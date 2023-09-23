@@ -40,6 +40,14 @@ const EnvDialog = ({ show, onCancel }) => {
         enqueueSnackbar('Added Auth keys!', { variant: 'success' });
     }
 
+    const editAuth = () => {
+        enqueueSnackbar('Edited Auth keys!', { variant: 'success' });
+    }
+
+    const deleteAuth = () => {
+        enqueueSnackbar('Deleted Auth keys!', { variant: 'success' });
+    }
+
     const component = show ? (
         <Dialog
             fullWidth
@@ -104,7 +112,7 @@ const EnvDialog = ({ show, onCancel }) => {
                             </TableHead>
                             <TableBody>
                                 <TableRow key={0} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component='th' scope='row'>
+                                    <TableCell component='th' scope='row' style={{ width: "30%" }}>
                                         {authKeys[0]}
                                     </TableCell>
                                     <TableCell component='th' scope='row'>
@@ -114,12 +122,14 @@ const EnvDialog = ({ show, onCancel }) => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <IconButton title='Edit' color='primary'>
-                        <IconEdit />
-                    </IconButton>
-                    <IconButton title='Delete' color='error'>
-                        <IconTrash />
-                    </IconButton>
+                    <div style={{display: 'flex', flexDirection: 'row'}}>
+                        <IconButton title='Edit' color='primary' onClick={() => editAuth()}>
+                            <IconEdit />
+                        </IconButton>
+                        <IconButton title='Delete' color='error' onClick={() => deleteAuth()}>
+                            <IconTrash />
+                        </IconButton>
+                    </div>
                 </>
             )}
       </Dialog>

@@ -1,8 +1,22 @@
-import React, { useCallback, useMemo } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background } from 'reactflow';
+import React, { useRef, useCallback, useMemo, useState } from 'react';
 
-import 'reactflow/dist/style.css';
+// react flow
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background } from 'reactflow';
+import 'reactflow/dist/style.css'
+import './index.css'
+
+// MUI
+import { AppBar, Box, Toolbar, IconButton, Typography, Button, ButtonBase, Avatar } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+
+// icons
+import { IconBrandCodesandbox } from '@tabler/icons-react';
+
 import RequestNode from './RequestNode';
+import EnvDialog from './EnvDialog';
+
+// theme
+import theme from './theme';
 
 const initialNodes = [
   { id: '1', 
@@ -33,6 +47,10 @@ const initialNodes = [
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
 const Flow = () => {
+  const reactFlowWrapper = useRef(null)
+
+  const [envDialogOpen, setEnvDialogOpen] = useState(false)
+  
   const nodeTypes = useMemo(() => ({ requestNode: RequestNode }), []);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -41,19 +59,64 @@ const Flow = () => {
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
   return (
-    <div style={{pt: '70px', width: '100vw', height: '100vh' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-        >
-            <Controls />
-            <Background variant='dots' gap={12} size={1} />
-      </ReactFlow>
-    </div>
+    <>
+        <Box>
+              <AppBar position="fixed" elevation={1}>
+                  <Toolbar>
+                      <IconButton
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        aria-label="menu"
+                        sx={{ mr: 2 }}
+                      >
+                        <MenuIcon />
+                      </IconButton>
+                      <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        FlowTest
+                      </Typography>
+                      <ButtonBase title='Environment' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
+                        <Avatar
+                            variant='rounded'
+                            sx={{
+                              ...theme.typography.commonAvatar,
+                              ...theme.typography.mediumAvatar,
+                              transition: 'all .2s ease-in-out',
+                              background: theme.palette.primary.light,
+                              color: theme.palette.primary.dark,
+                              '&:hover': {
+                                  background: theme.palette.primary.dark,
+                                  color: theme.palette.primary.light
+                              }
+                            }}
+                            color='inherit'
+                            onClick={() => setEnvDialogOpen(true)}
+                        >
+                            <IconBrandCodesandbox stroke={1.5} size='1.3rem' />
+                        </Avatar>
+                    </ButtonBase>
+                  </Toolbar>
+              </AppBar>
+              <Box sx={{pt: '70px', height: '100vh', width: '100%' }}>
+                  <div className='reactflow-parent-wrapper'>
+                      <div className='reactflow-wrapper' ref={reactFlowWrapper}>
+                          <ReactFlow
+                            nodes={nodes}
+                            edges={edges}
+                            onNodesChange={onNodesChange}
+                            onEdgesChange={onEdgesChange}
+                            onConnect={onConnect}
+                            nodeTypes={nodeTypes}
+                            >
+                                <Controls />
+                                <Background variant='dots' gap={12} size={1} />
+                          </ReactFlow>
+                      </div>
+                  </div>
+              </Box>
+              <EnvDialog show={envDialogOpen} onCancel={() => setEnvDialogOpen(false)} />
+        </Box>
+    </>
   );
 }
 

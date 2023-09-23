@@ -18,6 +18,8 @@ import EnvDialog from './EnvDialog';
 // theme
 import theme from './theme';
 
+import AddRequestNodes from './AddRequestNodes';
+
 const initialNodes = [
   { id: '1', 
     type: 'requestNode', 
@@ -110,6 +112,7 @@ const Flow = () => {
                             >
                                 <Controls />
                                 <Background variant='dots' gap={12} size={1} />
+                                <AddRequestNodes />
                           </ReactFlow>
                       </div>
                   </div>

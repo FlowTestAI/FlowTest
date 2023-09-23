@@ -18,7 +18,7 @@ import {
     TableHead,
     TableRow,
     Paper,
-    IconButton
+    IconButton,
 } from '@mui/material';
 
 import { useSnackbar } from 'notistack';
@@ -45,6 +45,7 @@ const EnvDialog = ({ show, onCancel }) => {
     }
 
     const deleteAuth = () => {
+        setAuthKeys([])
         enqueueSnackbar('Deleted Auth keys!', { variant: 'success' });
     }
 

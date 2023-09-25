@@ -74,12 +74,14 @@ const Flow = () => {
       event.preventDefault();
 
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      const type = event.dataTransfer.getData('application/reactflow');
+      let nodeData = event.dataTransfer.getData('application/reactflow');
 
       // check if the dropped element is valid
-      if (typeof type === 'undefined' || !type) {
+      if (typeof nodeData === 'undefined' || !nodeData) {
         return;
       }
+
+      nodeData = JSON.parse(nodeData)
 
       const position = reactFlowInstance.project({
         x: event.clientX - reactFlowBounds.left,
@@ -87,9 +89,22 @@ const Flow = () => {
       });
       const newNode = {
         id: getId(),
-        type,
+        type: 'requestNode',
         position,
-        data: { label: `${type} node` },
+        data: nodeData.label === 'GET' ? { 
+          requestType: 'GET',
+          variables: 
+          {
+            "uuid": "String"
+          }
+        }:
+        { 
+          requestType: 'POST',
+          variables: 
+          {
+            "uuid": "String"
+          }
+        }
       };
 
       setNodes((nds) => nds.concat(newNode));

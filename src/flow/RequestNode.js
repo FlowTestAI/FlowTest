@@ -6,9 +6,14 @@ import RequestBody from "./RequestBody";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
+
+import { IconPlus } from "@tabler/icons-react";
+import { useState } from "react";
 
 const RequestNode = ({data}) => {
+    
+    const [variables, setVariables] = useState([])
+
     return (
         <>
             <Handle type="target" position={Position.Left} />
@@ -28,19 +33,19 @@ const RequestNode = ({data}) => {
                     </div>
                     <RequestBody/>
                     <Divider />
-                        <Box sx={{ background: grey[100], p: 1 }}>
-                            <Typography
-                                sx={{
-                                    fontWeight: 500,
-                                    textAlign: 'center'
-                                }}
-                            >
-                                Input Variables
-                            </Typography>
-                        </Box>
+                    <Box sx={{ background: grey[100], p: 1 }}>
+                        <Typography
+                            sx={{
+                                fontWeight: 500,
+                                textAlign: 'center'
+                            }}
+                        >
+                            Variables
+                        </Typography>
+                    </Box>
                     <Divider />
-                    {/* <FormControl sx={{ m: 1 }} variant="outlined"> */}
                     <Box style={{ width: 300, margin: 10, padding: 5 }}>
+                        <IconPlus/>
                         <OutlinedInput
                             id="outlined-adornment-weight"
                             endAdornment={<InputAdornment position="end">{data.variables.uuid}</InputAdornment>}
@@ -54,7 +59,6 @@ const RequestNode = ({data}) => {
                         />
                         <FormHelperText id="outlined-weight-helper-text">uuid</FormHelperText>
                     </Box>
-                    {/* </FormControl> */}
                 </Box>
             </Card>
             <Handle type="source" position={Position.Right} />

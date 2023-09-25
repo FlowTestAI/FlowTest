@@ -6,7 +6,7 @@ import 'reactflow/dist/style.css'
 import './index.css'
 
 // MUI
-import { AppBar, Box, Toolbar, IconButton, Typography, Button, ButtonBase, Avatar } from '@mui/material';
+import { AppBar, Box, Toolbar, IconButton, Typography, ButtonBase, Avatar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 // icons

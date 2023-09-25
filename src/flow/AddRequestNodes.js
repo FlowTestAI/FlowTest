@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 //mui
-import { Fab } from "@mui/material";
+import { Fab, Popper, Fade, Paper, Typography, Box, Stack, List, ListItemButton, ListItem, ListItemText, Divider, Card } from "@mui/material";
 import { blue, green } from '@mui/material/colors';
 
 // icons
 import { IconMinus, IconPlus } from '@tabler/icons-react';
+
+import PerfectScrollbar from 'react-perfect-scrollbar'
 
 const fabStyle = {
     position: 'absolute',
@@ -23,6 +25,15 @@ const fabGreenStyle = {
 
 const AddRequestNodes = () => {
     const [open, setOpen] = useState(false)
+    const anchorRef = useRef(null);
+    const ps = useRef()
+
+    const nodes = [{"name":"GET", "label":"GET", "description":"GET"}, {"name":"POST", "label":"POST", "description":"POST"}]
+
+    const onDragStart = (event, node) => {
+        event.dataTransfer.setData('application/reactflow', JSON.stringify(node))
+        event.dataTransfer.effectAllowed = 'move'
+    }
 
     return (
         <>
@@ -32,9 +43,84 @@ const AddRequestNodes = () => {
                 title="Add Node"
                 sx= {{ ...fabStyle, ...fabGreenStyle }}
                 onClick={() => setOpen(!open)}
+                ref={anchorRef}
             >
                 {open ? <IconMinus /> : <IconPlus />}
             </Fab>
+            <Popper 
+                open={open} 
+                anchorEl={anchorRef.current} 
+                placement='top' 
+                transition
+                disablePortal
+            >
+                {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                    <Paper>
+                        <Card
+                            elevation={16}
+                        >
+                            <Box sx={{ p: 2 }}>
+                                <Stack>
+                                    <Typography variant='h6'>Add Nodes</Typography>
+                                </Stack>
+                            </Box>
+                            <PerfectScrollbar
+                                containerRef={(el) => {
+                                    ps.current = el
+                                }}
+                                style={{ height: '100%', maxHeight: 'calc(100vh - 320px)', overflowX: 'hidden' }}
+                            >
+                                <Box sx={{ p: 2 }}>
+                                    <List
+                                        sx={{
+                                            width: '100%',
+                                            maxWidth: 370,
+                                            borderRadius: '10px',
+                                            padding: '16px',
+                                            '& .MuiListItemSecondaryAction-root': {
+                                                top: 22
+                                            },
+                                            '& .MuiDivider-root': {
+                                                my: 0
+                                            },
+                                            '& .list-container': {
+                                                pl: 7
+                                            }
+                                        }}
+                                    >
+                                        {nodes.map((node, index) => (
+                                            <div
+                                                key={node.name}
+                                                onDragStart={(event) => onDragStart(event, node)}
+                                                draggable
+                                            >
+                                                <ListItemButton
+                                                    sx={{
+                                                        p: 0,
+                                                        borderRadius: '10px',
+                                                        cursor: 'move'
+                                                    }}
+                                                >
+                                                    <ListItem alignItems='center'>
+                                                        <ListItemText
+                                                            sx={{ ml: 1 }}
+                                                            primary={node.label}
+                                                            secondary={node.description}
+                                                        />
+                                                    </ListItem>
+                                                </ListItemButton>
+                                                {index === nodes.length - 1 ? null : <Divider orientation="horizontal" flexItem />}
+                                            </div>
+                                        ))}
+                                    </List>
+                                </Box>
+                            </PerfectScrollbar>
+                        </Card>
+                    </Paper>
+                </Fade>
+                )}
+            </Popper>
         </>
     )
 }

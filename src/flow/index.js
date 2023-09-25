@@ -50,6 +50,7 @@ const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
 const Flow = () => {
   const reactFlowWrapper = useRef(null)
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
   const [envDialogOpen, setEnvDialogOpen] = useState(false)
   
@@ -59,6 +60,42 @@ const Flow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  let id = 0;
+  const getId = () => `dndnode_${id++}`;
+
+  const onDrop = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const type = event.dataTransfer.getData('application/reactflow');
+
+      // check if the dropped element is valid
+      if (typeof type === 'undefined' || !type) {
+        return;
+      }
+
+      const position = reactFlowInstance.project({
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      });
+      const newNode = {
+        id: getId(),
+        type,
+        position,
+        data: { label: `${type} node` },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [reactFlowInstance]
+  );
 
   return (
     <>
@@ -109,6 +146,9 @@ const Flow = () => {
                             onEdgesChange={onEdgesChange}
                             onConnect={onConnect}
                             nodeTypes={nodeTypes}
+                            onInit={setReactFlowInstance}
+                            onDrop={onDrop}
+                            onDragOver={onDragOver}
                             >
                                 <Controls />
                                 <Background variant='dots' gap={12} size={1} />

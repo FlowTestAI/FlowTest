@@ -28,7 +28,7 @@ const AddRequestNodes = () => {
     const anchorRef = useRef(null);
     const ps = useRef()
 
-    const nodes = [{"name":"GET", "label":"GET", "description":"GET"}, {"name":"POST", "label":"POST", "description":"POST"}]
+    const nodes = [{"name":"GET", "label":"GET", "description":"GET Descr"}, {"name":"POST", "label":"POST", "description":"POST desc"}]
 
     const onDragStart = (event, node) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify(node))
@@ -53,6 +53,17 @@ const AddRequestNodes = () => {
                 placement='top' 
                 transition
                 disablePortal
+                popperOptions={{
+                    modifiers: [
+                        {
+                            name: 'offset',
+                            options: {
+                                offset: [-40, 14]
+                            }
+                        }
+                    ]
+                }}
+                sx={{ zIndex: 1000 }}
             >
                 {({ TransitionProps }) => (
                 <Fade {...TransitionProps} timeout={350}>
@@ -94,14 +105,9 @@ const AddRequestNodes = () => {
                                                 key={node.name}
                                                 onDragStart={(event) => onDragStart(event, node)}
                                                 draggable
+                                                cursor='move'
                                             >
-                                                <ListItemButton
-                                                    sx={{
-                                                        p: 0,
-                                                        borderRadius: '10px',
-                                                        cursor: 'move'
-                                                    }}
-                                                >
+                                                <ListItemButton>
                                                     <ListItem alignItems='center'>
                                                         <ListItemText
                                                             sx={{ ml: 1 }}
@@ -110,7 +116,7 @@ const AddRequestNodes = () => {
                                                         />
                                                     </ListItem>
                                                 </ListItemButton>
-                                                {index === nodes.length - 1 ? null : <Divider orientation="horizontal" flexItem />}
+                                                {index === nodes.length - 1 ? null : <Divider />}
                                             </div>
                                         ))}
                                     </List>

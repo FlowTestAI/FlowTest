@@ -1,7 +1,8 @@
 import { Card, Box, TextField, Typography, Divider } from "@mui/material"
 import { grey } from "@mui/material/colors"
 import { Handle, Position } from "reactflow"
-import RequestBodyOptions from "./RequestBodyOptions"
+
+import RequestBody from "./RequestBody";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -25,43 +26,7 @@ const RequestNode = ({data}) => {
                             />
                         </Box>
                     </div>
-                    <Divider />
-                        <Box sx={{ background: grey[100], p: 1 }}>
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                <Typography
-                                    sx={{
-                                        fontWeight: 500,
-                                        textAlign: 'center'
-                                    }}
-                                >
-                                        Body 
-                                </Typography>
-                                <RequestBodyOptions/>
-                            </div>
-                        </Box>
-                    <Divider />
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left' }}>
-                        {/* <Typography
-                            id="decorated-list-demo"
-                            level="body-xs"
-                            mb={1}
-                            ml={1}
-                            fontSize="default"
-                        >
-                            Body <RequestBodyOptions/>
-                        </Typography> */}
-                        <Box style={{ width: 300, margin: 10, padding: 5 }}>
-                            <TextField
-                                id="outlined-multiline-static"
-                                label="Json"
-                                multiline
-                                rows={4}
-                                defaultValue="{}"
-                                fullWidth
-                                className="nodrag"
-                            />
-                        </Box>
-                    </div>
+                    <RequestBody/>
                     <Divider />
                         <Box sx={{ background: grey[100], p: 1 }}>
                             <Typography

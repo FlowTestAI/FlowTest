@@ -23,12 +23,21 @@ const fabGreenStyle = {
     },
 }
 
+const requestNodes = [
+    { 
+        requestType: 'GET',
+        requestDescription: 'GET is used to request data from a specified resource.'
+    },
+    {  
+        requestType: 'POST',
+        requestDescription: 'POST is used to send data to a server to create/update a resource.'
+    },
+  ];
+
 const AddRequestNodes = () => {
     const [open, setOpen] = useState(false)
     const anchorRef = useRef(null);
     const ps = useRef()
-
-    const nodes = [{"name":"GET", "label":"GET", "description":"GET Descr"}, {"name":"POST", "label":"POST", "description":"POST desc"}]
 
     const onDragStart = (event, node) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify(node))
@@ -73,7 +82,7 @@ const AddRequestNodes = () => {
                         >
                             <Box sx={{ p: 2 }}>
                                 <Stack>
-                                    <Typography variant='h6'>Add Nodes</Typography>
+                                    <Typography variant='h6' align="center">Add Nodes</Typography>
                                 </Stack>
                             </Box>
                             <PerfectScrollbar
@@ -100,9 +109,9 @@ const AddRequestNodes = () => {
                                             }
                                         }}
                                     >
-                                        {nodes.map((node, index) => (
+                                        {requestNodes.map((node, index) => (
                                             <div
-                                                key={node.name}
+                                                key={node.requestType}
                                                 onDragStart={(event) => onDragStart(event, node)}
                                                 draggable
                                                 cursor='move'
@@ -111,12 +120,12 @@ const AddRequestNodes = () => {
                                                     <ListItem alignItems='center'>
                                                         <ListItemText
                                                             sx={{ ml: 1 }}
-                                                            primary={node.label}
-                                                            secondary={node.description}
+                                                            primary={node.requestType}
+                                                            secondary={node.requestDescription}
                                                         />
                                                     </ListItem>
                                                 </ListItemButton>
-                                                {index === nodes.length - 1 ? null : <Divider />}
+                                                {index === requestNodes.length - 1 ? null : <Divider />}
                                             </div>
                                         ))}
                                     </List>

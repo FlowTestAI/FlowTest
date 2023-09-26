@@ -20,34 +20,6 @@ import theme from './theme';
 
 import AddRequestNodes from './AddRequestNodes';
 
-const initialNodes = [
-  { id: '1', 
-    type: 'requestNode', 
-    position: { x: 0, y: 50 }, 
-    data: 
-    { 
-      requestType: 'GET',
-      variables: 
-      {
-        "uuid": "String"
-      }
-    } 
-  },
-  { id: '2', 
-    type: 'requestNode', 
-    position: { x: 100, y: 100 }, 
-    data: 
-    { 
-      requestType: 'POST',
-      variables: 
-      {
-        "uuid": "String"
-      } 
-    } 
-  },
-];
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
-
 const Flow = () => {
   const reactFlowWrapper = useRef(null)
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
@@ -56,8 +28,8 @@ const Flow = () => {
   
   const nodeTypes = useMemo(() => ({ requestNode: RequestNode }), []);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
@@ -91,20 +63,7 @@ const Flow = () => {
         id: getId(),
         type: 'requestNode',
         position,
-        data: nodeData.label === 'GET' ? { 
-          requestType: 'GET',
-          variables: 
-          {
-            "uuid": "String"
-          }
-        }:
-        { 
-          requestType: 'POST',
-          variables: 
-          {
-            "uuid": "String"
-          }
-        }
+        data: nodeData
       };
 
       setNodes((nds) => nds.concat(newNode));

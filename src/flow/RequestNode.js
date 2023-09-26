@@ -1,4 +1,4 @@
-import { Card, Box, TextField, Typography, Divider } from "@mui/material"
+import { Card, Box, TextField, Typography, Divider, IconButton } from "@mui/material"
 import { grey } from "@mui/material/colors"
 import { Handle, Position } from "reactflow"
 
@@ -7,12 +7,38 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
 
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import { IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 
 const RequestNode = ({data}) => {
     
-    const [variables, setVariables] = useState([])
+    const [variables, setVariables] = useState([]);
+
+    const handleAddVariable = (varName, varType) => {
+        const newVar = {
+            id: variables.length + 1,
+            name: 'var'+ (variables.length + 1),
+            type: varType
+        }
+        setVariables((prevVariables) => [...prevVariables, newVar]);
+    }
+
+    const handleDeleteVariable = (event, id) => {
+        setVariables(variables => {
+          for (let i = id - 1; i < variables.length; i++) {
+            variables[i].id--;
+          }
+        });
+    
+        setVariables((prevVariables) => {
+          return [
+            ...variables.slice(0, id - 1),
+            ...variables.slice(id),
+          ];
+        });
+    }
 
     return (
         <>
@@ -45,19 +71,32 @@ const RequestNode = ({data}) => {
                     </Box>
                     <Divider />
                     <Box style={{ width: 300, margin: 10, padding: 5 }}>
-                        <IconPlus/>
-                        <OutlinedInput
-                            id="outlined-adornment-weight"
-                            endAdornment={<InputAdornment position="end">{data.variables.uuid}</InputAdornment>}
-                            aria-describedby="outlined-weight-helper-text"
-                            inputProps={{
-                            'aria-label': 'weight',
-                            }}
-                            fullWidth
-                            size="small"
-                            className="nodrag"
-                        />
-                        <FormHelperText id="outlined-weight-helper-text">uuid</FormHelperText>
+                        <IconButton onClick={() => handleAddVariable("uuid", "String")}>
+                            <IconPlus/>
+                        </IconButton>
+                        {variables.map((variable, index) => (
+                            <>
+                                <div style={{display:'flex', flexDirection:'row'}}>
+                                    <div>
+                                        <OutlinedInput
+                                            id="outlined-adornment-weight"
+                                            endAdornment={<InputAdornment position="end">{variable.type}</InputAdornment>}
+                                            aria-describedby="outlined-weight-helper-text"
+                                            inputProps={{
+                                            'aria-label': 'weight',
+                                            }}
+                                            fullWidth
+                                            size="small"
+                                            className="nodrag"
+                                        />
+                                        <FormHelperText id="outlined-weight-helper-text">{variable.name}</FormHelperText>
+                                    </div>
+                                    <IconButton onClick={(e) => handleDeleteVariable(e, variable.id)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </div>
+                            </>
+                        ))}
                     </Box>
                 </Box>
             </Card>

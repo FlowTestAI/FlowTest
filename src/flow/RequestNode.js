@@ -16,11 +16,12 @@ const RequestNode = ({data}) => {
     
     const [variables, setVariables] = useState([]);
 
-    const handleAddVariable = (varName, varType) => {
+    // only supporting string type variables for now
+    const handleAddVariable = () => {
         const newVar = {
             id: variables.length + 1,
             name: 'var'+ (variables.length + 1),
-            type: varType
+            type: 'String'
         }
         setVariables((prevVariables) => [...prevVariables, newVar]);
     }
@@ -38,6 +39,19 @@ const RequestNode = ({data}) => {
             ...variables.slice(id),
           ];
         });
+    }
+
+    const handleVariableChange = (event, variable) => {
+        const varId = variable.id
+        if (!data["variable"]) {
+            data["variable"] = {}
+        }
+        if (!data["variable"][varId]) {
+            data["variable"][varId] = {}
+        }
+        data.variable[varId].name = variable.name
+        data.variable[varId].type = variable.type
+        data.variable[varId].value = event.target.value
     }
 
     return (
@@ -71,7 +85,7 @@ const RequestNode = ({data}) => {
                     </Box>
                     <Divider />
                     <Box style={{ width: 300, margin: 10, padding: 5 }}>
-                        <IconButton onClick={() => handleAddVariable("uuid", "String")}>
+                        <IconButton onClick={() => handleAddVariable()}>
                             <IconPlus/>
                         </IconButton>
                         {variables.map((variable, index) => (
@@ -88,6 +102,7 @@ const RequestNode = ({data}) => {
                                             fullWidth
                                             size="small"
                                             className="nodrag"
+                                            onChange={(e) => handleVariableChange(e, variable)}
                                         />
                                         <FormHelperText id="outlined-weight-helper-text">{variable.name}</FormHelperText>
                                     </div>

@@ -32,6 +32,14 @@ const requestNodes = [
         requestType: 'POST',
         requestDescription: 'POST is used to send data to a server to create/update a resource.'
     },
+    {  
+        requestType: 'PUT',
+        requestDescription: 'PUT is used to send data to a server to create/update a resource. PUT requests are idempotent.'
+    },
+    {  
+        requestType: 'DELETE',
+        requestDescription: 'The DELETE method deletes the specified resource.'
+    },
   ];
 
 const AddRequestNodes = () => {

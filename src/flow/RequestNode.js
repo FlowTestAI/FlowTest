@@ -56,6 +56,10 @@ const RequestNode = ({data}) => {
         data.variables[varId].value = event.target.value
     }
 
+    const handleURLChange = (e) => {
+        data.url = e.target.value
+    }
+
     return (
         <>
             <Handle type="target" position={Position.Left} />
@@ -70,6 +74,7 @@ const RequestNode = ({data}) => {
                                 size="small"
                                 className="nodrag"
                                 fullWidth
+                                onChange={(e) => handleURLChange(e)}
                             />
                         </Box>
                     </div>

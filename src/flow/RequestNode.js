@@ -39,19 +39,21 @@ const RequestNode = ({data}) => {
             ...variables.slice(id),
           ];
         });
+
+        delete data.variables[id];
     }
 
     const handleVariableChange = (event, variable) => {
         const varId = variable.id
-        if (!data["variable"]) {
-            data["variable"] = {}
+        if (!data["variables"]) {
+            data["variables"] = {}
         }
-        if (!data["variable"][varId]) {
-            data["variable"][varId] = {}
+        if (!data["variables"][varId]) {
+            data["variables"][varId] = {}
         }
-        data.variable[varId].name = variable.name
-        data.variable[varId].type = variable.type
-        data.variable[varId].value = event.target.value
+        data.variables[varId].name = variable.name
+        data.variables[varId].type = variable.type
+        data.variables[varId].value = event.target.value
     }
 
     return (

@@ -73,7 +73,7 @@ const RequestNode = ({data}) => {
                             />
                         </Box>
                     </div>
-                    <RequestBody/>
+                    <RequestBody nodeData={data}/>
                     <Divider />
                     <Box sx={{ background: grey[100], p: 1 }}>
                         <Typography

@@ -2,7 +2,10 @@ import React, { useRef, useCallback, useMemo, useState } from 'react';
 
 // react flow
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background } from 'reactflow';
+import { Handle, Position } from "reactflow"
 import 'reactflow/dist/style.css'
+
+// css
 import './index.css'
 
 // MUI
@@ -20,15 +23,30 @@ import theme from './theme';
 
 import AddRequestNodes from './AddRequestNodes';
 
+const initialNodes = [
+  { id: '0', type: 'startNode', position: { x: 150, y: 150 } }
+];
+
+const StartNode = () => (
+  <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
+    <div>Start</div>
+    <Handle style={{}} type="source" position={Position.Right} />
+  </div>
+);
+
 const Flow = () => {
   const reactFlowWrapper = useRef(null)
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
   const [envDialogOpen, setEnvDialogOpen] = useState(false)
   
-  const nodeTypes = useMemo(() => ({ requestNode: RequestNode }), []);
+  const nodeTypes = useMemo(() => (
+    {
+      startNode: StartNode, 
+      requestNode: RequestNode 
+    }), []);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
@@ -71,6 +89,10 @@ const Flow = () => {
     [reactFlowInstance]
   );
 
+  const getAllNodes = () => {
+    reactFlowInstance.getNodes().map((node) => console.log(node))
+  }
+
   return (
     <>
         <Box>
@@ -88,6 +110,7 @@ const Flow = () => {
                       <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         FlowTest
                       </Typography>
+                      <button onClick={() => getAllNodes()}>Get all nodes</button>
                       <ButtonBase title='Environment' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
                         <Avatar
                             variant='rounded'

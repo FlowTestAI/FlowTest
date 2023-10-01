@@ -1,5 +1,6 @@
 import "reflect-metadata"
 import express from 'express';
+import cors from 'cors'
 import { AppDataSource } from "./data-source";
 
 class App {
@@ -24,6 +25,8 @@ class App {
       })
       .catch((error) => console.log('❌ [server]: Error during Data Source initialization:', error))
 
+      this.app.use(cors())
+      
       this.app.get('/', (req, res) => {
         res.send('Hello World!');
       });

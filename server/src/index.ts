@@ -28,6 +28,9 @@ class App {
 
       this.app.use(cors())
 
+      this.app.use(express.json({ limit: '50mb' }))
+      this.app.use(express.urlencoded({ limit: '50mb', extended: true }))
+
       this.app.get('/', (req, res) => {
         res.send('Hello World!');
       });
@@ -42,7 +45,7 @@ class App {
 
         return res.json(results);
       });
-      
+
       this.app.listen(this.port, () => {
         return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
       });

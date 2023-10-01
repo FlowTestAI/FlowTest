@@ -36,6 +36,7 @@ import theme from './theme';
 
 import AddRequestNodes from './AddRequestNodes';
 import SaveDialog from './SaveDialog';
+import wrapper from '../api/wrapper';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -47,6 +48,9 @@ const StartNode = () => (
 const Flow = () => {
   const navigate = useNavigate()
 
+  const createNewFlowTest = wrapper(flowTestApi.createNewFlowTest)
+  const updateFlowTest = wrapper(flowTestApi.updateFlowTest)
+
   // notification
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -56,7 +60,6 @@ const Flow = () => {
   const [envDialogOpen, setEnvDialogOpen] = useState(false)
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [flowTest, setFlowTest]= useState({})
-  const [drawer, setDrawer] = useState(false)
 
   const URLpath = document.location.pathname.toString().split('/')
   const flowTestId = URLpath[URLpath.length - 1] === 'flow' ? '' : URLpath[URLpath.length - 1]
@@ -132,19 +135,33 @@ const Flow = () => {
                   name: flowTestName,
                   flowData
               }
-              //flowTestApi.createNewFlowTest(newFlowTestBody)
-              // success
-              setFlowTest(newFlowTestBody)
-              enqueueSnackbar('Saved FlowTest!', { variant: 'success' });
+              createNewFlowTest.request(newFlowTestBody)
           } else {
               const updateBody = {
                   name: flowTestName,
                   flowData
               }
-              flowTestApi.updateFlowTest(flowTest.id, updateBody)
+              updateFlowTest.request(flowTest.id, updateBody)
           }
       }
   }
+
+  useEffect(() => {
+    if (createNewFlowTest.data) {
+      const createdFlowTest = createNewFlowTest.data
+      setFlowTest(createdFlowTest)
+      enqueueSnackbar('Saved FlowTest!', { variant: 'success' });
+      window.history.replaceState(null, null, `/flow/${createdFlowTest.id}`)
+    } else if (createNewFlowTest.error) {
+      const error = createNewFlowTest.error
+      if (!error.response) {
+        enqueueSnackbar(`Failed to save chatflow: ${error}`, { variant: 'error'});
+      } else {
+        const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
+        enqueueSnackbar(`Failed to save chatflow: ${errorData}`, { variant: 'error'});
+      }
+    }
+  },[createNewFlowTest.data, createNewFlowTest.error])
 
   const onSaveClick = () => {
     setSaveDialogOpen(true);

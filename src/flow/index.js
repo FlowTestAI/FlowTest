@@ -27,6 +27,9 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
+// notification
+import { useSnackbar } from 'notistack';
+
 // API
 import flowTestApi from '../api/flowtest'
 
@@ -51,6 +54,9 @@ const StartNode = () => (
 
 const Flow = () => {
   const navigate = useNavigate()
+
+  // notification
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const reactFlowWrapper = useRef(null)
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
@@ -134,7 +140,10 @@ const Flow = () => {
                   name: flowTestName,
                   flowData
               }
-              flowTestApi.createNewFlowTest(newFlowTestBody)
+              //flowTestApi.createNewFlowTest(newFlowTestBody)
+              // success
+              setFlowTest(newFlowTestBody)
+              enqueueSnackbar('Saved FlowTest!', { variant: 'success' });
           } else {
               const updateBody = {
                   name: flowTestName,
@@ -294,6 +303,7 @@ const Flow = () => {
                             onInit={setReactFlowInstance}
                             onDrop={onDrop}
                             onDragOver={onDragOver}
+                            onNodeDragStop={() => setIsDirty(true)}
                             >
                                 <Controls />
                                 <Background variant='dots' gap={12} size={1} />

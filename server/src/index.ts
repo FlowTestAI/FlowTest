@@ -1,7 +1,8 @@
 import "reflect-metadata"
-import express from 'express';
+import express, {Request, Response} from 'express';
 import cors from 'cors'
 import { AppDataSource } from "./data-source";
+import { FlowTest } from "./entities/FlowTest"
 
 class App {
 
@@ -26,9 +27,20 @@ class App {
       .catch((error) => console.log('❌ [server]: Error during Data Source initialization:', error))
 
       this.app.use(cors())
-      
+
       this.app.get('/', (req, res) => {
         res.send('Hello World!');
+      });
+
+      // Create Chatflow
+      this.app.post('/api/v1/flowtest', async (req: Request, res: Response) => {
+        const body = req.body
+        const newFlowTest = new FlowTest()
+        Object.assign(newFlowTest, body)
+
+        const results = await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
+
+        return res.json(results);
       });
       
       this.app.listen(this.port, () => {

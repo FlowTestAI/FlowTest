@@ -1,4 +1,5 @@
 import React, { useRef, useCallback, useMemo, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'
 
 // react flow
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background } from 'reactflow';
@@ -9,7 +10,21 @@ import 'reactflow/dist/style.css'
 import './index.css'
 
 // MUI
-import { AppBar, Box, Toolbar, IconButton, Typography, ButtonBase, Avatar } from '@mui/material';
+import { 
+  AppBar, 
+  Box, 
+  Toolbar, 
+  IconButton, 
+  Typography, 
+  ButtonBase, 
+  Avatar, 
+  Drawer, 
+  List, 
+  ListItem, 
+  ListItemButton, 
+  ListItemText,
+  Divider 
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 // API
@@ -35,12 +50,15 @@ const StartNode = () => (
 );
 
 const Flow = () => {
+  const navigate = useNavigate()
+
   const reactFlowWrapper = useRef(null)
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
   const [envDialogOpen, setEnvDialogOpen] = useState(false)
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
-  const [flowTest, setFlowTest]= useState(null)
+  const [flowTest, setFlowTest]= useState({})
+  const [drawer, setDrawer] = useState(false)
 
   const URLpath = document.location.pathname.toString().split('/')
   const flowTestId = URLpath[URLpath.length - 1] === 'flow' ? '' : URLpath[URLpath.length - 1]
@@ -152,7 +170,41 @@ const Flow = () => {
       return () => {
           setIsDirty(false);
       }
-  }, [])
+  }, []);
+
+  // Side menu
+  const sideMenu = () => {
+    return (
+      <Box
+        sx={{ width: 250 }}
+        role="presentation"
+        onClick={() => setDrawer(false)}
+        onKeyDown={() => setDrawer(false)}
+      >
+        <List>
+            <ListItem key="FlowTest" disablePadding>
+              <ListItemButton>
+                {/* <ListItemText primary="FlowTest" /> */}
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                  FlowTest
+                </Typography>
+              </ListItemButton>
+            </ListItem>
+            <Divider/>
+            <ListItem key="list" disablePadding>
+              <ListItemButton>
+                <ListItemText primary='Saved Flows' />
+              </ListItemButton>
+            </ListItem>
+            <ListItem key="create" disablePadding>
+              <ListItemButton onClick={() => navigate('/flow')}>
+                <ListItemText primary='Create New Flow' />
+              </ListItemButton>
+            </ListItem>
+        </List>
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -165,11 +217,26 @@ const Flow = () => {
                         color="inherit"
                         aria-label="menu"
                         sx={{ mr: 2 }}
+                        onClick={() => setDrawer(true)}
                       >
                         <MenuIcon />
                       </IconButton>
-                      <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        FlowTest
+                      <Drawer
+                        open={drawer}
+                        onClose={() => setDrawer(false)}
+                      >
+                        {sideMenu()}
+                      </Drawer>
+                      <Typography
+                          component="div"
+                          sx={{
+                              flexGrow: 1,
+                              fontSize: '1.5rem',
+                              fontWeight: 600,
+                              ml: 2
+                          }}
+                      >
+                          {isDirty && <strong style={{ color: theme.palette.primary.light }}>*</strong>} {flowTest.name}
                       </Typography>
                       <button onClick={() => getAllNodes()}>Get all nodes</button>
                       <ButtonBase title='Save' sx={{ borderRadius: '50%', mr: 2 }}>

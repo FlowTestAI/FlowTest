@@ -13,19 +13,11 @@ import './index.css'
 import { 
   AppBar, 
   Box, 
-  Toolbar, 
-  IconButton, 
+  Toolbar,  
   Typography, 
   ButtonBase, 
-  Avatar, 
-  Drawer, 
-  List, 
-  ListItem, 
-  ListItemButton, 
-  ListItemText,
-  Divider 
+  Avatar 
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 
 // notification
 import { useSnackbar } from 'notistack';
@@ -34,7 +26,7 @@ import { useSnackbar } from 'notistack';
 import flowTestApi from '../api/flowtest'
 
 // icons
-import { IconBrandCodesandbox, IconDeviceFloppy } from '@tabler/icons-react';
+import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft } from '@tabler/icons-react';
 
 import RequestNode from './RequestNode';
 import EnvDialog from './EnvDialog';
@@ -181,61 +173,35 @@ const Flow = () => {
       }
   }, []);
 
-  // Side menu
-  const sideMenu = () => {
-    return (
-      <Box
-        sx={{ width: 250 }}
-        role="presentation"
-        onClick={() => setDrawer(false)}
-        onKeyDown={() => setDrawer(false)}
-      >
-        <List>
-            <ListItem key="FlowTest" disablePadding>
-              <ListItemButton>
-                {/* <ListItemText primary="FlowTest" /> */}
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  FlowTest
-                </Typography>
-              </ListItemButton>
-            </ListItem>
-            <Divider/>
-            <ListItem key="list" disablePadding>
-              <ListItemButton>
-                <ListItemText primary='Saved Flows' />
-              </ListItemButton>
-            </ListItem>
-            <ListItem key="create" disablePadding>
-              <ListItemButton onClick={() => navigate('/flow')}>
-                <ListItemText primary='Create New Flow' />
-              </ListItemButton>
-            </ListItem>
-        </List>
-      </Box>
-    );
-  }
-
   return (
     <>
         <Box>
               <AppBar position="fixed" elevation={1}>
                   <Toolbar>
-                      <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        sx={{ mr: 2 }}
-                        onClick={() => setDrawer(true)}
-                      >
-                        <MenuIcon />
-                      </IconButton>
-                      <Drawer
-                        open={drawer}
-                        onClose={() => setDrawer(false)}
-                      >
-                        {sideMenu()}
-                      </Drawer>
+                      <Box>
+                          <ButtonBase title='Back' sx={{ borderRadius: '50%' }}>
+                              <Avatar
+                                  variant='rounded'
+                                  sx={{
+                                      ...theme.typography.commonAvatar,
+                                      ...theme.typography.mediumAvatar,
+                                      transition: 'all .2s ease-in-out',
+                                      background: theme.palette.secondary.light,
+                                      color: theme.palette.secondary.dark,
+                                      '&:hover': {
+                                          background: theme.palette.secondary.dark,
+                                          color: theme.palette.secondary.light
+                                      }
+                                  }}
+                                  color='inherit'
+                                  onClick={() =>
+                                      window.history.state && window.history.state.idx > 0 ? navigate(-1) : navigate('/', { replace: true })
+                                  }
+                              >
+                                  <IconChevronLeft stroke={1.5} size='1.3rem' />
+                              </Avatar>
+                          </ButtonBase>
+                      </Box>
                       <Typography
                           component="div"
                           sx={{

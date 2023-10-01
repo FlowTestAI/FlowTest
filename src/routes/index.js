@@ -1,21 +1,7 @@
-import { Outlet, useRoutes } from "react-router";
-import Flow from "../flow";
+import { useRoutes } from "react-router";
+import FlowRoutes from "./FlowRoutes";
+import MainRoutes from "./MainRoutes";
 
-const Routes = {
-    path: '/',
-    element: <Outlet/>,
-    children: [
-        {
-            path: '/flow',
-            element: <Flow />
-        },
-        {
-            path: '/flow/:id',
-            element: <Flow />
-        }
-    ] 
-}
-
-export default function FlowRoutes() {
-    return useRoutes([Routes]);
+export default function Routes() {
+    return useRoutes([MainRoutes, FlowRoutes]);
 }

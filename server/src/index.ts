@@ -1,11 +1,6 @@
 import "reflect-metadata"
 import express from 'express';
 import { AppDataSource } from "./data-source";
-import { DataSource } from 'typeorm'
-
-
-const app = express();
-
 
 class App {
 
@@ -15,7 +10,7 @@ class App {
 
   constructor() {
     this.app = express()
-    this.port = 3000
+    this.port = 3500
   }
 
   initServer() {

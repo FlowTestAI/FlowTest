@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useMemo, useState } from 'react';
+import React, { useRef, useCallback, useMemo, useState, useEffect } from 'react';
 
 // react flow
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background } from 'reactflow';
@@ -12,8 +12,11 @@ import './index.css'
 import { AppBar, Box, Toolbar, IconButton, Typography, ButtonBase, Avatar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
+// API
+import flowTestApi from '../api/flowtest'
+
 // icons
-import { IconBrandCodesandbox } from '@tabler/icons-react';
+import { IconBrandCodesandbox, IconDeviceFloppy } from '@tabler/icons-react';
 
 import RequestNode from './RequestNode';
 import EnvDialog from './EnvDialog';
@@ -22,10 +25,7 @@ import EnvDialog from './EnvDialog';
 import theme from './theme';
 
 import AddRequestNodes from './AddRequestNodes';
-
-const initialNodes = [
-  { id: '0', type: 'startNode', position: { x: 150, y: 150 } }
-];
+import SaveDialog from './SaveDialog';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -39,6 +39,13 @@ const Flow = () => {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
   const [envDialogOpen, setEnvDialogOpen] = useState(false)
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false)
+  const [flowTest, setFlowTest]= useState(null)
+
+  const URLpath = document.location.pathname.toString().split('/')
+  const flowTestId = URLpath[URLpath.length - 1] === 'flow' ? '' : URLpath[URLpath.length - 1]
+
+  const [isDirty, setIsDirty] = useState(false)
   
   const nodeTypes = useMemo(() => (
     {
@@ -46,7 +53,7 @@ const Flow = () => {
       requestNode: RequestNode 
     }), []);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState();
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
@@ -85,6 +92,7 @@ const Flow = () => {
       };
 
       setNodes((nds) => nds.concat(newNode));
+      setIsDirty(true);
     },
     [reactFlowInstance]
   );
@@ -92,6 +100,59 @@ const Flow = () => {
   const getAllNodes = () => {
     reactFlowInstance.getNodes().map((node) => console.log(node))
   }
+
+  // SAVE
+
+  const handleSaveFlow = (flowTestName) => {
+      if (reactFlowInstance) {
+          const rfInstanceObject = reactFlowInstance.toObject()
+          rfInstanceObject.nodes = nodes
+          const flowData = JSON.stringify(rfInstanceObject)
+
+          console.log(flowData)
+
+          if (!flowTest.id) {
+              const newFlowTestBody = {
+                  name: flowTestName,
+                  flowData
+              }
+              flowTestApi.createNewFlowTest(newFlowTestBody)
+          } else {
+              const updateBody = {
+                  name: flowTestName,
+                  flowData
+              }
+              flowTestApi.updateFlowTest(flowTest.id, updateBody)
+          }
+      }
+  }
+
+  const onSaveClick = () => {
+    setSaveDialogOpen(true);
+  }
+
+  const onConfirmSaveName = (flowTestName) => {
+    setSaveDialogOpen(false)
+    handleSaveFlow(flowTestName)
+  }
+
+  // Initialization
+  useEffect(() => {
+      if (flowTestId) {
+          flowTestApi.getSpecificFlowTest(flowTestId)
+      } else {
+          setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 } }])
+          setEdges([])
+
+          setFlowTest({
+            name: 'Untitled chatflow'
+          })
+      }
+
+      return () => {
+          setIsDirty(false);
+      }
+  }, [])
 
   return (
     <>
@@ -111,26 +172,46 @@ const Flow = () => {
                         FlowTest
                       </Typography>
                       <button onClick={() => getAllNodes()}>Get all nodes</button>
+                      <ButtonBase title='Save' sx={{ borderRadius: '50%', mr: 2 }}>
+                          <Avatar
+                              variant='rounded'
+                              sx={{
+                                  ...theme.typography.commonAvatar,
+                                  ...theme.typography.mediumAvatar,
+                                  transition: 'all .2s ease-in-out',
+                                  background: theme.palette.primary.light,
+                                  color: theme.palette.primary.dark,
+                                  '&:hover': {
+                                      background: theme.palette.primary.dark,
+                                      color: theme.palette.primary.light
+                                  }
+                              }}
+                              color='inherit'
+                              onClick={onSaveClick}
+                          >
+                              <IconDeviceFloppy stroke={1.5} size='1.3rem' />
+                          </Avatar>
+                      </ButtonBase>
                       <ButtonBase title='Environment' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
-                        <Avatar
-                            variant='rounded'
-                            sx={{
-                              ...theme.typography.commonAvatar,
-                              ...theme.typography.mediumAvatar,
-                              transition: 'all .2s ease-in-out',
-                              background: theme.palette.primary.light,
-                              color: theme.palette.primary.dark,
-                              '&:hover': {
-                                  background: theme.palette.primary.dark,
-                                  color: theme.palette.primary.light
-                              }
-                            }}
-                            color='inherit'
-                            onClick={() => setEnvDialogOpen(true)}
-                        >
-                            <IconBrandCodesandbox stroke={1.5} size='1.3rem' />
-                        </Avatar>
-                    </ButtonBase>
+                          <Avatar
+                              variant='rounded'
+                              sx={{
+                                ...theme.typography.commonAvatar,
+                                ...theme.typography.mediumAvatar,
+                                transition: 'all .2s ease-in-out',
+                                background: theme.palette.primary.light,
+                                color: theme.palette.primary.dark,
+                                '&:hover': {
+                                    background: theme.palette.primary.dark,
+                                    color: theme.palette.primary.light
+                                }
+                              }}
+                              color='inherit'
+                              onClick={() => setEnvDialogOpen(true)}
+                          >
+                              <IconBrandCodesandbox stroke={1.5} size='1.3rem' />
+                          </Avatar>
+                      </ButtonBase>
                   </Toolbar>
               </AppBar>
               <Box sx={{pt: '70px', height: '100vh', width: '100%' }}>
@@ -154,6 +235,7 @@ const Flow = () => {
                       </div>
                   </div>
               </Box>
+              <SaveDialog show={saveDialogOpen} onCancel={() => setSaveDialogOpen(false)} onConfirm={onConfirmSaveName} />
               <EnvDialog show={envDialogOpen} onCancel={() => setEnvDialogOpen(false)} />
         </Box>
     </>

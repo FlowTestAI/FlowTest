@@ -46,6 +46,25 @@ class App {
         return res.json(results);
       });
 
+      // Update FlowTest
+      this.app.put('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
+        const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
+            id: req.params.id
+        })
+        if (flowtest) {
+          const body = req.body
+          const updateFlowTest = new FlowTest()
+          Object.assign(updateFlowTest, body)
+          flowtest.name = updateFlowTest.name
+          flowtest.flowData = updateFlowTest.flowData
+
+          const result = await this.appDataSource.getRepository(FlowTest).save(flowtest)
+
+          return res.json(result)
+        }
+        return res.status(404).send(`FlowTest ${req.params.id} not found`)
+      })
+
       // Get FlowTest
       this.app.get('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
         const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
@@ -53,7 +72,7 @@ class App {
         })
         if (flowtest) return res.json(flowtest)
         return res.status(404).send(`FlowTest ${req.params.id} not found`)
-    })
+      })
 
       this.app.listen(this.port, () => {
         return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);

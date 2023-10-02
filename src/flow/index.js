@@ -151,6 +151,7 @@ const Flow = () => {
     if (createNewFlowTest.data) {
       const createdFlowTest = createNewFlowTest.data
       setFlowTest(createdFlowTest)
+      setIsDirty(false)
       enqueueSnackbar('Saved FlowTest!', { variant: 'success' });
       window.history.replaceState(null, null, `/flow/${createdFlowTest.id}`)
     } else if (createNewFlowTest.error) {
@@ -163,6 +164,22 @@ const Flow = () => {
       }
     }
   },[createNewFlowTest.data, createNewFlowTest.error])
+
+  useEffect(() => {
+    if (updateFlowTest.data) {
+      setFlowTest(updateFlowTest.data)
+      setIsDirty(false)
+      enqueueSnackbar('Saved FlowTest!', { variant: 'success' });
+    } else if (updateFlowTest.error) {
+      const error = updateFlowTest.error
+      if (!error.response) {
+        enqueueSnackbar(`Failed to save flowtest: ${error}`, { variant: 'error'});
+      } else {
+        const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
+        enqueueSnackbar(`Failed to save flowtest: ${errorData}`, { variant: 'error'});
+      }
+    }
+  },[updateFlowTest.data, updateFlowTest.error])
 
   useEffect(() => {
     if (getFlowTest.data) {
@@ -183,7 +200,8 @@ const Flow = () => {
   },[getFlowTest.data, getFlowTest.error])
 
   const onSaveClick = () => {
-    setSaveDialogOpen(true);
+    if (flowTest.id && flowTestId) handleSaveFlow(flowTest.name)
+    else setSaveDialogOpen(true);
   }
 
   const onConfirmSaveName = (flowTestName) => {

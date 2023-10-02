@@ -50,6 +50,7 @@ const Flow = () => {
 
   const createNewFlowTest = wrapper(flowTestApi.createNewFlowTest)
   const updateFlowTest = wrapper(flowTestApi.updateFlowTest)
+  const getFlowTest = wrapper(flowTestApi.getSpecificFlowTest)
 
   // notification
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -155,13 +156,31 @@ const Flow = () => {
     } else if (createNewFlowTest.error) {
       const error = createNewFlowTest.error
       if (!error.response) {
-        enqueueSnackbar(`Failed to save chatflow: ${error}`, { variant: 'error'});
+        enqueueSnackbar(`Failed to save flowtest: ${error}`, { variant: 'error'});
       } else {
         const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
-        enqueueSnackbar(`Failed to save chatflow: ${errorData}`, { variant: 'error'});
+        enqueueSnackbar(`Failed to save flowtest: ${errorData}`, { variant: 'error'});
       }
     }
   },[createNewFlowTest.data, createNewFlowTest.error])
+
+  useEffect(() => {
+    if (getFlowTest.data) {
+      const retrievedFlowtest = getFlowTest.data
+      const initialFlow = retrievedFlowtest.flowData ? JSON.parse(retrievedFlowtest.flowData) : []
+      setNodes(initialFlow.nodes || [])
+      setEdges(initialFlow.edges || [])
+      setFlowTest(retrievedFlowtest)
+    } else if (getFlowTest.error) {
+      const error = getFlowTest.error
+      if (!error.response) {
+        enqueueSnackbar(`Failed to get flowtest: ${error}`, { variant: 'error'});
+      } else {
+        const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
+        enqueueSnackbar(`Failed to get flowtest: ${errorData}`, { variant: 'error'});
+      }
+    }
+  },[getFlowTest.data, getFlowTest.error])
 
   const onSaveClick = () => {
     setSaveDialogOpen(true);
@@ -175,7 +194,7 @@ const Flow = () => {
   // Initialization
   useEffect(() => {
       if (flowTestId) {
-          flowTestApi.getSpecificFlowTest(flowTestId)
+        getFlowTest.request(flowTestId)
       } else {
           setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 } }])
           setEdges([])

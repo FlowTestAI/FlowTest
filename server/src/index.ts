@@ -35,7 +35,7 @@ class App {
         res.send('Hello World!');
       });
 
-      // Create Chatflow
+      // Create FlowTest
       this.app.post('/api/v1/flowtest', async (req: Request, res: Response) => {
         const body = req.body
         const newFlowTest = new FlowTest()
@@ -45,6 +45,15 @@ class App {
 
         return res.json(results);
       });
+
+      // Get FlowTest
+      this.app.get('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
+        const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
+            id: req.params.id
+        })
+        if (flowtest) return res.json(flowtest)
+        return res.status(404).send(`FlowTest ${req.params.id} not found`)
+    })
 
       this.app.listen(this.port, () => {
         return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);

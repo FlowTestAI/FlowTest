@@ -37,6 +37,7 @@ import theme from './theme';
 import AddRequestNodes from './AddRequestNodes';
 import SaveDialog from './SaveDialog';
 import wrapper from '../api/wrapper';
+import PromptDialog from './PromptDialog';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -60,6 +61,7 @@ const Flow = () => {
 
   const [envDialogOpen, setEnvDialogOpen] = useState(false)
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
+  const [promptDialogOpen, setPromptDialogOpen] = useState(false)
   const [flowTest, setFlowTest]= useState({})
 
   const URLpath = document.location.pathname.toString().split('/')
@@ -248,8 +250,10 @@ const Flow = () => {
                                       }
                                   }}
                                   color='inherit'
-                                  onClick={() =>
-                                      window.history.state && window.history.state.idx > 0 ? navigate(-1) : navigate('/', { replace: true })
+                                  onClick={() => {
+                                      if (isDirty) setPromptDialogOpen(true)
+                                      else window.history.state && window.history.state.idx > 0 ? navigate(-1) : navigate('/', { replace: true })
+                                    }
                                   }
                               >
                                   <IconChevronLeft stroke={1.5} size='1.3rem' />
@@ -334,6 +338,7 @@ const Flow = () => {
               </Box>
               <SaveDialog show={saveDialogOpen} onCancel={() => setSaveDialogOpen(false)} onConfirm={onConfirmSaveName} />
               <EnvDialog show={envDialogOpen} onCancel={() => setEnvDialogOpen(false)} />
+              <PromptDialog open={promptDialogOpen} closePromptDialog={() => setPromptDialogOpen(false)} />
         </Box>
     </>
   );

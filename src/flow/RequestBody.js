@@ -32,8 +32,7 @@ const ITEM_HEIGHT = 48;
 
 const RequestBody = ({nodeData}) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [bodyType, setBodyType] = React.useState('None')
-    const [myValue, setMyValue] = React.useState('')
+    const [bodyType, setBodyType] = React.useState(nodeData.requestBody ? nodeData.requestBody.type : 'None')
 
     const open = Boolean(anchorEl);
 
@@ -45,9 +44,11 @@ const RequestBody = ({nodeData}) => {
         nodeData["requestBody"] = {}
         nodeData.requestBody.type = option
         setBodyType(option)
-        setMyValue('')
         setAnchorEl(null);
     };
+
+    // form-data
+    const [myValue, setMyValue] = React.useState(nodeData.requestBody && nodeData.requestBody.body && nodeData.requestBody.body.name ? nodeData.requestBody.body.name : '')
 
     const handleFileUpload = async (e) => {
         if (!e.target.files) return
@@ -70,19 +71,25 @@ const RequestBody = ({nodeData}) => {
                     nodeData.requestBody.body = {}
                 }
                 nodeData.requestBody.body.value = value
+                nodeData.requestBody.body.name = name
             }
             reader.readAsDataURL(file)
         }
     }
 
+    const [fileKey, setFileKey] = React.useState(bodyType === 'form-data' &&nodeData.requestBody && nodeData.requestBody.body ? nodeData.requestBody.body.key : '')
     const handleFormDataKey = (e) => {
         if(!nodeData.requestBody.body) {
             nodeData.requestBody.body = {}
         }
+        setFileKey(e.target.value)
         nodeData.requestBody.body.key = e.target.value
     }
 
+    // raw-json
+    const [jsonValue, setJsonValue] = React.useState(bodyType === 'raw-json' && nodeData.requestBody && nodeData.requestBody.body ? nodeData.requestBody.body : '{}')
     const handleRawJson = (e) => {
+        setJsonValue(e.target.value)
         nodeData.requestBody.body = e.target.value
     }
 
@@ -143,7 +150,7 @@ const RequestBody = ({nodeData}) => {
                             label={bodyType}
                             multiline
                             rows={4}
-                            defaultValue="{}"
+                            value={jsonValue}
                             fullWidth
                             className="nodrag"
                             onChange={(e) => handleRawJson(e)}
@@ -158,6 +165,7 @@ const RequestBody = ({nodeData}) => {
                         <div>
                             <OutlinedInput
                                 id="outlined-adornment-weight"
+                                value={fileKey}
                                 endAdornment={<InputAdornment position="end">File</InputAdornment>}
                                 aria-describedby="outlined-weight-helper-text"
                                 inputProps={{

@@ -2,7 +2,7 @@ import React, { useRef, useCallback, useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // react flow
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background } from 'reactflow';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
 import { Handle, Position } from "reactflow"
 import 'reactflow/dist/style.css'
 
@@ -16,8 +16,10 @@ import {
   Toolbar,  
   Typography, 
   ButtonBase, 
-  Avatar 
+  Avatar,
+  Button 
 } from '@mui/material';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 
 // notification
 import { useSnackbar } from 'notistack';
@@ -330,7 +332,13 @@ const Flow = () => {
                             onDragOver={onDragOver}
                             onNodeDragStop={() => setIsDirty(true)}
                             >
-                                <Controls />
+                                <Controls>
+                                  <ControlButton onClick={() => console.log('action')} title="action">
+                                    <Button variant="contained" endIcon={<PlayCircleOutlineIcon />}>
+                                      Run
+                                    </Button>
+                                  </ControlButton>
+                                </Controls>
                                 <Background variant='dots' gap={12} size={1} />
                                 <AddRequestNodes />
                           </ReactFlow>

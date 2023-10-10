@@ -10,51 +10,53 @@ import FormHelperText from '@mui/material/FormHelperText';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { IconPlus } from "@tabler/icons-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+function initialVariables (data) {
+    if (data.variables != undefined) {
+        return data.variables
+    }
+    return {};
+}
 
 const RequestNode = ({data}) => {
     
-    const [variables, setVariables] = useState([]);
+    const [variables, setVariables] = useState(initialVariables(data));
 
     // only supporting string type variables for now
     const handleAddVariable = () => {
+        const newId = Object.keys(variables).length + 1
         const newVar = {
-            id: variables.length + 1,
-            name: 'var'+ (variables.length + 1),
-            type: 'String'
+            name: 'var'+ newId,
+            type: 'String',
+            value: ''
         }
-        setVariables((prevVariables) => [...prevVariables, newVar]);
+        setVariables((prevVariables) => {
+            return { ...prevVariables, [newId]: newVar}
+        });
     }
 
     const handleDeleteVariable = (event, id) => {
-        setVariables(variables => {
-          for (let i = id - 1; i < variables.length; i++) {
-            variables[i].id--;
-          }
+        setVariables((currentVariables) => {
+            const { [id]: _, ...newVariables } = currentVariables;
+            return newVariables;
         });
-    
-        setVariables((prevVariables) => {
-          return [
-            ...variables.slice(0, id - 1),
-            ...variables.slice(id),
-          ];
-        });
-
-        delete data.variables[id];
     }
 
-    const handleVariableChange = (event, variable) => {
-        const varId = variable.id
-        if (!data["variables"]) {
-            data["variables"] = {}
-        }
-        if (!data["variables"][varId]) {
-            data["variables"][varId] = {}
-        }
-        data.variables[varId].name = variable.name
-        data.variables[varId].type = variable.type
-        data.variables[varId].value = event.target.value
+    const handleVariableChange = (event, id) => {
+        setVariables((currentVariables) => {
+            const updateVar = {
+                name: currentVariables[id].name,
+                type: currentVariables[id].type,
+                value: event.target.value
+            }
+            return {...currentVariables, [id]: updateVar};
+        });
     }
+
+    useEffect(() => {
+        data.variables = variables
+    }, [variables])
 
     const handleURLChange = (e) => {
         data.url = e.target.value
@@ -69,6 +71,7 @@ const RequestNode = ({data}) => {
                         <Box style={{ width: 300, margin: 10, padding: 5 }}>
                             <TextField
                                 label={data.requestType}
+                                defaultValue={data.url ? data.url : ''}
                                 id="outlined-size-small"
                                 helperText="Enter URL"
                                 size="small"
@@ -95,13 +98,14 @@ const RequestNode = ({data}) => {
                         <IconButton onClick={() => handleAddVariable()}>
                             <IconPlus/>
                         </IconButton>
-                        {variables.map((variable, index) => (
+                        {Object.keys(variables).map((id) => (
                             <>
                                 <div style={{display:'flex', flexDirection:'row'}}>
                                     <div>
                                         <OutlinedInput
                                             id="outlined-adornment-weight"
-                                            endAdornment={<InputAdornment position="end">{variable.type}</InputAdornment>}
+                                            value={variables[id].value}
+                                            endAdornment={<InputAdornment position="end">{variables[id].type}</InputAdornment>}
                                             aria-describedby="outlined-weight-helper-text"
                                             inputProps={{
                                             'aria-label': 'weight',
@@ -109,11 +113,11 @@ const RequestNode = ({data}) => {
                                             fullWidth
                                             size="small"
                                             className="nodrag"
-                                            onChange={(e) => handleVariableChange(e, variable)}
+                                            onChange={(e) => handleVariableChange(e, id)}
                                         />
-                                        <FormHelperText id="outlined-weight-helper-text">{variable.name}</FormHelperText>
+                                        <FormHelperText id="outlined-weight-helper-text">{variables[id].name}</FormHelperText>
                                     </div>
-                                    <IconButton onClick={(e) => handleDeleteVariable(e, variable.id)}>
+                                    <IconButton onClick={(e) => handleDeleteVariable(e, id)}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </div>

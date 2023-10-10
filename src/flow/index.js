@@ -85,8 +85,7 @@ const Flow = () => {
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
-  let id = 0;
-  const getId = () => `dndnode_${id++}`;
+  const getId = () => `dndnode_${(reactFlowInstance.getNodes().length)++}`;
 
   const onDrop = useCallback(
     (event) => {
@@ -131,7 +130,7 @@ const Flow = () => {
           rfInstanceObject.nodes = nodes
           const flowData = JSON.stringify(rfInstanceObject)
 
-          console.log(flowData)
+          console.log(`save flow ${flowData}`)
 
           if (!flowTest.id) {
               const newFlowTestBody = {
@@ -187,6 +186,8 @@ const Flow = () => {
     if (getFlowTest.data) {
       const retrievedFlowtest = getFlowTest.data
       const initialFlow = retrievedFlowtest.flowData ? JSON.parse(retrievedFlowtest.flowData) : []
+      console.log('get flow')
+      console.log(initialFlow.nodes)
       setNodes(initialFlow.nodes || [])
       setEdges(initialFlow.edges || [])
       setFlowTest(retrievedFlowtest)

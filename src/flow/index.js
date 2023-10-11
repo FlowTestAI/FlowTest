@@ -40,6 +40,7 @@ import AddRequestNodes from './AddRequestNodes';
 import SaveDialog from './SaveDialog';
 import wrapper from '../api/wrapper';
 import PromptDialog from './PromptDialog';
+import GraphRun from './graph/GraphRun';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -345,7 +346,7 @@ const Flow = () => {
                             isValidConnection={isValidConnection}
                             >
                                 <Controls>
-                                  <ControlButton onClick={() => console.log('action')} title="action">
+                                  <ControlButton onClick={() => GraphRun(reactFlowInstance.getNodes(), reactFlowInstance.getEdges())} title="run">
                                     <div>Run</div>
                                   </ControlButton>
                                 </Controls>

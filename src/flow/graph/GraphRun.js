@@ -4,13 +4,15 @@ import axios from 'axios'
 
 const GraphRun = function(nodes, edges) {
 
+    function startRun(node, prevNodeOutput) {
+
+    }
+
     const startNode = nodes.find((node) => node.type === 'startNode')
     const connectingEdge = edges.find((edge) => edge.source === startNode.id)
-    const targetNode = nodes.find((node) => node.type === 'requestNode' && node.id === connectingEdge.target)
+    const firstRequestNode = nodes.find((node) => node.type === 'requestNode' && node.id === connectingEdge.target)
 
-    console.log(startNode)
-    console.log(connectingEdge)
-    console.log(targetNode)
+    startNode(firstRequestNode, '{}')
 }
 
 export default GraphRun;

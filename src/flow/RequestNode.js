@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { IconPlus } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
+import VariableDialog from "./VariableDialog";
 
 function initialVariables (data) {
     if (data.variables != undefined) {
@@ -21,14 +22,14 @@ function initialVariables (data) {
 
 const RequestNode = ({data}) => {
     
+    const [variableDialogOpen, setVariableDialogOpen] = useState(false)
     const [variables, setVariables] = useState(initialVariables(data));
 
     // only supporting string type variables for now
-    const handleAddVariable = () => {
-        const newId = Object.keys(variables).length + 1
+    const handleAddVariable = (name, type) => {
+        const newId = name
         const newVar = {
-            name: 'var'+ newId,
-            type: 'String',
+            type: type,
             value: ''
         }
         setVariables((prevVariables) => {
@@ -46,7 +47,6 @@ const RequestNode = ({data}) => {
     const handleVariableChange = (event, id) => {
         setVariables((currentVariables) => {
             const updateVar = {
-                name: currentVariables[id].name,
                 type: currentVariables[id].type,
                 value: event.target.value
             }
@@ -95,7 +95,7 @@ const RequestNode = ({data}) => {
                     </Box>
                     <Divider />
                     <Box style={{ width: 300, margin: 10, padding: 5 }}>
-                        <IconButton onClick={() => handleAddVariable()}>
+                        <IconButton onClick={() => setVariableDialogOpen(true)}>
                             <IconPlus/>
                         </IconButton>
                         {Object.keys(variables).map((id) => (
@@ -115,7 +115,7 @@ const RequestNode = ({data}) => {
                                             className="nodrag"
                                             onChange={(e) => handleVariableChange(e, id)}
                                         />
-                                        <FormHelperText id="outlined-weight-helper-text">{variables[id].name}</FormHelperText>
+                                        <FormHelperText id="outlined-weight-helper-text">{id}</FormHelperText>
                                     </div>
                                     <IconButton onClick={(e) => handleDeleteVariable(e, id)}>
                                         <DeleteIcon />
@@ -125,6 +125,7 @@ const RequestNode = ({data}) => {
                         ))}
                     </Box>
                 </Box>
+                <VariableDialog show={variableDialogOpen} onCancel={() => setVariableDialogOpen(false)} onVariableAdd={handleAddVariable} />
             </Card>
             <Handle type="source" position={Position.Right} />
         </>

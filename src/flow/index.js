@@ -80,7 +80,7 @@ const Flow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState();
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -122,6 +122,7 @@ const Flow = () => {
 
   const getAllNodes = () => {
     reactFlowInstance.getNodes().map((node) => console.log(node))
+    reactFlowInstance.getEdges().map((edge) => console.log(edge))
   }
 
   // SAVE
@@ -232,6 +233,16 @@ const Flow = () => {
       }
   }, []);
 
+  const isValidConnection = (connection) => {
+    let canConnect = true
+    reactFlowInstance.getEdges().map((edge) => {
+      if (connection.source === edge.source || connection.target === edge.target) {
+        canConnect = false
+      }
+    })
+    return canConnect;
+  }
+
   return (
     <>
         <Box>
@@ -331,12 +342,11 @@ const Flow = () => {
                             onDrop={onDrop}
                             onDragOver={onDragOver}
                             onNodeDragStop={() => setIsDirty(true)}
+                            isValidConnection={isValidConnection}
                             >
                                 <Controls>
                                   <ControlButton onClick={() => console.log('action')} title="action">
-                                    <Button variant="contained" endIcon={<PlayCircleOutlineIcon />}>
-                                      Run
-                                    </Button>
+                                    <div>Run</div>
                                   </ControlButton>
                                 </Controls>
                                 <Background variant='dots' gap={12} size={1} />

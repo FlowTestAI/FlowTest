@@ -40,15 +40,9 @@ const RequestBody = ({nodeData}) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = (option) => {
-        nodeData["requestBody"] = {}
-        nodeData.requestBody.type = option
-        setBodyType(option)
-        setAnchorEl(null);
-    };
-
     // form-data
-    const [myValue, setMyValue] = React.useState(nodeData.requestBody && nodeData.requestBody.body && nodeData.requestBody.body.name ? nodeData.requestBody.body.name : '')
+    const [fileName, setFileName] = React.useState(nodeData.requestBody && nodeData.requestBody.body && nodeData.requestBody.body.name ? nodeData.requestBody.body.name : '')
+    const [fileValue, setFileValue] = React.useState(nodeData.requestBody && nodeData.requestBody.body && nodeData.requestBody.body.value ? nodeData.requestBody.body.name : '')
 
     const handleFileUpload = async (e) => {
         if (!e.target.files) return
@@ -66,10 +60,13 @@ const RequestBody = ({nodeData}) => {
 
                 const value = result
 
-                setMyValue(name)
+                setFileName(name)
+                setFileValue(value)
+
                 if(!nodeData.requestBody.body) {
                     nodeData.requestBody.body = {}
                 }
+
                 nodeData.requestBody.body.value = value
                 nodeData.requestBody.body.name = name
             }
@@ -92,6 +89,22 @@ const RequestBody = ({nodeData}) => {
         setJsonValue(e.target.value)
         nodeData.requestBody.body = e.target.value
     }
+
+    const handleClose = (option) => {
+        nodeData.requestBody = {}
+        nodeData.requestBody.type = option
+        setBodyType(option)
+        setAnchorEl(null);
+
+        if (option == 'raw-json') {
+            nodeData.requestBody.body = jsonValue
+        } else if (option == 'form-data') {
+            nodeData.requestBody.body = {}
+            nodeData.requestBody.body.key = fileKey
+            nodeData.requestBody.body.value = fileValue
+            nodeData.requestBody.body.name = fileName
+        }
+    };
 
     return (
       <>
@@ -187,7 +200,7 @@ const RequestBody = ({nodeData}) => {
                                     marginBottom: '1rem'
                                 }}
                             >
-                                {myValue != '' ? myValue : 'Choose a file to upload'}
+                                {fileName != '' ? fileName : 'Choose a file to upload'}
                             </span>
                             <Button
                                 variant='outlined'

@@ -41,6 +41,49 @@ const GraphRun = function(nodes, edges) {
         })
         console.log(evalVariables)
         console.log(finalUrl)
+
+        let apiClient = undefined
+        let restMethod = node.data.requestType.toLowerCase()
+        let contentType = 'application/json'
+        let requestData = undefined
+
+        if (restMethod ==='get') {
+            if (node.data.requestBody) {
+                if (node.data.requestBody.type === 'raw-json') {
+                    contentType = 'application/json'
+                    requestData =  node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}')
+                }
+            }
+
+            apiClient = axios.create({
+                method: 'get',
+                url: finalUrl,
+                headers: {
+                    'Content-type': contentType
+                },
+                data: requestData
+            })
+
+        } else if (restMethod === 'post') {
+            if (node.data.requestBody) {
+                if (node.data.requestBody.type === 'form-data') {
+                    contentType = 'multipart/form-data'
+                    requestData = new FormData();
+                    requestData.append(node.data.requestBody.body.key, node.data.requestBody.body.value, node.data.requestBody.body.name)
+                }
+            } 
+
+            apiClient = axios.create({
+                method: 'post',
+                url: finalUrl,
+                headers: {
+                    'Content-type': contentType
+                },
+                data: requestData
+            })
+        } else if (restMethod === 'put') {
+
+        }
     }
 
     const startNode = nodes.find((node) => node.type === 'startNode')

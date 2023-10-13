@@ -65,7 +65,16 @@ const RequestNode = ({data}) => {
     return (
         <>
             <Handle type="target" position={Position.Left} />
-            <Card sx={{ border: 1, borderColor: 'primary.main', borderRadius: 2 }}>
+            <Card 
+                sx={{ 
+                        border: 1,  
+                        borderRadius: 2,
+                        ':hover': {
+                            borderColor: 'primary.main',
+                            boxShadow: 10, // theme.shadows[20]
+                        }  
+                    }}
+            >
                 <Box>
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                         <Box style={{ width: 300, margin: 10, padding: 5 }}>

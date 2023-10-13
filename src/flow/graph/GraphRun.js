@@ -3,9 +3,8 @@ import * as React from 'react';
 import axios from 'axios'
 
 // assumption is that apis are giving json as output
-// test string: '{"body":{"explainPlan":"90ms", "tf_runner":{"process":"90ms"}}}'
 
-const GraphRun = function(nodes, edges) {
+const GraphRun = function(nodes, edges, onGraphComplete) {
 
     async function startRun(node, prevNodeOutput) {
 
@@ -136,6 +135,7 @@ const GraphRun = function(nodes, edges) {
                 if (result[0] == "Failed") {
                     console.log('Flow failed at: ', result[1])
                 }
+                onGraphComplete(result);
             });
     } else {
         console.log("No connected request node to start node")

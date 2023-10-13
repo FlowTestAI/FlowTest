@@ -83,6 +83,16 @@ const Flow = () => {
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
+  const runnableEdges = (runnable) => {
+    const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
+      return {
+        ...edge,
+        animated: runnable
+      };
+    })
+    setEdges(updatedEdges)
+  }
+
   const onDragOver = useCallback((event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -244,6 +254,18 @@ const Flow = () => {
     return canConnect;
   }
 
+  // graph
+
+  const onGraphComplete = (result) => {
+    console.log('callback: ', result)
+    if (result[0] == 'Success') {
+
+    } else if (result[0] == 'Failed') {
+      
+    }
+    runnableEdges(false)
+  }
+
   return (
     <>
         <Box>
@@ -346,7 +368,11 @@ const Flow = () => {
                             isValidConnection={isValidConnection}
                             >
                                 <Controls>
-                                  <ControlButton onClick={() => GraphRun(reactFlowInstance.getNodes(), reactFlowInstance.getEdges())} title="run">
+                                  <ControlButton 
+                                    onClick={() => {
+                                      runnableEdges(true)
+                                      GraphRun(reactFlowInstance.getNodes(), reactFlowInstance.getEdges(), onGraphComplete)
+                                    }} title="run">
                                     <div>Run</div>
                                   </ControlButton>
                                 </Controls>

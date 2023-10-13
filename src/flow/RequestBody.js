@@ -165,8 +165,9 @@ const RequestBody = ({nodeData}) => {
                             rows={4}
                             value={jsonValue}
                             fullWidth
-                            className="nodrag"
+                            className="nodrag nowheel"
                             onChange={(e) => handleRawJson(e)}
+                            inputProps={{style: {fontSize: 11}}}
                         />
                     </Box>
                 </div>
@@ -186,7 +187,7 @@ const RequestBody = ({nodeData}) => {
                                 }}
                                 fullWidth
                                 size="small"
-                                className="nodrag"
+                                className="nodrag nowheel"
                                 onChange={(e) => handleFormDataKey(e)}
                             />
                             <FormHelperText id="outlined-weight-helper-text">Key</FormHelperText>

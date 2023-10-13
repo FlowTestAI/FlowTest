@@ -75,9 +75,10 @@ const RequestNode = ({data}) => {
                                 id="outlined-size-small"
                                 helperText="Enter URL"
                                 size="small"
-                                className="nodrag"
+                                className="nodrag nowheel"
                                 fullWidth
                                 onChange={(e) => handleURLChange(e)}
+                                inputProps={{style: {fontSize: 12}}}
                             />
                         </Box>
                     </div>

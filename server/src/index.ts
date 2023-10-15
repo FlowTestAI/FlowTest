@@ -3,6 +3,7 @@ import express, {Request, Response} from 'express';
 import cors from 'cors'
 import { AppDataSource } from "./data-source";
 import { FlowTest } from "./entities/FlowTest"
+import SwaggerParser from '@apidevtools/swagger-parser';
 
 class App {
 
@@ -74,9 +75,31 @@ class App {
         return res.status(404).send(`FlowTest ${req.params.id} not found`)
       })
 
+      // Get All FlowTest
+      this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
+        const flowtests = await this.appDataSource.getRepository(FlowTest).find();
+        if (flowtests) return res.json(flowtests)
+        return res.status(404).send('Error in fetching saved flowtests')
+      })
+
+      // Parse OpenApi spec
+      this.app.get('/api/v1/parse/', (req: Request, res: Response) => {
+        SwaggerParser.validate('/Users/sjain/projects/FlowTest/server/src/test.yaml', (err, api) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).send('Failed to parse openapi spec');
+          } else {
+            console.log("API name: %s, Version: %s", api.info.title, api.info.version);
+            console.log(api);
+            return res.json(api);
+          }
+        });
+      })
+
       this.app.listen(this.port, () => {
         return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
       });
+
   }
 }
 

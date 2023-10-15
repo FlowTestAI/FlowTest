@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Outlet } from "react-router";
 import { useNavigate } from 'react-router-dom'
 
+// mui
 import {
     AppBar,
     Box,
@@ -14,80 +15,94 @@ import {
     ListItem, 
     ListItemButton, 
     ListItemText,
+    ListItemIcon,
     Divider 
- } from '@mui/material';
+} from '@mui/material';
 
-import MenuIcon from '@mui/icons-material/Menu';
+import CssBaseline from '@mui/material/CssBaseline';
+
+// icons
+import CreateIcon from '@mui/icons-material/Create';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
+import CollectionsIcon from '@mui/icons-material/Collections';
+import SecurityIcon from '@mui/icons-material/Security';
+
+const drawerWidth = 240;
 
 const HomeLayout = () => {
 
     const navigate = useNavigate()
-    const [drawer, setDrawer] = React.useState(false)
-
-    // Side menu
-    const sideMenu = () => {
-        return (
-        <Box
-            sx={{ width: 250 }}
-            role="presentation"
-            onClick={() => setDrawer(false)}
-            onKeyDown={() => setDrawer(false)}
-        >
-            <List>
-                <ListItem key="FlowTest" disablePadding>
-                <ListItemButton>
-                    {/* <ListItemText primary="FlowTest" /> */}
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    FlowTest
-                    </Typography>
-                </ListItemButton>
-                </ListItem>
-                <Divider/>
-                <ListItem key="list" disablePadding>
-                <ListItemButton>
-                    <ListItemText primary='Saved Flows' />
-                </ListItemButton>
-                </ListItem>
-                <ListItem key="create" disablePadding>
-                <ListItemButton onClick={() => navigate('/flow')}>
-                    <ListItemText primary='Create New Flow' />
-                </ListItemButton>
-                </ListItem>
-            </List>
-        </Box>
-        );
-    }
 
     return (
         <>
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+         <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
+            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
-                <IconButton
-                    size="large"
-                    edge="start"
-                    color="inherit"
-                    aria-label="menu"
-                    sx={{ mr: 2 }}
-                    onClick={() => setDrawer(true)}
-                >
-                    <MenuIcon />
-                </IconButton>
-                <Drawer
-                    open={drawer}
-                    onClose={() => setDrawer(false)}
-                >
-                {sideMenu()}
-                </Drawer>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" noWrap component="div" onClick={() => navigate('/')} sx={{ "&:hover": { cursor: 'pointer' } }}>
                     FlowTest
                 </Typography>
-                <Button color="inherit">Login</Button>
                 </Toolbar>
             </AppBar>
-
-            <Outlet/>
-        </Box>
+            <Drawer
+                variant="permanent"
+                sx={{
+                width: drawerWidth,
+                flexShrink: 0,
+                [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+                }}
+            >
+                <Toolbar />
+                <Box sx={{ overflow: 'auto' }}>
+                <List>
+                    <ListItem key="list" disablePadding>
+                        <ListItemButton onClick={() => navigate('/flowtest')}>
+                            <ListItemIcon>
+                                <FolderSpecialIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary='Saved Flows' />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key="create" disablePadding>
+                        <ListItemButton onClick={() => navigate('/flow')}>
+                            <ListItemIcon>
+                                <CreateIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary='Create New Flow' />
+                        </ListItemButton>
+                    </ListItem>
+                </List>
+                <Divider />
+                <List>
+                    <ListItem key="list" disablePadding>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <CollectionsIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary='Collections' />
+                        </ListItemButton>
+                    </ListItem>
+                </List>
+                <Divider />
+                <List>
+                    <ListItem key="list" disablePadding>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <SecurityIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary='Auth Keys' />
+                        </ListItemButton>
+                    </ListItem>
+                </List>
+                </Box>
+            </Drawer>
+            {/* main content */}
+            
+            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                <Toolbar />
+                <Outlet />
+            </Box>
+         </Box>
         </>
     );
 }

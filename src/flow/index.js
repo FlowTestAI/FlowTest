@@ -26,6 +26,7 @@ import { useSnackbar } from 'notistack';
 
 // API
 import flowTestApi from '../api/flowtest'
+import openApiClient from '../api/openapi'
 
 // icons
 import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft } from '@tabler/icons-react';
@@ -140,25 +141,25 @@ const Flow = () => {
 
   const handleSaveFlow = (flowTestName) => {
       if (reactFlowInstance) {
-          const rfInstanceObject = reactFlowInstance.toObject()
-          rfInstanceObject.nodes = nodes
-          const flowData = JSON.stringify(rfInstanceObject)
+        const rfInstanceObject = reactFlowInstance.toObject()
+        // rfInstanceObject.nodes = nodes
+        const flowData = JSON.stringify(rfInstanceObject)
 
-          console.log(`save flow ${flowData}`)
+        console.log('Save flow: ', flowData)
 
-          if (!flowTest.id) {
-              const newFlowTestBody = {
-                  name: flowTestName,
-                  flowData
-              }
-              createNewFlowTest.request(newFlowTestBody)
-          } else {
-              const updateBody = {
-                  name: flowTestName,
-                  flowData
-              }
-              updateFlowTest.request(flowTest.id, updateBody)
-          }
+        if (!flowTest.id) {
+            const newFlowTestBody = {
+                name: flowTestName,
+                flowData
+            }
+            createNewFlowTest.request(newFlowTestBody)
+        } else {
+            const updateBody = {
+                name: flowTestName,
+                flowData
+            }
+            updateFlowTest.request(flowTest.id, updateBody)
+        }
       }
   }
 
@@ -200,8 +201,7 @@ const Flow = () => {
     if (getFlowTest.data) {
       const retrievedFlowtest = getFlowTest.data
       const initialFlow = retrievedFlowtest.flowData ? JSON.parse(retrievedFlowtest.flowData) : []
-      console.log('get flow')
-      console.log(initialFlow.nodes)
+      console.log('Get flow: ', initialFlow.nodes)
       setNodes(initialFlow.nodes || [])
       setEdges(initialFlow.edges || [])
       setFlowTest(retrievedFlowtest)
@@ -261,7 +261,7 @@ const Flow = () => {
     if (result[0] == 'Success') {
 
     } else if (result[0] == 'Failed') {
-      
+
     }
     runnableEdges(false)
   }
@@ -308,7 +308,10 @@ const Flow = () => {
                       >
                           {isDirty && <strong style={{ color: theme.palette.primary.light }}>*</strong>} {flowTest.name}
                       </Typography>
-                      <button onClick={() => getAllNodes()}>Get all nodes</button>
+                      <button onClick={() => {
+                        const result = openApiClient.parseOpenApiSpec();
+                        console.log(result);
+                      }}>Get all nodes</button>
                       <ButtonBase title='Save' sx={{ borderRadius: '50%', mr: 2 }}>
                           <Avatar
                               variant='rounded'

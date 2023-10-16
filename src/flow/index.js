@@ -26,7 +26,7 @@ import { useSnackbar } from 'notistack';
 
 // API
 import flowTestApi from '../api/flowtest'
-import openApiClient from '../api/openapi'
+import openApiClient from '../api/collection'
 
 // icons
 import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft } from '@tabler/icons-react';
@@ -308,10 +308,10 @@ const Flow = () => {
                       >
                           {isDirty && <strong style={{ color: theme.palette.primary.light }}>*</strong>} {flowTest.name}
                       </Typography>
-                      <button onClick={() => {
-                        const result = openApiClient.parseOpenApiSpec();
+                      {/* <button onClick={() => {
+                        const result = openApiClient.createCollection('');
                         console.log(result);
-                      }}>Get all nodes</button>
+                      }}>Get all nodes</button> */}
                       <ButtonBase title='Save' sx={{ borderRadius: '50%', mr: 2 }}>
                           <Avatar
                               variant='rounded'

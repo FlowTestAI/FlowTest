@@ -4,6 +4,7 @@ import cors from 'cors'
 import { AppDataSource } from "./data-source";
 import { FlowTest } from "./entities/FlowTest"
 import SwaggerParser from '@apidevtools/swagger-parser';
+import { Collection } from "./entities/Collection";
 
 class App {
 
@@ -82,18 +83,29 @@ class App {
         return res.status(404).send('Error in fetching saved flowtests')
       })
 
-      // Parse OpenApi spec
-      this.app.get('/api/v1/parse/', (req: Request, res: Response) => {
-        SwaggerParser.validate('/Users/sjain/projects/FlowTest/server/src/test.yaml', (err, api) => {
+      // Create collection
+      this.app.post('/api/v1/collection', (req: Request, res: Response) => {
+        SwaggerParser.validate('/Users/sjain/projects/FlowTest/server/src/test.yaml', async (err, api) => {
           if (err) {
             console.error(err);
             return res.status(500).send('Failed to parse openapi spec');
           } else {
             console.log("API name: %s, Version: %s", api.info.title, api.info.version);
             console.log(api);
-            return res.json(api);
+            const body = req.body
+            const newCollection = new Collection()
+            Object.assign(newCollection, body)
+
+            const results = await this.appDataSource.getRepository(Collection).save(newCollection);
+
+            return res.json(results);
           }
         });
+      })
+
+      // Get all collections
+      this.app.get('/api/v1/collection', (req: Request, res: Response) => {
+        return res.status(200).send('');
       })
 
       this.app.listen(this.port, () => {

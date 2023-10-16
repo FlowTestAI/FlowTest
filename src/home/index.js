@@ -32,6 +32,8 @@ const drawerWidth = 240;
 const HomeLayout = () => {
 
     const navigate = useNavigate()
+    
+    const [selected, setSelected] = React.useState('');
 
     return (
         <>
@@ -56,7 +58,13 @@ const HomeLayout = () => {
                 <Box sx={{ overflow: 'auto' }}>
                 <List>
                     <ListItem key="list" disablePadding>
-                        <ListItemButton onClick={() => navigate('/flowtest')}>
+                        <ListItemButton 
+                            onClick={() => {
+                                setSelected('saved_flows');
+                                navigate('/flowtest');
+                            }}
+                            selected={selected === 'saved_flows'}
+                        >
                             <ListItemIcon>
                                 <FolderSpecialIcon/>
                             </ListItemIcon>
@@ -64,7 +72,13 @@ const HomeLayout = () => {
                         </ListItemButton>
                     </ListItem>
                     <ListItem key="create" disablePadding>
-                        <ListItemButton onClick={() => navigate('/flow')}>
+                        <ListItemButton 
+                            onClick={() => {
+                                setSelected('create_flow');
+                                navigate('/flow')
+                            }}
+                            selected={selected === 'create_flow'}
+                        >
                             <ListItemIcon>
                                 <CreateIcon/>
                             </ListItemIcon>
@@ -74,8 +88,14 @@ const HomeLayout = () => {
                 </List>
                 <Divider />
                 <List>
-                    <ListItem key="list" disablePadding>
-                        <ListItemButton>
+                    <ListItem key="list_collection" disablePadding>
+                        <ListItemButton 
+                            onClick={() => {
+                                setSelected('collection');
+                                navigate('/collection');
+                            }}
+                            selected={selected === 'collection'}
+                        >
                             <ListItemIcon>
                                 <CollectionsIcon/>
                             </ListItemIcon>
@@ -85,7 +105,7 @@ const HomeLayout = () => {
                 </List>
                 <Divider />
                 <List>
-                    <ListItem key="list" disablePadding>
+                    <ListItem key="list_auth_keys" disablePadding>
                         <ListItemButton>
                             <ListItemIcon>
                                 <SecurityIcon/>

@@ -33,3 +33,4 @@ package-lock.json
 
 # openapi spec
 *.yaml
+uploads/

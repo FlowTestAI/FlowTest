@@ -5,6 +5,7 @@ import { AppDataSource } from "./data-source";
 import { FlowTest } from "./entities/FlowTest"
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { Collection } from "./entities/Collection";
+import multer from 'multer';
 
 class App {
 
@@ -31,6 +32,8 @@ class App {
       this.app.use(cors())
 
       this.app.use(express.json({ limit: '50mb' }))
+      this.app.use(express.raw({ limit: '50mb' }))
+      this.app.use(express.text({ limit: '50mb' }))
       this.app.use(express.urlencoded({ limit: '50mb', extended: true }))
 
       this.app.get('/', (req, res) => {
@@ -84,17 +87,26 @@ class App {
       })
 
       // Create collection
-      this.app.post('/api/v1/collection', (req: Request, res: Response) => {
-        SwaggerParser.validate('/Users/sjain/projects/FlowTest/server/src/test.yaml', async (err, api) => {
+      const parseCollection = (collection) => {
+        return '';
+      }
+
+      const upload = multer({ dest: 'uploads/' })
+      this.app.post('/api/v1/collection', upload.single('file'), (req: Request, res: Response) => {
+        console.log(req.file)
+        SwaggerParser.validate(req.file.path, async (err, api) => {
           if (err) {
             console.error(err);
             return res.status(500).send('Failed to parse openapi spec');
           } else {
             console.log("API name: %s, Version: %s", api.info.title, api.info.version);
-            console.log(api);
-            const body = req.body
             const newCollection = new Collection()
-            Object.assign(newCollection, body)
+            const constructCollection = {
+              name: api.info.title,
+              collection: api,
+              nodes: parseCollection(api)
+            }
+            Object.assign(newCollection, constructCollection)
 
             const results = await this.appDataSource.getRepository(Collection).save(newCollection);
 
@@ -104,8 +116,10 @@ class App {
       })
 
       // Get all collections
-      this.app.get('/api/v1/collection', (req: Request, res: Response) => {
-        return res.status(200).send('');
+      this.app.get('/api/v1/collection', async (req: Request, res: Response) => {
+        const collections = await this.appDataSource.getRepository(Collection).find();
+        if (collections) return res.json(collections)
+        return res.status(404).send('Error in fetching saved collections')
       })
 
       this.app.listen(this.port, () => {

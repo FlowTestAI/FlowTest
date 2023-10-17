@@ -13,7 +13,7 @@ import { experimentalStyled as styled } from '@mui/material/styles';
 import { Card, CardContent, Typography, Box, Paper, Grid, Stack, Button } from '@mui/material';
 
 // icons
-import { IconPlus } from '@tabler/icons-react';
+import { IconUpload } from '@tabler/icons-react';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -56,17 +56,13 @@ const Collections = () => {
         }
     },[getAllCollections.data, getAllCollections.error])
 
-    const parseCollection = (collection) => {
-        return '';
-    }
+    const addCollection = (e) => {
+        if (!e.target.files) return
 
-    const addCollection = (collectionName, collection) => {
-        const newCollection = {
-            name: collectionName,
-            collection: collection,
-            nodes: parseCollection(collection)
+        if (e.target.files.length === 1) {
+            const file = e.target.files[0]
+            createCollection.request(file)
         }
-        createCollection.request(newCollection)
     }
 
     useEffect(() => {
@@ -94,23 +90,24 @@ const Collections = () => {
                         <Grid sx={{ mb: 1.25 }} container direction='row'>
                             <Box sx={{ flexGrow: 1 }} />
                             <Grid item>
-                                <Button variant='contained' sx={{ color: 'white' }} onClick={() => addCollection()} startIcon={<IconPlus />}>
-                                    Import
+                                <Button variant='contained' component='label' sx={{ color: 'white' }} startIcon={<IconUpload />}>
+                                    {'Import'}
+                                    <input type='file' name='file' accept=".yaml,.yml" hidden onChange={(e) => addCollection(e)} />
                                 </Button>
                             </Grid>
                         </Grid>
                     </Stack>
                     <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                        {savedCollections.map((flowtest, index) => (
+                        {savedCollections.map((collection, index) => (
                             <Grid item xs={2} sm={4} md={4} key={index}>
                                 <Item
                                     sx={{ "&:hover": { cursor: 'pointer' } }}
-                                    onClick={() => navigate(`/flow/${flowtest.id}`)}
+                                    // onClick={() => navigate(`/flow/${flowtest.id}`)}
                                 >
                                     <Typography variant="h5" noWrap component="div">
-                                        {flowtest.name}
+                                        {collection.name}
                                     </Typography>
-                                    {flowtest.id}
+                                    {collection.id}
                                 </Item>
                             </Grid>
                         ))}

@@ -12,12 +12,15 @@ const client = axios.create({
 const createCollection = (file) => {
     const bodyFormData = new FormData();
     bodyFormData.append('file', file, file.name);
-    client.post('/collection', bodyFormData)
+    return client.post('/collection', bodyFormData);
 }
 
 const getAllCollection = () => client.get('/collection')
 
+const deleteCollection = (id) => client.delete(`/collection/${id}`)
+
 export default {
     createCollection,
-    getAllCollection
+    getAllCollection,
+    deleteCollection
 }

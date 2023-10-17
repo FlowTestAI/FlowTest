@@ -10,10 +10,11 @@ import collectionApi from '../api/collection'
 
 //mui 
 import { experimentalStyled as styled } from '@mui/material/styles';
-import { Card, CardContent, Typography, Box, Paper, Grid, Stack, Button } from '@mui/material';
+import { Card, CardContent, Typography, Box, Paper, Grid, Stack, Button, IconButton } from '@mui/material';
 
 // icons
-import { IconUpload } from '@tabler/icons-react';
+import { IconUpload, IconTrash } from '@tabler/icons-react';
+import DeleteCollectionDialog from './DeleteCollectionDialog';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -27,8 +28,9 @@ const Collections = () => {
 
     const navigate = useNavigate()
 
-    const createCollection = wrapper(collectionApi.createCollection);
-    const getAllCollections = wrapper(collectionApi.getAllCollection);
+    const createCollectionApi = wrapper(collectionApi.createCollection);
+    const getAllCollectionsApi = wrapper(collectionApi.getAllCollection);
+    const deleteCollectionApi = wrapper(collectionApi.deleteCollection);
 
     const [savedCollections, setSavedCollections] = useState([]);
     const [createdCollection, setCreatedCollection] = useState(undefined);
@@ -36,17 +38,19 @@ const Collections = () => {
     // notification
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
+    // Get
+
     useEffect(() => {
-        getAllCollections.request();
+        getAllCollectionsApi.request();
     },[])
 
     useEffect(() => {
-        if (getAllCollections.data) {
-            const retrievedCollections = getAllCollections.data
+        if (getAllCollectionsApi.data) {
+            const retrievedCollections = getAllCollectionsApi.data
             console.log('Got saved collections: ', retrievedCollections);
             setSavedCollections(retrievedCollections)
-        } else if (getAllCollections.error) {
-            const error = getAllCollections.error
+        } else if (getAllCollectionsApi.error) {
+            const error = getAllCollectionsApi.error
             if (!error.response) {
                 enqueueSnackbar(`Failed to get saved collections: ${error}`, { variant: 'error'});
             } else {
@@ -54,24 +58,28 @@ const Collections = () => {
                 enqueueSnackbar(`Failed to get saved collections: ${errorData}`, { variant: 'error'});
             }
         }
-    },[getAllCollections.data, getAllCollections.error])
+    },[getAllCollectionsApi.data, getAllCollectionsApi.error])
+
+    // Create
 
     const addCollection = (e) => {
         if (!e.target.files) return
 
         if (e.target.files.length === 1) {
             const file = e.target.files[0]
-            createCollection.request(file)
+            createCollectionApi.request(file)
         }
     }
 
     useEffect(() => {
-        if (createCollection.data) {
-            const createdCollection = createCollection.data
+        if (createCollectionApi.data) {
+            const createdCollection = createCollectionApi.data
             console.log('Created collection: ', createdCollection);
             setCreatedCollection(createdCollection)
-        } else if (createCollection.error) {
-            const error = createCollection.error
+            enqueueSnackbar('Created collection!', { variant: 'success' });
+            getAllCollectionsApi.request();
+        } else if (createCollectionApi.error) {
+            const error = createCollectionApi.error
             if (!error.response) {
                 enqueueSnackbar(`Failed to create collection: ${error}`, { variant: 'error'});
             } else {
@@ -79,7 +87,41 @@ const Collections = () => {
                 enqueueSnackbar(`Failed to create collection: ${errorData}`, { variant: 'error'});
             }
         }
-    },[createCollection.data, createCollection.error])
+    },[createCollectionApi.data, createCollectionApi.error])
+
+    // Delete
+
+    const [openDelete, setOpenDelete] = useState(false);
+    const [deleteId, setDeleteId] = useState(undefined)
+
+    const deleteCollection = (id) => {
+        setDeleteId(id);
+        setOpenDelete(true);
+    }
+
+    const handleDeleteCollection = () => {
+        if (deleteId != undefined) {
+            deleteCollectionApi.request(deleteId);
+        }
+        setDeleteId(undefined);
+    }
+
+    useEffect(() => {
+        if (deleteCollectionApi.data) {
+            const deletedCollection = deleteCollectionApi.data
+            console.log('Deleted collection: ', deletedCollection);
+            enqueueSnackbar('Deleted collection!', { variant: 'success' });
+            getAllCollectionsApi.request();
+        } else if (deleteCollectionApi.error) {
+            const error = deleteCollectionApi.error
+            if (!error.response) {
+                enqueueSnackbar(`Failed to delete collection: ${error}`, { variant: 'error'});
+            } else {
+                const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
+                enqueueSnackbar(`Failed to delete collection: ${errorData}`, { variant: 'error'});
+            }
+        }
+    },[deleteCollectionApi.data, deleteCollectionApi.error])
 
     return (
         <>
@@ -108,9 +150,13 @@ const Collections = () => {
                                         {collection.name}
                                     </Typography>
                                     {collection.id}
+                                    <IconButton title='Delete' color='error' onClick={() => deleteCollection(collection.id)}>
+                                        <IconTrash />
+                                    </IconButton>
                                 </Item>
                             </Grid>
                         ))}
+                        <DeleteCollectionDialog open={openDelete} openDeleteDialog={setOpenDelete} handleDelete={handleDeleteCollection}/>
                     </Grid>
                 </CardContent>
             </Card>

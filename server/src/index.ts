@@ -92,27 +92,40 @@ class App {
       }
 
       const upload = multer({ dest: 'uploads/' })
-      this.app.post('/api/v1/collection', upload.single('file'), (req: Request, res: Response) => {
+      this.app.post('/api/v1/collection', upload.single('file'), async (req: Request, res: Response) => {
         console.log(req.file)
-        SwaggerParser.validate(req.file.path, async (err, api) => {
-          if (err) {
-            console.error(err);
-            return res.status(500).send('Failed to parse openapi spec');
-          } else {
-            console.log("API name: %s, Version: %s", api.info.title, api.info.version);
-            const newCollection = new Collection()
-            const constructCollection = {
-              name: api.info.title,
-              collection: api,
-              nodes: parseCollection(api)
-            }
-            Object.assign(newCollection, constructCollection)
+        try {
+          // async/await syntax
+          let api = await SwaggerParser.validate(req.file.path);
 
-            const results = await this.appDataSource.getRepository(Collection).save(newCollection);
-
-            return res.json(results);
+          console.log("API name: %s, Version: %s", api.info.title, api.info.version);
+          const newCollection = new Collection()
+          const constructCollection = {
+            name: api.info.title,
+            collection: api,
+            nodes: parseCollection(api)
           }
-        });
+          Object.assign(newCollection, constructCollection)
+
+          const results = await this.appDataSource.getRepository(Collection).save(newCollection);
+          return res.json(results);
+        } catch(err) {
+          console.error(err);
+          return res.status(500).send('Failed to parse openapi spec');
+        }
+      })
+
+      // Delete collections
+      this.app.delete('/api/v1/collection/:id', async (req: Request, res: Response) => {
+        const collection = await this.appDataSource.getRepository(Collection).findOneBy({
+          id: req.params.id
+        })
+
+        if (collection) {
+          const result = await this.appDataSource.getRepository(Collection).remove(collection)
+          return res.json(result)
+        }
+        return res.status(404).send(`Collection ${req.params.id} not found`)
       })
 
       // Get all collections

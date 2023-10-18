@@ -42,7 +42,7 @@ const PromptDialog = ({open, closePromptDialog}) => {
             </DialogContent>
             <DialogActions>
             <Button onClick={handleNo}>No</Button>
-            <Button onClick={handleYes} autoFocus>
+            <Button onClick={handleYes} autoFocus variant="contained">
                 Yes
             </Button>
             </DialogActions>

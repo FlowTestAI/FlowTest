@@ -6,6 +6,7 @@ import { FlowTest } from "./entities/FlowTest"
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { Collection } from "./entities/Collection";
 import multer from 'multer';
+import * as fs from 'fs';
 
 class App {
 
@@ -94,6 +95,7 @@ class App {
       const upload = multer({ dest: 'uploads/' })
       this.app.post('/api/v1/collection', upload.single('file'), async (req: Request, res: Response) => {
         console.log(req.file)
+        const spec = fs.readFileSync(req.file.path, 'utf8');
         try {
           // async/await syntax
           let api = await SwaggerParser.validate(req.file.path);
@@ -102,7 +104,7 @@ class App {
           const newCollection = new Collection()
           const constructCollection = {
             name: api.info.title,
-            collection: api,
+            collection: spec,
             nodes: parseCollection(api)
           }
           Object.assign(newCollection, constructCollection)
@@ -133,6 +135,15 @@ class App {
         const collections = await this.appDataSource.getRepository(Collection).find();
         if (collections) return res.json(collections)
         return res.status(404).send('Error in fetching saved collections')
+      })
+
+      // Get collection
+      this.app.get('/api/v1/collection/:id', async (req: Request, res: Response) => {
+        const collection = await this.appDataSource.getRepository(Collection).findOneBy({
+          id: req.params.id
+        })
+        if (collection) return res.json(collection)
+        return res.status(404).send(`Collection ${req.params.id} not found`)
       })
 
       this.app.listen(this.port, () => {

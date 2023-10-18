@@ -35,7 +35,7 @@ const DeleteCollectionDialog = ({open, openDeleteDialog, handleDelete}) => {
                 onClick={() => {
                     handleDelete();
                     openDeleteDialog(false);
-                }} autoFocus>
+                }} variant="contained" autoFocus>
                 Delete
             </Button>
             </DialogActions>

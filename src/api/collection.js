@@ -17,10 +17,13 @@ const createCollection = (file) => {
 
 const getAllCollection = () => client.get('/collection')
 
+const getCollection = (id) => client.get(`/collection/${id}`)
+
 const deleteCollection = (id) => client.delete(`/collection/${id}`)
 
 export default {
     createCollection,
     getAllCollection,
-    deleteCollection
+    deleteCollection,
+    getCollection
 }

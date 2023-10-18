@@ -16,7 +16,9 @@ import { Card, CardContent, Typography, Box, Paper, Grid, Stack, Button, IconBut
 import { IconUpload, IconTrash } from '@tabler/icons-react';
 import DeleteCollectionDialog from './DeleteCollectionDialog';
 
-const Item = styled(Paper)(({ theme }) => ({
+import PropTypes from 'prop-types';
+
+const Item1 = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   ...theme.typography.body2,
   padding: theme.spacing(2),
@@ -24,26 +26,72 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+function Item(props) {
+    const { sx, ...other } = props;
+    return (
+        <Box
+        sx={{
+            p: 1,
+            m: 1,
+            bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#101010' : 'grey.100'),
+            color: (theme) => (theme.palette.mode === 'dark' ? 'grey.300' : 'grey.800'),
+            border: '1px solid',
+            borderColor: (theme) =>
+            theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300',
+            borderRadius: 2,
+            fontSize: '0.875rem',
+            fontWeight: '700',
+            ...sx,
+        }}
+        {...other}
+        />
+    );
+}
+  
+Item.propTypes = {
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([
+        PropTypes.arrayOf(
+        PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool]),
+        ),
+        PropTypes.func,
+        PropTypes.object,
+    ]),
+};
+
 const Collections = () => {
 
     const navigate = useNavigate()
 
+    const URLpath = document.location.pathname.toString().split('/')
+    const collectionId = URLpath[URLpath.length - 1] === 'collection' ? undefined : URLpath[URLpath.length - 1]
+
     const createCollectionApi = wrapper(collectionApi.createCollection);
     const getAllCollectionsApi = wrapper(collectionApi.getAllCollection);
     const deleteCollectionApi = wrapper(collectionApi.deleteCollection);
+    const getCollectionApi = wrapper(collectionApi.getCollection);
 
     const [savedCollections, setSavedCollections] = useState([]);
     const [createdCollection, setCreatedCollection] = useState(undefined);
+    const [retrievedCollection, setRetrievedCollection] = useState(undefined);
 
     // notification
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-    // Get
+    // Initialization
 
     useEffect(() => {
-        getAllCollectionsApi.request();
-    },[])
+        console.log('inside useEffect: ', collectionId)
+        if (collectionId != undefined) {
+            getCollectionApi.request(collectionId);
+        } else {
+            getAllCollectionsApi.request();
+        }
+    }, [collectionId])
 
+    // Get All
     useEffect(() => {
         if (getAllCollectionsApi.data) {
             const retrievedCollections = getAllCollectionsApi.data
@@ -59,6 +107,23 @@ const Collections = () => {
             }
         }
     },[getAllCollectionsApi.data, getAllCollectionsApi.error])
+
+    // Get Specific
+    useEffect(() => {
+        if (getCollectionApi.data) {
+            const retrievedCollection = getCollectionApi.data
+            console.log('Got collection: ', retrievedCollection);
+            setRetrievedCollection(retrievedCollection)
+        } else if (getCollectionApi.error) {
+            const error = getCollectionApi.error
+            if (!error.response) {
+                enqueueSnackbar(`Failed to get collection: ${error}`, { variant: 'error'});
+            } else {
+                const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
+                enqueueSnackbar(`Failed to get collection: ${errorData}`, { variant: 'error'});
+            }
+        }
+    },[getCollectionApi.data, getCollectionApi.error])
 
     // Create
 
@@ -126,39 +191,61 @@ const Collections = () => {
     return (
         <>
             <Card>
-                <CardContent>
-                    <Stack flexDirection='row'>
-                        {/* <h1>Collections</h1> */}
-                        <Grid sx={{ mb: 1.25 }} container direction='row'>
-                            <Box sx={{ flexGrow: 1 }} />
-                            <Grid item>
-                                <Button variant='contained' component='label' sx={{ color: 'white' }} startIcon={<IconUpload />}>
-                                    {'Import'}
-                                    <input type='file' name='file' accept=".yaml,.yml" hidden onChange={(e) => addCollection(e)} />
-                                </Button>
+                {collectionId == undefined ?
+                    (
+                        <CardContent>
+                            <Stack flexDirection='row'>
+                                {/* <h1>Collections</h1> */}
+                                <Grid sx={{ mb: 1.25 }} container direction='row'>
+                                    <Box sx={{ flexGrow: 1 }} />
+                                    <Grid item>
+                                        <Button variant='contained' component='label' sx={{ color: 'white' }} startIcon={<IconUpload />}>
+                                            {'Import'}
+                                            <input type='file' name='file' accept=".yaml,.yml" hidden onChange={(e) => addCollection(e)} />
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Stack>
+                            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                                {savedCollections.map((collection, index) => (
+                                    <Grid item xs={2} sm={4} md={4} key={index}>
+                                        <Item1
+                                            sx={{ "&:hover": { cursor: 'pointer' } }}
+                                            onClick={() => navigate(`/collection/${collection.id}`)}
+                                        >
+                                            <Typography variant="h6" noWrap component="div">
+                                                {collection.name}
+                                            </Typography>
+                                            {collection.id}
+                                        </Item1>
+                                        <IconButton title='Delete' color='error' onClick={() => deleteCollection(collection.id)}>
+                                            <IconTrash />
+                                        </IconButton>
+                                    </Grid>
+                                ))}
+                                <DeleteCollectionDialog open={openDelete} openDeleteDialog={setOpenDelete} handleDelete={handleDeleteCollection}/>
                             </Grid>
-                        </Grid>
-                    </Stack>
-                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                        {savedCollections.map((collection, index) => (
-                            <Grid item xs={2} sm={4} md={4} key={index}>
-                                <Item
-                                    sx={{ "&:hover": { cursor: 'pointer' } }}
-                                    // onClick={() => navigate(`/flow/${flowtest.id}`)}
-                                >
-                                    <Typography variant="h5" noWrap component="div">
-                                        {collection.name}
-                                    </Typography>
-                                    {collection.id}
-                                    <IconButton title='Delete' color='error' onClick={() => deleteCollection(collection.id)}>
-                                        <IconTrash />
-                                    </IconButton>
-                                </Item>
-                            </Grid>
-                        ))}
-                        <DeleteCollectionDialog open={openDelete} openDeleteDialog={setOpenDelete} handleDelete={handleDeleteCollection}/>
-                    </Grid>
-                </CardContent>
+                        </CardContent>
+                    ):
+                    (
+                        <CardContent>
+                            {collectionId != undefined && retrievedCollection != undefined && (
+                                <div style={{ width: '100%' }}>
+                                    <Box
+                                        sx={{ display: 'flex', p: 1, bgcolor: 'background.paper', borderRadius: 1 }}
+                                    >
+                                        <Item sx={{ width: '50%' }}>
+                                            <div>
+                                                <pre>{retrievedCollection.collection}</pre>
+                                            </div>
+                                        </Item>
+                                        <Item sx={{ width: '50%' }}>Item 2</Item>
+                                        {/* <Item sx={{ flexShrink: 1 }}>Item 3</Item> */}
+                                    </Box>
+                                </div>
+                            )}
+                        </CardContent>
+                    )}
             </Card>
         </>
     );

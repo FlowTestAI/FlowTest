@@ -14,6 +14,10 @@ const MainRoutes = {
         {
             path: '/collection',
             element: <Collections />
+        },
+        {
+            path: '/collection/:id',
+            element: <Collections />
         }
     ] 
 }

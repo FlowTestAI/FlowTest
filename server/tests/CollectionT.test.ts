@@ -1,15 +1,5 @@
 import CollectionUtil from "../src/CollectionUtil";
 
-function add(a: number, b: number): number {
-    return a + b;
-}
-
-describe("Math functions", () => {
-    it("should add two numbers correctly", () => {
-      expect(add(1, 2)).toEqual(3);
-    });
-});
-
 describe("parse", () => {
     it("should add do basic parsing", async () => {
         const p = new CollectionUtil()

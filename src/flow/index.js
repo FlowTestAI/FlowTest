@@ -26,7 +26,6 @@ import { useSnackbar } from 'notistack';
 
 // API
 import flowTestApi from '../api/flowtest'
-import openApiClient from '../api/collection'
 
 // icons
 import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft } from '@tabler/icons-react';
@@ -228,20 +227,20 @@ const Flow = () => {
 
   // Initialization
   useEffect(() => {
-      if (flowTestId) {
-        getFlowTest.request(flowTestId)
-      } else {
-          setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 } }])
-          setEdges([])
+    if (flowTestId) {
+      getFlowTest.request(flowTestId)
+    } else {
+        setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 } }])
+        setEdges([])
 
-          setFlowTest({
-            name: 'Untitled chatflow'
-          })
-      }
+        setFlowTest({
+          name: 'Untitled chatflow'
+        })
+    }
 
-      return () => {
-          setIsDirty(false);
-      }
+    return () => {
+        setIsDirty(false);
+    }
   }, []);
 
   const isValidConnection = (connection) => {

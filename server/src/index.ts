@@ -7,16 +7,19 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 import { Collection } from "./entities/Collection";
 import multer from 'multer';
 import * as fs from 'fs';
+import CollectionUtil from "./CollectionUtil";
 
 class App {
 
   app: express.Application
   port: number
   appDataSource = AppDataSource
+  collectionUtil: CollectionUtil
 
   constructor() {
     this.app = express()
     this.port = 3500
+    this.collectionUtil = new CollectionUtil()
   }
 
   initServer() {
@@ -88,9 +91,6 @@ class App {
       })
 
       // Create collection
-      const parseCollection = (collection) => {
-        return '';
-      }
 
       const upload = multer({ dest: 'uploads/' })
       this.app.post('/api/v1/collection', upload.single('file'), async (req: Request, res: Response) => {
@@ -99,13 +99,14 @@ class App {
         try {
           // async/await syntax
           let api = await SwaggerParser.validate(req.file.path);
-
           console.log("API name: %s, Version: %s", api.info.title, api.info.version);
+          const parsedNodes = await this.collectionUtil.parse(req.file.path)
+
           const newCollection = new Collection()
           const constructCollection = {
             name: api.info.title,
             collection: spec,
-            nodes: parseCollection(api)
+            nodes: JSON.stringify(parsedNodes)
           }
           Object.assign(newCollection, constructCollection)
 

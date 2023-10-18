@@ -83,7 +83,6 @@ const Collections = () => {
     // Initialization
 
     useEffect(() => {
-        console.log('inside useEffect: ', collectionId)
         if (collectionId != undefined) {
             getCollectionApi.request(collectionId);
         } else {
@@ -234,13 +233,16 @@ const Collections = () => {
                                     <Box
                                         sx={{ display: 'flex', p: 1, bgcolor: 'background.paper', borderRadius: 1 }}
                                     >
-                                        <Item sx={{ width: '50%' }}>
+                                        <Item sx={{ flexGrow: 1 }}>
                                             <div>
                                                 <pre>{retrievedCollection.collection}</pre>
                                             </div>
                                         </Item>
-                                        <Item sx={{ width: '50%' }}>Item 2</Item>
-                                        {/* <Item sx={{ flexShrink: 1 }}>Item 3</Item> */}
+                                        <Item sx={{ flexGrow: 1 }}>
+                                            <div>
+                                                <pre>{retrievedCollection.nodes}</pre>
+                                            </div>
+                                        </Item>
                                     </Box>
                                 </div>
                             )}

@@ -31,6 +31,5 @@ package-lock.json
 # db
 .flowtest
 
-# openapi spec
-*.yaml
+# temp upload directory
 uploads/

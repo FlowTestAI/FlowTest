@@ -1,11 +1,32 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 //mui
-import { Fab, Popper, Fade, Paper, Typography, Box, Stack, List, ListItemButton, ListItem, ListItemText, Divider, Card } from "@mui/material";
+import { 
+    Fab, 
+    Popper, 
+    Fade, 
+    Paper, 
+    Typography, 
+    Box, 
+    Stack, 
+    List, 
+    ListItemButton,
+    ListItem, 
+    ListItemText, 
+    Divider, 
+    Card,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails 
+} from "@mui/material";
 import { blue, green } from '@mui/material/colors';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 // icons
 import { IconMinus, IconPlus } from '@tabler/icons-react';
+
+import collectionApi from '../api/collection'
+import wrapper from '../api/wrapper';
 
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
@@ -26,19 +47,19 @@ const fabGreenStyle = {
 const requestNodes = [
     { 
         requestType: 'GET',
-        requestDescription: 'GET is used to request data from a specified resource.'
+        description: 'GET is used to request data from a specified resource.'
     },
     {  
         requestType: 'POST',
-        requestDescription: 'POST is used to send data to a server to create/update a resource.'
+        description: 'POST is used to send data to a server to create/update a resource.'
     },
     {  
         requestType: 'PUT',
-        requestDescription: 'PUT is used to send data to a server to create/update a resource. PUT requests are idempotent.'
+        description: 'PUT is used to send data to a server to create/update a resource. PUT requests are idempotent.'
     },
     {  
         requestType: 'DELETE',
-        requestDescription: 'The DELETE method deletes the specified resource.'
+        description: 'The DELETE method deletes the specified resource.'
     },
   ];
 
@@ -51,6 +72,32 @@ const AddRequestNodes = () => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify(node))
         event.dataTransfer.effectAllowed = 'move'
     }
+
+    const getAllCollectionsApi = wrapper(collectionApi.getAllCollection)
+
+    // Get All collections
+    const [savedCollections, setSavedCollections] = useState([]);
+
+    useEffect(() => {
+        if (getAllCollectionsApi.data) {
+            const retrievedCollections = getAllCollectionsApi.data
+            console.log('Got saved collections: ', retrievedCollections);
+            setSavedCollections(retrievedCollections)
+        } else if (getAllCollectionsApi.error) {
+            const error = getAllCollectionsApi.error
+            if (!error.response) {
+                console.log('Failed to get saved collections: ', error)
+            } else {
+                const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
+                console.log('Failed to get saved collections: ', errorData)
+            }
+        }
+    },[getAllCollectionsApi.data, getAllCollectionsApi.error])
+
+    // Initialization
+    useEffect(() => {
+        getAllCollectionsApi.request();
+    }, []);
 
     return (
         <>
@@ -117,24 +164,67 @@ const AddRequestNodes = () => {
                                             }
                                         }}
                                     >
-                                        {requestNodes.map((node, index) => (
-                                            <div
-                                                key={node.requestType}
-                                                onDragStart={(event) => onDragStart(event, node)}
-                                                draggable
-                                                cursor='move'
+                                        <Accordion key="requests" disableGutters>
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                aria-controls="panel1a-content"
+                                                id="panel1a-header"
                                             >
-                                                <ListItemButton>
-                                                    <ListItem alignItems='center'>
-                                                        <ListItemText
-                                                            sx={{ ml: 1 }}
-                                                            primary={node.requestType}
-                                                            secondary={node.requestDescription}
-                                                        />
-                                                    </ListItem>
-                                                </ListItemButton>
-                                                {index === requestNodes.length - 1 ? null : <Divider />}
-                                            </div>
+                                                <Typography variant='h7'>Requests</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                {requestNodes.map((node, index) => (
+                                                    <div
+                                                        key={node.requestType}
+                                                        onDragStart={(event) => onDragStart(event, node)}
+                                                        draggable
+                                                        cursor='move'
+                                                    >
+                                                        <ListItemButton>
+                                                            <ListItem alignItems='center'>
+                                                                <ListItemText
+                                                                    sx={{ ml: 1 }}
+                                                                    primary={node.requestType}
+                                                                    secondary={node.description}
+                                                                />
+                                                            </ListItem>
+                                                        </ListItemButton>
+                                                        {index === requestNodes.length - 1 ? null : <Divider />}
+                                                    </div>
+                                                ))}
+                                            </AccordionDetails>
+                                        </Accordion>
+                                        {savedCollections.map((collection, index) => (
+                                            <Accordion key={collection.id} disableGutters>
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                aria-controls={`panel1a-content-${collection.id}`}
+                                                id={`panel1a-header-${collection.id}`}
+                                            >
+                                                <Typography variant='h7'>{collection.name}</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                {JSON.parse(collection.nodes).map((node, index1) => (
+                                                    <div
+                                                        key={node.requestType}
+                                                        onDragStart={(event) => onDragStart(event, node)}
+                                                        draggable
+                                                        cursor='move'
+                                                    >
+                                                        <ListItemButton>
+                                                            <ListItem alignItems='center'>
+                                                                <ListItemText
+                                                                    sx={{ ml: 1 }}
+                                                                    primary={`${node.requestType} - ${node.operationId}`}
+                                                                    secondary={node.description}
+                                                                />
+                                                            </ListItem>
+                                                        </ListItemButton>
+                                                        {index1 === JSON.parse(collection.nodes).length - 1 ? null : <Divider />}
+                                                    </div>
+                                                ))}
+                                            </AccordionDetails>
+                                            </Accordion>
                                         ))}
                                     </List>
                                 </Box>

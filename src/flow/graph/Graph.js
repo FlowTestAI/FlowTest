@@ -4,10 +4,14 @@ import axios from 'axios'
 
 // assumption is that apis are giving json as output
 
-const GraphRun = function(nodes, edges, onGraphComplete) {
+class Graph {
+    constructor(nodes, edges, onGraphComplete) {
+        this.nodes = nodes
+        this.edges = edges
+        this.onGraphComplete = onGraphComplete
+    }
 
-    async function startRun(node, prevNodeOutput) {
-
+    async #evaluateNode(node, prevNodeOutput) {
         // right now we allow a straight sequential graph but
         // once we allow success/failure routes from each requestNode, this will change
         if (node.data.type === 'outputNode') {
@@ -121,33 +125,34 @@ const GraphRun = function(nodes, edges, onGraphComplete) {
             return ["Failed", node];
         }
 
-        const connectingEdge = edges.find((edge) => edge.source === node.id)
+        const connectingEdge = this.edges.find((edge) => edge.source === node.id)
 
         if (connectingEdge != undefined) {
-            const nextNode = nodes.find((node) => (node.type === 'requestNode' || node.type === 'outputNode') && node.id === connectingEdge.target)
-            return startRun(nextNode, res.data);
+            const nextNode = this.nodes.find((node) => (node.type === 'requestNode' || node.type === 'outputNode') && node.id === connectingEdge.target)
+            return this.#evaluateNode(nextNode, res.data);
         } else {
             return ["Success"];
         }
     }
 
-    const startNode = nodes.find((node) => node.type === 'startNode')
-    const connectingEdge = edges.find((edge) => edge.source === startNode.id)
+    run() {
+        const startNode = this.nodes.find((node) => node.type === 'startNode')
+        const connectingEdge = this.edges.find((edge) => edge.source === startNode.id)
 
-    // only start computing graph if initial node has the connecting edge
-    if (connectingEdge != undefined) {
-        const firstRequestNode = nodes.find((node) => node.type === 'requestNode' && node.id === connectingEdge.target)
-        startRun(firstRequestNode, JSON.parse('{}'))
-            .then(result => {
-                console.log(result[0])
-                if (result[0] == "Failed") {
-                    console.log('Flow failed at: ', result[1])
-                }
-                onGraphComplete(result);
-            });
-    } else {
-        console.log("No connected request node to start node")
+        // only start computing graph if initial node has the connecting edge
+        if (connectingEdge != undefined) {
+            const firstRequestNode = this.nodes.find((node) => node.type === 'requestNode' && node.id === connectingEdge.target)
+            this.#evaluateNode(firstRequestNode, JSON.parse('{}'))
+                .then(result => {
+                    if (result[0] == "Failed") {
+                        console.log('Flow failed at: ', result[1])
+                    }
+                    this.onGraphComplete(result);
+                });
+        } else {
+            console.log("No connected request node to start node")
+        }
     }
 }
 
-export default GraphRun;
+export default Graph;

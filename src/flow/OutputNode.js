@@ -16,6 +16,7 @@ const OutputNode = ({data}) => {
 
     return (
         <>
+            <Handle type="target" position={Position.Left} />
             <Card 
                 sx={{ 
                     border: 1,  
@@ -44,7 +45,7 @@ const OutputNode = ({data}) => {
                     </div>
                 </Box>
             </Card>
-            <Handle style={{}} type="target" position={Position.Left} />
+            <Handle type="source" position={Position.Right} />
         </>
     );
 };

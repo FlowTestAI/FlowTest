@@ -41,7 +41,7 @@ import AddRequestNodes from './AddRequestNodes';
 import SaveDialog from './SaveDialog';
 import wrapper from '../api/wrapper';
 import PromptDialog from './PromptDialog';
-import GraphRun from './graph/GraphRun';
+import Graph from './graph/Graph';
 import OutputNode from './OutputNode';
 
 const StartNode = () => (
@@ -388,8 +388,9 @@ const Flow = () => {
                                 <Controls>
                                   <ControlButton 
                                     onClick={() => {
-                                      runnableEdges(true)
-                                      GraphRun(reactFlowInstance.getNodes(), reactFlowInstance.getEdges(), onGraphComplete)
+                                      runnableEdges(true);
+                                      const g = new Graph(reactFlowInstance.getNodes(), reactFlowInstance.getEdges(), onGraphComplete);
+                                      g.run();
                                     }} title="run">
                                     <div>Run</div>
                                   </ControlButton>

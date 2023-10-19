@@ -42,6 +42,7 @@ import SaveDialog from './SaveDialog';
 import wrapper from '../api/wrapper';
 import PromptDialog from './PromptDialog';
 import GraphRun from './graph/GraphRun';
+import OutputNode from './OutputNode';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -76,7 +77,8 @@ const Flow = () => {
   const nodeTypes = useMemo(() => (
   {
     startNode: StartNode, 
-    requestNode: RequestNode 
+    requestNode: RequestNode,
+    outputNode: OutputNode
   }), []);
   
   const edgeTypes = useMemo(() => (
@@ -132,10 +134,11 @@ const Flow = () => {
       });
       const newNode = {
         id: getId(),
-        type: 'requestNode',
+        type: nodeData.type,
         position,
         data: nodeData
       };
+      console.log('Dropped node: ', newNode);
 
       setNodes((nds) => nds.concat(newNode));
       setIsDirty(true);

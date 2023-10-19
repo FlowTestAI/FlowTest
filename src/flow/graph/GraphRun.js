@@ -8,6 +8,14 @@ const GraphRun = function(nodes, edges, onGraphComplete) {
 
     async function startRun(node, prevNodeOutput) {
 
+        // right now we allow a straight sequential graph but
+        // once we allow success/failure routes from each requestNode, this will change
+        if (node.data.type === 'outputNode') {
+            node.data.setOutput(prevNodeOutput);
+            // console.log(node)
+            return ["Success"];
+        }
+
         // step1 evaluate variables of this node
         let evalVariables = {}
         Object.entries(node.data.variables).map(([vname, variable], index) => {
@@ -116,7 +124,7 @@ const GraphRun = function(nodes, edges, onGraphComplete) {
         const connectingEdge = edges.find((edge) => edge.source === node.id)
 
         if (connectingEdge != undefined) {
-            const nextNode = nodes.find((node) => node.type === 'requestNode' && node.id === connectingEdge.target)
+            const nextNode = nodes.find((node) => (node.type === 'requestNode' || node.type === 'outputNode') && node.id === connectingEdge.target)
             return startRun(nextNode, res.data);
         } else {
             return ["Success"];

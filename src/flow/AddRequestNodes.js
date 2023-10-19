@@ -47,21 +47,30 @@ const fabGreenStyle = {
 const requestNodes = [
     { 
         requestType: 'GET',
-        description: 'GET is used to request data from a specified resource.'
+        description: 'GET is used to request data from a specified resource.',
+        type: 'requestNode'
     },
     {  
         requestType: 'POST',
-        description: 'POST is used to send data to a server to create/update a resource.'
+        description: 'POST is used to send data to a server to create/update a resource.',
+        type: 'requestNode'
     },
     {  
         requestType: 'PUT',
-        description: 'PUT is used to send data to a server to create/update a resource. PUT requests are idempotent.'
+        description: 'PUT is used to send data to a server to create/update a resource. PUT requests are idempotent.',
+        type: 'requestNode'
     },
     {  
         requestType: 'DELETE',
-        description: 'The DELETE method deletes the specified resource.'
+        description: 'The DELETE method deletes the specified resource.',
+        type: 'requestNode'
     },
   ];
+
+const outputNode = {
+    description: 'Displays any data received.',
+    type: 'outputNode'
+}
 
 const AddRequestNodes = () => {
     const [open, setOpen] = useState(false)
@@ -175,7 +184,7 @@ const AddRequestNodes = () => {
                                             <AccordionDetails>
                                                 {requestNodes.map((node, index) => (
                                                     <div
-                                                        key={node.requestType}
+                                                        key={`${node.requestType}-${index}`}
                                                         onDragStart={(event) => onDragStart(event, node)}
                                                         draggable
                                                         cursor='move'
@@ -206,8 +215,14 @@ const AddRequestNodes = () => {
                                             <AccordionDetails>
                                                 {JSON.parse(collection.nodes).map((node, index1) => (
                                                     <div
-                                                        key={node.requestType}
-                                                        onDragStart={(event) => onDragStart(event, node)}
+                                                        key={`${node.requestType} - ${node.operationId}`}
+                                                        onDragStart={(event) => {
+                                                            const newNode = {
+                                                                ...node,
+                                                                type: 'requestNode'
+                                                            }
+                                                            onDragStart(event, newNode)
+                                                        }}
                                                         draggable
                                                         cursor='move'
                                                     >
@@ -226,6 +241,33 @@ const AddRequestNodes = () => {
                                             </AccordionDetails>
                                             </Accordion>
                                         ))}
+                                        <Accordion key="output" disableGutters>
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                aria-controls="panel1a-content-output"
+                                                id="panel1a-header-output"
+                                            >
+                                                <Typography variant='h7'>Output</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <div
+                                                    key="output"
+                                                    onDragStart={(event) => onDragStart(event, outputNode)}
+                                                    draggable
+                                                    cursor='move'
+                                                >
+                                                    <ListItemButton>
+                                                        <ListItem alignItems='center'>
+                                                            <ListItemText
+                                                                sx={{ ml: 1 }}
+                                                                primary="Output"
+                                                                secondary={outputNode.description}
+                                                            />
+                                                        </ListItem>
+                                                    </ListItemButton>
+                                                </div>
+                                            </AccordionDetails>
+                                        </Accordion>
                                     </List>
                                 </Box>
                             </PerfectScrollbar>

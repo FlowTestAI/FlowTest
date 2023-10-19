@@ -32,6 +32,7 @@ import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft } from '@tabler
 
 import RequestNode from './RequestNode';
 import EnvDialog from './EnvDialog';
+import CustomEdge from './ButtonEdge';
 
 // theme
 import theme from './theme';
@@ -73,15 +74,26 @@ const Flow = () => {
   const [isDirty, setIsDirty] = useState(false)
   
   const nodeTypes = useMemo(() => (
-    {
-      startNode: StartNode, 
-      requestNode: RequestNode 
-    }), []);
+  {
+    startNode: StartNode, 
+    requestNode: RequestNode 
+  }), []);
+  
+  const edgeTypes = useMemo(() => (
+  {
+    buttonedge: CustomEdge,
+  }), []);
 
   const [nodes, setNodes, onNodesChange] = useNodesState();
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
+  const onConnect = (params) => {
+    const newEdge = {
+      ...params,
+      type: 'buttonedge'
+    }
+    setEdges((eds) => addEdge(newEdge, eds))
+  };
 
   const runnableEdges = (runnable) => {
     const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
@@ -363,6 +375,7 @@ const Flow = () => {
                             onEdgesChange={onEdgesChange}
                             onConnect={onConnect}
                             nodeTypes={nodeTypes}
+                            edgeTypes={edgeTypes}
                             onInit={setReactFlowInstance}
                             onDrop={onDrop}
                             onDragOver={onDragOver}

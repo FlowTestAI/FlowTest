@@ -39,7 +39,7 @@ const GraphRun = function(nodes, edges, onGraphComplete) {
         // step2 replace variables in url with value
         let finalUrl = node.data.url
         Object.entries(evalVariables).map(([vname, vvalue], index) => {
-            finalUrl = finalUrl.replace(`{{${vname}}}`, vvalue)
+            finalUrl = finalUrl.replace(`{${vname}}`, vvalue)
         })
 
         let options = undefined

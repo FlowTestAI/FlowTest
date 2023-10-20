@@ -72,6 +72,11 @@ const outputNode = {
     type: 'outputNode'
 }
 
+const evaluateNode = {
+    description: 'Evaluate conditional expressions.',
+    type: 'evaluateNode'
+}
+
 const AddRequestNodes = () => {
     const [open, setOpen] = useState(false)
     const anchorRef = useRef(null);
@@ -262,6 +267,33 @@ const AddRequestNodes = () => {
                                                                 sx={{ ml: 1 }}
                                                                 primary="Output"
                                                                 secondary={outputNode.description}
+                                                            />
+                                                        </ListItem>
+                                                    </ListItemButton>
+                                                </div>
+                                            </AccordionDetails>
+                                        </Accordion>
+                                        <Accordion key="evaluate" disableGutters>
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                aria-controls="panel1a-content-output"
+                                                id="panel1a-header-output"
+                                            >
+                                                <Typography variant='h7'>Evaluate</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <div
+                                                    key="evaluate"
+                                                    onDragStart={(event) => onDragStart(event, evaluateNode)}
+                                                    draggable
+                                                    cursor='move'
+                                                >
+                                                    <ListItemButton>
+                                                        <ListItem alignItems='center'>
+                                                            <ListItemText
+                                                                sx={{ ml: 1 }}
+                                                                primary="Evaluate"
+                                                                secondary={evaluateNode.description}
                                                             />
                                                         </ListItem>
                                                     </ListItemButton>

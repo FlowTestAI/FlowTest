@@ -43,6 +43,7 @@ import wrapper from '../api/wrapper';
 import PromptDialog from './PromptDialog';
 import Graph from './graph/Graph';
 import OutputNode from './OutputNode';
+import EvaluateNode from './EvaluateNode';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -78,7 +79,8 @@ const Flow = () => {
   {
     startNode: StartNode, 
     requestNode: RequestNode,
-    outputNode: OutputNode
+    outputNode: OutputNode,
+    evaluateNode: EvaluateNode
   }), []);
   
   const edgeTypes = useMemo(() => (

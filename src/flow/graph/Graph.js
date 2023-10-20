@@ -11,49 +11,7 @@ class Graph {
         this.onGraphComplete = onGraphComplete
     }
 
-    async #evaluateNode(node, prevNodeOutput) {
-        // right now we allow a straight sequential graph but
-        // once we allow success/failure routes from each requestNode, this will change
-        if (node.data.type === 'outputNode') {
-            node.data.setOutput(prevNodeOutput);
-            // console.log(node)
-            return ["Success"];
-        }
-
-        // step1 evaluate variables of this node
-        let evalVariables = {}
-        Object.entries(node.data.variables).map(([vname, variable], index) => {
-            if (variable.type === 'String') {
-                evalVariables[vname] = variable.value
-            } 
-            
-            if (variable.type === 'Select') {
-                const jsonTree = variable.value.split(".")
-                function getVal(parent, pos) {
-                    if (pos == jsonTree.length) {
-                        return parent;
-                    }
-                    const key = jsonTree[pos]
-                    if (key == '') {
-                        return parent;
-                    }
-                    
-                    return getVal(parent[key], pos + 1);
-                }
-                if (Object.keys(prevNodeOutput).length === 0) {
-                    console.log('Cannot evaluate variables as prevNodeOutput is empty: ', prevNodeOutput)
-                    return ["Failed", node];
-                }
-                evalVariables[vname] = getVal(prevNodeOutput, 0)
-            }
-        })
-
-        // step2 replace variables in url with value
-        let finalUrl = node.data.url
-        Object.entries(evalVariables).map(([vname, vvalue], index) => {
-            finalUrl = finalUrl.replace(`{${vname}}`, vvalue)
-        })
-
+    #formulateRequest(node, finalUrl) {
         let options = undefined
         let restMethod = node.data.requestType.toLowerCase()
         let contentType = 'application/json'
@@ -98,18 +56,65 @@ class Graph {
             }
         }
 
-        console.log('Executing node: ', node)
-        console.log('Evaluated variables: ', evalVariables)
-        console.log('Evaluated Url: ', finalUrl)
-        let res = undefined;
+        return options;
+    }
+
+    #evaluateNodeVariables(variables, prevNodeOutput) {
+        let evalVariables = {}
+        Object.entries(variables).map(([vname, variable], index) => {
+            if (variable.type === 'String') {
+                evalVariables[vname] = variable.value
+            } 
+            
+            if (variable.type === 'Select') {
+                if (Object.keys(prevNodeOutput).length === 0) {
+                    console.log('Cannot evaluate variables as prevNodeOutput is empty: ', prevNodeOutput)
+                    throw "Error evaluating node variables"
+                }
+                const jsonTree = variable.value.split(".")
+                function getVal(parent, pos) {
+                    if (pos == jsonTree.length) {
+                        return parent;
+                    }
+                    const key = jsonTree[pos]
+                    if (key == '') {
+                        return parent;
+                    }
+                    
+                    return getVal(parent[key], pos + 1);
+                }
+                evalVariables[vname] = getVal(prevNodeOutput, 0)
+            }
+        })
+        return evalVariables;
+    }
+
+    async #evaluateRequestNode(node, prevNodeOutput) {
         try {
-            res = await axios(options);
+            // step1 evaluate variables of this node
+            const evalVariables = this.#evaluateNodeVariables(node.data.variables, prevNodeOutput.data);
+
+            // step2 replace variables in url with value
+            let finalUrl = node.data.url
+            Object.entries(evalVariables).map(([vname, vvalue], index) => {
+                finalUrl = finalUrl.replace(`{${vname}}`, vvalue)
+            })
+
+            // step 3
+            const options = this.#formulateRequest(node, finalUrl);
+
+            console.log('Executing node: ', node)
+            console.log('Evaluated variables: ', evalVariables)
+            console.log('Evaluated Url: ', finalUrl)
+            const res = await axios(options);
             console.log('Response: ', res)
-        } catch (error) {
+            return ["Success", node, res];
+        } catch(error) {
+            console.log('Failure at node: ', node)
+            console.log('Error encountered: ', error)
             if (error.response) {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx
-                console.log('Response: ')
                 console.log(error.response.data);
                 console.log(error.response.status);
                 console.log(error.response.headers);
@@ -118,20 +123,43 @@ class Graph {
                 // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
                 // http.ClientRequest in node.js
                 console.log('Response: ', error.request);
-            } else {
+            } else if (error.message) {
                 // Something happened in setting up the request that triggered an Error
                 console.log('Response: ', error.message);
+            } else {
+                // Something not related to axios request
+                console.log('Failure: ', error);
             }
-            return ["Failed", node];
+            return ["Failed", node, error];
+        }
+    }
+
+    async #evaluateNode(node, prevNodeOutput) {
+        let result = undefined
+
+        // right now we allow a straight sequential graph but
+        // once we allow success/failure routes from each requestNode, this will change
+        if (node.type === 'outputNode') {
+            node.data.setOutput(prevNodeOutput.data);
+            // console.log(node)
+            result = ["Success", node, prevNodeOutput];
         }
 
-        const connectingEdge = this.edges.find((edge) => edge.source === node.id)
+        if (node.type === 'requestNode') {
+            result = await this.#evaluateRequestNode(node, prevNodeOutput)
+        }
 
-        if (connectingEdge != undefined) {
-            const nextNode = this.nodes.find((node) => (node.type === 'requestNode' || node.type === 'outputNode') && node.id === connectingEdge.target)
-            return this.#evaluateNode(nextNode, res.data);
+        if (result[0] == 'Failed') {
+            return result;
         } else {
-            return ["Success"];
+            const connectingEdge = this.edges.find((edge) => edge.source === node.id)
+
+            if (connectingEdge != undefined) {
+                const nextNode = this.nodes.find((node) => (node.type === 'requestNode' || node.type === 'outputNode') && node.id === connectingEdge.target)
+                return this.#evaluateNode(nextNode, result[2]);
+            } else {
+                return result;
+            }
         }
     }
 

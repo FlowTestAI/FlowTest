@@ -59,7 +59,7 @@ class Graph {
         return options;
     }
 
-    #evaluateNodeVariables(variables, prevNodeOutput) {
+    #evaluateNodeVariables(variables, prevNodeOutputData) {
         let evalVariables = {}
         Object.entries(variables).map(([vname, variable], index) => {
             if (variable.type === 'String') {
@@ -67,8 +67,8 @@ class Graph {
             } 
             
             if (variable.type === 'Select') {
-                if (Object.keys(prevNodeOutput).length === 0) {
-                    console.log('Cannot evaluate variables as prevNodeOutput is empty: ', prevNodeOutput)
+                if (Object.keys(prevNodeOutputData).length === 0) {
+                    console.log('Cannot evaluate variables as prevNodeOutput data is empty: ', prevNodeOutputData)
                     throw "Error evaluating node variables"
                 }
                 const jsonTree = variable.value.split(".")
@@ -83,7 +83,7 @@ class Graph {
                     
                     return getVal(parent[key], pos + 1);
                 }
-                evalVariables[vname] = getVal(prevNodeOutput, 0)
+                evalVariables[vname] = getVal(prevNodeOutputData, 0)
             }
         })
         return evalVariables;

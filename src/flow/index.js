@@ -384,6 +384,7 @@ const Flow = () => {
                             onDragOver={onDragOver}
                             onNodeDragStop={() => setIsDirty(true)}
                             isValidConnection={isValidConnection}
+                            fitView
                             >
                                 <Controls>
                                   <ControlButton 

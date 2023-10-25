@@ -15,18 +15,19 @@ import {
     MenuItem
 } from "@mui/material"
 
-const OperatorMenu = () => {
+const OperatorMenu = (data) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose = (op) => {
+        data.opearator = op;
         setAnchorEl(null);
         setOperator(op);
     };
 
-    const [opearator, setOperator] = React.useState('Choose Operator')
+    const [opearator, setOperator] = React.useState(data.opearator ? data.opearator : 'Choose Operator')
 
     return (
         <div>
@@ -57,7 +58,7 @@ const OperatorMenu = () => {
     )
 }
 
-const VariableTypeMenu = () => {
+const VariableTypeMenu = (data, vname) => {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -65,11 +66,15 @@ const VariableTypeMenu = () => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose = (variabletype) => {
+        if (!data[vname]) {
+            data[vname] = {}
+        }
+        data[vname].type = variabletype;
         setAnchorEl(null);
         setVtype(variabletype);
     };
 
-    const [vType, setVtype] = React.useState('String')
+    const [vType, setVtype] = React.useState(data[vname] && data[vname].type ? data[vname].type : 'String')
 
     return (
         <div>
@@ -102,6 +107,9 @@ const VariableTypeMenu = () => {
 
 const EvaluateNode = ({data}) => {
 
+    const [var1, setVar1] = React.useState(data["var1"] && data["var1"].value ? data["var1"].value : "");
+    const [var2, setVar2] = React.useState(data["var2"] && data["var2"].value ? data["var2"].value : "");
+
     return (
         <>
             <Handle type="target" position={Position.Left} />
@@ -122,10 +130,10 @@ const EvaluateNode = ({data}) => {
                             <div>
                                 <OutlinedInput
                                     id="outlined-adornment-weight"
-                                    value=""
+                                    value={var1}
                                     endAdornment={
                                         <InputAdornment position="end">
-                                            {VariableTypeMenu()}
+                                            {VariableTypeMenu(data, "var1")}
                                         </InputAdornment>
                                     }
                                     aria-describedby="outlined-weight-helper-text"
@@ -135,22 +143,28 @@ const EvaluateNode = ({data}) => {
                                     fullWidth
                                     size="small"
                                     className="nodrag"
-                                    // onChange={(e) => handleVariableChange(e, id)}
+                                    onChange={(e) => {
+                                        if (!data["var1"]) {
+                                            data["var1"] = {}
+                                        }
+                                        data["var1"].value = e.target.value;
+                                        setVar1(e.target.value)
+                                    }}
                                 />
                                 <FormHelperText id="outlined-weight-helper-text">var1</FormHelperText>
                             </div>
                         </Box>
                         <Box style={{ width: 300, margin: 10, padding: 5 }}>
-                            {OperatorMenu()}
+                            {OperatorMenu(data)}
                         </Box>
                         <Box style={{ width: 300, margin: 10, padding: 5 }}>
                             <div>
                                 <OutlinedInput
                                     id="outlined-adornment-weight"
-                                    value=""
+                                    value={var2}
                                     endAdornment={
                                         <InputAdornment position="end">
-                                            {VariableTypeMenu()}
+                                            {VariableTypeMenu(data, "var2")}
                                         </InputAdornment>
                                     }
                                     aria-describedby="outlined-weight-helper-text"
@@ -160,7 +174,13 @@ const EvaluateNode = ({data}) => {
                                     fullWidth
                                     size="small"
                                     className="nodrag"
-                                    // onChange={(e) => handleVariableChange(e, id)}
+                                    onChange={(e) => {
+                                        if (!data["var2"]) {
+                                            data["var2"] = {}
+                                        }
+                                        data["var2"].value = e.target.value;
+                                        setVar2(e.target.value)
+                                    }}
                                 />
                                 <FormHelperText id="outlined-weight-helper-text">var2</FormHelperText>
                             </div>

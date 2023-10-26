@@ -58,7 +58,15 @@ const OperatorMenu = (data) => {
     )
 }
 
-const VariableTypeMenu = (data, vname) => {
+const getInputType = (vType) => {
+    if (vType == "Number") {
+        return 'number'
+    } else {
+        return "text"
+    }
+}
+
+const Variable = (data, vname) => {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -72,43 +80,67 @@ const VariableTypeMenu = (data, vname) => {
         data[vname].type = variabletype;
         setAnchorEl(null);
         setVtype(variabletype);
+        setInputType(getInputType(variabletype))
     };
 
     const [vType, setVtype] = React.useState(data[vname] && data[vname].type ? data[vname].type : 'String')
+    const [inputType, setInputType] = React.useState(getInputType(data[vname] && data[vname].type ? data[vname].type : 'String'))
+    const [var1, setVar1] = React.useState(data[vname] && data[vname].value ? data[vname].value : "");
 
     return (
         <div>
-            <Button
-                id="basic-button"
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-            >
-                {vType}
-            </Button>
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                'aria-labelledby': 'basic-button',
+            <OutlinedInput
+                type={inputType}
+                id="outlined-adornment-weight"
+                value={var1}
+                endAdornment={
+                    <InputAdornment position="end">
+                        <Button
+                            id="basic-button"
+                            aria-controls={open ? 'basic-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                            onClick={handleClick}
+                        >
+                            {vType}
+                        </Button>
+                        <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                            }}
+                        >
+                            <MenuItem onClick={() => handleClose('String')}>String</MenuItem>
+                            <MenuItem onClick={() => handleClose('Select')}>Select</MenuItem>
+                            <MenuItem onClick={() => handleClose('Number')}>Number</MenuItem>
+                            <MenuItem onClick={() => handleClose('Bool')}>Bool</MenuItem>
+                        </Menu>
+                    </InputAdornment>
+                }
+                aria-describedby="outlined-weight-helper-text"
+                inputProps={{
+                'aria-label': 'weight'
                 }}
-            >
-                <MenuItem onClick={() => handleClose('String')}>String</MenuItem>
-                <MenuItem onClick={() => handleClose('Select')}>Select</MenuItem>
-                <MenuItem onClick={() => handleClose('Number')}>Number</MenuItem>
-                <MenuItem onClick={() => handleClose('Bool')}>Bool</MenuItem>
-            </Menu>
+                fullWidth
+                size="small"
+                className="nodrag"
+                onChange={(e) => {
+                    if (!data[vname]) {
+                        data[vname] = {}
+                    }
+                    data[vname].value = e.target.value;
+                    setVar1(e.target.value)
+                }}
+            />
+            <FormHelperText id="outlined-weight-helper-text">{vname}</FormHelperText>
         </div>
     )
 }
 
 const EvaluateNode = ({data}) => {
-
-    const [var1, setVar1] = React.useState(data["var1"] && data["var1"].value ? data["var1"].value : "");
-    const [var2, setVar2] = React.useState(data["var2"] && data["var2"].value ? data["var2"].value : "");
 
     return (
         <>
@@ -127,63 +159,13 @@ const EvaluateNode = ({data}) => {
                 <Box>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left' }}>
                         <Box style={{ width: 300, margin: 10, padding: 5 }}>
-                            <div>
-                                <OutlinedInput
-                                    id="outlined-adornment-weight"
-                                    value={var1}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            {VariableTypeMenu(data, "var1")}
-                                        </InputAdornment>
-                                    }
-                                    aria-describedby="outlined-weight-helper-text"
-                                    inputProps={{
-                                    'aria-label': 'weight'
-                                    }}
-                                    fullWidth
-                                    size="small"
-                                    className="nodrag"
-                                    onChange={(e) => {
-                                        if (!data["var1"]) {
-                                            data["var1"] = {}
-                                        }
-                                        data["var1"].value = e.target.value;
-                                        setVar1(e.target.value)
-                                    }}
-                                />
-                                <FormHelperText id="outlined-weight-helper-text">var1</FormHelperText>
-                            </div>
+                            {Variable(data, "var1")}
                         </Box>
                         <Box style={{ width: 300, margin: 10, padding: 5 }}>
                             {OperatorMenu(data)}
                         </Box>
                         <Box style={{ width: 300, margin: 10, padding: 5 }}>
-                            <div>
-                                <OutlinedInput
-                                    id="outlined-adornment-weight"
-                                    value={var2}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            {VariableTypeMenu(data, "var2")}
-                                        </InputAdornment>
-                                    }
-                                    aria-describedby="outlined-weight-helper-text"
-                                    inputProps={{
-                                    'aria-label': 'weight',
-                                    }}
-                                    fullWidth
-                                    size="small"
-                                    className="nodrag"
-                                    onChange={(e) => {
-                                        if (!data["var2"]) {
-                                            data["var2"] = {}
-                                        }
-                                        data["var2"].value = e.target.value;
-                                        setVar2(e.target.value)
-                                    }}
-                                />
-                                <FormHelperText id="outlined-weight-helper-text">var2</FormHelperText>
-                            </div>
+                            {Variable(data, "var2")}
                         </Box>
                     </div>
                 </Box>

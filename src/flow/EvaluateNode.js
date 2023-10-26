@@ -14,6 +14,7 @@ import {
     Menu,
     MenuItem
 } from "@mui/material"
+import Operators from '../constants/operators';
 
 const OperatorMenu = (data) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -22,7 +23,7 @@ const OperatorMenu = (data) => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose = (op) => {
-        data.opearator = op;
+        data.operator = op;
         setAnchorEl(null);
         setOperator(op);
     };
@@ -49,10 +50,10 @@ const OperatorMenu = (data) => {
                 'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem onClick={() => handleClose('isLessThan')}>isLessThan</MenuItem>
-                <MenuItem onClick={() => handleClose('isGreaterThan')}>isGreaterThan</MenuItem>
-                <MenuItem onClick={() => handleClose('isEqualTo')}>isEqualTo</MenuItem>
-                <MenuItem onClick={() => handleClose('isNotEqualTo')}>isNotEqualTo</MenuItem>
+                <MenuItem onClick={() => handleClose(Operators.isLessThan)}>{Operators.isLessThan}</MenuItem>
+                <MenuItem onClick={() => handleClose(Operators.isGreaterThan)}>{Operators.isGreaterThan}</MenuItem>
+                <MenuItem onClick={() => handleClose(Operators.isEqualTo)}>{Operators.isEqualTo}</MenuItem>
+                <MenuItem onClick={() => handleClose(Operators.isNotEqualTo)}>{Operators.isNotEqualTo}</MenuItem>
             </Menu>
         </div>
     )

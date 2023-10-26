@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import axios from 'axios'
+import Operators from '../../constants/operators';
 
 // assumption is that apis are giving json as output
 
@@ -59,40 +60,52 @@ class Graph {
         return options;
     }
 
-    #evaluateNodeVariables(variables, prevNodeOutputData) {
+    #computeNodeVariable(variable, prevNodeOutputData) {
+        if (variable.type === 'String') {
+            return variable.value;
+        }
+
+        if (variable.type === 'Number') {
+            return variable.value;
+        }
+
+        if (variable.type === 'Bool') {
+            return Boolean(variable.value);
+        }
+        
+        if (variable.type === 'Select') {
+            if (Object.keys(prevNodeOutputData).length === 0) {
+                console.log('Cannot evaluate variables as prevNodeOutput data is empty: ', prevNodeOutputData)
+                throw "Error evaluating node variables"
+            }
+            const jsonTree = variable.value.split(".")
+            function getVal(parent, pos) {
+                if (pos == jsonTree.length) {
+                    return parent;
+                }
+                const key = jsonTree[pos]
+                if (key == '') {
+                    return parent;
+                }
+                
+                return getVal(parent[key], pos + 1);
+            }
+            return getVal(prevNodeOutputData, 0);
+        }
+    }
+
+    #computeNodeVariables(variables, prevNodeOutputData) {
         let evalVariables = {}
         Object.entries(variables).map(([vname, variable], index) => {
-            if (variable.type === 'String') {
-                evalVariables[vname] = variable.value
-            } 
-            
-            if (variable.type === 'Select') {
-                if (Object.keys(prevNodeOutputData).length === 0) {
-                    console.log('Cannot evaluate variables as prevNodeOutput data is empty: ', prevNodeOutputData)
-                    throw "Error evaluating node variables"
-                }
-                const jsonTree = variable.value.split(".")
-                function getVal(parent, pos) {
-                    if (pos == jsonTree.length) {
-                        return parent;
-                    }
-                    const key = jsonTree[pos]
-                    if (key == '') {
-                        return parent;
-                    }
-                    
-                    return getVal(parent[key], pos + 1);
-                }
-                evalVariables[vname] = getVal(prevNodeOutputData, 0)
-            }
+            evalVariables[vname] = this.#computeNodeVariable(variable, prevNodeOutputData)
         })
         return evalVariables;
     }
 
-    async #evaluateRequestNode(node, prevNodeOutput) {
+    async #computeRequestNode(node, prevNodeOutput) {
         try {
             // step1 evaluate variables of this node
-            const evalVariables = this.#evaluateNodeVariables(node.data.variables, prevNodeOutput.data);
+            const evalVariables = this.#computeNodeVariables(node.data.variables, prevNodeOutput.data);
 
             // step2 replace variables in url with value
             let finalUrl = node.data.url
@@ -134,7 +147,26 @@ class Graph {
         }
     }
 
-    async #evaluateNode(node, prevNodeOutput) {
+    #computeEvaluateNode(node, prevNodeOutput) {
+        const var1 = this.#computeNodeVariable(node.data.var1, prevNodeOutput.data)
+        const var2 = this.#computeNodeVariable(node.data.var2, prevNodeOutput.data)
+        console.log(var1)
+            console.log(var2)
+
+        const operator = node.data.operator;
+        console.log(operator)
+        if (operator == Operators.isEqualTo) {
+            return var1 === var2
+        } else if (operator == Operators.isNotEqualTo) {
+            return var1 != var2
+        } else if (operator == Operators.isGreaterThan) {
+            return var1 > var2
+        } else if (operator == Operators.isLessThan) {
+            return var1 < var2
+        }
+    }
+
+    async #computeNode(node, prevNodeOutput) {
         let result = undefined
 
         // right now we allow a straight sequential graph but
@@ -145,8 +177,16 @@ class Graph {
             result = ["Success", node, prevNodeOutput];
         }
 
+        if (node.type === 'evaluateNode') {
+            if (this.#computeEvaluateNode(node, prevNodeOutput)) {
+                result = ["Success", node, prevNodeOutput]; 
+            } else {
+                result = ["Failed", node];
+            }
+        }
+
         if (node.type === 'requestNode') {
-            result = await this.#evaluateRequestNode(node, prevNodeOutput)
+            result = await this.#computeRequestNode(node, prevNodeOutput)
         }
 
         if (result[0] == 'Failed') {
@@ -155,8 +195,8 @@ class Graph {
             const connectingEdge = this.edges.find((edge) => edge.source === node.id)
 
             if (connectingEdge != undefined) {
-                const nextNode = this.nodes.find((node) => (node.type === 'requestNode' || node.type === 'outputNode') && node.id === connectingEdge.target)
-                return this.#evaluateNode(nextNode, result[2]);
+                const nextNode = this.nodes.find((node) => (node.type === 'requestNode' || node.type === 'outputNode' || node.type === 'evaluateNode') && node.id === connectingEdge.target)
+                return this.#computeNode(nextNode, result[2]);
             } else {
                 return result;
             }
@@ -170,7 +210,7 @@ class Graph {
         // only start computing graph if initial node has the connecting edge
         if (connectingEdge != undefined) {
             const firstRequestNode = this.nodes.find((node) => node.type === 'requestNode' && node.id === connectingEdge.target)
-            this.#evaluateNode(firstRequestNode, JSON.parse('{}'))
+            this.#computeNode(firstRequestNode, JSON.parse('{}'))
                 .then(result => {
                     if (result[0] == "Failed") {
                         console.log('Flow failed at: ', result[1])

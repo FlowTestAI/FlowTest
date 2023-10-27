@@ -19,7 +19,9 @@ import {
   Avatar,
   Button
 } from '@mui/material';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+
+import ImportExportIcon from '@mui/icons-material/ImportExport';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 // notification
 import { useSnackbar } from 'notistack';
@@ -284,6 +286,10 @@ const Flow = () => {
 
   const [authKey, setAuthKey] = React.useState(undefined);
 
+  const handleExport = (e) => {
+    console.log(e.target.files)
+  }
+
   return (
     <>
         <Box>
@@ -350,6 +356,63 @@ const Flow = () => {
                           >
                               <IconDeviceFloppy stroke={1.5} size='1.3rem' />
                           </Avatar>
+                      </ButtonBase>
+                      <ButtonBase title='Export FlowTest' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
+                          <Avatar
+                              variant='rounded'
+                              sx={{
+                                ...theme.typography.commonAvatar,
+                                ...theme.typography.mediumAvatar,
+                                transition: 'all .2s ease-in-out',
+                                background: theme.palette.primary.light,
+                                color: theme.palette.primary.dark,
+                                '&:hover': {
+                                    background: theme.palette.primary.dark,
+                                    color: theme.palette.primary.light
+                                }
+                              }}
+                              color='inherit'
+                              onClick={() => {
+                                try {
+                                  if (reactFlowInstance) {
+                                    const rfInstanceObject = reactFlowInstance.toObject()
+                                    const flowData = JSON.stringify(rfInstanceObject)
+                                    let dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(flowData)
+                  
+                                    let exportFileDefaultName = `flowTest.json`
+                    
+                                    let linkElement = document.createElement('a')
+                                    linkElement.setAttribute('href', dataUri)
+                                    linkElement.setAttribute('download', exportFileDefaultName)
+                                    linkElement.click()
+                                  }                                  
+                                } catch (e) {
+                                    console.error(e)
+                                }
+                              }}
+                          >
+                              <ImportExportIcon stroke={1.5} size='1.3rem' />
+                          </Avatar>
+                      </ButtonBase>
+                      <ButtonBase component="label" title='Load FlowTest' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
+                          <Avatar
+                              variant='rounded'
+                              sx={{
+                                ...theme.typography.commonAvatar,
+                                ...theme.typography.mediumAvatar,
+                                transition: 'all .2s ease-in-out',
+                                background: theme.palette.primary.light,
+                                color: theme.palette.primary.dark,
+                                '&:hover': {
+                                    background: theme.palette.primary.dark,
+                                    color: theme.palette.primary.light
+                                }
+                              }}
+                              color='inherit'
+                          >
+                              <UploadFileIcon stroke={1.5} size='1.3rem' />
+                          </Avatar>
+                          <input type='file' accept=".json" hidden onChange={(e) => handleExport(e)} />
                       </ButtonBase>
                       {/* <ButtonBase title='Environment' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
                           <Avatar

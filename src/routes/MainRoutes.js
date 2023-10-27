@@ -2,6 +2,7 @@ import { Outlet, useRoutes } from "react-router";
 import HomeLayout from "../home";
 import SavedFlows from "../home/SavedFlows";
 import Collections from "../home/Collections";
+import AuthKeys from "../home/AuthKeys";
 
 const MainRoutes = {
     path: '/',
@@ -18,6 +19,10 @@ const MainRoutes = {
         {
             path: '/collection/:id',
             element: <Collections />
+        },
+        {
+            path: '/authkeys',
+            element: <AuthKeys />
         }
     ] 
 }

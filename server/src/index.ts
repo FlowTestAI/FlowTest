@@ -8,6 +8,7 @@ import { Collection } from "./entities/Collection";
 import multer from 'multer';
 import * as fs from 'fs';
 import CollectionUtil from "./CollectionUtil";
+import { AuthKey } from "./entities/AuthKey";
 
 class App {
 
@@ -147,10 +148,27 @@ class App {
         return res.status(404).send(`Collection ${req.params.id} not found`)
       })
 
+      // Create Auth key
+      this.app.post('/api/v1/authkey', async (req: Request, res: Response) => {
+        const body = req.body
+        const newAuthKey = new AuthKey()
+        Object.assign(newAuthKey, body)
+
+        const results = await this.appDataSource.getRepository(AuthKey).save(newAuthKey);
+
+        return res.json(results);
+      });
+
       this.app.listen(this.port, () => {
         return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
       });
 
+      // Get all Auth keys
+      this.app.get('/api/v1/authkey', async (req: Request, res: Response) => {
+        const authkeys = await this.appDataSource.getRepository(AuthKey).find();
+        if (authkeys) return res.json(authkeys)
+        return res.status(404).send('Error in fetching saved authkeys')
+      })
   }
 }
 

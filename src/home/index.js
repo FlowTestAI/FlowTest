@@ -106,7 +106,13 @@ const HomeLayout = () => {
                 <Divider />
                 <List>
                     <ListItem key="list_auth_keys" disablePadding>
-                        <ListItemButton>
+                        <ListItemButton
+                            onClick={() => {
+                                setSelected('authkeys');
+                                navigate('/authkeys');
+                            }}
+                            selected={selected === 'authkeys'}
+                        >
                             <ListItemIcon>
                                 <SecurityIcon/>
                             </ListItemIcon>

@@ -286,8 +286,31 @@ const Flow = () => {
 
   const [authKey, setAuthKey] = React.useState(undefined);
 
+  // load flowtest
+  
   const handleExport = (e) => {
-    console.log(e.target.files)
+    if (!e.target.files) return
+
+    if (e.target.files.length === 1) {
+        const file = e.target.files[0]
+        const { name } = file
+
+        const reader = new FileReader()
+        reader.onload = (evt) => {
+            if (!evt?.target?.result) {
+                return
+            }
+            const { result } = evt.target
+
+            const flowData = JSON.parse(result);
+            console.log(flowData)
+
+            setNodes(flowData.nodes || []);
+            setEdges(flowData.edges || []);
+            setIsDirty(true);
+        }
+        reader.readAsText(file)
+    }
   }
 
   return (

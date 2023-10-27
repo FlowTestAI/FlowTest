@@ -10,15 +10,7 @@ import {
     Stack, 
     Box, 
     OutlinedInput, 
-    Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    IconButton,
+    Typography
 } from '@mui/material';
 
 const AuthKeyDialog = ({ show, onCancel, onAddAuth }) => {

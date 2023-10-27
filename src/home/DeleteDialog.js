@@ -11,7 +11,7 @@ import {
     DialogTitle
  } from '@mui/material';
 
-const DeleteCollectionDialog = ({open, openDeleteDialog, handleDelete}) => {
+const DeleteDialog = ({open, openDeleteDialog, handleDelete, dialogName}) => {
 
     return (
         <div>
@@ -26,7 +26,7 @@ const DeleteCollectionDialog = ({open, openDeleteDialog, handleDelete}) => {
             </DialogTitle>
             <DialogContent>
             <DialogContentText id="alert-dialog-description">
-                Are you sure you want to delete collection?
+                Are you sure you want to delete {dialogName}?
             </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -44,4 +44,4 @@ const DeleteCollectionDialog = ({open, openDeleteDialog, handleDelete}) => {
     );
 }
 
-export default DeleteCollectionDialog;
+export default DeleteDialog;

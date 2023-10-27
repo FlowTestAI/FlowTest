@@ -159,16 +159,29 @@ class App {
         return res.json(results);
       });
 
-      this.app.listen(this.port, () => {
-        return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
-      });
-
       // Get all Auth keys
       this.app.get('/api/v1/authkey', async (req: Request, res: Response) => {
         const authkeys = await this.appDataSource.getRepository(AuthKey).find();
         if (authkeys) return res.json(authkeys)
         return res.status(404).send('Error in fetching saved authkeys')
       })
+
+      // Delete Auth key
+      this.app.delete('/api/v1/authkey/:id', async (req: Request, res: Response) => {
+        const authkey = await this.appDataSource.getRepository(AuthKey).findOneBy({
+          id: req.params.id
+        })
+
+        if (authkey) {
+          const result = await this.appDataSource.getRepository(AuthKey).remove(authkey)
+          return res.json(result)
+        }
+        return res.status(404).send(`AuthKey ${req.params.id} not found`)
+      })
+
+      this.app.listen(this.port, () => {
+        return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
+      });
   }
 }
 

@@ -14,7 +14,7 @@ import { Card, CardContent, Typography, Box, Paper, Grid, Stack, Button, IconBut
 
 // icons
 import { IconUpload, IconTrash } from '@tabler/icons-react';
-import DeleteCollectionDialog from './DeleteCollectionDialog';
+import DeleteDialog from './DeleteDialog';
 
 import PropTypes from 'prop-types';
 
@@ -222,7 +222,7 @@ const Collections = () => {
                                         </IconButton>
                                     </Grid>
                                 ))}
-                                <DeleteCollectionDialog open={openDelete} openDeleteDialog={setOpenDelete} handleDelete={handleDeleteCollection}/>
+                                <DeleteDialog open={openDelete} openDeleteDialog={setOpenDelete} handleDelete={handleDeleteCollection} dialogName='collection'/>
                             </Grid>
                         </CardContent>
                     ):

@@ -6,10 +6,11 @@ import Operators from '../../constants/operators';
 // assumption is that apis are giving json as output
 
 class Graph {
-    constructor(nodes, edges, onGraphComplete) {
+    constructor(nodes, edges, onGraphComplete, authKey) {
         this.nodes = nodes
         this.edges = edges
         this.onGraphComplete = onGraphComplete
+        this.authKey = authKey
     }
 
     #formulateRequest(node, finalUrl) {
@@ -204,6 +205,7 @@ class Graph {
     }
 
     run() {
+        console.log(this.authKey)
         const startNode = this.nodes.find((node) => node.type === 'startNode')
         const connectingEdge = this.edges.find((edge) => edge.source === startNode.id)
 

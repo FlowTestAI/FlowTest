@@ -34,14 +34,6 @@ import DeleteDialog from './DeleteDialog';
 import PropTypes from 'prop-types';
 import AuthKeyDialog from './AuthKeyDialog';
 
-const Item1 = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(2),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-}));
-
 function Item(props) {
     const { sx, ...other } = props;
     return (

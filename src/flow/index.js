@@ -17,7 +17,7 @@ import {
   Typography, 
   ButtonBase, 
   Avatar,
-  Button 
+  Button
 } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 
@@ -31,7 +31,7 @@ import flowTestApi from '../api/flowtest'
 import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft } from '@tabler/icons-react';
 
 import RequestNode from './RequestNode';
-import EnvDialog from './EnvDialog';
+import SelectAuthComponent from './SelectAuthComponent';
 import CustomEdge from './ButtonEdge';
 
 // theme
@@ -282,6 +282,8 @@ const Flow = () => {
     runnableEdges(false)
   }
 
+  const [authKey, setAuthKey] = React.useState(undefined);
+
   return (
     <>
         <Box>
@@ -328,6 +330,7 @@ const Flow = () => {
                         const result = openApiClient.createCollection('');
                         console.log(result);
                       }}>Get all nodes</button> */}
+                      <SelectAuthComponent onSelectAuthKey={setAuthKey}/>
                       <ButtonBase title='Save' sx={{ borderRadius: '50%', mr: 2 }}>
                           <Avatar
                               variant='rounded'
@@ -348,7 +351,7 @@ const Flow = () => {
                               <IconDeviceFloppy stroke={1.5} size='1.3rem' />
                           </Avatar>
                       </ButtonBase>
-                      <ButtonBase title='Environment' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
+                      {/* <ButtonBase title='Environment' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
                           <Avatar
                               variant='rounded'
                               sx={{
@@ -367,7 +370,7 @@ const Flow = () => {
                           >
                               <IconBrandCodesandbox stroke={1.5} size='1.3rem' />
                           </Avatar>
-                      </ButtonBase>
+                      </ButtonBase> */}
                   </Toolbar>
               </AppBar>
               <Box sx={{pt: '70px', height: '100vh', width: '100%' }}>
@@ -392,7 +395,7 @@ const Flow = () => {
                                   <ControlButton 
                                     onClick={() => {
                                       runnableEdges(true);
-                                      const g = new Graph(reactFlowInstance.getNodes(), reactFlowInstance.getEdges(), onGraphComplete);
+                                      const g = new Graph(reactFlowInstance.getNodes(), reactFlowInstance.getEdges(), onGraphComplete, authKey);
                                       g.run();
                                     }} title="run">
                                     <div>Run</div>
@@ -405,7 +408,7 @@ const Flow = () => {
                   </div>
               </Box>
               <SaveDialog show={saveDialogOpen} onCancel={() => setSaveDialogOpen(false)} onConfirm={onConfirmSaveName} />
-              <EnvDialog show={envDialogOpen} onCancel={() => setEnvDialogOpen(false)} />
+              <SelectAuthComponent show={envDialogOpen} onCancel={() => setEnvDialogOpen(false)} />
               <PromptDialog open={promptDialogOpen} closePromptDialog={() => setPromptDialogOpen(false)} />
         </Box>
     </>

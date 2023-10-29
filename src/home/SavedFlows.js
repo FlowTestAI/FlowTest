@@ -10,7 +10,25 @@ import flowTestApi from '../api/flowtest'
 
 //mui 
 import { experimentalStyled as styled } from '@mui/material/styles';
-import { Card, CardContent, Typography, Box, Paper, Grid } from '@mui/material';
+import { 
+    Card, 
+    CardContent, 
+    Typography, 
+    Box, 
+    Paper, 
+    Grid,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    IconButton  
+} from '@mui/material';
+
+// icons
+import { IconUpload, IconTrash } from '@tabler/icons-react';
+import DeleteDialog from './DeleteDialog';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -26,6 +44,7 @@ const SavedFlows = () => {
 
     const [savedFlowTests, setSavedFlowTests] = useState([]);
     const getAllFlowTest = wrapper(flowTestApi.getAllFlowTest);
+    const deleteFlowTest = wrapper(flowTestApi.deleteFlowTest);
 
     // notification
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -42,35 +61,89 @@ const SavedFlows = () => {
         } else if (getAllFlowTest.error) {
             const error = getAllFlowTest.error
             if (!error.response) {
-            enqueueSnackbar(`Failed to get saved flowtests: ${error}`, { variant: 'error'});
+                enqueueSnackbar(`Failed to get saved flowtests: ${error}`, { variant: 'error'});
             } else {
-            const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
-            enqueueSnackbar(`Failed to get saved flowtests: ${errorData}`, { variant: 'error'});
+                const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
+                enqueueSnackbar(`Failed to get saved flowtests: ${errorData}`, { variant: 'error'});
             }
         }
     },[getAllFlowTest.data, getAllFlowTest.error])
+
+    // Delete
+
+    const [openDelete, setOpenDelete] = useState(false);
+    const [deleteId, setDeleteId] = useState(undefined)
+
+    const deleteFlowtest = (id) => {
+        setDeleteId(id);
+        setOpenDelete(true);
+    }
+
+    const handleDeleteFlowtest = () => {
+        if (deleteId != undefined) {
+            deleteFlowTest.request(deleteId);
+        }
+        setDeleteId(undefined);
+    }
+
+    useEffect(() => {
+        if (deleteFlowTest.data) {
+            const deletedFlowtest = deleteFlowTest.data
+            console.log('Deleted flowtest: ', deletedFlowtest);
+            enqueueSnackbar('Deleted flowtest!', { variant: 'success' });
+            getAllFlowTest.request();
+        } else if (deleteFlowTest.error) {
+            const error = deleteFlowTest.error
+            if (!error.response) {
+                enqueueSnackbar(`Failed to delete flowtest: ${error}`, { variant: 'error'});
+            } else {
+                const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`
+                enqueueSnackbar(`Failed to delete flowtest: ${errorData}`, { variant: 'error'});
+            }
+        }
+    },[deleteFlowTest.data, deleteFlowTest.error])
 
     return (
         <>
             <Card>
                 <CardContent>
-                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                        {savedFlowTests.map((flowtest, index) => (
-                            <Grid item xs={2} sm={4} md={4} key={index}>
-                                <Item
-                                    sx={{ "&:hover": { cursor: 'pointer' } }}
-                                    onClick={() => navigate(`/flow/${flowtest.id}`)}
-                                >
-                                    <Typography variant="h5" noWrap component="div">
-                                        {flowtest.name}
-                                    </Typography>
-                                    {flowtest.id}
-                                </Item>
-                            </Grid>
-                        ))}
-                    </Grid>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell>Created At</TableCell>
+                                    <TableCell> </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {savedFlowTests.map((flowtest, index) => (
+                                    <TableRow
+                                        key={index}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell 
+                                            component="th" 
+                                            scope="row"
+                                            sx={{ "&:hover": { cursor: 'pointer' } }}
+                                            onClick={() => navigate(`/flow/${flowtest.id}`)}
+                                        >
+                                            {flowtest.name}
+                                        </TableCell>
+                                        <TableCell>{flowtest.createdDate}</TableCell>
+                                        <TableCell>
+                                            <IconButton title='Delete' color='error' onClick={() => deleteFlowtest(flowtest.id)}>
+                                                <IconTrash />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </CardContent>
             </Card>
+            <DeleteDialog open={openDelete} openDeleteDialog={setOpenDelete} handleDelete={handleDeleteFlowtest} dialogName='flowtest'/>
         </>
     );
 }

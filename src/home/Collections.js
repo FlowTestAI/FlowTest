@@ -22,7 +22,13 @@ import {
     IconButton, 
     Accordion,
     AccordionSummary,
-    AccordionDetails 
+    AccordionDetails,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow 
 } from '@mui/material';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -220,25 +226,45 @@ const Collections = () => {
                                     </Grid>
                                 </Grid>
                             </Stack>
-                            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                {savedCollections.map((collection, index) => (
-                                    <Grid item xs={2} sm={4} md={4} key={index}>
-                                        <Item1
-                                            sx={{ "&:hover": { cursor: 'pointer' } }}
-                                            onClick={() => navigate(`/collection/${collection.id}`)}
-                                        >
-                                            <Typography variant="h6" noWrap component="div">
-                                                {collection.name}
-                                            </Typography>
-                                            {collection.id}
-                                        </Item1>
-                                        <IconButton title='Delete' color='error' onClick={() => deleteCollection(collection.id)}>
-                                            <IconTrash />
-                                        </IconButton>
-                                    </Grid>
-                                ))}
-                                <DeleteDialog open={openDelete} openDeleteDialog={setOpenDelete} handleDelete={handleDeleteCollection} dialogName='collection'/>
-                            </Grid>
+                            <TableContainer component={Paper}>
+                                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Name</TableCell>
+                                            <TableCell>Created At</TableCell>
+                                            <TableCell> </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {savedCollections.map((collection, index) => (
+                                            <TableRow
+                                                key={index}
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">
+                                                    {collection.name}
+                                                    {/* <Item1
+                                                        sx={{ "&:hover": { cursor: 'pointer' } }}
+                                                        onClick={() => navigate(`/collection/${collection.id}`)}
+                                                    >
+                                                        <Typography variant="h6" noWrap component="div">
+                                                            {collection.name}
+                                                        </Typography>
+                                                        {collection.id}
+                                                    </Item1> */}
+                                                </TableCell>
+                                                <TableCell>{collection.createdDate}</TableCell>
+                                                <TableCell>
+                                                    <IconButton title='Delete' color='error' onClick={() => deleteCollection(collection.id)}>
+                                                        <IconTrash />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <DeleteDialog open={openDelete} openDeleteDialog={setOpenDelete} handleDelete={handleDeleteCollection} dialogName='collection'/>
                         </CardContent>
                     ):
                     (

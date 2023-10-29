@@ -85,6 +85,19 @@ class App {
         return res.status(404).send(`FlowTest ${req.params.id} not found`)
       })
 
+      // Delete FlowTest
+      this.app.delete('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
+        const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
+          id: req.params.id
+        })
+
+        if (flowtest) {
+          const result = await this.appDataSource.getRepository(FlowTest).remove(flowtest)
+          return res.json(result)
+        }
+        return res.status(404).send(`FlowTest ${req.params.id} not found`)
+      })
+
       // Get All FlowTest
       this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
         const flowtests = await this.appDataSource.getRepository(FlowTest).find();

@@ -116,7 +116,11 @@ const Flow = () => {
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
-  const getId = () => `dndnode_${(reactFlowInstance.getNodes().length)++}`;
+  const getId = () => {
+    const currentIds = reactFlowInstance.getNodes().map((node) => Number(node.id));
+    const currentMaxId = Math.max(...currentIds);
+    return `${currentMaxId + 1}`;
+  }
 
   const onDrop = useCallback(
     (event) => {
@@ -287,7 +291,7 @@ const Flow = () => {
   const [authKey, setAuthKey] = React.useState(undefined);
 
   // load flowtest
-  
+
   const handleExport = (e) => {
     if (!e.target.files) return
 

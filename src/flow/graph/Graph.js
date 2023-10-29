@@ -33,7 +33,11 @@ class Graph {
                 headers: {
                     'Content-type': contentType
                 },
-                data: requestData
+                data: requestData,
+                auth: {
+                    username: this.authKey ? this.authKey.accessId : '',
+                    password: this.authKey ? this.authKey.accessKey : ''
+                }
             }
 
         } else if (restMethod === 'post' || restMethod === 'put') {
@@ -54,7 +58,11 @@ class Graph {
                 headers: {
                     'Content-type': contentType
                 },
-                data: requestData
+                data: requestData,
+                auth: {
+                    username: this.authKey ? this.authKey.accessId : '',
+                    password: this.authKey ? this.authKey.accessKey : ''
+                }
             }
         }
 

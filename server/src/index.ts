@@ -9,6 +9,7 @@ import multer from 'multer';
 import * as fs from 'fs';
 import CollectionUtil from "./CollectionUtil";
 import { AuthKey } from "./entities/AuthKey";
+import JsonRefs from 'json-refs'
 
 class App {
 
@@ -101,7 +102,11 @@ class App {
           // async/await syntax
           let api = await SwaggerParser.validate(req.file.path);
           console.log("API name: %s, Version: %s", api.info.title, api.info.version);
-          const parsedNodes = await this.collectionUtil.parse(req.file.path)
+
+          // resolve references in openapi spec
+          const resolvedSpec = await JsonRefs.resolveRefs(api);
+          // console.log('resolved json: ', JSON.stringify(resolvedSpec, null, 2));
+          const parsedNodes = await this.collectionUtil.parse(resolvedSpec.resolved)
 
           const newCollection = new Collection()
           const constructCollection = {

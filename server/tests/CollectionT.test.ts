@@ -1,9 +1,14 @@
 import CollectionUtil from "../src/CollectionUtil";
+import SwaggerParser from '@apidevtools/swagger-parser';
+import JsonRefs from 'json-refs'
 
 describe("parse", () => {
     it("should add do basic parsing", async () => {
         const p = new CollectionUtil()
-        const nodes = await p.parse('tests/test.yaml')
+        let api = await SwaggerParser.validate('tests/test.yaml');
+        console.log("API name: %s, Version: %s", api.info.title, api.info.version);
+        const resolvedSpec = await JsonRefs.resolveRefs(api);
+        const nodes = await p.parse(resolvedSpec.resolved)
         expect(nodes).toEqual(expected);
     });
 });

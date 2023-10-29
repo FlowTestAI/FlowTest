@@ -2,14 +2,12 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 
 class CollectionUtil {
 
-    async parse(collection: string) {
+    async parse(collection: object) {
         let parsedNodes = []
         try {
-            let api = await SwaggerParser.validate(collection);
-            console.log("API name: %s, Version: %s", api.info.title, api.info.version);
             // servers is array,, figure case where there can be multiple servers
-            const baseUrl = api["servers"][0]["url"]
-            Object.entries(api.paths).map(([path, operation], index) => {
+            const baseUrl = collection["servers"][0]["url"]
+            Object.entries(collection["paths"]).map(([path, operation], index) => {
                 var url = baseUrl + path
                 Object.entries(operation).map(([requestType, request], index1) => {
                     const summary = request['summary'];

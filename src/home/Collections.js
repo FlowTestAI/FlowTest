@@ -10,7 +10,22 @@ import collectionApi from '../api/collection'
 
 //mui 
 import { experimentalStyled as styled } from '@mui/material/styles';
-import { Card, CardContent, Typography, Box, Paper, Grid, Stack, Button, IconButton } from '@mui/material';
+import { 
+    Card, 
+    CardContent, 
+    Typography, 
+    Box, 
+    Paper, 
+    Grid, 
+    Stack, 
+    Button, 
+    IconButton, 
+    Accordion,
+    AccordionSummary,
+    AccordionDetails 
+} from '@mui/material';
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 // icons
 import { IconUpload, IconTrash } from '@tabler/icons-react';
@@ -229,21 +244,35 @@ const Collections = () => {
                     (
                         <CardContent>
                             {collectionId != undefined && retrievedCollection != undefined && (
-                                <div style={{ width: '100%' }}>
-                                    <Box
-                                        sx={{ display: 'flex', p: 1, bgcolor: 'background.paper', borderRadius: 1 }}
-                                    >
-                                        <Item sx={{ flexGrow: 1 }}>
-                                            <div>
+                                <div>
+                                    <Accordion>
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1a-content"
+                                            id="panel1a-header"
+                                        >
+                                            <Typography>OpenApi Spec</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <Typography>
                                                 <pre>{retrievedCollection.collection}</pre>
-                                            </div>
-                                        </Item>
-                                        <Item sx={{ flexGrow: 1 }}>
-                                            <div>
+                                            </Typography>
+                                        </AccordionDetails>
+                                    </Accordion>
+                                    <Accordion>
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel2a-content"
+                                            id="panel2a-header"
+                                        >
+                                        <Typography>Parsed Nodes</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <Typography>
                                                 <pre>{retrievedCollection.nodes}</pre>
-                                            </div>
-                                        </Item>
-                                    </Box>
+                                            </Typography>
+                                        </AccordionDetails>
+                                    </Accordion>
                                 </div>
                             )}
                         </CardContent>

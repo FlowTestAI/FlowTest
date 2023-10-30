@@ -33,3 +33,6 @@ package-lock.json
 
 # temp upload directory
 uploads/
+
+# env
+.env

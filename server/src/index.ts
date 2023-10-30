@@ -7,7 +7,7 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 import { Collection } from "./entities/Collection";
 import multer from 'multer';
 import * as fs from 'fs';
-import CollectionUtil from "./CollectionUtil";
+import CollectionUtil from "./collection-util";
 import { AuthKey } from "./entities/AuthKey";
 import JsonRefs from 'json-refs'
 

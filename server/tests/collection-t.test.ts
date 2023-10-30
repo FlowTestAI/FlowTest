@@ -1,4 +1,4 @@
-import CollectionUtil from "../src/CollectionUtil";
+import CollectionUtil from "../src/collection-util";
 import SwaggerParser from '@apidevtools/swagger-parser';
 import JsonRefs from 'json-refs'
 

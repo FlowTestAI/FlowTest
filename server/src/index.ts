@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import CollectionUtil from "./collection-util";
 import { AuthKey } from "./entities/AuthKey";
 import JsonRefs from 'json-refs'
+import FlowtestAI from "./flowtest-ai";
 
 class App {
 
@@ -199,6 +200,15 @@ class App {
 
       this.app.listen(this.port, () => {
         return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
+      });
+
+      // Create FlowTest AI
+      this.app.post('/api/v1/flowtest/ai', async (req: Request, res: Response) => {
+        const instruction = req.body
+        const flowTestAI = new FlowtestAI();
+        const nodes = flowTestAI.generate(instruction);
+
+        return res.json(nodes);
       });
   }
 }

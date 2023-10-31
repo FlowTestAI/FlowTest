@@ -14,13 +14,13 @@ const SYSTEM_MESSAGE = `You are a helpful assistant. \
         Ask for clarification if a user request is ambiguous.`
 
 // Maximum number of function calls allowed to prevent infinite or lengthy loops
-const MAX_CALLS = 5
+const MAX_CALLS = 10
 
 class FlowtestAI {
 
-    async generate(user_instruction: string) {
+    async generate(user_instruction: string): Promise<any[]> {
         const functions = await this.get_available_functions();
-        await this.process_user_instruction(functions, user_instruction);
+        return await this.process_user_instruction(functions, user_instruction);
     }
 
     async get_available_functions() {
@@ -85,7 +85,7 @@ class FlowtestAI {
         });
     }
 
-    async process_user_instruction(functions: any[], instruction: string) {
+    async process_user_instruction(functions: any[], instruction: string): Promise<any[]> {
         let result = []
         let num_calls = 0
         const messages: any[] = [
@@ -125,6 +125,8 @@ class FlowtestAI {
         if (num_calls >= MAX_CALLS) {
             console.log('Reached max chained function calls: ', MAX_CALLS)
         }
+
+        return result;
     }
 }
 

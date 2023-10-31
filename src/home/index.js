@@ -26,6 +26,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import SecurityIcon from '@mui/icons-material/Security';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 
 const drawerWidth = 240;
 
@@ -117,6 +118,23 @@ const HomeLayout = () => {
                                 <SecurityIcon/>
                             </ListItemIcon>
                             <ListItemText primary='Auth Keys' />
+                        </ListItemButton>
+                    </ListItem>
+                </List>
+                <Divider />
+                <List>
+                    <ListItem key="flowtest_ai" disablePadding>
+                        <ListItemButton
+                            onClick={() => {
+                                setSelected('flowtest-ai');
+                                navigate('/flowtest/ai');
+                            }}
+                            selected={selected === 'flowtest-ai'}
+                        >
+                            <ListItemIcon>
+                                <SmartToyIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary='FlowTest AI'/>
                         </ListItemButton>
                     </ListItem>
                 </List>

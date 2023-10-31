@@ -8,6 +8,7 @@ describe("generate", () => {
             Then get the created pet. \
             Then get pet with status as available.';
         let result = await f.generate(USER_INSTRUCTION);
-        //expect(nodes).toEqual(expected);
+        const nodeNames = result.map((node) => node.name)
+        expect(nodeNames).toEqual(['addPet', 'getPetById', 'findPetsByStatus']);
     }, 15000);
 });

@@ -206,7 +206,7 @@ class App {
       this.app.post('/api/v1/flowtest/ai', async (req: Request, res: Response) => {
         const instruction = req.body
         const flowTestAI = new FlowtestAI();
-        const nodes = flowTestAI.generate(instruction);
+        const nodes = await flowTestAI.generate(instruction);
 
         return res.json(nodes);
       });

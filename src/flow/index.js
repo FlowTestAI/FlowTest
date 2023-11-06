@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useMemo, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 // react flow
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
@@ -55,6 +55,8 @@ const StartNode = () => (
 );
 
 const Flow = () => {
+  const location = useLocation();
+
   const navigate = useNavigate()
 
   const createNewFlowTest = wrapper(flowTestApi.createNewFlowTest)
@@ -253,7 +255,22 @@ const Flow = () => {
     if (flowTestId) {
       getFlowTest.request(flowTestId)
     } else {
-        setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 } }])
+        const initialNodes = location.state && location.state.initialNodes ? location.state.initialNodes : undefined;
+        if (initialNodes != undefined) {
+          const nodes = []
+          nodes.push({ id: '0', type: 'startNode', position: { x: 150, y: 150 } })
+          for (let i = 1; i <= initialNodes.length; i++) {
+            nodes.push({
+              id: `${i}`,
+              type: initialNodes[i-1].type,
+              position: { x: 150 + (i * 500), y: 50 },
+              data: initialNodes[i-1]
+            })
+          }
+          setNodes(nodes);
+        } else {
+          setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 } }])
+        }
         setEdges([])
 
         setFlowTest({

@@ -36,7 +36,7 @@ const OutputNode = ({data}) => {
                                 id="outlined-multiline-static"
                                 multiline
                                 rows={10}
-                                value={output == undefined ? 'Run flow to see data' : JSON.stringify(output)}
+                                value={output == undefined ? 'Run flow to see data' : JSON.stringify(output, undefined, 4)}
                                 fullWidth
                                 className="nodrag nowheel"
                                 inputProps={{style: {fontSize: 12}}}

@@ -225,7 +225,8 @@ const Flow = () => {
     if (getFlowTest.data) {
       const retrievedFlowtest = getFlowTest.data
       const initialFlow = retrievedFlowtest.flowData ? JSON.parse(retrievedFlowtest.flowData) : []
-      console.log('Get flow: ', initialFlow.nodes)
+      console.log('Get flow nodes: ', initialFlow.nodes)
+      console.log('Get flow edges: ', initialFlow.edges)
       setNodes(initialFlow.nodes || [])
       setEdges(initialFlow.edges || [])
       setFlowTest(retrievedFlowtest)
@@ -258,6 +259,7 @@ const Flow = () => {
         const initialNodes = location.state && location.state.initialNodes ? location.state.initialNodes : undefined;
         if (initialNodes != undefined) {
           const nodes = []
+          const edges = []
           nodes.push({ id: '0', type: 'startNode', position: { x: 150, y: 150 } })
           for (let i = 1; i <= initialNodes.length; i++) {
             nodes.push({
@@ -266,14 +268,24 @@ const Flow = () => {
               position: { x: 150 + (i * 500), y: 50 },
               data: initialNodes[i-1]
             })
+
+            edges.push({
+              id: `reactflow__edge-${i-1}-${i}`,
+              source: `${i-1}`,
+              sourceHandle: null,
+              target: `${i}`,
+              targetHandle: null,
+              type: "buttonedge"
+            })
           }
           setNodes(nodes);
+          setEdges(edges);
           setIsDirty(true);
         } else {
           setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 } }])
+          setEdges([])
           setIsDirty(false);
         }
-        setEdges([])
 
         setFlowTest({
           name: 'Untitled chatflow'

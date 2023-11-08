@@ -70,19 +70,19 @@ class Graph {
     }
 
     #computeNodeVariable(variable, prevNodeOutputData) {
-        if (variable.type === 'String') {
+        if (variable.type.toLowerCase() === 'string') {
             return variable.value;
         }
 
-        if (variable.type === 'Number') {
+        if (variable.type.toLowerCase() === 'number') {
             return variable.value;
         }
 
-        if (variable.type === 'Bool') {
+        if (variable.type.toLowerCase() === 'bool') {
             return Boolean(variable.value);
         }
         
-        if (variable.type === 'Select') {
+        if (variable.type.toLowerCase() === 'select') {
             if (Object.keys(prevNodeOutputData).length === 0) {
                 console.log('Cannot evaluate variables as prevNodeOutput data is empty: ', prevNodeOutputData)
                 throw "Error evaluating node variables"
@@ -213,7 +213,7 @@ class Graph {
     }
 
     run() {
-        console.log(this.authKey)
+        console.log('Using authkey: ', this.authKey)
         const startNode = this.nodes.find((node) => node.type === 'startNode')
         const connectingEdge = this.edges.find((edge) => edge.source === startNode.id)
 

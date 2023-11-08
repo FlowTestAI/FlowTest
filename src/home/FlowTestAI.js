@@ -32,7 +32,7 @@ const parseResponse = (outputNodes, savedNodes) => {
             if (node_arguments.requestBody) {
                 savedNode["requestBody"] = {};
                 savedNode["requestBody"]["type"] = "raw-json"
-                savedNode["requestBody"]["body"] = node_arguments.requestBody;
+                savedNode["requestBody"]["body"] = JSON.stringify(node_arguments.requestBody);
             }
             if (node_arguments.parameters) {
                 savedNode.variables = {}

@@ -84,7 +84,7 @@ const RequestBody = ({nodeData}) => {
     }
 
     // raw-json
-    const [jsonValue, setJsonValue] = React.useState(bodyType === 'raw-json' && nodeData.requestBody && nodeData.requestBody.body ? JSON.stringify(nodeData.requestBody.body) : '{}')
+    const [jsonValue, setJsonValue] = React.useState(bodyType === 'raw-json' && nodeData.requestBody && nodeData.requestBody.body ? nodeData.requestBody.body : '{}')
     const handleRawJson = (e) => {
         setJsonValue(e.target.value)
         nodeData.requestBody.body = e.target.value

@@ -268,18 +268,16 @@ const Flow = () => {
             })
           }
           setNodes(nodes);
+          setIsDirty(true);
         } else {
           setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 } }])
+          setIsDirty(false);
         }
         setEdges([])
 
         setFlowTest({
           name: 'Untitled chatflow'
         })
-    }
-
-    return () => {
-        setIsDirty(false);
     }
   }, []);
 

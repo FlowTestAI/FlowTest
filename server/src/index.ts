@@ -1,5 +1,6 @@
 import "reflect-metadata"
 import express, {Request, Response} from 'express';
+import path from 'path';
 import cors from 'cors'
 import { AppDataSource } from "./data-source";
 import { FlowTest } from "./entities/FlowTest"
@@ -43,9 +44,8 @@ class App {
       this.app.use(express.text({ limit: '50mb' }))
       this.app.use(express.urlencoded({ limit: '50mb', extended: true }))
 
-      this.app.get('/', (req, res) => {
-        res.send('Hello World!');
-      });
+      // Have Node serve the files for our built React app
+      this.app.use(express.static(path.resolve(__dirname, '../../../build')));
 
       // Create FlowTest
       this.app.post('/api/v1/flowtest', async (req: Request, res: Response) => {
@@ -198,10 +198,6 @@ class App {
         return res.status(404).send(`AuthKey ${req.params.id} not found`)
       })
 
-      this.app.listen(this.port, () => {
-        return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
-      });
-
       // Create FlowTest AI
       this.app.post('/api/v1/flowtest/ai', async (req: Request, res: Response) => {
         const instruction = req.body
@@ -209,6 +205,15 @@ class App {
         const nodes = await flowTestAI.generate(instruction);
 
         return res.json(nodes);
+      });
+
+      // All other GET requests not handled before will return our React app
+      this.app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '../../../build', 'index.html'));
+      });
+
+      this.app.listen(this.port, () => {
+        return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
       });
   }
 }

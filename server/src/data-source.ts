@@ -7,7 +7,7 @@ export const AppDataSource = new DataSource({
     type: "sqlite",
     database: ".flowtest",
     synchronize: true,
-    logging: true,
+    logging: false,
     entities: [FlowTest, Collection, AuthKey],
     subscribers: [],
     migrations: [],

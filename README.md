@@ -2,7 +2,9 @@
 
 - Drag & drop UI for openAI function calling.
 - Contruct sharable flows that can act as end to end test in minutes.
-- Use natural language to connect your openAPI components in a meaningful way
+- Import your openAPI spec and use natural language to connect your openAPI components in a meaningful way
+
+![alt text](public/flowtest.gif)
 
 ## 👨‍💻 Developers
 FlowTest has 2 major components -

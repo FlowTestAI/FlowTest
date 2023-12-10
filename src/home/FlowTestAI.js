@@ -9,7 +9,12 @@ import {
     TextField,
     Button,
     Stack,
-    CircularProgress
+    CircularProgress,
+    Box,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem
 } from "@mui/material";
 
 import { green } from '@mui/material/colors';
@@ -153,11 +158,33 @@ const FlowTestAI = () => {
         getAllCollectionsApi.request();
     }, []);
 
+    const [collection, setCollection] = React.useState(null);
+
+    const handleChange = (event) => {
+        setCollection(event.target.value);
+    };
+
     return (
         <>
             <Card>
                 <CardContent>
                     <Stack spacing={2} direction="column">
+                        <Box sx={{ m: 1, minWidth: 120 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Choose Collection</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={collection}
+                                    label="Choose Collection"
+                                    onChange={handleChange}
+                                >
+                                    {savedCollections.map((collection, index) => (
+                                            <MenuItem value={collection.collection}>{collection.name}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
                         <TextField
                             fullWidth
                             id="outlined-multiline-static"
@@ -175,14 +202,20 @@ const FlowTestAI = () => {
                             disabled={loading}
                             endIcon={<SendIcon />}
                             onClick={() => {
-                                if (!flowCmd.trim()) {
+                                if(collection == null || collection === undefined) {
+                                    enqueueSnackbar('Please choose a collection', { variant: 'error'});
+                                } else if (!flowCmd.trim()) {
                                     enqueueSnackbar('Please enter a vaid command', { variant: 'error'});
                                 } else {
                                     if (!loading) {
                                         setSuccess(false);
                                         setLoading(true);
                                     }
-                                    createFlowTestAIApi.request(flowCmd);
+                                    const request = {
+                                        collection: collection,
+                                        cmd: flowCmd
+                                    }
+                                    createFlowTestAIApi.request(request);
                                 }
                             }}
                         >

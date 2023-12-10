@@ -8,10 +8,10 @@ class CollectionUtil {
             // servers is array,, figure case where there can be multiple servers
             const baseUrl = collection["servers"][0]["url"]
             Object.entries(collection["paths"]).map(([path, operation], index) => {
-                var url = baseUrl + path
                 Object.entries(operation).map(([requestType, request], index1) => {
                     const summary = request['summary'];
                     const operationId = request['operationId'];
+                    var url = baseUrl + path;
                     // console.log(operationId)
                     // Get is easy, others are hard
                     if (requestType.toUpperCase() === 'GET' && request["parameters"]) {

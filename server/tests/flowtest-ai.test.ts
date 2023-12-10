@@ -1,4 +1,6 @@
 import FlowtestAI from "../src/flowtest-ai";
+import * as fs from 'fs';
+import SwaggerParser from '@apidevtools/swagger-parser';
 
 
 describe("generate", () => {
@@ -7,8 +9,9 @@ describe("generate", () => {
         const USER_INSTRUCTION = 'Instruction: Add a new pet to the store. \
             Then get the created pet. \
             Then get pet with status as available.';
-        let result = await f.generate(USER_INSTRUCTION);
+        const testYaml = fs.readFileSync('tests/test.yaml', { encoding: 'utf8', flag: 'r' })
+        let result = await f.generate(testYaml, USER_INSTRUCTION);
         const nodeNames = result.map((node) => node.name)
         expect(nodeNames).toEqual(['addPet', 'getPetById', 'findPetsByStatus']);
-    }, 15000);
+    }, 60000);
 });

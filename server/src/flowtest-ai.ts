@@ -2,6 +2,7 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 import JsonRefs from 'json-refs'
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
+import * as fs from 'fs';
 
 dotenv.config();
 
@@ -18,13 +19,14 @@ const MAX_CALLS = 10
 
 class FlowtestAI {
 
-    async generate(user_instruction: string): Promise<any[]> {
-        const functions = await this.get_available_functions();
+    async generate(collection: string, user_instruction: string): Promise<any[]> {
+        const functions = await this.get_available_functions(collection);
         return await this.process_user_instruction(functions, user_instruction);
     }
 
-    async get_available_functions() {
-        let api = await SwaggerParser.validate('tests/test.yaml');
+    async get_available_functions(collection: string) {
+        fs.writeFileSync('uploads/tmp', collection);
+        let api = await SwaggerParser.validate('uploads/tmp');
         console.log("API name: %s, Version: %s", api.info.title, api.info.version);
         const resolvedSpec = (await JsonRefs.resolveRefs(api)).resolved;
 

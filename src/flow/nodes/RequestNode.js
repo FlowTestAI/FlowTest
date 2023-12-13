@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { IconPlus } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
-import VariableDialog from "./VariableDialog";
+import VariableDialog from "../VariableDialog";
 
 function initialVariables (data) {
     if (data.variables != undefined) {

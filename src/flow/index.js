@@ -17,7 +17,15 @@ import {
   Typography, 
   ButtonBase, 
   Avatar,
-  Button
+  Button,
+  Drawer,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody
 } from '@mui/material';
 
 import ImportExportIcon from '@mui/icons-material/ImportExport';
@@ -30,7 +38,7 @@ import { useSnackbar } from 'notistack';
 import flowTestApi from '../api/flowtest'
 
 // icons
-import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft } from '@tabler/icons-react';
+import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft, IconFiles } from '@tabler/icons-react';
 
 import RequestNode from './RequestNode';
 import SelectAuthComponent from './SelectAuthComponent';
@@ -305,12 +313,31 @@ const Flow = () => {
 
   // graph
 
-  const onGraphComplete = (result) => {
-    console.log('Graph complete callback: ', result)
+  const [state, setState] = React.useState(false);
+
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+
+    setState(open);
+  };
+
+  const [graphRun, setGraphRun] = useState(false)
+  const [graphRunLogs, setGraphRunLogs] = useState(undefined)
+
+  const onGraphComplete = (result, logs) => {
+    console.debug('Graph complete callback: ', result)
+    setGraphRun(true);
+    setGraphRunLogs(logs);
     if (result[0] == 'Success') {
-
+      enqueueSnackbar('FlowTest Run Success!', { variant: 'success' });
     } else if (result[0] == 'Failed') {
-
+      enqueueSnackbar('FlowTest Run Failed!', { variant: 'error'});
     }
     runnableEdges(false)
   }
@@ -468,7 +495,8 @@ const Flow = () => {
                           </Avatar>
                           <input type='file' accept=".json" hidden onChange={(e) => handleExport(e)} />
                       </ButtonBase>
-                      {/* <ButtonBase title='Environment' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
+                      { graphRun && 
+                        <ButtonBase title='View Logs' sx={{ borderRadius: '50%', mr: 2 }} color='black'>
                           <Avatar
                               variant='rounded'
                               sx={{
@@ -483,11 +511,48 @@ const Flow = () => {
                                 }
                               }}
                               color='inherit'
-                              onClick={() => setEnvDialogOpen(true)}
+                              onClick={toggleDrawer(true)}
                           >
-                              <IconBrandCodesandbox stroke={1.5} size='1.3rem' />
+                              <IconFiles stroke={1.5} size='1.3rem' />
                           </Avatar>
-                      </ButtonBase> */}
+                        </ButtonBase> 
+                      }
+                        <Drawer
+                          anchor="right"
+                          open={state}
+                          onClose={toggleDrawer(false)}
+                        >
+                            <Box
+                              sx={{ width: 400 }}
+                              role="presentation"
+                              onClick={toggleDrawer(false)}
+                              onKeyDown={toggleDrawer(false)}
+                            >
+                              {graphRunLogs != undefined && (
+                                <TableContainer component={Paper}>
+                                    <Table sx={{ minWidth: 400 }} aria-label="simple table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Logs</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {graphRunLogs.map((graphRunLog, index) => (
+                                                <TableRow
+                                                    key={index}
+                                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                >
+                                                    <TableCell component="th" scope="row">
+                                                        {graphRunLog}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                              )}
+                            </Box>
+                        </Drawer>
                   </Toolbar>
               </AppBar>
               <Box sx={{pt: '70px', height: '100vh', width: '100%' }}>

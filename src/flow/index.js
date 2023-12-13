@@ -306,7 +306,7 @@ const Flow = () => {
   // graph
 
   const onGraphComplete = (result) => {
-    console.log('callback: ', result)
+    console.log('Graph complete callback: ', result)
     if (result[0] == 'Success') {
 
     } else if (result[0] == 'Failed') {
@@ -512,7 +512,7 @@ const Flow = () => {
                                   <ControlButton 
                                     onClick={() => {
                                       runnableEdges(true);
-                                      const g = new Graph(reactFlowInstance.getNodes(), reactFlowInstance.getEdges(), onGraphComplete, authKey);
+                                      const g = new Graph(reactFlowInstance.getNodes(), reactFlowInstance.getEdges(), onGraphComplete, authKey, flowTestApi.runRequest);
                                       g.run();
                                     }} title="run">
                                     <div>Run</div>

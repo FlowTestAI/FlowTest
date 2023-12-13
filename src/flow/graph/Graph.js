@@ -186,33 +186,51 @@ class Graph {
     async #computeNode(node, prevNodeOutput) {
         let result = undefined
 
-        // right now we allow a straight sequential graph but
-        // once we allow success/failure routes from each requestNode, this will change
-        if (node.type === 'outputNode') {
-            node.data.setOutput(prevNodeOutput.data);
-            // console.log(node)
-            result = ["Success", node, prevNodeOutput];
-        }
-
-        if (node.type === 'evaluateNode') {
-            if (this.#computeEvaluateNode(node, prevNodeOutput)) {
-                result = ["Success", node, prevNodeOutput]; 
-            } else {
-                result = ["Failed", node];
+        try {
+            // right now we allow a straight sequential graph but
+            // once we allow success/failure routes from each requestNode, this will change
+            if (node.type === 'outputNode') {
+                node.data.setOutput(prevNodeOutput.data);
+                // console.log(node)
+                result = ["Success", node, prevNodeOutput];
             }
+
+            if (node.type === 'evaluateNode') {
+                if (this.#computeEvaluateNode(node, prevNodeOutput)) {
+                    result = ["Success", node, prevNodeOutput]; 
+                } else {
+                    result = ["Failed", node];
+                }
+            }
+
+            if (node.type === 'delayNode') {
+                const delay = node.data.delay;
+                const wait = (ms) => {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                };
+                await wait(delay);
+                this.logs.push(`Wait for: ${delay} ms`);
+                result = ["Success", node, prevNodeOutput];
+            }
+
+            if (node.type === 'requestNode') {
+                result = await this.#computeRequestNode(node, prevNodeOutput)
+            }
+        } catch(err) {
+            this.logs.push(`Flow failed at: ${JSON.stringify(node)} due to ${err}`)
+            result = ["Failed", node];
         }
 
-        if (node.type === 'requestNode') {
-            result = await this.#computeRequestNode(node, prevNodeOutput)
-        }
-
-        if (result[0] == 'Failed') {
+        if (result === undefined) {
+            this.logs.push(`Flow failed at: ${JSON.stringify(node)}`)
+            return ["Failed", node];
+        } else if (result[0] == 'Failed') {
             return result;
         } else {
             const connectingEdge = this.edges.find((edge) => edge.source === node.id)
 
             if (connectingEdge != undefined) {
-                const nextNode = this.nodes.find((node) => (node.type === 'requestNode' || node.type === 'outputNode' || node.type === 'evaluateNode') && node.id === connectingEdge.target)
+                const nextNode = this.nodes.find((node) => ['requestNode', 'outputNode', 'evaluateNode', 'delayNode'].includes(node.type) && node.id === connectingEdge.target)
                 return this.#computeNode(nextNode, result[2]);
             } else {
                 return result;

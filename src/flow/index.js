@@ -54,6 +54,7 @@ import PromptDialog from './PromptDialog';
 import Graph from './graph/Graph';
 import OutputNode from './nodes/OutputNode';
 import EvaluateNode from './nodes/EvaluateNode';
+import DelayNode from './nodes/DelayNode';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -92,7 +93,8 @@ const Flow = () => {
     startNode: StartNode, 
     requestNode: RequestNode,
     outputNode: OutputNode,
-    evaluateNode: EvaluateNode
+    evaluateNode: EvaluateNode,
+    delayNode: DelayNode
   }), []);
   
   const edgeTypes = useMemo(() => (
@@ -156,7 +158,7 @@ const Flow = () => {
         position,
         data: nodeData
       };
-      console.log('Dropped node: ', newNode);
+      console.debug('Dropped node: ', newNode);
 
       setNodes((nds) => nds.concat(newNode));
       setIsDirty(true);
@@ -177,7 +179,7 @@ const Flow = () => {
         // rfInstanceObject.nodes = nodes
         const flowData = JSON.stringify(rfInstanceObject)
 
-        console.log('Save flow: ', flowData)
+        console.debug('Save flow: ', flowData)
 
         if (!flowTest.id) {
             const newFlowTestBody = {
@@ -233,8 +235,8 @@ const Flow = () => {
     if (getFlowTest.data) {
       const retrievedFlowtest = getFlowTest.data
       const initialFlow = retrievedFlowtest.flowData ? JSON.parse(retrievedFlowtest.flowData) : []
-      console.log('Get flow nodes: ', initialFlow.nodes)
-      console.log('Get flow edges: ', initialFlow.edges)
+      console.debug('Get flow nodes: ', initialFlow.nodes)
+      console.debug('Get flow edges: ', initialFlow.edges)
       setNodes(initialFlow.nodes || [])
       setEdges(initialFlow.edges || [])
       setFlowTest(retrievedFlowtest)
@@ -361,7 +363,7 @@ const Flow = () => {
             const { result } = evt.target
 
             const flowData = JSON.parse(result);
-            console.log(flowData)
+            console.debug(flowData)
 
             setNodes(flowData.nodes || []);
             setEdges(flowData.edges || []);

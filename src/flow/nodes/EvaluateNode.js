@@ -14,7 +14,7 @@ import {
     Menu,
     MenuItem
 } from "@mui/material"
-import Operators from '../constants/operators';
+import Operators from '../../constants/operators';
 
 const OperatorMenu = (data) => {
     const [anchorEl, setAnchorEl] = React.useState(null);

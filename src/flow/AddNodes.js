@@ -77,7 +77,7 @@ const evaluateNode = {
     type: 'evaluateNode'
 }
 
-const AddRequestNodes = () => {
+const AddNodes = () => {
     const [open, setOpen] = useState(false)
     const anchorRef = useRef(null);
     const ps = useRef()
@@ -312,4 +312,4 @@ const AddRequestNodes = () => {
     )
 }
 
-export default AddRequestNodes;
+export default AddNodes;

@@ -40,20 +40,20 @@ import flowTestApi from '../api/flowtest'
 // icons
 import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft, IconFiles } from '@tabler/icons-react';
 
-import RequestNode from './RequestNode';
+import RequestNode from './nodes/RequestNode';
 import SelectAuthComponent from './SelectAuthComponent';
-import CustomEdge from './ButtonEdge';
+import CustomEdge from './edges/ButtonEdge';
 
 // theme
 import theme from './theme';
 
-import AddRequestNodes from './AddRequestNodes';
+import AddNodes from './AddNodes';
 import SaveDialog from './SaveDialog';
 import wrapper from '../api/wrapper';
 import PromptDialog from './PromptDialog';
 import Graph from './graph/Graph';
-import OutputNode from './OutputNode';
-import EvaluateNode from './EvaluateNode';
+import OutputNode from './nodes/OutputNode';
+import EvaluateNode from './nodes/EvaluateNode';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -584,7 +584,7 @@ const Flow = () => {
                                   </ControlButton>
                                 </Controls>
                                 <Background variant='dots' gap={12} size={1} />
-                                <AddRequestNodes />
+                                <AddNodes />
                           </ReactFlow>
                       </div>
                   </div>

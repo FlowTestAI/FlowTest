@@ -13,6 +13,7 @@ class Graph {
         this.onGraphComplete = onGraphComplete
         this.authKey = authKey
         this.runRequest = runRequest
+        this.logs = []
     }
 
     #formulateRequest(node, finalUrl) {
@@ -68,6 +69,7 @@ class Graph {
             }
         }
 
+        this.logs.push(`${restMethod} ${finalUrl}`);
         return options;
     }
 
@@ -86,7 +88,7 @@ class Graph {
         
         if (variable.type.toLowerCase() === 'select') {
             if (Object.keys(prevNodeOutputData).length === 0) {
-                console.log('Cannot evaluate variables as prevNodeOutput data is empty: ', prevNodeOutputData)
+                console.debug('Cannot evaluate variables as prevNodeOutput data is empty: ', prevNodeOutputData)
                 throw "Error evaluating node variables"
             }
             const jsonTree = variable.value.split(".")
@@ -127,33 +129,38 @@ class Graph {
             // step 3
             const options = this.#formulateRequest(node, finalUrl);
 
-            console.log('Executing node: ', node)
-            console.log('Evaluated variables: ', evalVariables)
-            console.log('Evaluated Url: ', finalUrl)
+            console.debug('Executing node: ', node)
+            console.debug('Evaluated variables: ', evalVariables)
+            console.debug('Evaluated Url: ', finalUrl)
             //const res = await axios(options);
             const res = await this.runRequest(JSON.stringify(options));
-            console.log('Response: ', res)
+            this.logs.push(`Request successful: ${JSON.stringify(res.data)}`);
+            console.debug('Response: ', res)
             return ["Success", node, res];
         } catch(error) {
-            console.log('Failure at node: ', node)
-            console.log('Error encountered: ', error)
+            console.debug('Failure at node: ', node)
+            console.debug('Error encountered: ', error)
             if (error.response) {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                console.debug(error.response.data);
+                console.debug(error.response.status);
+                console.debug(error.response.headers);
+                this.logs.push(`Request failed. Status: ${error.response.status}, Data: ${JSON.stringify(error.response.data)}`);
             } else if (error.request) {
                 // The request was made but no response was received
                 // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
                 // http.ClientRequest in node.js
-                console.log('Response: ', error.request);
+                console.debug('Response: ', error.request);
+                this.logs.push(`Request failed: ${error.request}`);
             } else if (error.message) {
                 // Something happened in setting up the request that triggered an Error
-                console.log('Response: ', error.message);
+                console.debug('Response: ', error.message);
+                this.logs.push(`Request failed: ${error.message}`);
             } else {
                 // Something not related to axios request
-                console.log('Failure: ', error);
+                console.debug('Failure: ', error);
+                this.logs.push(`Request failed: ${error}`);
             }
             return ["Failed", node, error];
         }
@@ -162,11 +169,9 @@ class Graph {
     #computeEvaluateNode(node, prevNodeOutput) {
         const var1 = this.#computeNodeVariable(node.data.var1, prevNodeOutput.data)
         const var2 = this.#computeNodeVariable(node.data.var2, prevNodeOutput.data)
-        console.log(var1)
-            console.log(var2)
 
         const operator = node.data.operator;
-        console.log(operator)
+        this.logs.push(`Evaluate var1: ${var1}, var2: ${var2} with operator: ${operator}`);
         if (operator == Operators.isEqualTo) {
             return var1 === var2
         } else if (operator == Operators.isNotEqualTo) {
@@ -216,7 +221,8 @@ class Graph {
     }
 
     run() {
-        console.log('Using authkey: ', this.authKey)
+        console.debug('Using authkey: ', this.authKey)
+        this.logs.push("Start Flowtest");
         const startNode = this.nodes.find((node) => node.type === 'startNode')
         const connectingEdge = this.edges.find((edge) => edge.source === startNode.id)
 
@@ -226,12 +232,15 @@ class Graph {
             this.#computeNode(firstRequestNode, JSON.parse('{}'))
                 .then(result => {
                     if (result[0] == "Failed") {
-                        console.log('Flow failed at: ', result[1])
+                        console.debug('Flow failed at: ', result[1])
                     }
-                    this.onGraphComplete(result);
+                    this.logs.push("End Flowtest");
+                    this.onGraphComplete(result, this.logs);
                 });
         } else {
-            console.log("No connected request node to start node")
+            this.logs.push("No connected request node to start node");
+            this.logs.push("End Flowtest");
+            this.onGraphComplete(["Success"], this.logs);
         }
     }
 }

@@ -36,6 +36,7 @@ FlowTest has 2 major components -
     ```bash
     OPENAI_API_KEY={API_KEY_VALUE}
     PORT=3500
+    ...
     ```
 5. Start the app:
     ```bash

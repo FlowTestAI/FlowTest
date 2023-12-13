@@ -77,6 +77,11 @@ const evaluateNode = {
     type: 'evaluateNode'
 }
 
+const delayNode = {
+    description: 'Add a certain delay before next computation.',
+    type: 'delayNode'
+}
+
 const AddNodes = () => {
     const [open, setOpen] = useState(false)
     const anchorRef = useRef(null);
@@ -294,6 +299,33 @@ const AddNodes = () => {
                                                                 sx={{ ml: 1 }}
                                                                 primary="Evaluate"
                                                                 secondary={evaluateNode.description}
+                                                            />
+                                                        </ListItem>
+                                                    </ListItemButton>
+                                                </div>
+                                            </AccordionDetails>
+                                        </Accordion>
+                                        <Accordion key="delay" disableGutters>
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                aria-controls="panel1a-content-output"
+                                                id="panel1a-header-output"
+                                            >
+                                                <Typography variant='h7'>Delay</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <div
+                                                    key="delay"
+                                                    onDragStart={(event) => onDragStart(event, delayNode)}
+                                                    draggable
+                                                    cursor='move'
+                                                >
+                                                    <ListItemButton>
+                                                        <ListItem alignItems='center'>
+                                                            <ListItemText
+                                                                sx={{ ml: 1 }}
+                                                                primary="Delay"
+                                                                secondary={delayNode.description}
                                                             />
                                                         </ListItem>
                                                     </ListItemButton>

@@ -19,10 +19,13 @@ const updateFlowTest = (id, body) => client.put(`/flowtest/${id}`, body)
 
 const deleteFlowTest = (id) => client.delete(`/flowtest/${id}`)
 
+const runRequest = (body) => client.put(`/request`, body)
+
 export default {
     getAllFlowTest,
     getSpecificFlowTest,
     createNewFlowTest,
     updateFlowTest,
-    deleteFlowTest
+    deleteFlowTest,
+    runRequest
 }

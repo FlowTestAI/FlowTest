@@ -6,11 +6,13 @@ import Operators from '../../constants/operators';
 // assumption is that apis are giving json as output
 
 class Graph {
-    constructor(nodes, edges, onGraphComplete, authKey) {
+
+    constructor(nodes, edges, onGraphComplete, authKey, runRequest) {
         this.nodes = nodes
         this.edges = edges
         this.onGraphComplete = onGraphComplete
         this.authKey = authKey
+        this.runRequest = runRequest
     }
 
     #formulateRequest(node, finalUrl) {
@@ -128,7 +130,8 @@ class Graph {
             console.log('Executing node: ', node)
             console.log('Evaluated variables: ', evalVariables)
             console.log('Evaluated Url: ', finalUrl)
-            const res = await axios(options);
+            //const res = await axios(options);
+            const res = await this.runRequest(JSON.stringify(options));
             console.log('Response: ', res)
             return ["Success", node, res];
         } catch(error) {

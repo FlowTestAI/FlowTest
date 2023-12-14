@@ -242,6 +242,11 @@ class Graph {
         console.debug('Using authkey: ', this.authKey)
         this.logs.push("Start Flowtest");
         const startNode = this.nodes.find((node) => node.type === 'startNode')
+        if (startNode == undefined) {
+            this.logs.push("No start node found");
+            this.logs.push("End Flowtest");
+            return;
+        }
         const connectingEdge = this.edges.find((edge) => edge.source === startNode.id)
 
         // only start computing graph if initial node has the connecting edge

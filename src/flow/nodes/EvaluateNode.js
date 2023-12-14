@@ -28,7 +28,7 @@ const OperatorMenu = (data) => {
         setOperator(op);
     };
 
-    const [opearator, setOperator] = React.useState(data.opearator ? data.opearator : 'Choose Operator')
+    const [operator, setOperator] = React.useState(data.operator ? data.operator : 'Choose Operator')
 
     return (
         <div>
@@ -39,7 +39,7 @@ const OperatorMenu = (data) => {
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
             >
-                {opearator}
+                {operator}
             </Button>
             <Menu
                 id="basic-menu"
@@ -169,9 +169,28 @@ const EvaluateNode = ({data}) => {
                             {Variable(data, "var2")}
                         </Box>
                     </div>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <Box style={{ width: 300, margin: 10, padding: 5, textAlign: 'right' }}>
+                            True
+                        </Box>
+                        <Box style={{ width: 300, margin: 10, padding: 5, textAlign: 'right' }}>
+                            False
+                        </Box>
+                    </div>
                 </Box>
             </Card>
-            <Handle type="source" position={Position.Right} />
+            <Handle
+                type="source"
+                position={Position.Right}
+                id="true"
+                style={{ bottom: 50, top: 'auto' }}
+            />
+            <Handle
+                type="source"
+                position={Position.Right}
+                id="false"
+                style={{ bottom: 5, top: 'auto' }}
+            />
         </>
     );
 };

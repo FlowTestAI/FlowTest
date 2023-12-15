@@ -79,6 +79,20 @@ const Variable = (data, vname) => {
             data[vname] = {}
         }
         data[vname].type = variabletype;
+        switch (variabletype) {
+            case 'String':
+                data[vname].value = ''
+                setVar1('')
+                break;
+            case 'Select':
+                data[vname].value = ''
+                setVar1('')
+                break;
+            case 'Number':
+                data[vname].value = 0
+                setVar1(0)
+                break;
+        }
         setAnchorEl(null);
         setVtype(variabletype);
         setInputType(getInputType(variabletype))
@@ -124,7 +138,6 @@ const Variable = (data, vname) => {
                             <MenuItem onClick={() => handleClose('String')}>String</MenuItem>
                             <MenuItem onClick={() => handleClose('Select')}>Select</MenuItem>
                             <MenuItem onClick={() => handleClose('Number')}>Number</MenuItem>
-                            <MenuItem onClick={() => handleClose('Bool')}>Bool</MenuItem>
                         </Menu>
                     </InputAdornment>
                 }
@@ -139,8 +152,20 @@ const Variable = (data, vname) => {
                     if (!data[vname]) {
                         data[vname] = {}
                     }
-                    data[vname].value = e.target.value;
-                    setVar1(e.target.value)
+                    switch (vType) {
+                        case 'String':
+                            data[vname].value = e.target.value.toString();
+                            setVar1(e.target.value.toString())
+                            break;
+                        case 'Select':
+                            data[vname].value = e.target.value.toString();
+                            setVar1(e.target.value.toString())
+                            break;
+                        case 'Number':
+                            data[vname].value = parseInt(e.target.value);
+                            setVar1(parseInt(e.target.value))
+                            break;
+                    }
                 }}
             />
             <FormHelperText id="outlined-weight-helper-text">{vname}</FormHelperText>

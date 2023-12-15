@@ -172,7 +172,10 @@ class Graph {
         const var2 = this.#computeNodeVariable(node.data.var2, prevNodeOutputData)
 
         const operator = node.data.operator;
-        this.logs.push(`Evaluate var1: ${var1}, var2: ${var2} with operator: ${operator}`);
+        if (operator == undefined) {
+            throw "Operator undefined"
+        }
+        this.logs.push(`Evaluate var1: ${var1} of type: ${typeof(var1)}, var2: ${var2} of type: ${typeof(var2)} with operator: ${operator}`);
         if (operator == Operators.isEqualTo) {
             return var1 === var2
         } else if (operator == Operators.isNotEqualTo) {
@@ -210,15 +213,17 @@ class Graph {
             // right now we allow a straight sequential graph but
             // once we allow success/failure routes from each requestNode, this will change
             if (node.type === 'outputNode') {
-                this.logs.push(`Output: ${prevNodeOutputData}`);
+                this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
                 node.data.setOutput(prevNodeOutputData);
                 result = ["Success", node, prevNodeOutput];
             }
 
             if (node.type === 'evaluateNode') {
                 if (this.#computeEvaluateNode(node, prevNodeOutputData)) {
+                    this.logs.push("Result: true")
                     result = ["Success", node, prevNodeOutput, true]; 
                 } else {
+                    this.logs.push("Result: false")
                     result = ["Success", node, prevNodeOutput, false];
                 }
             }

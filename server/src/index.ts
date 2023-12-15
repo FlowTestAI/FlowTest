@@ -20,11 +20,20 @@ class App {
   port: number
   appDataSource = AppDataSource
   collectionUtil: CollectionUtil
+  timeout: number
 
   constructor() {
     this.app = express()
     this.port = 3500
     this.collectionUtil = new CollectionUtil()
+    this.timeout = 60000
+  }
+
+  private newAbortSignal() {
+    const abortController = new AbortController();
+    setTimeout(() => abortController.abort(), this.timeout || 0);
+  
+    return abortController.signal;
   }
 
   initServer() {
@@ -103,27 +112,35 @@ class App {
       // This endpoint acts as a proxy to route request without origin header for cross-origin requests
       this.app.put('/api/v1/request', async (req: Request, res: Response) => {
         try {
-            const result = await axios(req.body);
+            const options = {
+              ...req.body,
+              signal: this.newAbortSignal()
+            }
+            const result = await axios(options);
             return res.status(200).send(result.data);
         } catch(error) {
             //console.log('Error encountered: ', error)
-            if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
-                return res.status(error.response.status).send(error.response.data);
+            if(error.code === "ERR_CANCELED") {
+              //timeout
+              return res.status(408).send(error)
+            }
+            else if (error.response) {
+              // The request was made and the server responded with a status code
+              // that falls out of the range of 2xx
+              return res.status(error.response.status).send(error.response.data);
             } else if (error.request) {
-                // The request was made but no response was received
-                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                // http.ClientRequest in node.js
-                return res.status(503).send(error.request);
+              // The request was made but no response was received
+              // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+              // http.ClientRequest in node.js
+              return res.status(503).send(error.request);
             } else if (error.message) {
-                // Something happened in setting up the request that triggered an Error
-                //console.log('Response: ', error.message);
-                return res.status(400).send(error.message);
+              // Something happened in setting up the request that triggered an Error
+              //console.log('Response: ', error.message);
+              return res.status(400).send(error.message);
             } else {
-                // Something not related to axios request
-                //console.log('Failure: ', error);
-                return res.status(500).send(error);
+              // Something not related to axios request
+              //console.log('Failure: ', error);
+              return res.status(500).send(error);
             }
         }
       })

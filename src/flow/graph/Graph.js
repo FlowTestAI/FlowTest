@@ -14,6 +14,12 @@ class Graph {
         this.authKey = authKey
         this.runRequest = runRequest
         this.logs = []
+        this.timeout = 60000 // 1m timeout
+        this.startTime = Date.now()
+    }
+
+    #checkTimeout() {
+        return Date.now() - this.startTime > this.timeout
     }
 
     #formulateRequest(node, finalUrl) {
@@ -175,7 +181,7 @@ class Graph {
         if (operator == undefined) {
             throw "Operator undefined"
         }
-        this.logs.push(`Evaluate var1: ${var1} of type: ${typeof(var1)}, var2: ${var2} of type: ${typeof(var2)} with operator: ${operator}`);
+        this.logs.push(`Evaluate var1: ${JSON.stringify(var1)} of type: ${typeof(var1)}, var2: ${JSON.stringify(var2)} of type: ${typeof(var2)} with operator: ${operator}`);
         if (operator == Operators.isEqualTo) {
             return var1 === var2
         } else if (operator == Operators.isNotEqualTo) {
@@ -231,7 +237,7 @@ class Graph {
             if (node.type === 'delayNode') {
                 const delay = node.data.delay;
                 const wait = (ms) => {
-                    return new Promise(resolve => setTimeout(resolve, ms));
+                    return new Promise(resolve => setTimeout(resolve, Math.min(ms, this.timeout)));
                 };
                 await wait(delay);
                 this.logs.push(`Wait for: ${delay} ms`);
@@ -240,6 +246,10 @@ class Graph {
 
             if (node.type === 'requestNode') {
                 result = await this.#computeRequestNode(node, prevNodeOutputData)
+            }
+
+            if (this.#checkTimeout()) {
+                throw `Timeout of ${this.timeout} ms exceeded, stopping graph run`
             }
         } catch(err) {
             this.logs.push(`Flow failed at: ${JSON.stringify(node)} due to ${err}`)

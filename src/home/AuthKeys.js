@@ -201,7 +201,11 @@ const AuthKeys = () => {
                                                 {authkey.name}
                                             </TableCell>
                                             <TableCell>{authkey.accessId}</TableCell>
-                                            <TableCell>{authkey.accessKey}</TableCell>
+                                            <TableCell>
+                                                {`${authkey.accessKey.substring(0, 2)}${'•'.repeat(18)}${authkey.accessKey.substring(
+                                                    authkey.accessKey.length - 5
+                                                )}`}
+                                            </TableCell>
                                             <TableCell>{authkey.createdDate}</TableCell>
                                             <TableCell>
                                                 <IconButton title='Delete' color='error' onClick={() => deleteAuthKey(authkey.id)}>

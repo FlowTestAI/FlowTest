@@ -87,7 +87,8 @@ class Graph {
         }
         
         if (variable.type.toLowerCase() === 'select') {
-            if (Object.keys(prevNodeOutputData).length === 0) {
+            if (prevNodeOutputData == undefined || Object.keys(prevNodeOutputData).length === 0) {
+                this.logs.push("Cannot evaluate variables as previous node output data is empty")
                 console.debug('Cannot evaluate variables as prevNodeOutput data is empty: ', prevNodeOutputData)
                 throw "Error evaluating node variables"
             }
@@ -115,10 +116,10 @@ class Graph {
         return evalVariables;
     }
 
-    async #computeRequestNode(node, prevNodeOutput) {
+    async #computeRequestNode(node, prevNodeOutputData) {
         try {
             // step1 evaluate variables of this node
-            const evalVariables = this.#computeNodeVariables(node.data.variables, prevNodeOutput.data);
+            const evalVariables = this.#computeNodeVariables(node.data.variables, prevNodeOutputData);
 
             // step2 replace variables in url with value
             let finalUrl = node.data.url
@@ -166,12 +167,15 @@ class Graph {
         }
     }
 
-    #computeEvaluateNode(node, prevNodeOutput) {
-        const var1 = this.#computeNodeVariable(node.data.var1, prevNodeOutput.data)
-        const var2 = this.#computeNodeVariable(node.data.var2, prevNodeOutput.data)
+    #computeEvaluateNode(node, prevNodeOutputData) {
+        const var1 = this.#computeNodeVariable(node.data.var1, prevNodeOutputData)
+        const var2 = this.#computeNodeVariable(node.data.var2, prevNodeOutputData)
 
         const operator = node.data.operator;
-        this.logs.push(`Evaluate var1: ${var1}, var2: ${var2} with operator: ${operator}`);
+        if (operator == undefined) {
+            throw "Operator undefined"
+        }
+        this.logs.push(`Evaluate var1: ${var1} of type: ${typeof(var1)}, var2: ${var2} of type: ${typeof(var2)} with operator: ${operator}`);
         if (operator == Operators.isEqualTo) {
             return var1 === var2
         } else if (operator == Operators.isNotEqualTo) {
@@ -183,23 +187,44 @@ class Graph {
         }
     }
 
+    #computeConnectingEdge(node, result) {
+        let connectingEdge = undefined;
+
+        if (node.type === 'evaluateNode') {
+            if (result[3] === true) {
+                connectingEdge = this.edges.find((edge) => edge.sourceHandle == "true" && edge.source === node.id)
+            } else {
+                connectingEdge = this.edges.find((edge) => edge.sourceHandle == "false" && edge.source === node.id)
+            }
+        } else {
+            if (result[0] === 'Success') {
+                connectingEdge = this.edges.find((edge) => edge.source === node.id)
+            }
+        }
+
+        return connectingEdge;
+    }
+
     async #computeNode(node, prevNodeOutput) {
         let result = undefined
+        const prevNodeOutputData = prevNodeOutput && prevNodeOutput.data ? prevNodeOutput.data : ""
 
         try {
             // right now we allow a straight sequential graph but
             // once we allow success/failure routes from each requestNode, this will change
             if (node.type === 'outputNode') {
-                node.data.setOutput(prevNodeOutput.data);
-                // console.log(node)
+                this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
+                node.data.setOutput(prevNodeOutputData);
                 result = ["Success", node, prevNodeOutput];
             }
 
             if (node.type === 'evaluateNode') {
-                if (this.#computeEvaluateNode(node, prevNodeOutput)) {
-                    result = ["Success", node, prevNodeOutput]; 
+                if (this.#computeEvaluateNode(node, prevNodeOutputData)) {
+                    this.logs.push("Result: true")
+                    result = ["Success", node, prevNodeOutput, true]; 
                 } else {
-                    result = ["Failed", node];
+                    this.logs.push("Result: false")
+                    result = ["Success", node, prevNodeOutput, false];
                 }
             }
 
@@ -214,20 +239,18 @@ class Graph {
             }
 
             if (node.type === 'requestNode') {
-                result = await this.#computeRequestNode(node, prevNodeOutput)
+                result = await this.#computeRequestNode(node, prevNodeOutputData)
             }
         } catch(err) {
             this.logs.push(`Flow failed at: ${JSON.stringify(node)} due to ${err}`)
-            result = ["Failed", node];
+            return ["Failed", node];
         }
 
         if (result === undefined) {
             this.logs.push(`Flow failed at: ${JSON.stringify(node)}`)
             return ["Failed", node];
-        } else if (result[0] == 'Failed') {
-            return result;
         } else {
-            const connectingEdge = this.edges.find((edge) => edge.source === node.id)
+            const connectingEdge = this.#computeConnectingEdge(node, result);
 
             if (connectingEdge != undefined) {
                 const nextNode = this.nodes.find((node) => ['requestNode', 'outputNode', 'evaluateNode', 'delayNode'].includes(node.type) && node.id === connectingEdge.target)
@@ -239,15 +262,26 @@ class Graph {
     }
 
     run() {
+        // reset every output node for a fresh run
+        this.nodes.forEach(node => {
+            if (node.type === 'outputNode') {
+                node.data.setOutput(undefined)
+            }
+        })
         console.debug('Using authkey: ', this.authKey)
         this.logs.push("Start Flowtest");
         const startNode = this.nodes.find((node) => node.type === 'startNode')
+        if (startNode == undefined) {
+            this.logs.push("No start node found");
+            this.logs.push("End Flowtest");
+            return;
+        }
         const connectingEdge = this.edges.find((edge) => edge.source === startNode.id)
 
         // only start computing graph if initial node has the connecting edge
         if (connectingEdge != undefined) {
-            const firstRequestNode = this.nodes.find((node) => node.type === 'requestNode' && node.id === connectingEdge.target)
-            this.#computeNode(firstRequestNode, JSON.parse('{}'))
+            const firstNode = this.nodes.find((node) => node.id === connectingEdge.target)
+            this.#computeNode(firstNode, undefined)
                 .then(result => {
                     if (result[0] == "Failed") {
                         console.debug('Flow failed at: ', result[1])

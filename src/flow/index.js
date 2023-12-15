@@ -305,8 +305,10 @@ const Flow = () => {
 
   const isValidConnection = (connection) => {
     let canConnect = true
+    // Only 1 outgoing edge from each (source, sourceHandle) is allowed 
+    // as we only support sequential graphs for now
     reactFlowInstance.getEdges().map((edge) => {
-      if (connection.source === edge.source || connection.target === edge.target) {
+      if (connection.source === edge.source && connection.sourceHandle === edge.sourceHandle) {
         canConnect = false
       }
     })

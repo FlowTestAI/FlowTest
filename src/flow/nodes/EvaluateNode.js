@@ -28,7 +28,7 @@ const OperatorMenu = (data) => {
         setOperator(op);
     };
 
-    const [opearator, setOperator] = React.useState(data.opearator ? data.opearator : 'Choose Operator')
+    const [operator, setOperator] = React.useState(data.operator ? data.operator : 'Choose Operator')
 
     return (
         <div>
@@ -39,7 +39,7 @@ const OperatorMenu = (data) => {
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
             >
-                {opearator}
+                {operator}
             </Button>
             <Menu
                 id="basic-menu"
@@ -79,6 +79,20 @@ const Variable = (data, vname) => {
             data[vname] = {}
         }
         data[vname].type = variabletype;
+        switch (variabletype) {
+            case 'String':
+                data[vname].value = ''
+                setVar1('')
+                break;
+            case 'Select':
+                data[vname].value = ''
+                setVar1('')
+                break;
+            case 'Number':
+                data[vname].value = 0
+                setVar1(0)
+                break;
+        }
         setAnchorEl(null);
         setVtype(variabletype);
         setInputType(getInputType(variabletype))
@@ -87,6 +101,13 @@ const Variable = (data, vname) => {
     const [vType, setVtype] = React.useState(data[vname] && data[vname].type ? data[vname].type : 'String')
     const [inputType, setInputType] = React.useState(getInputType(data[vname] && data[vname].type ? data[vname].type : 'String'))
     const [var1, setVar1] = React.useState(data[vname] && data[vname].value ? data[vname].value : "");
+
+    // default value
+    if (!data[vname]) {
+        data[vname] = {}
+        data[vname].type = 'String';
+        data[vname].value = ''
+    }
 
     return (
         <div>
@@ -117,7 +138,6 @@ const Variable = (data, vname) => {
                             <MenuItem onClick={() => handleClose('String')}>String</MenuItem>
                             <MenuItem onClick={() => handleClose('Select')}>Select</MenuItem>
                             <MenuItem onClick={() => handleClose('Number')}>Number</MenuItem>
-                            <MenuItem onClick={() => handleClose('Bool')}>Bool</MenuItem>
                         </Menu>
                     </InputAdornment>
                 }
@@ -132,8 +152,20 @@ const Variable = (data, vname) => {
                     if (!data[vname]) {
                         data[vname] = {}
                     }
-                    data[vname].value = e.target.value;
-                    setVar1(e.target.value)
+                    switch (vType) {
+                        case 'String':
+                            data[vname].value = e.target.value.toString();
+                            setVar1(e.target.value.toString())
+                            break;
+                        case 'Select':
+                            data[vname].value = e.target.value.toString();
+                            setVar1(e.target.value.toString())
+                            break;
+                        case 'Number':
+                            data[vname].value = parseInt(e.target.value);
+                            setVar1(parseInt(e.target.value))
+                            break;
+                    }
                 }}
             />
             <FormHelperText id="outlined-weight-helper-text">{vname}</FormHelperText>
@@ -169,9 +201,28 @@ const EvaluateNode = ({data}) => {
                             {Variable(data, "var2")}
                         </Box>
                     </div>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <Box style={{ width: 300, margin: 10, padding: 5, textAlign: 'right' }}>
+                            True
+                        </Box>
+                        <Box style={{ width: 300, margin: 10, padding: 5, textAlign: 'right' }}>
+                            False
+                        </Box>
+                    </div>
                 </Box>
             </Card>
-            <Handle type="source" position={Position.Right} />
+            <Handle
+                type="source"
+                position={Position.Right}
+                id="true"
+                style={{ bottom: 50, top: 'auto' }}
+            />
+            <Handle
+                type="source"
+                position={Position.Right}
+                id="false"
+                style={{ bottom: 5, top: 'auto' }}
+            />
         </>
     );
 };

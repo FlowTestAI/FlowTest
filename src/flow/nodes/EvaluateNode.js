@@ -88,6 +88,13 @@ const Variable = (data, vname) => {
     const [inputType, setInputType] = React.useState(getInputType(data[vname] && data[vname].type ? data[vname].type : 'String'))
     const [var1, setVar1] = React.useState(data[vname] && data[vname].value ? data[vname].value : "");
 
+    // default value
+    if (!data[vname]) {
+        data[vname] = {}
+        data[vname].type = 'String';
+        data[vname].value = ''
+    }
+
     return (
         <div>
             <OutlinedInput

@@ -2,6 +2,16 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 
 class CollectionUtil {
 
+    private computeUrl(baseUrl: string, path: string) {
+        if (baseUrl.charAt(baseUrl.length - 1) === '/' && path.charAt(0) === '/') {
+            return baseUrl + path.substring(1, path.length);
+        } else if (baseUrl.charAt(baseUrl.length - 1) !== '/' && path.charAt(0) !== '/') {
+            return baseUrl + '/' + path;
+        } else {
+            return baseUrl + path;
+        }
+    }
+
     async parse(collection: object) {
         let parsedNodes = []
         try {
@@ -11,7 +21,7 @@ class CollectionUtil {
                 Object.entries(operation).map(([requestType, request], index1) => {
                     const summary = request['summary'];
                     const operationId = request['operationId'];
-                    var url = baseUrl + path;
+                    var url = this.computeUrl(baseUrl, path);
                     // console.log(operationId)
                     // Get is easy, others are hard
                     if (requestType.toUpperCase() === 'GET' && request["parameters"]) {

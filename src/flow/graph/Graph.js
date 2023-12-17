@@ -23,7 +23,6 @@ class Graph {
     }
 
     #formulateRequest(node, finalUrl) {
-        let options = undefined
         let restMethod = node.data.requestType.toLowerCase()
         let contentType = 'application/json'
         let requestData = undefined
@@ -35,20 +34,6 @@ class Graph {
                     requestData =  node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}')
                 }
             }
-
-            options = {
-                method: 'get',
-                url: finalUrl,
-                headers: {
-                    'Content-type': contentType
-                },
-                data: requestData,
-                auth: {
-                    username: this.authKey ? this.authKey.accessId : '',
-                    password: this.authKey ? this.authKey.accessKey : ''
-                }
-            }
-
         } else if (restMethod === 'post' || restMethod === 'put') {
             if (node.data.requestBody) {
                 if (node.data.requestBody.type === 'form-data') {
@@ -59,19 +44,19 @@ class Graph {
                     contentType = 'application/json'
                     requestData =  node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}')
                 }
-            } 
+            }
+        }
 
-            options = {
-                method: 'post',
-                url: finalUrl,
-                headers: {
-                    'Content-type': contentType
-                },
-                data: requestData,
-                auth: {
-                    username: this.authKey ? this.authKey.accessId : '',
-                    password: this.authKey ? this.authKey.accessKey : ''
-                }
+        const options = {
+            method: restMethod,
+            url: finalUrl,
+            headers: {
+                'Content-type': contentType
+            },
+            data: requestData,
+            auth: {
+                username: this.authKey ? this.authKey.accessId : '',
+                password: this.authKey ? this.authKey.accessKey : ''
             }
         }
 

@@ -38,8 +38,11 @@ class Graph {
             if (node.data.requestBody) {
                 if (node.data.requestBody.type === 'form-data') {
                     contentType = 'multipart/form-data'
-                    requestData = new FormData();
-                    requestData.append(node.data.requestBody.body.key, node.data.requestBody.body.value, node.data.requestBody.body.name)
+                    requestData = {
+                        key: node.data.requestBody.body.key,
+                        value: node.data.requestBody.body.value,
+                        name: node.data.requestBody.body.name
+                    }
                 } else if (node.data.requestBody.type === 'raw-json') {
                     contentType = 'application/json'
                     requestData =  node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}')

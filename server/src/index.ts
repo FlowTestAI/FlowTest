@@ -36,6 +36,13 @@ class App {
     return abortController.signal;
   }
 
+  /** web platform: blob. */
+  private async convertBase64ToBlob(base64: string) {
+    const response = await fetch(base64);
+    const blob = await response.blob();
+    return blob;
+  };
+
   initServer() {
       // to initialize the initial connection with the database, register all entities
       // and "synchronize" database schema, call "initialize()" method of a newly created database
@@ -112,10 +119,20 @@ class App {
       // This endpoint acts as a proxy to route request without origin header for cross-origin requests
       this.app.put('/api/v1/request', async (req: Request, res: Response) => {
         try {
+            if (req.body.headers['Content-type'] === 'multipart/form-data') {
+              const requestData = new FormData();
+              const file = await this.convertBase64ToBlob(req.body.data.value);
+              requestData.append(req.body.data.key, file, req.body.data.name)
+            
+              req.body.data = requestData;
+            }
+            
+            // assuming 'application/json' type
             const options = {
               ...req.body,
               signal: this.newAbortSignal()
             }
+            
             const result = await axios(options);
             return res.status(200).send(result.data);
         } catch(error) {

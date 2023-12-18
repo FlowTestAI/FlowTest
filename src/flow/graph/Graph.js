@@ -309,7 +309,7 @@ class Graph {
                         console.debug('Flow failed at: ', result[1])
                     }
                     this.logs.push("End Flowtest");
-                    console.log(this.graphRunNodeOutput)
+                    this.logs.push(`Total time: ${Date.now() - this.startTime} ms`)
                     this.onGraphComplete(result, this.logs);
                 });
         } else {

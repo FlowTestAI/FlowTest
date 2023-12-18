@@ -75,21 +75,21 @@ const Variable = (data, vname) => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose = (variabletype) => {
-        if (!data[vname]) {
-            data[vname] = {}
+        if (!data.variables[vname]) {
+            data.variables[vname] = {}
         }
-        data[vname].type = variabletype;
+        data.variables[vname].type = variabletype;
         switch (variabletype) {
             case 'String':
-                data[vname].value = ''
+                data.variables[vname].value = ''
                 setVar1('')
                 break;
             case 'Select':
-                data[vname].value = ''
+                data.variables[vname].value = ''
                 setVar1('')
                 break;
             case 'Number':
-                data[vname].value = 0
+                data.variables[vname].value = 0
                 setVar1(0)
                 break;
         }
@@ -98,15 +98,15 @@ const Variable = (data, vname) => {
         setInputType(getInputType(variabletype))
     };
 
-    const [vType, setVtype] = React.useState(data[vname] && data[vname].type ? data[vname].type : 'String')
-    const [inputType, setInputType] = React.useState(getInputType(data[vname] && data[vname].type ? data[vname].type : 'String'))
-    const [var1, setVar1] = React.useState(data[vname] && data[vname].value ? data[vname].value : "");
+    const [vType, setVtype] = React.useState(data.variables[vname] && data.variables[vname].type ? data.variables[vname].type : 'String')
+    const [inputType, setInputType] = React.useState(getInputType(data.variables[vname] && data.variables[vname].type ? data.variables[vname].type : 'String'))
+    const [var1, setVar1] = React.useState(data.variables[vname] && data.variables[vname].value ? data.variables[vname].value : "");
 
     // default value
-    if (!data[vname]) {
-        data[vname] = {}
-        data[vname].type = 'String';
-        data[vname].value = ''
+    if (!data.variables[vname]) {
+        data.variables[vname] = {}
+        data.variables[vname].type = 'String';
+        data.variables[vname].value = ''
     }
 
     return (
@@ -149,20 +149,20 @@ const Variable = (data, vname) => {
                 size="small"
                 className="nodrag"
                 onChange={(e) => {
-                    if (!data[vname]) {
-                        data[vname] = {}
+                    if (!data.variables[vname]) {
+                        data.variables[vname] = {}
                     }
                     switch (vType) {
                         case 'String':
-                            data[vname].value = e.target.value.toString();
+                            data.variables[vname].value = e.target.value.toString();
                             setVar1(e.target.value.toString())
                             break;
                         case 'Select':
-                            data[vname].value = e.target.value.toString();
+                            data.variables[vname].value = e.target.value.toString();
                             setVar1(e.target.value.toString())
                             break;
                         case 'Number':
-                            data[vname].value = parseInt(e.target.value);
+                            data.variables[vname].value = parseInt(e.target.value);
                             setVar1(parseInt(e.target.value))
                             break;
                     }
@@ -174,6 +174,9 @@ const Variable = (data, vname) => {
 }
 
 const EvaluateNode = ({data}) => {
+    if (data.variables == undefined) {
+        data.variables = {}
+    }
 
     return (
         <>

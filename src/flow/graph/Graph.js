@@ -16,6 +16,7 @@ class Graph {
         this.logs = []
         this.timeout = 60000 // 1m timeout
         this.startTime = Date.now()
+        this.graphRunNodeOutput = {}
     }
 
     #checkTimeout() {
@@ -82,8 +83,7 @@ class Graph {
         
         if (variable.type.toLowerCase() === 'select') {
             if (prevNodeOutputData == undefined || Object.keys(prevNodeOutputData).length === 0) {
-                this.logs.push("Cannot evaluate variables as previous node output data is empty")
-                console.debug('Cannot evaluate variables as prevNodeOutput data is empty: ', prevNodeOutputData)
+                this.logs.push(`Cannot evaluate variable ${variable} as previous node output data ${JSON.stringify(prevNodeOutputData)} is empty`)
                 throw "Error evaluating node variables"
             }
             const jsonTree = variable.value.split(".")
@@ -98,7 +98,12 @@ class Graph {
                 
                 return getVal(parent[key], pos + 1);
             }
-            return getVal(prevNodeOutputData, 0);
+            const result = getVal(prevNodeOutputData, 0);
+            if (result == undefined) {
+                this.logs.push(`Cannot evaluate variable ${JSON.stringify(variable)} as previous node output data ${JSON.stringify(prevNodeOutputData)} did not contain the variable`)
+                throw "Error evaluating node variables"
+            }
+            return result;
         }
     }
 
@@ -124,7 +129,6 @@ class Graph {
             // step 3
             const options = this.#formulateRequest(node, finalUrl);
 
-            console.debug('Executing node: ', node)
             console.debug('Evaluated variables: ', evalVariables)
             console.debug('Evaluated Url: ', finalUrl)
             //const res = await axios(options);
@@ -162,8 +166,9 @@ class Graph {
     }
 
     #computeEvaluateNode(node, prevNodeOutputData) {
-        const var1 = this.#computeNodeVariable(node.data.var1, prevNodeOutputData)
-        const var2 = this.#computeNodeVariable(node.data.var2, prevNodeOutputData)
+        const evalVariables = this.#computeNodeVariables(node.data.variables, prevNodeOutputData);
+        const var1 = evalVariables.var1
+        const var2 = evalVariables.var2
 
         const operator = node.data.operator;
         if (operator == undefined) {
@@ -199,13 +204,29 @@ class Graph {
         return connectingEdge;
     }
 
+    #computeDataFromPreviousNodes(node) {
+        var prevNodesData = {}
+        // a request node is allowed multiple incoming edges
+        this.edges.forEach((edge) => {
+            if (edge.target === node.id) {
+                if (this.graphRunNodeOutput[edge.source]) {
+                    prevNodesData = {
+                        ...prevNodesData,
+                        ...this.graphRunNodeOutput[edge.source]
+                    }
+                }
+            }
+        });
+        return prevNodesData;
+    }
+
     async #computeNode(node, prevNodeOutput) {
         let result = undefined
-        const prevNodeOutputData = prevNodeOutput && prevNodeOutput.data ? prevNodeOutput.data : ""
+        const prevNodeOutputData = this.#computeDataFromPreviousNodes(node);
 
         try {
-            // right now we allow a straight sequential graph but
-            // once we allow success/failure routes from each requestNode, this will change
+            console.debug('Executing node: ', node)
+
             if (node.type === 'outputNode') {
                 this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
                 node.data.setOutput(prevNodeOutputData);
@@ -252,6 +273,7 @@ class Graph {
 
             if (connectingEdge != undefined) {
                 const nextNode = this.nodes.find((node) => ['requestNode', 'outputNode', 'evaluateNode', 'delayNode'].includes(node.type) && node.id === connectingEdge.target)
+                this.graphRunNodeOutput[node.id] = result[2] && result[2].data ? result[2].data : {}
                 return this.#computeNode(nextNode, result[2]);
             } else {
                 return result;
@@ -266,6 +288,8 @@ class Graph {
                 node.data.setOutput(undefined)
             }
         })
+        this.graphRunNodeOutput = {}
+
         console.debug('Using authkey: ', this.authKey)
         this.logs.push("Start Flowtest");
         const startNode = this.nodes.find((node) => node.type === 'startNode')
@@ -285,6 +309,7 @@ class Graph {
                         console.debug('Flow failed at: ', result[1])
                     }
                     this.logs.push("End Flowtest");
+                    this.logs.push(`Total time: ${Date.now() - this.startTime} ms`)
                     this.onGraphComplete(result, this.logs);
                 });
         } else {

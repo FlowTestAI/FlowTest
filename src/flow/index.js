@@ -175,7 +175,15 @@ const Flow = () => {
 
   const handleSaveFlow = (flowTestName) => {
       if (reactFlowInstance) {
+        // save might get triggered when the flow is running, don't store animated edges
+        const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
+          return {
+            ...edge,
+            animated: false
+          };
+        })
         const rfInstanceObject = reactFlowInstance.toObject()
+        rfInstanceObject.edges = updatedEdges;
         // rfInstanceObject.nodes = nodes
         const flowData = JSON.stringify(rfInstanceObject)
 
@@ -312,6 +320,17 @@ const Flow = () => {
         canConnect = false
       }
     })
+
+    // multiple incoming edges are only allowed for request nodes
+    const nodes = reactFlowInstance.getNodes();
+    const nodeType = nodes.find((node) => node.id === connection.target).type;
+    if (nodeType != 'requestNode') {
+      reactFlowInstance.getEdges().map((edge) => {
+        if (connection.target === edge.target) {
+          canConnect = false
+        }
+      })
+    }
     return canConnect;
   }
 

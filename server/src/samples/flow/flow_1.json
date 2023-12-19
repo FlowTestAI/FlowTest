@@ -130,7 +130,7 @@
              "variables":{
                 "var1":{
                    "type":"Select",
-                   "value":"id"
+                   "value":"tags.0.id"
                 },
                 "var2":{
                    "type":"String",

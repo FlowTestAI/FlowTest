@@ -43,16 +43,65 @@ class App {
     return blob;
   };
 
+  private async createCollection(path: string) {
+    const spec = fs.readFileSync(path, 'utf8');
+    // async/await syntax
+    let api = await SwaggerParser.validate(path);
+    // console.log("API name: %s, Version: %s", api.info.title, api.info.version);
+
+    // resolve references in openapi spec
+    const resolvedSpec = await JsonRefs.resolveRefs(api);
+    const parsedNodes = await this.collectionUtil.parse(resolvedSpec.resolved)
+
+    const newCollection = new Collection()
+    const constructCollection = {
+      name: api.info.title,
+      collection: spec,
+      nodes: JSON.stringify(parsedNodes)
+    }
+    Object.assign(newCollection, constructCollection)
+
+    const result = await this.appDataSource.getRepository(Collection).save(newCollection);
+    console.log(`Created collection: ${result.name}`)
+    return result;
+  }
+
+  private async initSamples() {
+    // collection
+    const collections = await this.appDataSource.getRepository(Collection).find();
+    const sample_collection = collections.find((collection) => collection.name === "Swagger Petstore - OpenAPI 3.0")
+    if (sample_collection === undefined) {
+      await this.createCollection('src/samples/collection/petstore.yaml');
+    }
+
+    // flows
+    const flowtests = await this.appDataSource.getRepository(FlowTest).find();
+    const sample_flow = flowtests.find((flowtest) => flowtest.name === "flow_1")
+    if (sample_flow === undefined) {
+      const flowData = fs.readFileSync('src/samples/flow/flow_1.json', 'utf8');
+      const newFlowTestBody = {
+        name: "flow_1",
+        flowData
+      }
+      const newFlowTest = new FlowTest()
+      Object.assign(newFlowTest, newFlowTestBody)
+
+      await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
+      console.log(`Created sample flow: flow_1`)
+    }
+  }
+
   initServer() {
       // to initialize the initial connection with the database, register all entities
       // and "synchronize" database schema, call "initialize()" method of a newly created database
       // once in your application bootstrap
       this.appDataSource.initialize()
-      .then(() => {
-          // here you can start to work with your database
-          console.log('📦 [server]: Data Source has been initialized!')
-      })
-      .catch((error) => console.log('❌ [server]: Error during Data Source initialization:', error))
+        .then(() => {
+            // here you can start to work with your database
+            console.log('📦 [server]: Data Source has been initialized!')
+            this.initSamples();
+        })
+        .catch((error) => console.log('❌ [server]: Error during Data Source initialization:', error))
 
       this.app.use(cors())
 
@@ -70,9 +119,10 @@ class App {
         const newFlowTest = new FlowTest()
         Object.assign(newFlowTest, body)
 
-        const results = await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
+        const result = await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
+        console.log(`Created flow: ${result.name}`)
 
-        return res.json(results);
+        return res.json(result);
       });
 
       // Update FlowTest
@@ -88,6 +138,7 @@ class App {
           flowtest.flowData = updateFlowTest.flowData
 
           const result = await this.appDataSource.getRepository(FlowTest).save(flowtest)
+          console.log(`Updated flow: ${result.name}`)
 
           return res.json(result)
         }
@@ -111,6 +162,7 @@ class App {
 
         if (flowtest) {
           const result = await this.appDataSource.getRepository(FlowTest).remove(flowtest)
+          console.log(`Deleted flow: ${result.name}`)
           return res.json(result)
         }
         return res.status(404).send(`FlowTest ${req.params.id} not found`)
@@ -136,7 +188,6 @@ class App {
             const result = await axios(options);
             return res.status(200).send(result.data);
         } catch(error) {
-            //console.log('Error encountered: ', error)
             if(error.code === "ERR_CANCELED") {
               //timeout
               return res.status(408).send(error)
@@ -152,11 +203,9 @@ class App {
               return res.status(503).send(error.request);
             } else if (error.message) {
               // Something happened in setting up the request that triggered an Error
-              //console.log('Response: ', error.message);
               return res.status(400).send(error.message);
             } else {
               // Something not related to axios request
-              //console.log('Failure: ', error);
               return res.status(500).send(error);
             }
         }
@@ -173,27 +222,9 @@ class App {
 
       const upload = multer({ dest: 'uploads/' })
       this.app.post('/api/v1/collection', upload.single('file'), async (req: Request, res: Response) => {
-        console.log(req.file)
-        const spec = fs.readFileSync(req.file.path, 'utf8');
+        console.debug(req.file)
         try {
-          // async/await syntax
-          let api = await SwaggerParser.validate(req.file.path);
-          console.log("API name: %s, Version: %s", api.info.title, api.info.version);
-
-          // resolve references in openapi spec
-          const resolvedSpec = await JsonRefs.resolveRefs(api);
-          // console.log('resolved json: ', JSON.stringify(resolvedSpec, null, 2));
-          const parsedNodes = await this.collectionUtil.parse(resolvedSpec.resolved)
-
-          const newCollection = new Collection()
-          const constructCollection = {
-            name: api.info.title,
-            collection: spec,
-            nodes: JSON.stringify(parsedNodes)
-          }
-          Object.assign(newCollection, constructCollection)
-
-          const results = await this.appDataSource.getRepository(Collection).save(newCollection);
+          const results = await this.createCollection(req.file.path);
           return res.json(results);
         } catch(err) {
           console.error(err);
@@ -209,6 +240,7 @@ class App {
 
         if (collection) {
           const result = await this.appDataSource.getRepository(Collection).remove(collection)
+          console.log(`Deleted collection: ${result.name}`)
           return res.json(result)
         }
         return res.status(404).send(`Collection ${req.params.id} not found`)
@@ -236,9 +268,10 @@ class App {
         const newAuthKey = new AuthKey()
         Object.assign(newAuthKey, body)
 
-        const results = await this.appDataSource.getRepository(AuthKey).save(newAuthKey);
+        const result = await this.appDataSource.getRepository(AuthKey).save(newAuthKey);
+        console.log(`Created Auth Credentials: ${result.name}`)
 
-        return res.json(results);
+        return res.json(result);
       });
 
       // Get all Auth keys
@@ -256,6 +289,7 @@ class App {
 
         if (authkey) {
           const result = await this.appDataSource.getRepository(AuthKey).remove(authkey)
+          console.log(`Deleted Auth Credentials: ${result.name}`)
           return res.json(result)
         }
         return res.status(404).send(`AuthKey ${req.params.id} not found`)

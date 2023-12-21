@@ -39,14 +39,6 @@ import DeleteDialog from './DeleteDialog';
 
 import PropTypes from 'prop-types';
 
-const Item1 = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(2),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-}));
-
 function Item(props) {
     const { sx, ...other } = props;
     return (
@@ -84,8 +76,6 @@ Item.propTypes = {
 
 const Collections = () => {
 
-    const navigate = useNavigate()
-
     const URLpath = document.location.pathname.toString().split('/')
     const collectionId = URLpath[URLpath.length - 1] === 'collection' ? undefined : URLpath[URLpath.length - 1]
 
@@ -95,11 +85,10 @@ const Collections = () => {
     const getCollectionApi = wrapper(collectionApi.getCollection);
 
     const [savedCollections, setSavedCollections] = useState([]);
-    const [createdCollection, setCreatedCollection] = useState(undefined);
     const [retrievedCollection, setRetrievedCollection] = useState(undefined);
 
     // notification
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { enqueueSnackbar, _ } = useSnackbar();
 
     // Initialization
 
@@ -115,7 +104,7 @@ const Collections = () => {
     useEffect(() => {
         if (getAllCollectionsApi.data) {
             const retrievedCollections = getAllCollectionsApi.data
-            console.log('Got saved collections: ', retrievedCollections);
+            console.debug('Got saved collections: ', retrievedCollections);
             setSavedCollections(retrievedCollections)
         } else if (getAllCollectionsApi.error) {
             const error = getAllCollectionsApi.error
@@ -132,7 +121,7 @@ const Collections = () => {
     useEffect(() => {
         if (getCollectionApi.data) {
             const retrievedCollection = getCollectionApi.data
-            console.log('Got collection: ', retrievedCollection);
+            console.debug('Got collection: ', retrievedCollection);
             setRetrievedCollection(retrievedCollection)
         } else if (getCollectionApi.error) {
             const error = getCollectionApi.error
@@ -159,8 +148,7 @@ const Collections = () => {
     useEffect(() => {
         if (createCollectionApi.data) {
             const createdCollection = createCollectionApi.data
-            console.log('Created collection: ', createdCollection);
-            setCreatedCollection(createdCollection)
+            console.debug('Created collection: ', createdCollection);
             enqueueSnackbar('Created collection!', { variant: 'success' });
             getAllCollectionsApi.request();
         } else if (createCollectionApi.error) {
@@ -185,7 +173,7 @@ const Collections = () => {
     }
 
     const handleDeleteCollection = () => {
-        if (deleteId != undefined) {
+        if (deleteId !== undefined) {
             deleteCollectionApi.request(deleteId);
         }
         setDeleteId(undefined);
@@ -194,7 +182,7 @@ const Collections = () => {
     useEffect(() => {
         if (deleteCollectionApi.data) {
             const deletedCollection = deleteCollectionApi.data
-            console.log('Deleted collection: ', deletedCollection);
+            console.debug('Deleted collection: ', deletedCollection);
             enqueueSnackbar('Deleted collection!', { variant: 'success' });
             getAllCollectionsApi.request();
         } else if (deleteCollectionApi.error) {
@@ -211,7 +199,7 @@ const Collections = () => {
     return (
         <>
             <Card>
-                {collectionId == undefined ?
+                {collectionId === undefined ?
                     (
                         <CardContent>
                             <Stack flexDirection='row'>
@@ -269,7 +257,7 @@ const Collections = () => {
                     ):
                     (
                         <CardContent>
-                            {collectionId != undefined && retrievedCollection != undefined && (
+                            {collectionId !== undefined && retrievedCollection !== undefined && (
                                 <div>
                                     <Accordion>
                                         <AccordionSummary

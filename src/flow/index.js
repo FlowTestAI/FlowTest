@@ -17,7 +17,6 @@ import {
   Typography, 
   ButtonBase, 
   Avatar,
-  Button,
   Drawer,
   TableContainer,
   Paper,
@@ -38,7 +37,7 @@ import { useSnackbar } from 'notistack';
 import flowTestApi from '../api/flowtest'
 
 // icons
-import { IconBrandCodesandbox, IconDeviceFloppy, IconChevronLeft, IconFiles } from '@tabler/icons-react';
+import { IconDeviceFloppy, IconChevronLeft, IconFiles } from '@tabler/icons-react';
 
 import RequestNode from './nodes/RequestNode';
 import SelectAuthComponent from './SelectAuthComponent';
@@ -278,7 +277,7 @@ const Flow = () => {
         if (initialNodes != undefined) {
           const nodes = []
           const edges = []
-          nodes.push({ id: '0', type: 'startNode', position: { x: 150, y: 150 } })
+          nodes.push({ id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false })
           for (let i = 1; i <= initialNodes.length; i++) {
             nodes.push({
               id: `${i}`,
@@ -300,7 +299,7 @@ const Flow = () => {
           setEdges(edges);
           setIsDirty(true);
         } else {
-          setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 } }])
+          setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false }])
           setEdges([])
           setIsDirty(false);
         }
@@ -369,7 +368,7 @@ const Flow = () => {
 
   // load flowtest
 
-  const handleExport = (e) => {
+  const handleImport = (e) => {
     if (!e.target.files) return
 
     if (e.target.files.length === 1) {
@@ -483,7 +482,7 @@ const Flow = () => {
                                     const flowData = JSON.stringify(rfInstanceObject)
                                     let dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(flowData)
                   
-                                    let exportFileDefaultName = `flowTest.json`
+                                    let exportFileDefaultName = `${flowTest.name}.json`
                     
                                     let linkElement = document.createElement('a')
                                     linkElement.setAttribute('href', dataUri)
@@ -516,7 +515,7 @@ const Flow = () => {
                           >
                               <UploadFileIcon stroke={1.5} size='1.3rem' />
                           </Avatar>
-                          <input type='file' accept=".json" hidden onChange={(e) => handleExport(e)} />
+                          <input type='file' accept=".json" hidden onChange={(e) => handleImport(e)} />
                       </ButtonBase>
                       { graphRun && 
                         <ButtonBase title='View Logs' sx={{ borderRadius: '50%', mr: 2 }} color='black'>

@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { 
     Card, 
     CardContent,
-    CardHeader,
     TextField,
     Button,
     Stack,
@@ -30,9 +29,9 @@ import collectionApi from '../api/collection'
 
 const parseResponse = (outputNodes, savedNodes) => {
     let parsedNodes = [];
-    outputNodes.map((outputNode, index) => {
-        const savedNode = savedNodes.find((node, index) => node.operationId === outputNode.name);
-        if (savedNode != undefined) {
+    outputNodes.forEach((outputNode, _) => {
+        const savedNode = savedNodes.find((node, _) => node.operationId === outputNode.name);
+        if (savedNode !== undefined) {
             const node_arguments = JSON.parse(outputNode.arguments)
             if (node_arguments.requestBody) {
                 savedNode["requestBody"] = {};
@@ -41,7 +40,7 @@ const parseResponse = (outputNodes, savedNodes) => {
             }
             if (node_arguments.parameters) {
                 savedNode.variables = {}
-                Object.entries(node_arguments.parameters).map(([paramName, paramValue], index) => {
+                Object.entries(node_arguments.parameters).forEach(([paramName, paramValue], _) => {
                     savedNode.variables[paramName] = {
                         type: typeof(paramValue),
                         value: paramValue
@@ -136,8 +135,8 @@ const FlowTestAI = () => {
             console.log('Got saved collections: ', retrievedCollections);
             setSavedCollections(retrievedCollections)
             let nodes = []
-            retrievedCollections.map((collection, index) => {
-                JSON.parse(collection.nodes).map((node, index1) => {
+            retrievedCollections.forEach((collection, _) => {
+                JSON.parse(collection.nodes).forEach((node, _) => {
                     nodes.push(node);
                 })
             })

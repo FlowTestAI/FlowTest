@@ -12,7 +12,8 @@ import {
     FormHelperText,
     Button,
     Menu,
-    MenuItem
+    MenuItem,
+    Switch
 } from "@mui/material"
 import Operators from '../../constants/operators';
 
@@ -92,6 +93,10 @@ const Variable = (data, vname) => {
                 data.variables[vname].value = 0
                 setVar1(0)
                 break;
+            case 'Boolean':
+                data.variables[vname].value = false
+                setVar1(false)
+                break;
         }
         setAnchorEl(null);
         setVtype(variabletype);
@@ -111,63 +116,122 @@ const Variable = (data, vname) => {
 
     return (
         <div>
-            <OutlinedInput
-                type={inputType}
-                id="outlined-adornment-weight"
-                value={var1}
-                endAdornment={
-                    <InputAdornment position="end">
-                        <Button
-                            id="basic-button"
-                            aria-controls={open ? 'basic-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                            onClick={handleClick}
-                        >
-                            {vType}
-                        </Button>
-                        <Menu
-                            id="basic-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                            MenuListProps={{
-                            'aria-labelledby': 'basic-button',
-                            }}
-                        >
-                            <MenuItem onClick={() => handleClose('String')}>String</MenuItem>
-                            <MenuItem onClick={() => handleClose('Select')}>Select</MenuItem>
-                            <MenuItem onClick={() => handleClose('Number')}>Number</MenuItem>
-                        </Menu>
-                    </InputAdornment>
-                }
-                aria-describedby="outlined-weight-helper-text"
-                inputProps={{
-                'aria-label': 'weight'
-                }}
-                fullWidth
-                size="small"
-                className="nodrag"
-                onChange={(e) => {
-                    if (!data.variables[vname]) {
-                        data.variables[vname] = {}
-                    }
-                    switch (vType) {
-                        case 'String':
-                            data.variables[vname].value = e.target.value.toString();
-                            setVar1(e.target.value.toString())
-                            break;
-                        case 'Select':
-                            data.variables[vname].value = e.target.value.toString();
-                            setVar1(e.target.value.toString())
-                            break;
-                        case 'Number':
-                            data.variables[vname].value = parseInt(e.target.value);
-                            setVar1(parseInt(e.target.value))
-                            break;
-                    }
-                }}
-            />
+            {vType === 'Boolean' ? 
+                (
+                    <TextField
+                        variant="outlined"
+                        label={var1.toString()}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Switch
+                                        checked={var1}
+                                        onChange={(e) => {
+                                                if (!data.variables[vname]) {
+                                                    data.variables[vname] = {}
+                                                }
+                                                data.variables[vname].value = e.target.checked
+                                                setVar1(e.target.checked)
+                                            }
+                                        }
+                                        color="primary"
+                                        inputProps={{ 'aria-label': 'toggle switch' }}
+                                    />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <Button
+                                        id="basic-button"
+                                        aria-controls={open ? 'basic-menu' : undefined}
+                                        aria-haspopup="true"
+                                        aria-expanded={open ? 'true' : undefined}
+                                        onClick={handleClick}
+                                    >
+                                        {vType}
+                                    </Button>
+                                    <Menu
+                                        id="basic-menu"
+                                        anchorEl={anchorEl}
+                                        open={open}
+                                        onClose={handleClose}
+                                        MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                        }}
+                                    >
+                                        <MenuItem onClick={() => handleClose('String')}>String</MenuItem>
+                                        <MenuItem onClick={() => handleClose('Select')}>Select</MenuItem>
+                                        <MenuItem onClick={() => handleClose('Number')}>Number</MenuItem>
+                                        <MenuItem onClick={() => handleClose('Boolean')}>Boolean</MenuItem>
+                                    </Menu>
+                                </InputAdornment>
+                            )
+                        }}
+                    />
+                    
+                ):
+                (
+                    <OutlinedInput
+                        type={inputType}
+                        id="outlined-adornment-weight"
+                        value={var1}
+                        endAdornment={
+                            <InputAdornment position="end">
+                                <Button
+                                    id="basic-button"
+                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}
+                                >
+                                    {vType}
+                                </Button>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                    'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={() => handleClose('String')}>String</MenuItem>
+                                    <MenuItem onClick={() => handleClose('Select')}>Select</MenuItem>
+                                    <MenuItem onClick={() => handleClose('Number')}>Number</MenuItem>
+                                    <MenuItem onClick={() => handleClose('Boolean')}>Boolean</MenuItem>
+                                </Menu>
+                            </InputAdornment>
+                        }
+                        aria-describedby="outlined-weight-helper-text"
+                        inputProps={{
+                        'aria-label': 'weight'
+                        }}
+                        fullWidth
+                        size="small"
+                        className="nodrag"
+                        onChange={(e) => {
+                            if (!data.variables[vname]) {
+                                data.variables[vname] = {}
+                            }
+                            switch (vType) {
+                                case 'String':
+                                    data.variables[vname].value = e.target.value.toString();
+                                    setVar1(e.target.value.toString())
+                                    break;
+                                case 'Select':
+                                    data.variables[vname].value = e.target.value.toString();
+                                    setVar1(e.target.value.toString())
+                                    break;
+                                case 'Number':
+                                    data.variables[vname].value = parseInt(e.target.value);
+                                    setVar1(parseInt(e.target.value))
+                                    break;
+                            }
+                        }}
+                    />
+                )
+            }
+            
             <FormHelperText id="outlined-weight-helper-text">{vname}</FormHelperText>
         </div>
     )

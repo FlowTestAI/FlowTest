@@ -12,32 +12,30 @@ import {
     OutlinedInput, 
     Typography,
     TextField,
-    MenuItem,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    IconButton,
+    MenuItem
 } from '@mui/material';
 
-import { useSnackbar } from 'notistack';
-
 // icons
-import { IconPlus, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconPlus } from '@tabler/icons-react';
 
 const variableTypes = [
     {
-      value: 'String',
-      label: 'String',
+        value: 'String',
+        label: 'String',
     },
     {
-      value: 'Select',
-      label: 'Select',
+        value: 'Select',
+        label: 'Select',
+    },
+    {
+        value: 'Number',
+        label: 'Number'
+    },
+    {
+        value: 'Boolean',
+        label: 'Boolean'
     }
-  ];
+];
 
 const VariableDialog = ({ show, onCancel, onVariableAdd }) => {
 
@@ -77,7 +75,7 @@ const VariableDialog = ({ show, onCancel, onVariableAdd }) => {
                             id="filled-select-currency"
                             select
                             label=""
-                            defaultValue="String"
+                            defaultValue={variableType}
                             helperText="Please select variable type"
                             variant="filled"
                             >

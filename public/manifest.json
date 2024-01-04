@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "FlowTest",
+  "name": "Drag & Drop UI for openAI function calling",
   "icons": [
     {
       "src": "favicon.ico",

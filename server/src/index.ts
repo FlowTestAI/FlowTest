@@ -188,9 +188,12 @@ class App {
             const result = await axios(options);
             return res.status(200).send(result.data);
         } catch(error) {
-            if(error.code === "ERR_CANCELED") {
+            if (error.code === "ERR_CANCELED") {
               //timeout
               return res.status(408).send(error)
+            }
+            else if (error.code === "ENOTFOUND") {
+              return res.status(404).send(error)
             }
             else if (error.response) {
               // The request was made and the server responded with a status code

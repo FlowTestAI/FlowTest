@@ -8,7 +8,7 @@
 - Import your openAPI spec and use natural language to chain together your api definitions to perform complex operations.
 - Easily export these runnable chains in json format and share with others.
 
-![alt text](public/flowtest.gif)
+![alt text](public/flowtest_1.gif)
 
 ## 👨‍💻 Developers
 FlowTest has 2 major components -

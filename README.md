@@ -1,10 +1,14 @@
 # FlowTest
 
-- Drag & drop UI for openAI function calling.
-- Contruct sharable flows that can act as end to end test in minutes.
-- Import your openAPI spec and use natural language to connect your openAPI components in a meaningful way
+[![Release Notes](https://img.shields.io/github/release/FlowTestAI/FlowTest)](https://github.com/FlowTestAI/FlowTest/releases)
+[![Linkedin](https://img.shields.io/badge/LinkedIn-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/company/flowtestai)
+[![Twitter Follow](https://img.shields.io/twitter/follow/FlowTestAI?style=social)](https://twitter.com/FlowTestAI)
 
-![alt text](public/flowtest.gif)
+- Drag & drop UI for openAI function calling.
+- Import your openAPI spec and use natural language to chain together your api definitions to perform complex operations.
+- Easily export these runnable chains in json format and share with others.
+
+![alt text](public/flowtest_1.gif)
 
 ## 👨‍💻 Developers
 FlowTest has 2 major components -
@@ -21,7 +25,7 @@ FlowTest has 2 major components -
 ### Setup
 1. Clone the repository
     ```bash
-    git clone https://github.com/jsajal/FlowTest
+    git clone https://github.com/FlowTestAI/FlowTest.git
     ```
 2. Go into repository folder
     ```bash
@@ -43,6 +47,10 @@ FlowTest has 2 major components -
     npm start
     ```
     You can now access the app on [http://localhost:3500](http://localhost:3500)
+
+## 🙋 Support
+
+Feel free to ask any questions, raise problems, and request new features in [discussion](https://github.com/FlowTestAI/FlowTest/discussions)
 
 ## 📄 License
 Source code in this repository is made available under the [MIT License](LICENSE.md).

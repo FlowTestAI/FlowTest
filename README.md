@@ -5,8 +5,8 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/FlowTestAI?style=social)](https://twitter.com/FlowTestAI)
 
 - Drag & drop UI for openAI function calling.
-- Contruct sharable flows that can act as end to end test in minutes.
-- Import your openAPI spec and use natural language to connect your openAPI components in a meaningful way
+- Import your openAPI spec and use natural language to chain together your api definitions to perform complex operations.
+- Easily export these runnable chains in json format and share with others.
 
 ![alt text](public/flowtest.gif)
 

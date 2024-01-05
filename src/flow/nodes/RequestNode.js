@@ -178,7 +178,7 @@ const RequestNode = ({data}) => {
                                                     }}
                                                     fullWidth
                                                     size="small"
-                                                    className="nodrag"
+                                                    className="nodrag nowheel"
                                                     onChange={(e) => handleVariableChange(e, id)}
                                                     type={getInputType(variables[id].type)}
                                                 />

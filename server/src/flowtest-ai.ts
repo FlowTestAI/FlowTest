@@ -3,6 +3,8 @@ import JsonRefs from 'json-refs'
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
 import * as fs from 'fs';
+import { HNSWLib } from "@langchain/community/vectorstores/hnswlib";
+import { OpenAIEmbeddings } from "@langchain/openai";
 
 dotenv.config();
 
@@ -20,7 +22,8 @@ const MAX_CALLS = 10
 class FlowtestAI {
 
     async generate(collection: string, user_instruction: string): Promise<any[]> {
-        const functions = await this.get_available_functions(collection);
+        const available_functions = await this.get_available_functions(collection);
+        const functions = await this.filter_functions(available_functions, user_instruction);
         return await this.process_user_instruction(functions, user_instruction);
     }
 
@@ -73,8 +76,37 @@ class FlowtestAI {
                 )
             })
         })
-        console.log(JSON.stringify(functions));
+        // console.log(JSON.stringify(functions));
         return functions;
+    }
+
+    async filter_functions(functions: any[], instruction: string): Promise<any[]> {
+        const chunkSize = 32;
+        const chunks = [];
+
+        for (let i = 0; i < functions.length; i += chunkSize) {
+            const chunk = functions.slice(i, i + chunkSize);
+            chunks.push(chunk);
+        }
+
+        const documents = chunks.map((chunk) => JSON.stringify(chunk));
+
+        const vectorStore = await HNSWLib.fromTexts(
+            documents,
+            [],
+            new OpenAIEmbeddings({
+                openAIApiKey: process.env.OPENAI_API_KEY
+            })
+        );
+
+        // 32 x 4 = 128 (max no of functions accepted by openAI function calling)
+        const retrievedDocuments = await vectorStore.similaritySearch(instruction, 4);
+        var selectedFunctions = [];
+        retrievedDocuments.forEach((document) => {
+            selectedFunctions = selectedFunctions.concat(JSON.parse(document.pageContent));
+        })
+        
+        return selectedFunctions;
     }
 
     async get_openai_response(functions: any[], messages: any[]) {
@@ -105,8 +137,7 @@ class FlowtestAI {
                 console.log(message["function_call"])
                 messages.push(message)
 
-                // For the sake of this example, we'll simply add a message to simulate success.
-                // Normally, you'd want to call the function here, and append the results to messages.
+                // We'll simply add a message to simulate successful function call.
                 messages.push(
                     {
                         "role": "function",

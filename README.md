@@ -5,13 +5,13 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/FlowTestAI?style=social)](https://twitter.com/FlowTestAI)
 [![Chat on Discord](https://img.shields.io/badge/chat-Discord-7289DA?logo=discord)](https://discord.gg/Pf9tdSjPeF)
 
-Leverage GenAI to convert your customer interactions with your product into runnable flows all via natural language and simple drag and drop. Generated flows not only test the functional correctness of your product but also the time it takes your customers to perform these actions together.
+Leverage GenAI to convert your customer's interactions with your product into runnable flows all via natural language and simple drag and drop. Generated flows not only test the functional correctness of your product but also the time it takes your customers to perform these actions together.
 
-Step 1 - Import your openAPI spec and describe your prodcut flow in natural language to our AI.
-Step 2 - Add an evaluate node at the end via simple drag and drop to check the final output.
-Step 3 - Run the created flow for a success/falure and observe the generated logs and timing info.
-Step 4 - Easily export these runnable chains in json format and share with others.
-Step 5 - Have a beer! 🍺
+- Step 1: Import your openAPI spec and describe your prodcut flow in natural language to our AI.
+- Step 2: Add an evaluate node at the end via simple drag and drop to check the final output.
+- Step 3: Run the created flow for a success/falure and observe the generated logs and timing info.
+- Step 4: Save and Export these runnable chains in json format and share with others.
+- Step 5: Have a beer! 🍺
 
 ![alt text](public/flowtest_1.gif)
 

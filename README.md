@@ -39,9 +39,8 @@ FlowTest has 2 major components -
 3. Install all dependencies of all modules:
     ```bash
     npm install
-    cd server && npm install
     ```
-4. Rename .env.example to .env and enter your cerdentials, for instance
+4. Rename `.env.example` to `.env` and enter your cerdentials, for instance
     ```bash
     OPENAI_API_KEY={API_KEY_VALUE}
     PORT=3500

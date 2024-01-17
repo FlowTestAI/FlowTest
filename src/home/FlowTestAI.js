@@ -104,7 +104,7 @@ const FlowTestAI = () => {
                 }
                 navigate('/flow', {state: initialNodes})
             } catch (err) {
-                enqueueSnackbar(`Failed to create flowtest: ${err}`, { variant: 'error'});
+                enqueueSnackbar(`Failed to create flowtest: ${JSON.stringify(err)}`, { variant: 'error'});
             }
         //   setFlowTest(createdFlowTest)
         //   setIsDirty(false)

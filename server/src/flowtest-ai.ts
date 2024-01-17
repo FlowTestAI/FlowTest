@@ -3,7 +3,7 @@ import JsonRefs from 'json-refs'
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
 import * as fs from 'fs';
-import { HNSWLib } from "@langchain/community/vectorstores/hnswlib";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAIEmbeddings } from "@langchain/openai";
 
 dotenv.config();
@@ -91,7 +91,7 @@ class FlowtestAI {
 
         const documents = chunks.map((chunk) => JSON.stringify(chunk));
 
-        const vectorStore = await HNSWLib.fromTexts(
+        const vectorStore = await MemoryVectorStore.fromTexts(
             documents,
             [],
             new OpenAIEmbeddings({

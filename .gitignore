@@ -36,3 +36,4 @@ uploads/
 
 # env
 .env
+.env.example

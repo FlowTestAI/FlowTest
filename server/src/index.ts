@@ -13,6 +13,9 @@ import { AuthKey } from "./entities/AuthKey";
 import JsonRefs from 'json-refs'
 import FlowtestAI from "./flowtest-ai";
 import axios from "axios";
+import createDirectory from "./controllers/file-manager/create-directory";
+import deleteDirectory from "./controllers/file-manager/delete-directory";
+import createFile from "./controllers/file-manager/create-file";
 
 class App {
 
@@ -305,6 +308,33 @@ class App {
         const nodes = await flowTestAI.generate(request.collection, request.cmd);
 
         return res.json(nodes);
+      });
+
+      // File Manager
+
+      // Create directory
+      this.app.post('/api/v1/file-manager/directory', async (req: Request, res: Response) => {
+        // Get the directory name that will be created, also get the path of the directory
+        const { name, path } = req.body;
+
+        return res.json(createDirectory(name, path));
+      });
+
+      // Delete directory
+      this.app.delete('/api/v1/file-manager/directory', async (req: Request, res: Response) => {
+        // Get the directory name to be deleted
+        const path = req.body;
+
+        return res.json(deleteDirectory(path));
+      });
+
+      // Create file
+      this.app.put('/api/v1/file-manager/file', async (req: Request, res: Response) => {
+        // Get the file name that will be created, also get the path of the directory 
+        // and the content to write to that file
+        const { name, path, content } = req.body;
+
+        return res.json(createFile(name, path, content));
       });
 
       // All other GET requests not handled before will return our React app

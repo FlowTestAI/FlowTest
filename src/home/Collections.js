@@ -38,6 +38,7 @@ import { IconUpload, IconTrash } from '@tabler/icons-react';
 import DeleteDialog from './DeleteDialog';
 
 import PropTypes from 'prop-types';
+import CollectionTree from '../file-manager/CollectionTree';
 
 function Item(props) {
     const { sx, ...other } = props;
@@ -86,6 +87,9 @@ const Collections = () => {
 
     const [savedCollections, setSavedCollections] = useState([]);
     const [retrievedCollection, setRetrievedCollection] = useState(undefined);
+
+    const [savedTreeNodes, setSavedTreeNodes] = useState([]);
+    const [savedTrees, setSavedTrees] = useState([]);
 
     // notification
     const { enqueueSnackbar, _ } = useSnackbar();
@@ -148,7 +152,12 @@ const Collections = () => {
     useEffect(() => {
         if (createCollectionApi.data) {
             const createdCollection = createCollectionApi.data
-            console.debug('Created collection: ', createdCollection);
+            console.debug('Created collection: ', createdCollection.metadata);
+            console.debug('Created tree node: ', createdCollection.node);
+            setSavedTreeNodes([...savedTreeNodes, createdCollection.node]);
+            const collectionTree = new CollectionTree(createdCollection.node, createdCollection.metadata.id)
+            setSavedTrees([...savedTrees, collectionTree])
+            console.log('Created collection tree: ', collectionTree)
             enqueueSnackbar('Created collection!', { variant: 'success' });
             getAllCollectionsApi.request();
         } else if (createCollectionApi.error) {

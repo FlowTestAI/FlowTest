@@ -12,6 +12,7 @@ const client = axios.create({
 const createCollection = (file) => {
     const bodyFormData = new FormData();
     bodyFormData.append('file', file, file.name);
+    bodyFormData.append('rootPath', "/Users/sjain/Desktop/")
     return client.post('/collection', bodyFormData);
 }
 

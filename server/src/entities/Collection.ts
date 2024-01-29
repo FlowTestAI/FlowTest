@@ -14,6 +14,9 @@ export class Collection {
     @Column({ type: 'text' })
     nodes: string
 
+    @Column({ type: 'text' })
+    rootPath: string
+
     @CreateDateColumn()
     createdDate: Date
 

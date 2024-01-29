@@ -16,6 +16,8 @@ import axios from "axios";
 import createDirectory from "./controllers/file-manager/create-directory";
 import deleteDirectory from "./controllers/file-manager/delete-directory";
 import createFile from "./controllers/file-manager/create-file";
+import makeNode from "./controllers/file-manager/Node";
+import concatRoute from "./controllers/file-manager/util/concat-route";
 
 class App {
 
@@ -46,7 +48,7 @@ class App {
     return blob;
   };
 
-  private async createCollection(path: string) {
+  private async createCollection(path: string, rootPath: string) {
     const spec = fs.readFileSync(path, 'utf8');
     // async/await syntax
     let api = await SwaggerParser.validate(path);
@@ -60,39 +62,49 @@ class App {
     const constructCollection = {
       name: api.info.title,
       collection: spec,
-      nodes: JSON.stringify(parsedNodes)
+      nodes: JSON.stringify(parsedNodes),
+      rootPath: rootPath
     }
     Object.assign(newCollection, constructCollection)
 
-    const result = await this.appDataSource.getRepository(Collection).save(newCollection);
-    console.log(`Created collection: ${result.name}`)
-    return result;
-  }
+    const dirResult = createDirectory(api.info.title, rootPath)
 
-  private async initSamples() {
-    // collection
-    const collections = await this.appDataSource.getRepository(Collection).find();
-    const sample_collection = collections.find((collection) => collection.name === "Swagger Petstore - OpenAPI 3.0")
-    if (sample_collection === undefined) {
-      await this.createCollection('src/samples/collection/petstore.yaml');
-    }
-
-    // flows
-    const flowtests = await this.appDataSource.getRepository(FlowTest).find();
-    const sample_flow = flowtests.find((flowtest) => flowtest.name === "flow_1")
-    if (sample_flow === undefined) {
-      const flowData = fs.readFileSync('src/samples/flow/flow_1.json', 'utf8');
-      const newFlowTestBody = {
-        name: "flow_1",
-        flowData
+    if (dirResult.status === 201) {
+      const result = await this.appDataSource.getRepository(Collection).save(newCollection);
+      console.log(`Created collection: ${result.name}`)
+      return {
+        metadata: result,
+        node: makeNode(result.name, result.rootPath, [])
       }
-      const newFlowTest = new FlowTest()
-      Object.assign(newFlowTest, newFlowTestBody)
-
-      await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
-      console.log(`Created sample flow: flow_1`)
+    } else {
+      throw dirResult.message
     }
   }
+
+  // private async initSamples() {
+  //   // collection
+  //   const collections = await this.appDataSource.getRepository(Collection).find();
+  //   const sample_collection = collections.find((collection) => collection.name === "Swagger Petstore - OpenAPI 3.0")
+  //   if (sample_collection === undefined) {
+  //     await this.createCollection('src/samples/collection/petstore.yaml');
+  //   }
+
+  //   // flows
+  //   const flowtests = await this.appDataSource.getRepository(FlowTest).find();
+  //   const sample_flow = flowtests.find((flowtest) => flowtest.name === "flow_1")
+  //   if (sample_flow === undefined) {
+  //     const flowData = fs.readFileSync('src/samples/flow/flow_1.json', 'utf8');
+  //     const newFlowTestBody = {
+  //       name: "flow_1",
+  //       flowData
+  //     }
+  //     const newFlowTest = new FlowTest()
+  //     Object.assign(newFlowTest, newFlowTestBody)
+
+  //     await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
+  //     console.log(`Created sample flow: flow_1`)
+  //   }
+  // }
 
   initServer() {
       // to initialize the initial connection with the database, register all entities
@@ -102,7 +114,7 @@ class App {
         .then(() => {
             // here you can start to work with your database
             console.log('📦 [server]: Data Source has been initialized!')
-            this.initSamples();
+            // this.initSamples();
         })
         .catch((error) => console.log('❌ [server]: Error during Data Source initialization:', error))
 
@@ -225,12 +237,11 @@ class App {
       })
 
       // Create collection
-
       const upload = multer({ dest: 'uploads/' })
       this.app.post('/api/v1/collection', upload.single('file'), async (req: Request, res: Response) => {
         console.debug(req.file)
         try {
-          const results = await this.createCollection(req.file.path);
+          const results = await this.createCollection(req.file.path, req.body.rootPath);
           return res.json(results);
         } catch(err) {
           console.error(err);
@@ -245,9 +256,12 @@ class App {
         })
 
         if (collection) {
-          const result = await this.appDataSource.getRepository(Collection).remove(collection)
-          console.log(`Deleted collection: ${result.name}`)
-          return res.json(result)
+          const deleteDir = deleteDirectory(concatRoute(collection.rootPath, collection.name));
+          if (deleteDir.status === 200) {
+            const result = await this.appDataSource.getRepository(Collection).remove(collection)
+            console.log(`Deleted collection: ${result.name}`)
+            return res.json(result)
+          }
         }
         return res.status(404).send(`Collection ${req.params.id} not found`)
       })

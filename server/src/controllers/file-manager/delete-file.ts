@@ -1,5 +1,6 @@
-import * as fs from "@mongez/fs";
+import * as fs from "fs";
 import concatRoute from "./util/concat-route";
+import { pathExists } from "./util/file-util";
 
 export default function deleteFile(path: string) {
 
@@ -11,7 +12,7 @@ export default function deleteFile(path: string) {
     }
 
     // check if file exists
-    if (!fs.fileExists(path)) {
+    if (!pathExists(path)) {
         return {
             status: 400,
             message: "File does not exist",
@@ -20,7 +21,7 @@ export default function deleteFile(path: string) {
 
     // now delete the file
     try {
-        fs.removePath(path);
+        fs.rmSync(path, { recursive: true, force: true });
     } catch(err) {
         return {
             status: 500,

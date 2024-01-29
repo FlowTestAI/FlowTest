@@ -1,5 +1,6 @@
-import * as fs from "@mongez/fs";
+import * as fs from "fs";
 import concatRoute from "./util/concat-route";
+import { isDirectory } from "./util/file-util";
 
 export default function createDirectory(name: string, path: string) {
 
@@ -19,7 +20,7 @@ export default function createDirectory(name: string, path: string) {
     }
 
     // check if the directory exists
-    if (!fs.isDirectory(path)) {
+    if (!isDirectory(path)) {
         return {
             status: 400,
             message: "Path is not a directory",
@@ -29,7 +30,7 @@ export default function createDirectory(name: string, path: string) {
     // check if the directory already exists
     const directoryPath = concatRoute(path, name);
 
-    if (fs.isDirectory(directoryPath)) {
+    if (isDirectory(directoryPath)) {
         return {
             status: 400,
             message: "The directory already exists",
@@ -38,7 +39,10 @@ export default function createDirectory(name: string, path: string) {
 
     // now create the directory
     try {
-        fs.makeDirectory(directoryPath);
+        fs.mkdirSync(directoryPath, {
+            mode: 0o777,
+            recursive: true,
+        });
     } catch(err) {
         return {
             status: 500,

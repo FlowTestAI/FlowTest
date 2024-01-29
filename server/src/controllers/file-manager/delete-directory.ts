@@ -1,4 +1,5 @@
-import * as fs from "@mongez/fs";
+import * as fs from "fs";
+import { isDirectory } from "./util/file-util";
 
 export default function deleteDirectory(path: string) {
 
@@ -10,16 +11,16 @@ export default function deleteDirectory(path: string) {
     }
 
     // check if the directory exists
-    if (!fs.isDirectory(path)) {
+    if (!isDirectory(path)) {
         return {
             status: 400,
             message: "Path is not a directory",
         };
     }
 
-    // now create the directory
+    // now delete the directory
     try {
-        fs.removeDirectory(path);
+        fs.rmSync(path, { recursive: true, force: true });
     } catch(err) {
         return {
             status: 500,

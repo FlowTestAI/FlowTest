@@ -48,7 +48,7 @@ class App {
     return blob;
   };
 
-  private async createCollection(path: string, rootPath: string) {
+  private async createCollectionObj(path: string, rootPath: string) {
     const spec = fs.readFileSync(path, 'utf8');
     // async/await syntax
     let api = await SwaggerParser.validate(path);
@@ -58,27 +58,14 @@ class App {
     const resolvedSpec = await JsonRefs.resolveRefs(api);
     const parsedNodes = await this.collectionUtil.parse(resolvedSpec.resolved)
 
-    const newCollection = new Collection()
     const constructCollection = {
       name: api.info.title,
       collection: spec,
       nodes: JSON.stringify(parsedNodes),
       rootPath: rootPath
     }
-    Object.assign(newCollection, constructCollection)
 
-    const dirResult = createDirectory(api.info.title, rootPath)
-
-    if (dirResult.status === 201) {
-      const result = await this.appDataSource.getRepository(Collection).save(newCollection);
-      console.log(`Created collection: ${result.name}`)
-      return {
-        metadata: result,
-        node: makeNode(result.name, result.rootPath, [])
-      }
-    } else {
-      throw dirResult.message
-    }
+    return constructCollection;
   }
 
   // private async initSamples() {
@@ -241,11 +228,26 @@ class App {
       this.app.post('/api/v1/collection', upload.single('file'), async (req: Request, res: Response) => {
         console.debug(req.file)
         try {
-          const results = await this.createCollection(req.file.path, req.body.rootPath);
-          return res.json(results);
+          const constructCollection = await this.createCollectionObj(req.file.path, req.body.rootPath);
+          const newCollection = new Collection()
+          Object.assign(newCollection, constructCollection)
+
+          const dirResult = createDirectory(newCollection.name, newCollection.rootPath)
+
+          if (dirResult.status === 201) {
+            const result = await this.appDataSource.getRepository(Collection).save(newCollection);
+            console.log(`Created collection: ${result.name}`)
+            return res.status(201).send({
+              metadata: result,
+              node: makeNode(result.name, result.rootPath, [])
+            })
+          } else {
+            console.log(dirResult.message)
+            return res.status(dirResult.status).send(dirResult.message);
+          }
         } catch(err) {
           console.error(err);
-          return res.status(500).send('Failed to parse openapi spec');
+          return res.status(500).send('Failed to parse OpenAPI spec');
         }
       })
 

@@ -1,5 +1,5 @@
-import * as fs from "@mongez/fs";
 import concatRoute from "./util/concat-route";
+import { isDirectory } from "./util/file-util";
 
 /**
  * File Manager node is the primary data structure for the File Manager.
@@ -38,7 +38,7 @@ export default function makeNode(name: string, path: string, children?: string[]
     const node: Node = {
         path,
         name,
-        isDirectory: fs.isDirectory(concatRoute(path, name)),
+        isDirectory: isDirectory(concatRoute(path, name)),
     };
     
     if (node.isDirectory) {

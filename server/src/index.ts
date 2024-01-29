@@ -18,6 +18,7 @@ import deleteDirectory from "./controllers/file-manager/delete-directory";
 import createFile from "./controllers/file-manager/create-file";
 import makeNode from "./controllers/file-manager/Node";
 import concatRoute from "./controllers/file-manager/util/concat-route";
+import deleteFile from "./controllers/file-manager/delete-file";
 
 class App {
 
@@ -333,7 +334,9 @@ class App {
         // Get the directory name that will be created, also get the path of the directory
         const { name, path } = req.body;
 
-        return res.json(createDirectory(name, path));
+        const newDir = createDirectory(name, path)
+
+        return res.status(newDir.status).send(newDir.message);
       });
 
       // Delete directory
@@ -341,7 +344,9 @@ class App {
         // Get the directory name to be deleted
         const path = req.body;
 
-        return res.json(deleteDirectory(path));
+        const delDir = deleteDirectory(path)
+
+        return res.status(delDir.status).send(delDir.message);
       });
 
       // Create file
@@ -350,7 +355,19 @@ class App {
         // and the content to write to that file
         const { name, path, content } = req.body;
 
-        return res.json(createFile(name, path, content));
+        const newFile = createFile(name, path, content)
+
+        return res.status(newFile.status).send(newFile.message);
+      });
+
+      // Delete file
+      this.app.delete('/api/v1/file-manager/file', async (req: Request, res: Response) => {
+        // Get the file name that will be deleted
+        const { path} = req.body;
+
+        const delFile = deleteFile(path)
+
+        return res.status(delFile.status).send(delFile.message);
       });
 
       // All other GET requests not handled before will return our React app

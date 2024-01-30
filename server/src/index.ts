@@ -19,6 +19,7 @@ import createFile from "./controllers/file-manager/create-file";
 import makeNode from "./controllers/file-manager/Node";
 import concatRoute from "./controllers/file-manager/util/concat-route";
 import deleteFile from "./controllers/file-manager/delete-file";
+import upadateFile from "./controllers/file-manager/update-file";
 
 class App {
 
@@ -234,16 +235,16 @@ class App {
           Object.assign(newCollection, constructCollection)
 
           const dirResult = createDirectory(newCollection.name, newCollection.rootPath)
+          console.log(dirResult.message)
 
           if (dirResult.status === 201) {
             const result = await this.appDataSource.getRepository(Collection).save(newCollection);
             console.log(`Created collection: ${result.name}`)
             return res.status(201).send({
               metadata: result,
-              node: makeNode(result.name, result.rootPath, [])
+              node: dirResult.node
             })
           } else {
-            console.log(dirResult.message)
             return res.status(dirResult.status).send(dirResult.message);
           }
         } catch(err) {
@@ -263,7 +264,10 @@ class App {
           if (deleteDir.status === 200) {
             const result = await this.appDataSource.getRepository(Collection).remove(collection)
             console.log(`Deleted collection: ${result.name}`)
-            return res.json(result)
+            console.log(deleteDir.message)
+            return res.status(200).send(`Collection ${result} deleted`)
+          } else {
+            return res.status(deleteDir.status).send(deleteDir.message)
           }
         }
         return res.status(404).send(`Collection ${req.params.id} not found`)
@@ -335,37 +339,65 @@ class App {
         const { name, path } = req.body;
 
         const newDir = createDirectory(name, path)
+        console.log(newDir.message)
 
-        return res.status(newDir.status).send(newDir.message);
+        if (newDir.status === 201) {
+          return res.status(newDir.status).send({
+            node: newDir.node
+          });
+        } else {
+          return res.status(newDir.status).send(newDir.message);
+        }
       });
 
       // Delete directory
       this.app.delete('/api/v1/file-manager/directory', async (req: Request, res: Response) => {
         // Get the directory name to be deleted
-        const path = req.body;
+        const path = req.query.path.toString();
 
         const delDir = deleteDirectory(path)
+        console.log(delDir.message)
 
         return res.status(delDir.status).send(delDir.message);
       });
 
       // Create file
-      this.app.put('/api/v1/file-manager/file', async (req: Request, res: Response) => {
+      this.app.post('/api/v1/file-manager/file', async (req: Request, res: Response) => {
         // Get the file name that will be created, also get the path of the directory 
         // and the content to write to that file
         const { name, path, content } = req.body;
 
         const newFile = createFile(name, path, content)
+        console.log(newFile.message)
 
-        return res.status(newFile.status).send(newFile.message);
+        if (newFile.status === 201) {
+          return res.status(newFile.status).send({
+            node: newFile.node
+          });
+        } else {
+          return res.status(newFile.status).send(newFile.message);
+        }
+      });
+
+      // Update file
+      this.app.put('/api/v1/file-manager/file', async (req: Request, res: Response) => {
+        // Get the file name that will be created, also get the path of the directory 
+        // and the content to write to that file
+        const { name, path, content } = req.body;
+
+        const updateFile = upadateFile(path, content)
+        console.log(updateFile.message)
+
+        return res.status(updateFile.status).send(updateFile.message);
       });
 
       // Delete file
       this.app.delete('/api/v1/file-manager/file', async (req: Request, res: Response) => {
         // Get the file name that will be deleted
-        const { path} = req.body;
+        const path = req.query.path.toString();
 
         const delFile = deleteFile(path)
+        console.log(delFile.message)
 
         return res.status(delFile.status).send(delFile.message);
       });

@@ -2,7 +2,7 @@ import * as fs from "fs";
 import concatRoute from "./util/concat-route";
 import { pathExists } from "./util/file-util";
 
-export default function deleteFile(path: string) {
+export default function upadateFile(path: string, content: string) {
 
     if (!path) {
         return {
@@ -19,9 +19,9 @@ export default function deleteFile(path: string) {
         };
     }
 
-    // now delete the file
+    // now update the file
     try {
-        fs.rmSync(path, { recursive: true, force: true });
+        fs.writeFileSync(path, String(content), "utf8");
     } catch(err) {
         return {
             status: 500,
@@ -31,6 +31,6 @@ export default function deleteFile(path: string) {
 
     return {
         status: 200,
-        message: `File deleted: ${path}`,
+        message: `File updated: ${path}`,
     };
 }

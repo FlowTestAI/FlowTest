@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import makeNode from "./Node";
 import concatRoute from "./util/concat-route";
 import { isDirectory } from "./util/file-util";
 
@@ -54,5 +55,6 @@ export default function createDirectory(name: string, path: string) {
     return {
         status: 201,
         message: `Directory created: ${directoryPath}`,
+        node: makeNode(name, path)
     };
 }

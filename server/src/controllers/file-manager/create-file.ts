@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import makeNode from "./Node";
 import concatRoute from "./util/concat-route";
 import { isDirectory, pathExists } from "./util/file-util";
 
@@ -51,5 +52,6 @@ export default function createFile(name: string, path: string, content: string) 
     return {
         status: 201,
         message: `File created: ${filePath}`,
+        node: makeNode(name, path)
     };
 }

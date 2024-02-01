@@ -5,7 +5,7 @@ import * as fs from "fs";
  */
  export function isDirectory(path: string) {
     try {
-      return fs.lstatSync(path).isDirectory();
+      return fs.existsSync(path) && fs.lstatSync(path).isDirectory();
     } catch (e) {
       // lstatSync throws an error if path doesn't exist
       return false;

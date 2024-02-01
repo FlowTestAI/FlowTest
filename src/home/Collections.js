@@ -38,7 +38,6 @@ import { IconUpload, IconTrash } from '@tabler/icons-react';
 import DeleteDialog from './DeleteDialog';
 
 import PropTypes from 'prop-types';
-import CollectionTree from '../file-manager/CollectionTree';
 
 function Item(props) {
     const { sx, ...other } = props;

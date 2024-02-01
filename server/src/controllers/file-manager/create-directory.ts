@@ -54,7 +54,6 @@ export default function createDirectory(name: string, path: string) {
     // return the directory as node
     return {
         status: 201,
-        message: `Directory created: ${directoryPath}`,
-        node: makeNode(name, path)
+        message: `Directory created: ${directoryPath}`
     };
 }

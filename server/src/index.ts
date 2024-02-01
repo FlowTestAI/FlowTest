@@ -20,6 +20,7 @@ import makeNode from "./controllers/file-manager/Node";
 import concatRoute from "./controllers/file-manager/util/concat-route";
 import deleteFile from "./controllers/file-manager/delete-file";
 import upadateFile from "./controllers/file-manager/update-file";
+import readFile from "./controllers/file-manager/read-file";
 
 class App {
 
@@ -238,12 +239,9 @@ class App {
           console.log(dirResult.message)
 
           if (dirResult.status === 201) {
-            const result = await this.appDataSource.getRepository(Collection).save(newCollection);
-            console.log(`Created collection: ${result.name}`)
-            return res.status(201).send({
-              metadata: result,
-              node: dirResult.node
-            })
+            const collection = await this.appDataSource.getRepository(Collection).save(newCollection);
+            console.log(`Created collection: ${collection.name}`)
+            return res.status(201).send(collection)
           } else {
             return res.status(dirResult.status).send(dirResult.message);
           }
@@ -334,7 +332,7 @@ class App {
       // File Manager
 
       // Create directory
-      this.app.post('/api/v1/file-manager/directory', async (req: Request, res: Response) => {
+      this.app.post('/api/v1/file-manager/directory', (req: Request, res: Response) => {
         // Get the directory name that will be created, also get the path of the directory
         const { name, path } = req.body;
 
@@ -342,16 +340,14 @@ class App {
         console.log(newDir.message)
 
         if (newDir.status === 201) {
-          return res.status(newDir.status).send({
-            node: newDir.node
-          });
+          return res.status(newDir.status).send(concatRoute(path, name));
         } else {
           return res.status(newDir.status).send(newDir.message);
         }
       });
 
       // Delete directory
-      this.app.delete('/api/v1/file-manager/directory', async (req: Request, res: Response) => {
+      this.app.delete('/api/v1/file-manager/directory', (req: Request, res: Response) => {
         // Get the directory name to be deleted
         const path = req.query.path.toString();
 
@@ -362,7 +358,7 @@ class App {
       });
 
       // Create file
-      this.app.post('/api/v1/file-manager/file', async (req: Request, res: Response) => {
+      this.app.post('/api/v1/file-manager/file', (req: Request, res: Response) => {
         // Get the file name that will be created, also get the path of the directory 
         // and the content to write to that file
         const { name, path, content } = req.body;
@@ -371,19 +367,31 @@ class App {
         console.log(newFile.message)
 
         if (newFile.status === 201) {
-          return res.status(newFile.status).send({
-            node: newFile.node
-          });
+          return res.status(newFile.status).send(concatRoute(path, name));
         } else {
           return res.status(newFile.status).send(newFile.message);
         }
       });
 
+      // Read file
+      this.app.get('/api/v1/file-manager/file', (req: Request, res: Response) => {
+        // Get the file path that will be read
+        const { path } = req.body;
+
+        const rFile = readFile(path)
+        console.log(rFile.message)
+
+        if (rFile.status === 201) {
+          return res.status(rFile.status).send(rFile.content);
+        } else {
+          return res.status(rFile.status).send(rFile.message);
+        }
+      });
+
       // Update file
-      this.app.put('/api/v1/file-manager/file', async (req: Request, res: Response) => {
-        // Get the file name that will be created, also get the path of the directory 
-        // and the content to write to that file
-        const { name, path, content } = req.body;
+      this.app.put('/api/v1/file-manager/file', (req: Request, res: Response) => {
+        // Get the file path that will be updated and the content to write to that file
+        const { path, content } = req.body;
 
         const updateFile = upadateFile(path, content)
         console.log(updateFile.message)
@@ -392,8 +400,8 @@ class App {
       });
 
       // Delete file
-      this.app.delete('/api/v1/file-manager/file', async (req: Request, res: Response) => {
-        // Get the file name that will be deleted
+      this.app.delete('/api/v1/file-manager/file', (req: Request, res: Response) => {
+        // Get the file path that will be deleted
         const path = req.query.path.toString();
 
         const delFile = deleteFile(path)

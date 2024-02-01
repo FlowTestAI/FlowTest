@@ -51,7 +51,6 @@ export default function createFile(name: string, path: string, content: string) 
     // return the file as node
     return {
         status: 201,
-        message: `File created: ${filePath}`,
-        node: makeNode(name, path)
+        message: `File created: ${filePath}`
     };
 }

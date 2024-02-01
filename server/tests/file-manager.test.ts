@@ -2,6 +2,7 @@ import createDirectory from "../src/controllers/file-manager/create-directory";
 import createFile from "../src/controllers/file-manager/create-file";
 import deleteDirectory from "../src/controllers/file-manager/delete-directory";
 import deleteFile from "../src/controllers/file-manager/delete-file";
+import readFile from "../src/controllers/file-manager/read-file";
 import concatRoute from "../src/controllers/file-manager/util/concat-route";
 
 const DIRECTORY_NAME = "testDir"
@@ -31,6 +32,11 @@ describe("file-manager", () => {
 
         result = createFile("test.flowtest.json", concatRoute(__dirname, DIRECTORY_NAME), "{\"k1\":\"v1\"}")
         expect(result.status).toEqual(201)
+
+        // read file
+        const rContent = readFile(concatRoute(__dirname, DIRECTORY_NAME, "test.flowtest.json"))
+        expect(rContent.status).toEqual(200)
+        expect(rContent.content).toEqual("{\"k1\":\"v1\"}")
         
         // file already exists
         result = createFile("test.flowtest.json", concatRoute(__dirname, DIRECTORY_NAME), "{\"k1\":\"v1\"}")
@@ -41,7 +47,7 @@ describe("file-manager", () => {
 
         // delete file
         result = deleteFile(concatRoute(__dirname, DIRECTORY_NAME, "test1.flowtest.json"))
-        expect(result.status).toEqual(201)
+        expect(result.status).toEqual(200)
 
         // delete file: file no longer exists
         result = deleteFile(concatRoute(__dirname, DIRECTORY_NAME, "test1.flowtest.json"))

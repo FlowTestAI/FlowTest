@@ -16,13 +16,13 @@ import axios from "axios";
 import createDirectory from "./controllers/file-manager/create-directory";
 import deleteDirectory from "./controllers/file-manager/delete-directory";
 import createFile from "./controllers/file-manager/create-file";
-import makeNode from "./controllers/file-manager/Node";
 import concatRoute from "./controllers/file-manager/util/concat-route";
 import deleteFile from "./controllers/file-manager/delete-file";
 import upadateFile from "./controllers/file-manager/update-file";
 import readFile from "./controllers/file-manager/read-file";
 import { Watcher } from "./collections/watcher";
 import { isDirectory } from "./controllers/file-manager/util/file-util";
+import { InMemoryStateStore } from "./collections/statestore/store";
 
 class App {
 
@@ -75,22 +75,27 @@ class App {
     return constructCollection;
   }
 
+  private addCollectionToStore(collection: Collection, fullPath: string) {
+    const collectionObj = {
+      version: '1',
+      id: collection.id,
+      name: collection.name,
+      pathname: fullPath,
+      items: []
+    };
+    // create collection tree first
+    inMemoryStateStore.createCollection(collectionObj)
+    this.watcher.addWatcher(fullPath, collection.id)
+    console.log(`Watcher added for path: ${fullPath}`)
+  }
+
   private async addWatchersForExsistingCollections() {
       const collections = await this.appDataSource.getRepository(Collection).find();
       collections.forEach(async collection => {
         const fullPath = concatRoute(collection.rootPath, collection.name)
         // collection folder might have been deleted externally
         if (isDirectory(fullPath)) {
-          const collectionObj = {
-            version: '1',
-            uid: collection.id,
-            name: collection.name,
-            pathname: fullPath,
-            items: []
-          };
-          // dispatch create collection first
-          this.watcher.addWatcher(fullPath, collection.id)
-          console.log(`Watcher added for path: ${fullPath}`)
+          this.addCollectionToStore(collection, fullPath)
         } else {
           const result = await this.appDataSource.getRepository(Collection).remove(collection)
           console.log(`Deleted collection: ${result.name}`)
@@ -269,8 +274,7 @@ class App {
           if (dirResult.status === 201) {
             const collection = await this.appDataSource.getRepository(Collection).save(newCollection);
             console.log(`Created collection: ${collection.name}`)
-            this.watcher.addWatcher(concatRoute(collection.rootPath, collection.name), collection.id)
-            console.log(`Watcher added for path: ${concatRoute(collection.rootPath, collection.name)}`)
+            this.addCollectionToStore(collection, concatRoute(collection.rootPath, collection.name))
             return res.status(201).send(collection)
           } else {
             return res.status(dirResult.status).send(dirResult.message);
@@ -293,6 +297,8 @@ class App {
             const result = await this.appDataSource.getRepository(Collection).remove(collection)
             console.log(`Deleted collection: ${result.name}`)
             console.log(deleteDir.message)
+            // remove collection tree from in memory store
+            inMemoryStateStore.removeCollection(req.params.id)
             this.watcher.removeWatcher(concatRoute(collection.rootPath, collection.name))
             console.log(`Watcher removed for path: ${concatRoute(collection.rootPath, collection.name)}`)
             return res.status(200).send(`Collection ${result} deleted`)
@@ -454,5 +460,6 @@ class App {
 }
 
 let server = new App()
+let inMemoryStateStore = new InMemoryStateStore()
 server.initServer()
 

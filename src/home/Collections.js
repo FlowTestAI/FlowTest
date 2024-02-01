@@ -148,7 +148,7 @@ const Collections = () => {
     useEffect(() => {
         if (createCollectionApi.data) {
             const createdCollection = createCollectionApi.data
-            console.debug('Created collection: ', createdCollection.metadata);
+            console.debug('Created collection: ', createdCollection);
             enqueueSnackbar('Created collection!', { variant: 'success' });
             getAllCollectionsApi.request();
         } else if (createCollectionApi.error) {

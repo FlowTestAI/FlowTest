@@ -1,15 +1,43 @@
 import * as chokidar from 'chokidar'
+import * as path from 'path'
+import readFile from '../controllers/file-manager/read-file';
+import { InMemoryStateStore } from './statestore/store';
 
 export class Watcher {
 
     private watchers = {};
+    private store: InMemoryStateStore
 
-    private add(pathname: string, collectionId: string, watchPath: string) {
-      console.log(`file ${pathname} added`)
+    constructor(inMemoryStore: InMemoryStateStore) {
+      this.store = inMemoryStore
     }
 
-    private addDirectory(pathname: string, collectionId: string, watchPath: string) {
+    private isFlowTestFile(pathname: string): Boolean {
+      if (!pathname || typeof pathname !== 'string') return false;
+      return ['flowtest.json'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
+    }
+
+    private add(pathname: string, collectionId: string) {
+      console.log(`file ${pathname} added`)
+      if (this.isFlowTestFile(pathname)) {
+        const file = {
+          id: collectionId,
+          name: path.basename(pathname),
+          pathname: pathname,
+          data: readFile(pathname).content
+        };
+        this.store.addFile(file);
+      }
+    }
+
+    private addDirectory(pathname: string, collectionId: string) {
       console.log(`directory ${pathname} added`)
+      const directory = {
+        id: collectionId,
+        name: path.basename(pathname),
+        pathname: pathname
+      };
+      this.store.addDirectory(directory)
     }
 
     private change(pathname: string, collectionId: string, watchPath: string) {
@@ -45,8 +73,8 @@ export class Watcher {
         });
   
         watcher
-          .on('add', (pathname) => this.add(pathname, collectionId, watchPath))
-          .on('addDir', (pathname) => this.addDirectory(pathname, collectionId, watchPath))
+          .on('add', (pathname) => this.add(pathname, collectionId))
+          .on('addDir', (pathname) => this.addDirectory(pathname, collectionId))
           .on('change', (pathname) => this.change(pathname, collectionId, watchPath))
           .on('unlink', (pathname) => this.unlink(pathname, collectionId, watchPath))
           .on('unlinkDir', (pathname) => this.unlinkDir(pathname, collectionId, watchPath));

@@ -32,13 +32,15 @@ class App {
   collectionUtil: CollectionUtil
   timeout: number
   watcher: Watcher
+  inMemoryStateStore: InMemoryStateStore
 
   constructor() {
     this.app = express()
     this.port = 3500
     this.collectionUtil = new CollectionUtil()
     this.timeout = 60000
-    this.watcher = new Watcher()
+    this.inMemoryStateStore = new InMemoryStateStore()
+    this.watcher = new Watcher(this.inMemoryStateStore)
   }
 
   private newAbortSignal() {
@@ -84,7 +86,7 @@ class App {
       items: []
     };
     // create collection tree first
-    inMemoryStateStore.createCollection(collectionObj)
+    this.inMemoryStateStore.createCollection(collectionObj)
     this.watcher.addWatcher(fullPath, collection.id)
     console.log(`Watcher added for path: ${fullPath}`)
   }
@@ -298,7 +300,7 @@ class App {
             console.log(`Deleted collection: ${result.name}`)
             console.log(deleteDir.message)
             // remove collection tree from in memory store
-            inMemoryStateStore.removeCollection(req.params.id)
+            this.inMemoryStateStore.removeCollection(req.params.id)
             this.watcher.removeWatcher(concatRoute(collection.rootPath, collection.name))
             console.log(`Watcher removed for path: ${concatRoute(collection.rootPath, collection.name)}`)
             return res.status(200).send(`Collection ${result} deleted`)
@@ -460,6 +462,5 @@ class App {
 }
 
 let server = new App()
-let inMemoryStateStore = new InMemoryStateStore()
 server.initServer()
 

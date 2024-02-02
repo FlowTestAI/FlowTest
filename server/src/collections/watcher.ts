@@ -40,16 +40,39 @@ export class Watcher {
       this.store.addDirectory(directory)
     }
 
-    private change(pathname: string, collectionId: string, watchPath: string) {
+    private change(pathname: string, collectionId: string) {
       console.log(`file ${pathname} changed`)
+      if (this.isFlowTestFile(pathname)) {
+        const file = {
+          id: collectionId,
+          name: path.basename(pathname),
+          pathname: pathname,
+          data: readFile(pathname).content
+        };
+        this.store.changeFile(file);
+      }
     }
 
-    private unlink(pathname: string, collectionId: string, watchPath: string) {
+    private unlink(pathname: string, collectionId: string) {
       console.log(`file ${pathname} removed`)
+      if (this.isFlowTestFile(pathname)) {
+        const file = {
+          id: collectionId,
+          name: path.basename(pathname),
+          pathname: pathname
+        };
+        this.store.unlinkFile(file);
+      }
     }
 
-    private unlinkDir(pathname: string, collectionId: string, watchPath: string) {
+    private unlinkDir(pathname: string, collectionId: string) {
       console.log(`dir ${pathname} removed`)
+      const directory = {
+        id: collectionId,
+        name: path.basename(pathname),
+        pathname: pathname
+      };
+      this.store.unlinkDirectory(directory)
     }
 
     public addWatcher(watchPath: string, collectionId: string) {
@@ -75,9 +98,9 @@ export class Watcher {
         watcher
           .on('add', (pathname) => this.add(pathname, collectionId))
           .on('addDir', (pathname) => this.addDirectory(pathname, collectionId))
-          .on('change', (pathname) => this.change(pathname, collectionId, watchPath))
-          .on('unlink', (pathname) => this.unlink(pathname, collectionId, watchPath))
-          .on('unlinkDir', (pathname) => this.unlinkDir(pathname, collectionId, watchPath));
+          .on('change', (pathname) => this.change(pathname, collectionId))
+          .on('unlink', (pathname) => this.unlink(pathname, collectionId))
+          .on('unlinkDir', (pathname) => this.unlinkDir(pathname, collectionId));
   
         self.watchers[watchPath] = watcher;
       }, 100);

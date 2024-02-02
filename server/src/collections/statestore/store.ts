@@ -1,4 +1,3 @@
-import * as path from 'path'
 import { getDirectoryName, getSubdirectoriesFromRoot, PATH_SEPARATOR } from './filesystem';
 
 /**
@@ -86,4 +85,83 @@ export class InMemoryStateStore {
             console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
         }
     }
+
+    public changeFile(file) {
+        const collection = this.state.collections.find((c) => c.id === file.id);
+  
+        if (collection) {
+            const item = this.findItemInCollectionTree(file, collection);
+
+            if (item) {
+                item.data = file.data;
+                console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+            }
+        }
+    }
+
+    public unlinkFile(file) {
+        const collection = this.state.collections.find((c) => c.id === file.id);
+  
+        if (collection) {
+            const item = this.findItemInCollectionTree(file, collection);
+
+            if (item) {
+                this.deleteItemInCollectionByPathname(item.pathname, collection)
+                console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+            }
+        }
+    }
+
+    public unlinkDirectory(directory) {
+        const collection = this.state.collections.find((c) => c.id === directory.id);
+  
+        if (collection) {
+            // if it's the collection itself
+            if (collection.pathname === directory.pathname && collection.name === directory.name) {
+                this.removeCollection(collection.id)
+            } else {
+                const item = this.findItemInCollectionTree(directory, collection);
+
+                if (item) {
+                    this.deleteItemInCollectionByPathname(item.pathname, collection)
+                    console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+                }
+            }
+        }
+    }
+
+    private findItemInCollectionTree(item, collection) {
+        let flattenedItems = this.flattenItems(collection.items);
+
+        return flattenedItems.find(i => i.pathname === item.pathname && i.name === item.name);
+    }
+
+    private deleteItemInCollectionByPathname(pathname, collection) {
+        collection.items = collection.items.filter((i) => i.pathname !== pathname);
+      
+        let flattenedItems = this.flattenItems(collection.items);
+        flattenedItems.forEach((i) => {
+          if (i.items && i.items.length) {
+            i.items = i.items.filter((i) => i.pathname !== pathname);
+          }
+        });
+    };
+
+    private flattenItems(items = []) {
+        const flattenedItems = [];
+      
+        const flatten = (itms, flattened) => {
+          itms.forEach((i) => {
+            flattened.push(i);
+      
+            if (i.items && i.items.length) {
+              flatten(i.items, flattened);
+            }
+          });
+        };
+      
+        flatten(items, flattenedItems);
+      
+        return flattenedItems;
+    };
 }

@@ -275,12 +275,14 @@ const Flow = () => {
     if (flowTestId) {
       getFlowTest.request(flowTestId)
     } else {
+        // Used by flowTestAI
         const initialNodes = location.state && location.state.initialNodes ? location.state.initialNodes : undefined;
         if (initialNodes != undefined) {
           const nodes = []
           const edges = []
-          nodes.push({ id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false })
-          for (let i = 1; i <= initialNodes.length; i++) {
+          nodes.push({ id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
+            { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false })
+          for (let i = 2; i <= initialNodes.length; i++) {
             nodes.push({
               id: `${i}`,
               type: initialNodes[i-1].type,
@@ -301,8 +303,16 @@ const Flow = () => {
           setEdges(edges);
           setIsDirty(true);
         } else {
-          setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false }])
-          setEdges([])
+          setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
+            { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false }])
+          setEdges([{
+            id: `reactflow__edge-0-1`,
+            source: `0`,
+            sourceHandle: null,
+            target: `1`,
+            targetHandle: null,
+            type: "buttonedge"
+          }])
           setIsDirty(false);
         }
 

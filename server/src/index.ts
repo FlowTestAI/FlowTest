@@ -83,7 +83,8 @@ class App {
       id: collection.id,
       name: collection.name,
       pathname: fullPath,
-      items: []
+      items: [],
+      enviroments: []
     };
     // create collection tree first
     this.inMemoryStateStore.createCollection(collectionObj)
@@ -272,6 +273,8 @@ class App {
 
           const dirResult = createDirectory(newCollection.name, newCollection.rootPath)
           console.log(dirResult.message)
+          // create env folder
+          createDirectory("environments", concatRoute(newCollection.rootPath, newCollection.name))
 
           if (dirResult.status === 201) {
             const collection = await this.appDataSource.getRepository(Collection).save(newCollection);

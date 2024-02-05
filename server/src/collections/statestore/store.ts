@@ -130,6 +130,30 @@ export class InMemoryStateStore {
         }
     }
 
+    public addEnvFile(file) {
+        const collection = this.state.collections.find((c) => c.id === file.id);
+  
+        if (collection) {
+            const existingEnvs = collection.enviroments;
+            if (existingEnvs.find((e) => e.name === file.name && e.pathname === file.pathname)) {
+                existingEnvs.variables = file.variables;
+                console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+            } else {
+                collection.enviroments.push(file);
+                console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+            }
+        }
+    }
+
+    public unlinkEnvFile(file) {
+        const collection = this.state.collections.find((c) => c.id === file.id);
+  
+        if (collection) {
+            collection.enviroments = collection.enviroments.filter((e) => e.name !== file.name && e.pathname !== file.pathname)
+            console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+        }
+    }
+
     private findItemInCollectionTree(item, collection) {
         let flattenedItems = this.flattenItems(collection.items);
 

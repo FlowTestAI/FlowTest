@@ -17,7 +17,16 @@ export class Watcher {
       return ['flowtest.json'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
     }
 
-    private add(pathname: string, collectionId: string) {
+    private isEnvFile(pathname: string, collectionPath: string): Boolean {
+      if (!pathname || typeof pathname !== 'string') return false;
+      const dirname = path.dirname(pathname);
+      const envDirectory = path.join(collectionPath, 'environments');
+
+      return dirname === envDirectory && 
+        ['env.json'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
+    }
+
+    private add(pathname: string, collectionId: string, watchPath: string) {
       console.log(`file ${pathname} added`)
       if (this.isFlowTestFile(pathname)) {
         const file = {
@@ -27,10 +36,34 @@ export class Watcher {
           data: readFile(pathname).content
         };
         this.store.addFile(file);
+      } else if (this.isEnvFile(pathname, watchPath)) {
+        try {
+          const variables = this.getEnvVariables(pathname)
+          const file = {
+            id: collectionId,
+            name: path.basename(pathname),
+            pathname: pathname,
+            variables
+          }
+          this.store.addEnvFile(file)
+        } catch (error) {
+          console.error(`Failed to add ${pathname} due to: ${error}`)
+        }
       }
     }
 
-    private addDirectory(pathname: string, collectionId: string) {
+    private getEnvVariables(pathname: string) {
+      const content = readFile(pathname).content
+      return JSON.parse(content);
+    }
+
+    private addDirectory(pathname: string, collectionId: string, watchPath: string) {
+      const envDirectory = path.join(watchPath, 'environments');
+
+      if (pathname === envDirectory) {
+          return;
+      }
+
       console.log(`directory ${pathname} added`)
       const directory = {
         id: collectionId,
@@ -40,7 +73,7 @@ export class Watcher {
       this.store.addDirectory(directory)
     }
 
-    private change(pathname: string, collectionId: string) {
+    private change(pathname: string, collectionId: string, watchPath: string) {
       console.log(`file ${pathname} changed`)
       if (this.isFlowTestFile(pathname)) {
         const file = {
@@ -50,10 +83,23 @@ export class Watcher {
           data: readFile(pathname).content
         };
         this.store.changeFile(file);
+      } else if (this.isEnvFile(pathname, watchPath)) {
+        try {
+          const variables = this.getEnvVariables(pathname)
+          const file = {
+            id: collectionId,
+            name: path.basename(pathname),
+            pathname: pathname,
+            variables
+          }
+          this.store.addEnvFile(file)
+        } catch (error) {
+          console.error(`Failed to save ${pathname} due to: ${error}`)
+        }
       }
     }
 
-    private unlink(pathname: string, collectionId: string) {
+    private unlink(pathname: string, collectionId: string, watchPath: string) {
       console.log(`file ${pathname} removed`)
       if (this.isFlowTestFile(pathname)) {
         const file = {
@@ -62,10 +108,27 @@ export class Watcher {
           pathname: pathname
         };
         this.store.unlinkFile(file);
+      } else if (this.isEnvFile(pathname, watchPath)) {
+        try {
+          const file = {
+            id: collectionId,
+            name: path.basename(pathname),
+            pathname: pathname
+          }
+          this.store.unlinkEnvFile(file)
+        } catch (error) {
+          console.error(`Failed to save ${pathname} due to: ${error}`)
+        }
       }
     }
 
-    private unlinkDir(pathname: string, collectionId: string) {
+    private unlinkDir(pathname: string, collectionId: string, watchPath: string) {
+      const envDirectory = path.join(watchPath, 'environments');
+
+      if (pathname === envDirectory) {
+          return;
+      }
+
       console.log(`dir ${pathname} removed`)
       const directory = {
         id: collectionId,
@@ -96,11 +159,11 @@ export class Watcher {
         });
   
         watcher
-          .on('add', (pathname) => this.add(pathname, collectionId))
-          .on('addDir', (pathname) => this.addDirectory(pathname, collectionId))
-          .on('change', (pathname) => this.change(pathname, collectionId))
-          .on('unlink', (pathname) => this.unlink(pathname, collectionId))
-          .on('unlinkDir', (pathname) => this.unlinkDir(pathname, collectionId));
+          .on('add', (pathname) => this.add(pathname, collectionId, watchPath))
+          .on('addDir', (pathname) => this.addDirectory(pathname, collectionId, watchPath))
+          .on('change', (pathname) => this.change(pathname, collectionId, watchPath))
+          .on('unlink', (pathname) => this.unlink(pathname, collectionId, watchPath))
+          .on('unlinkDir', (pathname) => this.unlinkDir(pathname, collectionId, watchPath));
   
         self.watchers[watchPath] = watcher;
       }, 100);

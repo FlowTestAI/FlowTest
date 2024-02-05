@@ -54,6 +54,7 @@ import Graph from './graph/Graph';
 import OutputNode from './nodes/OutputNode';
 import EvaluateNode from './nodes/EvaluateNode';
 import DelayNode from './nodes/DelayNode';
+import AuthNode from './nodes/AuthNode';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -93,7 +94,8 @@ const Flow = () => {
     requestNode: RequestNode,
     outputNode: OutputNode,
     evaluateNode: EvaluateNode,
-    delayNode: DelayNode
+    delayNode: DelayNode,
+    authNode: AuthNode
   }), []);
   
   const edgeTypes = useMemo(() => (

@@ -134,9 +134,9 @@ export class InMemoryStateStore {
         const collection = this.state.collections.find((c) => c.id === file.id);
   
         if (collection) {
-            const existingEnvs = collection.enviroments;
-            if (existingEnvs.find((e) => e.name === file.name && e.pathname === file.pathname)) {
-                existingEnvs.variables = file.variables;
+            const existingEnv = collection.enviroments.find((e) => e.name === file.name && e.pathname === file.pathname);
+            if (existingEnv) {
+                existingEnv.variables = file.variables;
                 console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
             } else {
                 collection.enviroments.push(file);
@@ -150,6 +150,15 @@ export class InMemoryStateStore {
   
         if (collection) {
             collection.enviroments = collection.enviroments.filter((e) => e.name !== file.name && e.pathname !== file.pathname)
+            console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+        }
+    }
+
+    public addOrUpdateDotEnvVariables(collectionId, variables) {
+        const collection = this.state.collections.find((c) => c.id === collectionId);
+  
+        if (collection) {
+            collection.dotEnvVariables = variables;
             console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
         }
     }

@@ -2,6 +2,7 @@ import * as chokidar from 'chokidar'
 import * as path from 'path'
 import readFile from '../controllers/file-manager/read-file';
 import { InMemoryStateStore } from './statestore/store';
+import * as dotenv from 'dotenv';
 
 export class Watcher {
 
@@ -24,6 +25,13 @@ export class Watcher {
 
       return dirname === envDirectory && 
         ['env.json'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
+    }
+
+    private isDotEnvFile(pathname: string, collectionPath: string): Boolean {
+      const dirname = path.dirname(pathname);
+      const basename = path.basename(pathname);
+
+      return dirname === collectionPath && basename === '.env';
     }
 
     private add(pathname: string, collectionId: string, watchPath: string) {
@@ -49,12 +57,22 @@ export class Watcher {
         } catch (error) {
           console.error(`Failed to add ${pathname} due to: ${error}`)
         }
+      } else if (this.isDotEnvFile(pathname, watchPath)) {
+        const variablesJson = this.getDotEnvVariables(pathname);
+        this.store.addOrUpdateDotEnvVariables(collectionId, variablesJson)
       }
     }
 
     private getEnvVariables(pathname: string) {
       const content = readFile(pathname).content
       return JSON.parse(content);
+    }
+
+    private getDotEnvVariables(pathname: string) {
+      const content = readFile(pathname).content
+      const buf = Buffer.from(content);
+      const parsed = dotenv.parse(buf);
+      return parsed;
     }
 
     private addDirectory(pathname: string, collectionId: string, watchPath: string) {
@@ -96,6 +114,9 @@ export class Watcher {
         } catch (error) {
           console.error(`Failed to save ${pathname} due to: ${error}`)
         }
+      } else if (this.isDotEnvFile(pathname, watchPath)) {
+        const variablesJson = this.getDotEnvVariables(pathname);
+        this.store.addOrUpdateDotEnvVariables(collectionId, variablesJson)
       }
     }
 

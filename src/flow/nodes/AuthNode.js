@@ -35,6 +35,7 @@ const AuthNode = ({data}) => {
     };
     const handleClose = (authOption) => {
         setAuth(authOption);
+        data.auth = {}
         data.auth.type = authOption;
         setAnchorEl(null);
     };

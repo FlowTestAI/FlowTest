@@ -27,7 +27,7 @@ import {
 import { IconTrash } from '@tabler/icons-react';
 import DeleteDialog from './DeleteDialog';
 
-const SavedFlows = () => {
+const SavedFlows = ({socket}) => {
 
     const navigate = useNavigate()
 
@@ -38,8 +38,11 @@ const SavedFlows = () => {
     // notification
     const { enqueueSnackbar, _ } = useSnackbar();
 
+    // init
     useEffect(() => {
         getAllFlowTest.request();
+
+        socket.emit("message", "sajal")
     },[])
 
     useEffect(() => {

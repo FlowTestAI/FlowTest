@@ -21,6 +21,7 @@
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "reactflow": "^11.8.3",
+    "socket.io-client": "^4.7.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -49,9 +50,9 @@
     ]
   },
   "devDependencies": {
+    "@types/node": "20.11.5",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.33",
-    "tailwindcss": "^3.4.1",
-    "@types/node": "20.11.5"
+    "tailwindcss": "^3.4.1"
   }
 }

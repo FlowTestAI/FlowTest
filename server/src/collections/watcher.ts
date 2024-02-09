@@ -3,6 +3,7 @@ import * as path from 'path'
 import readFile from '../controllers/file-manager/read-file';
 import { InMemoryStateStore } from './statestore/store';
 import * as dotenv from 'dotenv';
+import { readableDataToFlowData } from '../flowtest/parser';
 
 export class Watcher {
 
@@ -35,15 +36,20 @@ export class Watcher {
     }
 
     private add(pathname: string, collectionId: string, watchPath: string) {
-      console.log(`file ${pathname} added`)
+      console.log(`[Watcher] file ${pathname} added`)
       if (this.isFlowTestFile(pathname)) {
-        const file = {
-          id: collectionId,
-          name: path.basename(pathname),
-          pathname: pathname,
-          data: readFile(pathname).content
-        };
-        this.store.addFile(file);
+        try {
+          const data = JSON.stringify(readableDataToFlowData(JSON.parse(readFile(pathname).content)))
+          const file = {
+            id: collectionId,
+            name: path.basename(pathname),
+            pathname: pathname,
+            data
+          };
+          this.store.addFile(file);
+        } catch(error) {
+          console.log(`Failed to add ${pathname} due to: ${error}`)
+        }
       } else if (this.isEnvFile(pathname, watchPath)) {
         try {
           const variables = this.getEnvVariables(pathname)
@@ -58,8 +64,12 @@ export class Watcher {
           console.error(`Failed to add ${pathname} due to: ${error}`)
         }
       } else if (this.isDotEnvFile(pathname, watchPath)) {
-        const variablesJson = this.getDotEnvVariables(pathname);
-        this.store.addOrUpdateDotEnvVariables(collectionId, variablesJson)
+        try {
+          const variablesJson = this.getDotEnvVariables(pathname);
+          this.store.addOrUpdateDotEnvVariables(collectionId, variablesJson)
+        } catch (error) {
+          console.error(`Failed to add .env variables due to: ${error}`)
+        }
       }
     }
 
@@ -92,15 +102,20 @@ export class Watcher {
     }
 
     private change(pathname: string, collectionId: string, watchPath: string) {
-      console.log(`file ${pathname} changed`)
+      console.log(`[Watcher] file ${pathname} changed`)
       if (this.isFlowTestFile(pathname)) {
-        const file = {
-          id: collectionId,
-          name: path.basename(pathname),
-          pathname: pathname,
-          data: readFile(pathname).content
-        };
-        this.store.changeFile(file);
+        try {
+          const data = JSON.stringify(readableDataToFlowData(JSON.parse(readFile(pathname).content)))
+          const file = {
+            id: collectionId,
+            name: path.basename(pathname),
+            pathname: pathname,
+            data
+          };
+          this.store.changeFile(file);
+        } catch(error) {
+          console.error(`Failed to save ${pathname} due to: ${error}`)
+        }
       } else if (this.isEnvFile(pathname, watchPath)) {
         try {
           const variables = this.getEnvVariables(pathname)
@@ -115,8 +130,12 @@ export class Watcher {
           console.error(`Failed to save ${pathname} due to: ${error}`)
         }
       } else if (this.isDotEnvFile(pathname, watchPath)) {
-        const variablesJson = this.getDotEnvVariables(pathname);
-        this.store.addOrUpdateDotEnvVariables(collectionId, variablesJson)
+        try {
+          const variablesJson = this.getDotEnvVariables(pathname);
+          this.store.addOrUpdateDotEnvVariables(collectionId, variablesJson)
+        } catch(error) {
+          console.error(`Failed to add .env variables due to: ${error}`)
+        }
       }
     }
 

@@ -18,11 +18,12 @@ import deleteDirectory from "./controllers/file-manager/delete-directory";
 import createFile from "./controllers/file-manager/create-file";
 import concatRoute from "./controllers/file-manager/util/concat-route";
 import deleteFile from "./controllers/file-manager/delete-file";
-import upadateFile from "./controllers/file-manager/update-file";
+import updateFile from "./controllers/file-manager/update-file";
 import readFile from "./controllers/file-manager/read-file";
 import { Watcher } from "./collections/watcher";
 import { isDirectory } from "./controllers/file-manager/util/file-util";
 import { InMemoryStateStore } from "./collections/statestore/store";
+import { flowDataToReadableData, readableDataToFlowData } from "./flowtest/parser";
 
 class App {
 
@@ -163,6 +164,10 @@ class App {
         const result = await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
         console.log(`Created flow: ${result.name}`)
 
+        const readableData = flowDataToReadableData(JSON.parse(newFlowTest.flowData));
+        createFile(`${newFlowTest.name}.flowtest.json`, "/Users/sjain/Desktop/Swagger Petstore - OpenAPI 3.0", 
+          JSON.stringify(readableData, null, 4))
+
         return res.json(result);
       });
 
@@ -181,12 +186,17 @@ class App {
           const result = await this.appDataSource.getRepository(FlowTest).save(flowtest)
           console.log(`Updated flow: ${result.name}`)
 
+          const readableData = flowDataToReadableData(JSON.parse(updateFlowTest.flowData));
+          updateFile(`/Users/sjain/Desktop/Swagger Petstore - OpenAPI 3.0/${flowtest.name}.flowtest.json`, 
+            JSON.stringify(readableData, null, 4))
+
           return res.json(result)
         }
         return res.status(404).send(`FlowTest ${req.params.id} not found`)
       })
 
       // Get FlowTest
+      // Note - this method will go away, UI should refer the collection tree for rendering
       this.app.get('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
         const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
             id: req.params.id
@@ -196,6 +206,7 @@ class App {
       })
 
       // Delete FlowTest
+      // Note - this method will go away, deleting a flowtest is equivalent to deleting a file
       this.app.delete('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
         const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
           id: req.params.id
@@ -207,6 +218,14 @@ class App {
           return res.json(result)
         }
         return res.status(404).send(`FlowTest ${req.params.id} not found`)
+      })
+
+      // Get All FlowTest
+      // Note - this method will go away, UI should refer the collection tree for rendering
+      this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
+        const flowtests = await this.appDataSource.getRepository(FlowTest).find();
+        if (flowtests) return res.json(flowtests)
+        return res.status(404).send('Error in fetching saved flowtests')
       })
 
       // This endpoint acts as a proxy to route request without origin header for cross-origin requests
@@ -253,13 +272,6 @@ class App {
               return res.status(500).send(error);
             }
         }
-      })
-
-      // Get All FlowTest
-      this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
-        const flowtests = await this.appDataSource.getRepository(FlowTest).find();
-        if (flowtests) return res.json(flowtests)
-        return res.status(404).send('Error in fetching saved flowtests')
       })
 
       // Create collection
@@ -436,10 +448,10 @@ class App {
         // Get the file path that will be updated and the content to write to that file
         const { path, content } = req.body;
 
-        const updateFile = upadateFile(path, content)
-        console.log(updateFile.message)
+        const updatedFile = updateFile(path, content)
+        console.log(updatedFile.message)
 
-        return res.status(updateFile.status).send(updateFile.message);
+        return res.status(updatedFile.status).send(updatedFile.message);
       });
 
       // Delete file

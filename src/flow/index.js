@@ -35,7 +35,6 @@ import { useSnackbar } from 'notistack';
 
 // API
 import flowTestApi from '../api/flowtest'
-import fileManagerApi from '../api/filemanager';
 
 // icons
 import { IconDeviceFloppy, IconChevronLeft, IconFiles } from '@tabler/icons-react';
@@ -71,9 +70,6 @@ const Flow = () => {
   const createNewFlowTest = wrapper(flowTestApi.createNewFlowTest)
   const updateFlowTest = wrapper(flowTestApi.updateFlowTest)
   const getFlowTest = wrapper(flowTestApi.getSpecificFlowTest)
-
-  const createNewFile = wrapper(fileManagerApi.createFile);
-  const updateFile = wrapper(fileManagerApi.updateFile)
 
   // notification
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -215,11 +211,6 @@ const Flow = () => {
       setIsDirty(false)
       enqueueSnackbar('Saved FlowTest!', { variant: 'success' });
       window.history.replaceState(null, null, `/flow/${createdFlowTest.id}`)
-      createNewFile.request({
-        name: `${createdFlowTest.name}.flowtest.json`,
-        path: "/Users/sjain/Desktop/Swagger Petstore/",
-        content: `${createdFlowTest.flowData}`
-      })
     } else if (createNewFlowTest.error) {
       const error = createNewFlowTest.error
       if (!error.response) {
@@ -237,10 +228,6 @@ const Flow = () => {
       setFlowTest(updatedFlowTest)
       setIsDirty(false)
       enqueueSnackbar('Saved FlowTest!', { variant: 'success' });
-      updateFile.request({
-        path: `/Users/sjain/Desktop/Swagger Petstore/${updatedFlowTest.name}.flowtest.json`,
-        content: `${updatedFlowTest.flowData}`
-      })
     } else if (updateFlowTest.error) {
       const error = updateFlowTest.error
       if (!error.response) {

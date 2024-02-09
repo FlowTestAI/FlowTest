@@ -95,6 +95,8 @@ export class InMemoryStateStore {
             if (item) {
                 item.data = file.data;
                 console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+            } else {
+                console.log(`[InMemoryStore] collection tree item: ${file.pathname} not found`)
             }
         }
     }

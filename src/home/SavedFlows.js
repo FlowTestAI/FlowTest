@@ -7,7 +7,6 @@ import { useSnackbar } from 'notistack';
 // api
 import wrapper from '../api/wrapper';
 import flowTestApi from '../api/flowtest'
-import fileManagerApi from '../api/filemanager';
 
 //mui 
 import { experimentalStyled as styled } from '@mui/material/styles';
@@ -35,8 +34,6 @@ const SavedFlows = () => {
     const [savedFlowTests, setSavedFlowTests] = useState([]);
     const getAllFlowTest = wrapper(flowTestApi.getAllFlowTest);
     const deleteFlowTest = wrapper(flowTestApi.deleteFlowTest);
-
-    const deleteFile = wrapper(fileManagerApi.deleteFile);
 
     // notification
     const { enqueueSnackbar, _ } = useSnackbar();
@@ -83,7 +80,6 @@ const SavedFlows = () => {
             const deletedFlowtest = deleteFlowTest.data
             console.log('Deleted flowtest: ', deletedFlowtest);
             enqueueSnackbar('Deleted flowtest!', { variant: 'success' });
-            deleteFile.request(`/Users/sjain/Desktop/Swagger Petstore/${deletedFlowtest.name}.flowtest.json`)
             getAllFlowTest.request();
         } else if (deleteFlowTest.error) {
             const error = deleteFlowTest.error

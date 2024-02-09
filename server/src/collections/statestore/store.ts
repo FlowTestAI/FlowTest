@@ -1,4 +1,5 @@
 import { getDirectoryName, getSubdirectoriesFromRoot, PATH_SEPARATOR } from './filesystem';
+import { Server } from 'socket.io'
 
 /**
  * In memory store to keep track of collection tree for each collection.
@@ -11,13 +12,23 @@ export class InMemoryStateStore {
     private state = {
         collections: []
     };
+    private io: Server
 
+    constructor(io: Server) {
+        this.io = io;
+    }
+
+    public getCollections() {
+        return this.state.collections;
+    }
+    
     public createCollection(collection) {
         const collectionIds = this.state.collections.map((c) => c.id);
   
         if (!collectionIds.includes(collection.uid)) {
           this.state.collections.push(collection);
           console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} initialized`)
+          this.io.emit('collection tree', this.state.collections);
         }
     }
 
@@ -25,6 +36,7 @@ export class InMemoryStateStore {
         const collection = this.state.collections.find(c => c.id === collectionId)
         this.state.collections = this.state.collections.filter((c) => c.id !== collectionId);
         console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} removed`)
+        this.io.emit('collection tree', this.state.collections);
     }
 
     public addFile(file) {
@@ -55,6 +67,7 @@ export class InMemoryStateStore {
             if (!currentSubItems.find((f) => f.name === file.name)) {
                 currentSubItems.push(file);
                 console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+                this.io.emit('collection tree', this.state.collections);
             }
         }
     }
@@ -83,6 +96,7 @@ export class InMemoryStateStore {
                 currentSubItems = childItem.items;
             }
             console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+            this.io.emit('collection tree', this.state.collections);
         }
     }
 
@@ -95,6 +109,7 @@ export class InMemoryStateStore {
             if (item) {
                 item.data = file.data;
                 console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+                this.io.emit('collection tree', this.state.collections);
             } else {
                 console.log(`[InMemoryStore] collection tree item: ${file.pathname} not found`)
             }
@@ -110,6 +125,7 @@ export class InMemoryStateStore {
             if (item) {
                 this.deleteItemInCollectionByPathname(item.pathname, collection)
                 console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+                this.io.emit('collection tree', this.state.collections);
             }
         }
     }
@@ -127,6 +143,7 @@ export class InMemoryStateStore {
                 if (item) {
                     this.deleteItemInCollectionByPathname(item.pathname, collection)
                     console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+                    this.io.emit('collection tree', this.state.collections);
                 }
             }
         }
@@ -140,9 +157,11 @@ export class InMemoryStateStore {
             if (existingEnv) {
                 existingEnv.variables = file.variables;
                 console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+                this.io.emit('collection tree', this.state.collections);
             } else {
                 collection.enviroments.push(file);
                 console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+                this.io.emit('collection tree', this.state.collections);
             }
         }
     }
@@ -153,6 +172,7 @@ export class InMemoryStateStore {
         if (collection) {
             collection.enviroments = collection.enviroments.filter((e) => e.name !== file.name && e.pathname !== file.pathname)
             console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+            this.io.emit('collection tree', this.state.collections);
         }
     }
 
@@ -162,6 +182,7 @@ export class InMemoryStateStore {
         if (collection) {
             collection.dotEnvVariables = variables;
             console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+            this.io.emit('collection tree', this.state.collections);
         }
     }
 

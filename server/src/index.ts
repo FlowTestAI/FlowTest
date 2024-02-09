@@ -47,7 +47,7 @@ class App {
     this.port = 3500
     this.collectionUtil = new CollectionUtil()
     this.timeout = 60000
-    this.inMemoryStateStore = new InMemoryStateStore()
+    this.inMemoryStateStore = new InMemoryStateStore(this.io)
     this.watcher = new Watcher(this.inMemoryStateStore)
   }
 
@@ -142,14 +142,11 @@ class App {
   initServer() {
       this.io.on('connection', (socket) => { 
         console.log('a user connected');
-        console.log(`clients count: ${this.io.engine.clientsCount}`)
+        console.log(`clients count: ${this.io.engine.clientsCount}`);
+        this.io.emit('collection tree', this.inMemoryStateStore.getCollections());
+
         socket.on('disconnect', () => {
           console.log('user disconnected');
-        });
-        
-        socket.on('message', (msg) => {
-          console.log(`messaged received charlie: ${msg}`)
-          this.io.emit('alpha', 'copy');
         });
       });
 

@@ -4,6 +4,7 @@ import readFile from '../controllers/file-manager/read-file';
 import { InMemoryStateStore } from './statestore/store';
 import * as dotenv from 'dotenv';
 import { readableDataToFlowData } from '../flowtest/parser';
+import {v4 as uuidv4} from 'uuid';
 
 export class Watcher {
 
@@ -92,13 +93,17 @@ export class Watcher {
           return;
       }
 
+      if (pathname === watchPath) {
+        // we have already added collection object to store
+        return;
+      }
+
       console.log(`directory ${pathname} added`)
       const directory = {
-        id: collectionId,
         name: path.basename(pathname),
         pathname: pathname
       };
-      this.store.addDirectory(directory)
+      this.store.addDirectory(directory, collectionId)
     }
 
     private change(pathname: string, collectionId: string, watchPath: string) {
@@ -171,11 +176,10 @@ export class Watcher {
 
       console.log(`dir ${pathname} removed`)
       const directory = {
-        id: collectionId,
         name: path.basename(pathname),
         pathname: pathname
       };
-      this.store.unlinkDirectory(directory)
+      this.store.unlinkDirectory(directory, collectionId)
     }
 
     public addWatcher(watchPath: string, collectionId: string) {
@@ -183,7 +187,6 @@ export class Watcher {
         this.watchers[watchPath].close();
       }
   
-      const self = this;
       setTimeout(() => {
         const watcher = chokidar.watch(watchPath, {
           ignoreInitial: false,
@@ -205,12 +208,12 @@ export class Watcher {
           .on('unlink', (pathname) => this.unlink(pathname, collectionId, watchPath))
           .on('unlinkDir', (pathname) => this.unlinkDir(pathname, collectionId, watchPath));
   
-        self.watchers[watchPath] = watcher;
+        this.watchers[watchPath] = watcher;
       }, 100);
     }
 
     hasWatcher(watchPath: string) {
-      return this.watchers[watchPath];
+      return this.watchers[watchPath] != undefined ? true : false;
     }
 
     removeWatcher(watchPath: string) {

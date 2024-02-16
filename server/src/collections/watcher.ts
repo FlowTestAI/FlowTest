@@ -164,7 +164,6 @@ export class Watcher {
         this.watchers[watchPath].close();
       }
   
-      const self = this;
       setTimeout(() => {
         const watcher = chokidar.watch(watchPath, {
           ignoreInitial: false,
@@ -186,12 +185,12 @@ export class Watcher {
           .on('unlink', (pathname) => this.unlink(pathname, collectionId, watchPath))
           .on('unlinkDir', (pathname) => this.unlinkDir(pathname, collectionId, watchPath));
   
-        self.watchers[watchPath] = watcher;
+        this.watchers[watchPath] = watcher;
       }, 100);
     }
 
     hasWatcher(watchPath: string) {
-      return this.watchers[watchPath];
+      return this.watchers[watchPath] != undefined ? true : false;
     }
 
     removeWatcher(watchPath: string) {

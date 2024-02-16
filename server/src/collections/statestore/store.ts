@@ -27,6 +27,15 @@ export class InMemoryStateStore {
         console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} removed`)
     }
 
+    public getAllCollection() {
+        return this.state.collections;
+    }
+
+    public getCollection(collectionId: string) {
+        const collection = this.state.collections.find(c => c.id === collectionId)
+        return collection;
+    }
+
     public addFile(file) {
         const collection = this.state.collections.find((c) => c.id === file.id);
   

@@ -24,7 +24,7 @@ import { Watcher } from "./collections/watcher";
 import { isDirectory } from "./controllers/file-manager/util/file-util";
 import { InMemoryStateStore } from "./collections/statestore/store";
 
-class App {
+export class App {
 
   app: express.Application
   port: number
@@ -90,6 +90,7 @@ class App {
     this.inMemoryStateStore.createCollection(collectionObj)
     this.watcher.addWatcher(fullPath, collection.id)
     console.log(`Watcher added for path: ${fullPath}`)
+    return collectionObj;
   }
 
   private async addWatchersForExsistingCollections() {
@@ -106,32 +107,7 @@ class App {
       })
   }
 
-  // private async initSamples() {
-  //   // collection
-  //   const collections = await this.appDataSource.getRepository(Collection).find();
-  //   const sample_collection = collections.find((collection) => collection.name === "Swagger Petstore - OpenAPI 3.0")
-  //   if (sample_collection === undefined) {
-  //     await this.createCollection('src/samples/collection/petstore.yaml');
-  //   }
-
-  //   // flows
-  //   const flowtests = await this.appDataSource.getRepository(FlowTest).find();
-  //   const sample_flow = flowtests.find((flowtest) => flowtest.name === "flow_1")
-  //   if (sample_flow === undefined) {
-  //     const flowData = fs.readFileSync('src/samples/flow/flow_1.json', 'utf8');
-  //     const newFlowTestBody = {
-  //       name: "flow_1",
-  //       flowData
-  //     }
-  //     const newFlowTest = new FlowTest()
-  //     Object.assign(newFlowTest, newFlowTestBody)
-
-  //     await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
-  //     console.log(`Created sample flow: flow_1`)
-  //   }
-  // }
-
-  initServer() {
+  init() {
       // to initialize the initial connection with the database, register all entities
       // and "synchronize" database schema, call "initialize()" method of a newly created database
       // once in your application bootstrap
@@ -140,7 +116,6 @@ class App {
             // here you can start to work with your database
             console.log('📦 [server]: Data Source has been initialized!')
             this.addWatchersForExsistingCollections();
-            // this.initSamples();
         })
         .catch((error) => console.log('❌ [server]: Error during Data Source initialization:', error))
 
@@ -153,6 +128,8 @@ class App {
 
       // Have Node serve the files for our built React app
       this.app.use(express.static(path.resolve(__dirname, '../../../build')));
+
+      /* --------------------------------------------------------------------------*/
 
       // Create FlowTest
       this.app.post('/api/v1/flowtest', async (req: Request, res: Response) => {
@@ -209,6 +186,15 @@ class App {
         return res.status(404).send(`FlowTest ${req.params.id} not found`)
       })
 
+      // Get All FlowTest
+      this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
+        const flowtests = await this.appDataSource.getRepository(FlowTest).find();
+        if (flowtests) return res.json(flowtests)
+        return res.status(404).send('Error in fetching saved flowtests')
+      })
+
+      /* --------------------------------------------------------------------------*/
+
       // This endpoint acts as a proxy to route request without origin header for cross-origin requests
       this.app.put('/api/v1/request', async (req: Request, res: Response) => {
         try {
@@ -255,12 +241,7 @@ class App {
         }
       })
 
-      // Get All FlowTest
-      this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
-        const flowtests = await this.appDataSource.getRepository(FlowTest).find();
-        if (flowtests) return res.json(flowtests)
-        return res.status(404).send('Error in fetching saved flowtests')
-      })
+      /* --------------------------------------------------------------------------*/
 
       // Create collection
       const upload = multer({ dest: 'uploads/' })
@@ -273,20 +254,21 @@ class App {
 
           const dirResult = createDirectory(newCollection.name, newCollection.rootPath)
           console.log(dirResult.message)
-          // create env folder
-          createDirectory("environments", concatRoute(newCollection.rootPath, newCollection.name))
 
           if (dirResult.status === 201) {
+            // create env folder
+            createDirectory("environments", concatRoute(newCollection.rootPath, newCollection.name))
+
             const collection = await this.appDataSource.getRepository(Collection).save(newCollection);
-            console.log(`Created collection: ${collection.name}`)
-            this.addCollectionToStore(collection, concatRoute(collection.rootPath, collection.name))
-            return res.status(201).send(collection)
+            console.log(`Created collection in db: ${collection.name}`)
+            const collectionObj = this.addCollectionToStore(collection, concatRoute(collection.rootPath, collection.name))
+            return res.status(201).send(collectionObj)
           } else {
             return res.status(dirResult.status).send(dirResult.message);
           }
         } catch(err) {
           console.error(err);
-          return res.status(500).send('Failed to parse OpenAPI spec');
+          return res.status(500).send('Internal Server Error');
         }
       })
 
@@ -299,9 +281,9 @@ class App {
         if (collection) {
           const deleteDir = deleteDirectory(concatRoute(collection.rootPath, collection.name));
           if (deleteDir.status === 200) {
-            const result = await this.appDataSource.getRepository(Collection).remove(collection)
-            console.log(`Deleted collection: ${result.name}`)
             console.log(deleteDir.message)
+            const result = await this.appDataSource.getRepository(Collection).remove(collection)
+            console.log(`Deleted collection from db: ${result.name}`)
             // remove collection tree from in memory store
             this.inMemoryStateStore.removeCollection(req.params.id)
             this.watcher.removeWatcher(concatRoute(collection.rootPath, collection.name))
@@ -315,54 +297,18 @@ class App {
       })
 
       // Get all collections
-      this.app.get('/api/v1/collection', async (req: Request, res: Response) => {
-        const collections = await this.appDataSource.getRepository(Collection).find();
-        if (collections) return res.json(collections)
-        return res.status(404).send('Error in fetching saved collections')
+      this.app.get('/api/v1/collection', (req: Request, res: Response) => {
+        return res.json(this.inMemoryStateStore.getAllCollection())
       })
 
       // Get collection
-      this.app.get('/api/v1/collection/:id', async (req: Request, res: Response) => {
-        const collection = await this.appDataSource.getRepository(Collection).findOneBy({
-          id: req.params.id
-        })
+      this.app.get('/api/v1/collection/:id', (req: Request, res: Response) => {
+        const collection = this.inMemoryStateStore.getCollection(req.params.id)
         if (collection) return res.json(collection)
         return res.status(404).send(`Collection ${req.params.id} not found`)
       })
 
-      // Create Auth key
-      this.app.post('/api/v1/authkey', async (req: Request, res: Response) => {
-        const body = req.body
-        const newAuthKey = new AuthKey()
-        Object.assign(newAuthKey, body)
-
-        const result = await this.appDataSource.getRepository(AuthKey).save(newAuthKey);
-        console.log(`Created Auth Credentials: ${result.name}`)
-
-        return res.json(result);
-      });
-
-      // Get all Auth keys
-      this.app.get('/api/v1/authkey', async (req: Request, res: Response) => {
-        const authkeys = await this.appDataSource.getRepository(AuthKey).find();
-        if (authkeys) return res.json(authkeys)
-        return res.status(404).send('Error in fetching saved authkeys')
-      })
-
-      // Delete Auth key
-      this.app.delete('/api/v1/authkey/:id', async (req: Request, res: Response) => {
-        const authkey = await this.appDataSource.getRepository(AuthKey).findOneBy({
-          id: req.params.id
-        })
-
-        if (authkey) {
-          const result = await this.appDataSource.getRepository(AuthKey).remove(authkey)
-          console.log(`Deleted Auth Credentials: ${result.name}`)
-          return res.json(result)
-        }
-        return res.status(404).send(`AuthKey ${req.params.id} not found`)
-      })
-
+      /* --------------------------------------------------------------------------*/
       // Create FlowTest AI
       this.app.post('/api/v1/flowtest/ai', async (req: Request, res: Response) => {
         const request = req.body
@@ -371,6 +317,8 @@ class App {
 
         return res.json(nodes);
       });
+
+      /* --------------------------------------------------------------------------*/
 
       // File Manager
 
@@ -465,5 +413,8 @@ class App {
 }
 
 let server = new App()
-server.initServer()
+server.init()
+
+// VisibleForTesting
+export default server;
 

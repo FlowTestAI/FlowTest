@@ -1,4 +1,5 @@
 import { getDirectoryName, getSubdirectoriesFromRoot, PATH_SEPARATOR } from './filesystem';
+import {v4 as uuidv4} from 'uuid';
 
 /**
  * In memory store to keep track of collection tree for each collection.
@@ -24,7 +25,7 @@ export class InMemoryStateStore {
     public removeCollection(collectionId: string) {
         const collection = this.state.collections.find(c => c.id === collectionId)
         this.state.collections = this.state.collections.filter((c) => c.id !== collectionId);
-        console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} removed`)
+        console.log(`[InMemoryStore] collection removed: ${JSON.stringify(collection)}`)
     }
 
     public getAllCollection() {
@@ -68,8 +69,8 @@ export class InMemoryStateStore {
         }
     }
 
-    public addDirectory(directory) {
-        const collection = this.state.collections.find((c) => c.id === directory.id);
+    public addDirectory(directory, collectionId: string) {
+        const collection = this.state.collections.find((c) => c.id === collectionId);
 
         if (collection) {
             const subDirectories = getSubdirectoriesFromRoot(collection.pathname, directory.pathname);
@@ -79,7 +80,7 @@ export class InMemoryStateStore {
                 let childItem = currentSubItems.find((f) => f.type === 'folder' && f.name === directoryName);
                 if (!childItem) {
                     childItem = {
-                        id: directory.id,
+                        id: uuidv4(),
                         pathname: `${currentPath}${PATH_SEPARATOR}${directoryName}`,
                         name: directoryName,
                         type: 'folder',
@@ -91,7 +92,7 @@ export class InMemoryStateStore {
                 currentPath = `${currentPath}${PATH_SEPARATOR}${directoryName}`;
                 currentSubItems = childItem.items;
             }
-            console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+            console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`)
         }
     }
 
@@ -121,8 +122,8 @@ export class InMemoryStateStore {
         }
     }
 
-    public unlinkDirectory(directory) {
-        const collection = this.state.collections.find((c) => c.id === directory.id);
+    public unlinkDirectory(directory, collectionId: string) {
+        const collection = this.state.collections.find((c) => c.id === collectionId);
   
         if (collection) {
             // if it's the collection itself
@@ -133,7 +134,7 @@ export class InMemoryStateStore {
 
                 if (item) {
                     this.deleteItemInCollectionByPathname(item.pathname, collection)
-                    console.log(`[InMemoryStore] collection tree ${JSON.stringify(collection)} updated`)
+                    console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`)
                 }
             }
         }

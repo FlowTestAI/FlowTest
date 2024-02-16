@@ -3,6 +3,7 @@ import * as path from 'path'
 import readFile from '../controllers/file-manager/read-file';
 import { InMemoryStateStore } from './statestore/store';
 import * as dotenv from 'dotenv';
+import {v4 as uuidv4} from 'uuid';
 
 export class Watcher {
 
@@ -82,13 +83,17 @@ export class Watcher {
           return;
       }
 
+      if (pathname === watchPath) {
+        // we have already added collection object to store
+        return;
+      }
+
       console.log(`directory ${pathname} added`)
       const directory = {
-        id: collectionId,
         name: path.basename(pathname),
         pathname: pathname
       };
-      this.store.addDirectory(directory)
+      this.store.addDirectory(directory, collectionId)
     }
 
     private change(pathname: string, collectionId: string, watchPath: string) {
@@ -152,11 +157,10 @@ export class Watcher {
 
       console.log(`dir ${pathname} removed`)
       const directory = {
-        id: collectionId,
         name: path.basename(pathname),
         pathname: pathname
       };
-      this.store.unlinkDirectory(directory)
+      this.store.unlinkDirectory(directory, collectionId)
     }
 
     public addWatcher(watchPath: string, collectionId: string) {

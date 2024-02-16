@@ -50,6 +50,7 @@
     "platform": "^1.3.6",
     "reflect-metadata": "^0.1.13",
     "sqlite3": "^5.1.6",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "uuid": "^9.0.1"
   }
 }

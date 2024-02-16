@@ -11,6 +11,7 @@ export default (apiFunc) => {
         } catch (err) {
             console.log(err)
             setError(err || 'Unexpected Error!')
+            setData(null)
         }
     }
 

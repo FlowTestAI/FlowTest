@@ -9,21 +9,18 @@ const client = axios.create({
     }
 })
 
-const getAllFlowTest = () => client.get('/flowtest')
+const getFlowTest = (path) => client.get(`/flowtest?path=${path}`)
 
-const getSpecificFlowTest = (id) => client.get(`/flowtest/${id}`)
+const createNewFlowTest = (name, path, flowData) => client.post(`/flowtest`, {name, path, flowData})
 
-const createNewFlowTest = (body) => client.post(`/flowtest`, body)
+const updateFlowTest = (path, flowData) => client.put(`/flowtest`, {path, flowData})
 
-const updateFlowTest = (id, body) => client.put(`/flowtest/${id}`, body)
-
-const deleteFlowTest = (id) => client.delete(`/flowtest/${id}`)
+const deleteFlowTest = (path) => client.delete(`/flowtest?path=${path}`)
 
 const runRequest = (body) => client.put(`/request`, body)
 
 export default {
-    getAllFlowTest,
-    getSpecificFlowTest,
+    getFlowTest,
     createNewFlowTest,
     updateFlowTest,
     deleteFlowTest,

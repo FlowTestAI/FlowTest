@@ -4,7 +4,6 @@ import readFile from '../controllers/file-manager/read-file';
 import { InMemoryStateStore } from './statestore/store';
 import * as dotenv from 'dotenv';
 import { readableDataToFlowData } from '../flowtest/parser';
-import {v4 as uuidv4} from 'uuid';
 
 export class Watcher {
 
@@ -17,7 +16,7 @@ export class Watcher {
 
     private isFlowTestFile(pathname: string): Boolean {
       if (!pathname || typeof pathname !== 'string') return false;
-      return ['flowtest.json'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
+      return ['flow'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
     }
 
     private isEnvFile(pathname: string, collectionPath: string): Boolean {
@@ -26,7 +25,7 @@ export class Watcher {
       const envDirectory = path.join(collectionPath, 'environments');
 
       return dirname === envDirectory && 
-        ['env.json'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
+        ['env'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
     }
 
     private isDotEnvFile(pathname: string, collectionPath: string): Boolean {
@@ -39,51 +38,31 @@ export class Watcher {
     private add(pathname: string, collectionId: string, watchPath: string) {
       console.log(`[Watcher] file ${pathname} added`)
       if (this.isFlowTestFile(pathname)) {
-        try {
-          const data = JSON.stringify(readableDataToFlowData(JSON.parse(readFile(pathname).content)))
-          const file = {
-            id: collectionId,
-            name: path.basename(pathname),
-            pathname: pathname,
-            data
-          };
-          this.store.addFile(file);
-        } catch(error) {
-          console.log(`Failed to add ${pathname} due to: ${error}`)
-        }
+        const file = {
+          name: path.basename(pathname),
+          pathname: pathname,
+        };
+        this.store.addFile(file, collectionId);
       } else if (this.isEnvFile(pathname, watchPath)) {
         try {
           const variables = this.getEnvVariables(pathname)
           const file = {
-            id: collectionId,
             name: path.basename(pathname),
             pathname: pathname,
             variables
           }
-          this.store.addEnvFile(file)
+          this.store.addEnvFile(file, collectionId)
         } catch (error) {
           console.error(`Failed to add ${pathname} due to: ${error}`)
         }
       } else if (this.isDotEnvFile(pathname, watchPath)) {
         try {
-          const variablesJson = this.getDotEnvVariables(pathname);
+          const variablesJson = this.getEnvVariables(pathname);
           this.store.addOrUpdateDotEnvVariables(collectionId, variablesJson)
         } catch (error) {
           console.error(`Failed to add .env variables due to: ${error}`)
         }
       }
-    }
-
-    private getEnvVariables(pathname: string) {
-      const content = readFile(pathname).content
-      return JSON.parse(content);
-    }
-
-    private getDotEnvVariables(pathname: string) {
-      const content = readFile(pathname).content
-      const buf = Buffer.from(content);
-      const parsed = dotenv.parse(buf);
-      return parsed;
     }
 
     private addDirectory(pathname: string, collectionId: string, watchPath: string) {
@@ -109,34 +88,26 @@ export class Watcher {
     private change(pathname: string, collectionId: string, watchPath: string) {
       console.log(`[Watcher] file ${pathname} changed`)
       if (this.isFlowTestFile(pathname)) {
-        try {
-          const data = JSON.stringify(readableDataToFlowData(JSON.parse(readFile(pathname).content)))
-          const file = {
-            id: collectionId,
-            name: path.basename(pathname),
-            pathname: pathname,
-            data
-          };
-          this.store.changeFile(file);
-        } catch(error) {
-          console.error(`Failed to save ${pathname} due to: ${error}`)
-        }
+        const file = {
+          name: path.basename(pathname),
+          pathname: pathname,
+        };
+        this.store.changeFile(file, collectionId);
       } else if (this.isEnvFile(pathname, watchPath)) {
         try {
           const variables = this.getEnvVariables(pathname)
           const file = {
-            id: collectionId,
             name: path.basename(pathname),
             pathname: pathname,
             variables
           }
-          this.store.addEnvFile(file)
+          this.store.addEnvFile(file, collectionId)
         } catch (error) {
           console.error(`Failed to save ${pathname} due to: ${error}`)
         }
       } else if (this.isDotEnvFile(pathname, watchPath)) {
         try {
-          const variablesJson = this.getDotEnvVariables(pathname);
+          const variablesJson = this.getEnvVariables(pathname);
           this.store.addOrUpdateDotEnvVariables(collectionId, variablesJson)
         } catch(error) {
           console.error(`Failed to add .env variables due to: ${error}`)
@@ -148,19 +119,17 @@ export class Watcher {
       console.log(`file ${pathname} removed`)
       if (this.isFlowTestFile(pathname)) {
         const file = {
-          id: collectionId,
           name: path.basename(pathname),
           pathname: pathname
         };
-        this.store.unlinkFile(file);
+        this.store.unlinkFile(file, collectionId);
       } else if (this.isEnvFile(pathname, watchPath)) {
         try {
           const file = {
-            id: collectionId,
             name: path.basename(pathname),
             pathname: pathname
           }
-          this.store.unlinkEnvFile(file)
+          this.store.unlinkEnvFile(file, collectionId)
         } catch (error) {
           console.error(`Failed to save ${pathname} due to: ${error}`)
         }
@@ -180,6 +149,13 @@ export class Watcher {
         pathname: pathname
       };
       this.store.unlinkDirectory(directory, collectionId)
+    }
+
+    private getEnvVariables(pathname: string) {
+      const content = readFile(pathname).content
+      const buf = Buffer.from(content);
+      const parsed = dotenv.parse(buf);
+      return parsed;
     }
 
     public addWatcher(watchPath: string, collectionId: string) {

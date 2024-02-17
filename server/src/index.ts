@@ -3,13 +3,11 @@ import express, {Request, Response} from 'express';
 import path from 'path';
 import cors from 'cors'
 import { AppDataSource } from "./data-source";
-import { FlowTest } from "./entities/FlowTest"
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { Collection } from "./entities/Collection";
 import multer from 'multer';
 import * as fs from 'fs';
 import CollectionUtil from "./collection-util";
-import { AuthKey } from "./entities/AuthKey";
 import JsonRefs from 'json-refs'
 import FlowtestAI from "./flowtest-ai";
 import axios from "axios";
@@ -28,7 +26,7 @@ import { Server } from 'socket.io'
 
 import * as http from 'http'
 
-class App {
+export class App {
 
   app: express.Application
   server: http.Server
@@ -98,6 +96,7 @@ class App {
     this.inMemoryStateStore.createCollection(collectionObj)
     this.watcher.addWatcher(fullPath, collection.id)
     console.log(`Watcher added for path: ${fullPath}`)
+    return collectionObj;
   }
 
   private async addWatchersForExsistingCollections() {
@@ -114,44 +113,14 @@ class App {
       })
   }
 
-  // private async initSamples() {
-  //   // collection
-  //   const collections = await this.appDataSource.getRepository(Collection).find();
-  //   const sample_collection = collections.find((collection) => collection.name === "Swagger Petstore - OpenAPI 3.0")
-  //   if (sample_collection === undefined) {
-  //     await this.createCollection('src/samples/collection/petstore.yaml');
-  //   }
-
-  //   // flows
-  //   const flowtests = await this.appDataSource.getRepository(FlowTest).find();
-  //   const sample_flow = flowtests.find((flowtest) => flowtest.name === "flow_1")
-  //   if (sample_flow === undefined) {
-  //     const flowData = fs.readFileSync('src/samples/flow/flow_1.json', 'utf8');
-  //     const newFlowTestBody = {
-  //       name: "flow_1",
-  //       flowData
-  //     }
-  //     const newFlowTest = new FlowTest()
-  //     Object.assign(newFlowTest, newFlowTestBody)
-
-  //     await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
-  //     console.log(`Created sample flow: flow_1`)
-  //   }
-  // }
-
-  initServer() {
+  init() {
       this.io.on('connection', (socket) => { 
         console.log('a user connected');
         console.log(`clients count: ${this.io.engine.clientsCount}`);
-        this.io.emit('collection tree', this.inMemoryStateStore.getCollections());
 
         socket.on('disconnect', () => {
           console.log('user disconnected');
         });
-      });
-
-      this.server.listen(this.port, () => {
-        return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
       });
 
       // to initialize the initial connection with the database, register all entities
@@ -162,7 +131,6 @@ class App {
             // here you can start to work with your database
             console.log('📦 [server]: Data Source has been initialized!')
             this.addWatchersForExsistingCollections();
-            // this.initSamples();
         })
         .catch((error) => console.log('❌ [server]: Error during Data Source initialization:', error))
 
@@ -176,78 +144,68 @@ class App {
       // Have Node serve the files for our built React app
       this.app.use(express.static(path.resolve(__dirname, '../../../build')));
 
+      /* --------------------------------------------------------------------------*/
+
       // Create FlowTest
       this.app.post('/api/v1/flowtest', async (req: Request, res: Response) => {
-        const body = req.body
-        const newFlowTest = new FlowTest()
-        Object.assign(newFlowTest, body)
+        const {name, path, flowData} = req.body
 
-        const result = await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
-        console.log(`Created flow: ${result.name}`)
-
-        const readableData = flowDataToReadableData(JSON.parse(newFlowTest.flowData));
-        createFile(`${newFlowTest.name}.flowtest.json`, "/Users/sjain/Desktop/Swagger Petstore - OpenAPI 3.0", 
-          JSON.stringify(readableData, null, 4))
-
-        return res.json(result);
+        try {
+          const readableData = flowDataToReadableData(flowData);
+          const file = createFile(`${name}.flow`, path, JSON.stringify(readableData, null, 4))
+          if (file.status === 201) {
+            return res.status(file.status).send(concatRoute(path, `${name}.flow`))
+          } else {
+            return res.status(file.status).send(file.message)
+          }
+        } catch(err) {
+          console.log(`Failed to create flowtest: ${err}`);
+          return res.status(500).send("Interal Server Error");
+        }
       });
 
       // Update FlowTest
-      this.app.put('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
-        const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
-            id: req.params.id
-        })
-        if (flowtest) {
-          const body = req.body
-          const updateFlowTest = new FlowTest()
-          Object.assign(updateFlowTest, body)
-          flowtest.name = updateFlowTest.name
-          flowtest.flowData = updateFlowTest.flowData
+      this.app.put('/api/v1/flowtest', async (req: Request, res: Response) => {
+        const {path, flowData} = req.body
 
-          const result = await this.appDataSource.getRepository(FlowTest).save(flowtest)
-          console.log(`Updated flow: ${result.name}`)
-
-          const readableData = flowDataToReadableData(JSON.parse(updateFlowTest.flowData));
-          updateFile(`/Users/sjain/Desktop/Swagger Petstore - OpenAPI 3.0/${flowtest.name}.flowtest.json`, 
-            JSON.stringify(readableData, null, 4))
-
-          return res.json(result)
+        try {
+          const readableData = flowDataToReadableData(flowData);
+          const file = updateFile(path, JSON.stringify(readableData, null, 4))
+          return res.status(file.status).send(file.message)
+        } catch(err) {
+          console.log(`Failed to update flowtest: ${err}`);
+          return res.status(500).send("Interal Server Error");
         }
-        return res.status(404).send(`FlowTest ${req.params.id} not found`)
       })
 
       // Get FlowTest
-      // Note - this method will go away, UI should refer the collection tree for rendering
-      this.app.get('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
-        const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
-            id: req.params.id
-        })
-        if (flowtest) return res.json(flowtest)
-        return res.status(404).send(`FlowTest ${req.params.id} not found`)
+      this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
+        const path = req.query.path.toString();
+
+        const rFile = readFile(path)
+        console.log(rFile.message)
+        
+        if (rFile.status === 200) {
+          const flowData = readableDataToFlowData(JSON.parse(rFile.content));
+          return res.status(rFile.status).json(flowData)
+        } else {
+          return res.status(rFile.status).send(rFile.message)
+        }
       })
 
       // Delete FlowTest
-      // Note - this method will go away, deleting a flowtest is equivalent to deleting a file
-      this.app.delete('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
-        const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
-          id: req.params.id
-        })
+      this.app.delete('/api/v1/flowtest', async (req: Request, res: Response) => {
 
-        if (flowtest) {
-          const result = await this.appDataSource.getRepository(FlowTest).remove(flowtest)
-          console.log(`Deleted flow: ${result.name}`)
-          return res.json(result)
-        }
-        return res.status(404).send(`FlowTest ${req.params.id} not found`)
+        // Get the file path that will be deleted
+        const path = req.query.path.toString();
+
+        const delFile = deleteFile(path)
+        console.log(delFile.message)
+
+        return res.status(delFile.status).send(delFile.message);
       })
 
-      // Get All FlowTest
-      // Note - this method will go away, UI should refer the collection tree for rendering
-      this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
-        const flowtests = await this.appDataSource.getRepository(FlowTest).find();
-        if (flowtests) return res.json(flowtests)
-        return res.status(404).send('Error in fetching saved flowtests')
-      })
+      /* --------------------------------------------------------------------------*/
 
       // This endpoint acts as a proxy to route request without origin header for cross-origin requests
       this.app.put('/api/v1/request', async (req: Request, res: Response) => {
@@ -295,6 +253,8 @@ class App {
         }
       })
 
+      /* --------------------------------------------------------------------------*/
+
       // Create collection
       const upload = multer({ dest: 'uploads/' })
       this.app.post('/api/v1/collection', upload.single('file'), async (req: Request, res: Response) => {
@@ -306,20 +266,21 @@ class App {
 
           const dirResult = createDirectory(newCollection.name, newCollection.rootPath)
           console.log(dirResult.message)
-          // create env folder
-          createDirectory("environments", concatRoute(newCollection.rootPath, newCollection.name))
 
           if (dirResult.status === 201) {
+            // create env folder
+            createDirectory("environments", concatRoute(newCollection.rootPath, newCollection.name))
+
             const collection = await this.appDataSource.getRepository(Collection).save(newCollection);
-            console.log(`Created collection: ${collection.name}`)
-            this.addCollectionToStore(collection, concatRoute(collection.rootPath, collection.name))
-            return res.status(201).send(collection)
+            console.log(`Created collection in db: ${collection.name}`)
+            const collectionObj = this.addCollectionToStore(collection, concatRoute(collection.rootPath, collection.name))
+            return res.status(201).json(collectionObj)
           } else {
             return res.status(dirResult.status).send(dirResult.message);
           }
         } catch(err) {
           console.error(err);
-          return res.status(500).send('Failed to parse OpenAPI spec');
+          return res.status(500).send('Internal Server Error');
         }
       })
 
@@ -332,9 +293,9 @@ class App {
         if (collection) {
           const deleteDir = deleteDirectory(concatRoute(collection.rootPath, collection.name));
           if (deleteDir.status === 200) {
-            const result = await this.appDataSource.getRepository(Collection).remove(collection)
-            console.log(`Deleted collection: ${result.name}`)
             console.log(deleteDir.message)
+            const result = await this.appDataSource.getRepository(Collection).remove(collection)
+            console.log(`Deleted collection from db: ${result.name}`)
             // remove collection tree from in memory store
             this.inMemoryStateStore.removeCollection(req.params.id)
             this.watcher.removeWatcher(concatRoute(collection.rootPath, collection.name))
@@ -348,54 +309,18 @@ class App {
       })
 
       // Get all collections
-      this.app.get('/api/v1/collection', async (req: Request, res: Response) => {
-        const collections = await this.appDataSource.getRepository(Collection).find();
-        if (collections) return res.json(collections)
-        return res.status(404).send('Error in fetching saved collections')
+      this.app.get('/api/v1/collection', (req: Request, res: Response) => {
+        return res.json(this.inMemoryStateStore.getAllCollection())
       })
 
       // Get collection
-      this.app.get('/api/v1/collection/:id', async (req: Request, res: Response) => {
-        const collection = await this.appDataSource.getRepository(Collection).findOneBy({
-          id: req.params.id
-        })
+      this.app.get('/api/v1/collection/:id', (req: Request, res: Response) => {
+        const collection = this.inMemoryStateStore.getCollection(req.params.id)
         if (collection) return res.json(collection)
         return res.status(404).send(`Collection ${req.params.id} not found`)
       })
 
-      // Create Auth key
-      this.app.post('/api/v1/authkey', async (req: Request, res: Response) => {
-        const body = req.body
-        const newAuthKey = new AuthKey()
-        Object.assign(newAuthKey, body)
-
-        const result = await this.appDataSource.getRepository(AuthKey).save(newAuthKey);
-        console.log(`Created Auth Credentials: ${result.name}`)
-
-        return res.json(result);
-      });
-
-      // Get all Auth keys
-      this.app.get('/api/v1/authkey', async (req: Request, res: Response) => {
-        const authkeys = await this.appDataSource.getRepository(AuthKey).find();
-        if (authkeys) return res.json(authkeys)
-        return res.status(404).send('Error in fetching saved authkeys')
-      })
-
-      // Delete Auth key
-      this.app.delete('/api/v1/authkey/:id', async (req: Request, res: Response) => {
-        const authkey = await this.appDataSource.getRepository(AuthKey).findOneBy({
-          id: req.params.id
-        })
-
-        if (authkey) {
-          const result = await this.appDataSource.getRepository(AuthKey).remove(authkey)
-          console.log(`Deleted Auth Credentials: ${result.name}`)
-          return res.json(result)
-        }
-        return res.status(404).send(`AuthKey ${req.params.id} not found`)
-      })
-
+      /* --------------------------------------------------------------------------*/
       // Create FlowTest AI
       this.app.post('/api/v1/flowtest/ai', async (req: Request, res: Response) => {
         const request = req.body
@@ -404,6 +329,8 @@ class App {
 
         return res.json(nodes);
       });
+
+      /* --------------------------------------------------------------------------*/
 
       // File Manager
 
@@ -493,6 +420,9 @@ class App {
   }
 }
 
-let app = new App()
-app.initServer()
+let server = new App()
+server.init()
+
+// VisibleForTesting
+export default server;
 

@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import makeNode from "./Node";
 import concatRoute from "./util/concat-route";
 import { isDirectory } from "./util/file-util";
 

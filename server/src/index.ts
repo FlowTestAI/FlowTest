@@ -3,13 +3,11 @@ import express, {Request, Response} from 'express';
 import path from 'path';
 import cors from 'cors'
 import { AppDataSource } from "./data-source";
-import { FlowTest } from "./entities/FlowTest"
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { Collection } from "./entities/Collection";
 import multer from 'multer';
 import * as fs from 'fs';
 import CollectionUtil from "./collection-util";
-import { AuthKey } from "./entities/AuthKey";
 import JsonRefs from 'json-refs'
 import FlowtestAI from "./flowtest-ai";
 import axios from "axios";

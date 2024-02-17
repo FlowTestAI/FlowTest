@@ -4,14 +4,14 @@ import Collections from "../home/Collections";
 import AuthKeys from "../home/AuthKeys";
 import FlowTestAI from "../home/FlowTestAI";
 
-const MainRoutes = ({socket}) => (
+const MainRoutes = () => (
     {
         path: '/',
         element: <HomeLayout/>,
         children: [
             {
                 path: '/flowtest',
-                element: <SavedFlows socket={socket} />
+                element: <SavedFlows />
             },
             {
                 path: '/collection',

@@ -27,7 +27,7 @@ import {
 import { IconTrash } from '@tabler/icons-react';
 import DeleteDialog from './DeleteDialog';
 
-const SavedFlows = ({socket}) => {
+const SavedFlows = () => {
 
     const navigate = useNavigate()
 
@@ -41,8 +41,6 @@ const SavedFlows = ({socket}) => {
     // init
     useEffect(() => {
         getAllFlowTest.request();
-
-        socket.emit("message", "sajal")
     },[])
 
     useEffect(() => {

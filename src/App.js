@@ -6,13 +6,15 @@ import { StyledEngineProvider, CssBaseline } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import { socketConnection } from './socket.io';
 
+socketConnection();
+
 function App() {
   return (
     <BrowserRouter>
       <StyledEngineProvider injectFirst>
         <SnackbarProvider>
           <CssBaseline/>
-          <FlowRoutes socket={socketConnection()}/>
+          <FlowRoutes/>
         </SnackbarProvider>
       </StyledEngineProvider>
     </BrowserRouter>

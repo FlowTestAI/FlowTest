@@ -3,13 +3,11 @@ import express, {Request, Response} from 'express';
 import path from 'path';
 import cors from 'cors'
 import { AppDataSource } from "./data-source";
-import { FlowTest } from "./entities/FlowTest"
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { Collection } from "./entities/Collection";
 import multer from 'multer';
 import * as fs from 'fs';
 import CollectionUtil from "./collection-util";
-import { AuthKey } from "./entities/AuthKey";
 import JsonRefs from 'json-refs'
 import FlowtestAI from "./flowtest-ai";
 import axios from "axios";
@@ -18,11 +16,12 @@ import deleteDirectory from "./controllers/file-manager/delete-directory";
 import createFile from "./controllers/file-manager/create-file";
 import concatRoute from "./controllers/file-manager/util/concat-route";
 import deleteFile from "./controllers/file-manager/delete-file";
-import upadateFile from "./controllers/file-manager/update-file";
+import updateFile from "./controllers/file-manager/update-file";
 import readFile from "./controllers/file-manager/read-file";
 import { Watcher } from "./collections/watcher";
 import { isDirectory } from "./controllers/file-manager/util/file-util";
 import { InMemoryStateStore } from "./collections/statestore/store";
+import { flowDataToReadableData, readableDataToFlowData } from "./flowtest/parser";
 
 export class App {
 
@@ -133,64 +132,61 @@ export class App {
 
       // Create FlowTest
       this.app.post('/api/v1/flowtest', async (req: Request, res: Response) => {
-        const body = req.body
-        const newFlowTest = new FlowTest()
-        Object.assign(newFlowTest, body)
+        const {name, path, flowData} = req.body
 
-        const result = await this.appDataSource.getRepository(FlowTest).save(newFlowTest);
-        console.log(`Created flow: ${result.name}`)
-
-        return res.json(result);
+        try {
+          const readableData = flowDataToReadableData(flowData);
+          const file = createFile(`${name}.flow`, path, JSON.stringify(readableData, null, 4))
+          if (file.status === 201) {
+            return res.status(file.status).send(concatRoute(path, `${name}.flow`))
+          } else {
+            return res.status(file.status).send(file.message)
+          }
+        } catch(err) {
+          console.log(`Failed to create flowtest: ${err}`);
+          return res.status(500).send("Interal Server Error");
+        }
       });
 
       // Update FlowTest
-      this.app.put('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
-        const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
-            id: req.params.id
-        })
-        if (flowtest) {
-          const body = req.body
-          const updateFlowTest = new FlowTest()
-          Object.assign(updateFlowTest, body)
-          flowtest.name = updateFlowTest.name
-          flowtest.flowData = updateFlowTest.flowData
+      this.app.put('/api/v1/flowtest', async (req: Request, res: Response) => {
+        const {path, flowData} = req.body
 
-          const result = await this.appDataSource.getRepository(FlowTest).save(flowtest)
-          console.log(`Updated flow: ${result.name}`)
-
-          return res.json(result)
+        try {
+          const readableData = flowDataToReadableData(flowData);
+          const file = updateFile(path, JSON.stringify(readableData, null, 4))
+          return res.status(file.status).send(file.message)
+        } catch(err) {
+          console.log(`Failed to update flowtest: ${err}`);
+          return res.status(500).send("Interal Server Error");
         }
-        return res.status(404).send(`FlowTest ${req.params.id} not found`)
       })
 
       // Get FlowTest
-      this.app.get('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
-        const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
-            id: req.params.id
-        })
-        if (flowtest) return res.json(flowtest)
-        return res.status(404).send(`FlowTest ${req.params.id} not found`)
+      this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
+        const path = req.query.path.toString();
+
+        const rFile = readFile(path)
+        console.log(rFile.message)
+        
+        if (rFile.status === 200) {
+          const flowData = readableDataToFlowData(JSON.parse(rFile.content));
+          return res.status(rFile.status).json(flowData)
+        } else {
+          return res.status(rFile.status).send(rFile.message)
+        }
       })
 
       // Delete FlowTest
-      this.app.delete('/api/v1/flowtest/:id', async (req: Request, res: Response) => {
-        const flowtest = await this.appDataSource.getRepository(FlowTest).findOneBy({
-          id: req.params.id
-        })
+      this.app.delete('/api/v1/flowtest', async (req: Request, res: Response) => {
 
-        if (flowtest) {
-          const result = await this.appDataSource.getRepository(FlowTest).remove(flowtest)
-          console.log(`Deleted flow: ${result.name}`)
-          return res.json(result)
-        }
-        return res.status(404).send(`FlowTest ${req.params.id} not found`)
-      })
+        // Get the file path that will be deleted
+        const path = req.query.path.toString();
 
-      // Get All FlowTest
-      this.app.get('/api/v1/flowtest', async (req: Request, res: Response) => {
-        const flowtests = await this.appDataSource.getRepository(FlowTest).find();
-        if (flowtests) return res.json(flowtests)
-        return res.status(404).send('Error in fetching saved flowtests')
+        const delFile = deleteFile(path)
+        console.log(delFile.message)
+
+        return res.status(delFile.status).send(delFile.message);
       })
 
       /* --------------------------------------------------------------------------*/
@@ -262,7 +258,7 @@ export class App {
             const collection = await this.appDataSource.getRepository(Collection).save(newCollection);
             console.log(`Created collection in db: ${collection.name}`)
             const collectionObj = this.addCollectionToStore(collection, concatRoute(collection.rootPath, collection.name))
-            return res.status(201).send(collectionObj)
+            return res.status(201).json(collectionObj)
           } else {
             return res.status(dirResult.status).send(dirResult.message);
           }
@@ -384,10 +380,10 @@ export class App {
         // Get the file path that will be updated and the content to write to that file
         const { path, content } = req.body;
 
-        const updateFile = upadateFile(path, content)
-        console.log(updateFile.message)
+        const updatedFile = updateFile(path, content)
+        console.log(updatedFile.message)
 
-        return res.status(updateFile.status).send(updateFile.message);
+        return res.status(updatedFile.status).send(updatedFile.message);
       });
 
       // Delete file

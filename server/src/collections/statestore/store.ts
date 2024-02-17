@@ -1,4 +1,5 @@
 import { getDirectoryName, getSubdirectoriesFromRoot, PATH_SEPARATOR } from './filesystem';
+import { Server } from 'socket.io'
 import {v4 as uuidv4} from 'uuid';
 
 /**
@@ -12,20 +13,27 @@ export class InMemoryStateStore {
     private state = {
         collections: []
     };
+    private io: Server
 
+    constructor(io: Server) {
+        this.io = io;
+    }
+    
     public createCollection(collection) {
         const collectionIds = this.state.collections.map((c) => c.id);
   
         if (!collectionIds.includes(collection.uid)) {
           this.state.collections.push(collection);
-          console.log(`[InMemoryStore] collection added: ${JSON.stringify(collection)}`)
+          console.log(`[InMemoryStore] collection added: ${JSON.stringify(collection)}`);
+          this.io.emit('collection tree', this.state.collections);
         }
     }
 
     public removeCollection(collectionId: string) {
         const collection = this.state.collections.find(c => c.id === collectionId)
         this.state.collections = this.state.collections.filter((c) => c.id !== collectionId);
-        console.log(`[InMemoryStore] collection removed: ${JSON.stringify(collection)}`)
+        console.log(`[InMemoryStore] collection removed: ${JSON.stringify(collection)}`);
+        this.io.emit('collection tree', this.state.collections);
     }
 
     public getAllCollection() {
@@ -70,7 +78,8 @@ export class InMemoryStateStore {
                     modifiedAt: timestamp,
                     ...file
                 });
-                console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`)
+                console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`);
+                this.io.emit('collection tree', this.state.collections);
             }
         }
     }
@@ -98,7 +107,8 @@ export class InMemoryStateStore {
                 currentPath = `${currentPath}${PATH_SEPARATOR}${directoryName}`;
                 currentSubItems = childItem.items;
             }
-            console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`)
+            console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`);
+            this.io.emit('collection tree', this.state.collections);
         }
     }
 
@@ -110,9 +120,10 @@ export class InMemoryStateStore {
 
             if (item) {
                 item.modifiedAt = Date.now();
-                console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`)
+                console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`);
+                this.io.emit('collection tree', this.state.collections);
             } else {
-                console.log(`[InMemoryStore] collection tree item not found: ${file.pathname}`)
+                console.log(`[InMemoryStore] collection tree item not found: ${file.pathname}`);
             }
         }
     }
@@ -125,7 +136,8 @@ export class InMemoryStateStore {
 
             if (item) {
                 this.deleteItemInCollectionByPathname(item.pathname, collection)
-                console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`)
+                console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`);
+                this.io.emit('collection tree', this.state.collections);
             }
         }
     }
@@ -141,8 +153,9 @@ export class InMemoryStateStore {
                 const item = this.findItemInCollectionTree(directory, collection);
 
                 if (item) {
-                    this.deleteItemInCollectionByPathname(item.pathname, collection)
-                    console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`)
+                    this.deleteItemInCollectionByPathname(item.pathname, collection);
+                    console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`);
+                    this.io.emit('collection tree', this.state.collections);
                 }
             }
         }
@@ -156,7 +169,8 @@ export class InMemoryStateStore {
             if (existingEnv) {
                 existingEnv.modifiedAt = Date.now();
                 existingEnv.variables = file.variables;
-                console.log(`[InMemoryStore] collection env updated: ${JSON.stringify(collection)}`)
+                console.log(`[InMemoryStore] collection env updated: ${JSON.stringify(collection)}`);
+                this.io.emit('collection tree', this.state.collections);
             } else {
                 const timestamp = Date.now();
                 collection.enviroments.push({
@@ -165,7 +179,8 @@ export class InMemoryStateStore {
                     modifiedAt: timestamp,
                     ...file
                 });
-                console.log(`[InMemoryStore] collection env added: ${JSON.stringify(collection)}`)
+                console.log(`[InMemoryStore] collection env added: ${JSON.stringify(collection)}`);
+                this.io.emit('collection tree', this.state.collections);
             }
         }
     }
@@ -175,7 +190,8 @@ export class InMemoryStateStore {
   
         if (collection && collection.enviroments) {
             collection.enviroments = collection.enviroments.filter((e) => e.name !== file.name && e.pathname !== file.pathname)
-            console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`)
+            console.log(`[InMemoryStore] collection updated: ${JSON.stringify(collection)}`);
+            this.io.emit('collection tree', this.state.collections);
         }
     }
 
@@ -184,7 +200,8 @@ export class InMemoryStateStore {
   
         if (collection) {
             collection.dotEnvVariables = variables;
-            console.log(`[InMemoryStore] collection dotenv variables added/updated: ${JSON.stringify(collection)}`)
+            console.log(`[InMemoryStore] collection dotenv variables added/updated: ${JSON.stringify(collection)}`);
+            this.io.emit('collection tree', this.state.collections);
         }
     }
 

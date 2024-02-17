@@ -22,10 +22,15 @@ import { Watcher } from "./collections/watcher";
 import { isDirectory } from "./controllers/file-manager/util/file-util";
 import { InMemoryStateStore } from "./collections/statestore/store";
 import { flowDataToReadableData, readableDataToFlowData } from "./flowtest/parser";
+import { Server } from 'socket.io'
+
+import * as http from 'http'
 
 export class App {
 
   app: express.Application
+  server: http.Server
+  io: Server
   port: number
   appDataSource = AppDataSource
   collectionUtil: CollectionUtil
@@ -35,10 +40,12 @@ export class App {
 
   constructor() {
     this.app = express()
+    this.server = http.createServer(this.app)
+    this.io = new Server(this.server)
     this.port = 3500
     this.collectionUtil = new CollectionUtil()
     this.timeout = 60000
-    this.inMemoryStateStore = new InMemoryStateStore()
+    this.inMemoryStateStore = new InMemoryStateStore(this.io)
     this.watcher = new Watcher(this.inMemoryStateStore)
   }
 
@@ -107,6 +114,15 @@ export class App {
   }
 
   init() {
+      this.io.on('connection', (socket) => { 
+        console.log('a user connected');
+        console.log(`clients count: ${this.io.engine.clientsCount}`);
+
+        socket.on('disconnect', () => {
+          console.log('user disconnected');
+        });
+      });
+
       // to initialize the initial connection with the database, register all entities
       // and "synchronize" database schema, call "initialize()" method of a newly created database
       // once in your application bootstrap
@@ -400,10 +416,6 @@ export class App {
       // All other GET requests not handled before will return our React app
       this.app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, '../../../build', 'index.html'));
-      });
-
-      this.app.listen(this.port, () => {
-        return console.log(`⚡️ [server]: FlowTest server is listening at http://localhost:${this.port}`);
       });
   }
 }

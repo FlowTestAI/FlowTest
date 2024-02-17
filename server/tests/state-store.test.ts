@@ -1,8 +1,20 @@
 import { InMemoryStateStore } from "../src/collections/statestore/store"
+import { Server } from 'socket.io'
+
+jest.mock('socket.io', () => {
+    return {
+      Server: jest.fn().mockImplementation(() => {
+        return {
+          emit: jest.fn(),
+        };
+      })
+    };
+});
 
 describe("State store", () => {
     it("should correctly add and delete directory in the collection tree", () => {
-        const store = new InMemoryStateStore()
+        const io = new Server()
+        const store = new InMemoryStateStore(io)
 
         const collectionObj = {
             version: '1',
@@ -53,10 +65,13 @@ describe("State store", () => {
         };
         store.unlinkDirectory(directory, collectionObj.id)
         expect(store.getAllCollection()).toEqual([])
+        
+        expect(io.emit).toHaveBeenCalledTimes(5);
     })
 
     it("should correctly add/delete/change file in the collection tree", () => {
-        const store = new InMemoryStateStore()
+        const io = new Server()
+        const store = new InMemoryStateStore(io)
 
         const collectionObj = {
             version: '1',
@@ -120,10 +135,13 @@ describe("State store", () => {
         };
         store.unlinkDirectory(directory, collectionObj.id)
         expect(store.getAllCollection()).toEqual([])
+        
+        expect(io.emit).toHaveBeenCalledTimes(8);
     })
 
     it("should add environment and dotEnv file correctly in collection tree", () => {
-        const store = new InMemoryStateStore()
+        const io = new Server()
+        const store = new InMemoryStateStore(io)
 
         const collectionObj = {
             version: '1',
@@ -203,5 +221,7 @@ describe("State store", () => {
         };
         store.unlinkDirectory(directory, collectionObj.id)
         expect(store.getAllCollection()).toEqual([])
+
+        expect(io.emit).toHaveBeenCalledTimes(9);
     })
 })

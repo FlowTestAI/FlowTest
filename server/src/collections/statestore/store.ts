@@ -18,10 +18,6 @@ export class InMemoryStateStore {
     constructor(io: Server) {
         this.io = io;
     }
-
-    public getCollections() {
-        return this.state.collections;
-    }
     
     public createCollection(collection) {
         const collectionIds = this.state.collections.map((c) => c.id);

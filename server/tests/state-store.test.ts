@@ -121,4 +121,87 @@ describe("State store", () => {
         store.unlinkDirectory(directory, collectionObj.id)
         expect(store.getAllCollection()).toEqual([])
     })
+
+    it("should add environment and dotEnv file correctly in collection tree", () => {
+        const store = new InMemoryStateStore()
+
+        const collectionObj = {
+            version: '1',
+            id: "1",
+            name: "collection",
+            pathname: "/parent/collection",
+            items: [],
+            enviroments: []
+        };
+
+        // create collection
+        store.createCollection(collectionObj)
+
+        let directory = {
+            name: "test-suite-3",
+            pathname: "/parent/collection/test-suite-1/test-suite-2/test-suite-3"
+        };
+        store.addDirectory(directory, collectionObj.id)
+
+        const variables = {
+            k1: "v1",
+            k2: "v2"
+        }
+        store.addOrUpdateEnvFile({
+            name: "staging.env",
+            pathname: "/parent/collection/environments/staging.env",
+            variables
+        }, collectionObj.id)
+
+        const dotEnvVars = {
+            k: "v",
+            v: "k"
+        }
+        store.addOrUpdateDotEnvVariables(collectionObj.id, dotEnvVars)
+
+        const collection = store.getCollection(collectionObj.id);
+        expect(collection.enviroments[0].variables).toEqual(variables)
+        expect(collection.dotEnvVariables).toEqual(dotEnvVars)
+
+        store.addOrUpdateEnvFile({
+            name: "staging.env",
+            pathname: "/parent/collection/environments/staging.env",
+            variables: {
+                ...variables,
+                k3: "v3"
+            }
+        }, collectionObj.id)
+        store.addOrUpdateDotEnvVariables(collectionObj.id, {
+            ...dotEnvVars,
+            t: "k"
+        })
+        expect(collection.enviroments[0].variables).toEqual({
+            ...variables,
+            k3: "v3"
+        })
+        expect(collection.dotEnvVariables).toEqual({
+            ...dotEnvVars,
+            t: "k"
+        })
+
+        store.unlinkEnvFile({
+            name: "staging.env",
+            pathname: "/parent/collection/environments/staging.env",
+        }, collectionObj.id)
+        expect(collection.enviroments).toEqual([])
+
+        // try to remove a env file should not error out
+        store.unlinkEnvFile({
+            name: "staging.env",
+            pathname: "/parent/collection/environments/staging.env",
+        }, collectionObj.id)
+        expect(collection.enviroments).toEqual([])
+
+        directory = {
+            name: "collection",
+            pathname: "/parent/collection"
+        };
+        store.unlinkDirectory(directory, collectionObj.id)
+        expect(store.getAllCollection()).toEqual([])
+    })
 })

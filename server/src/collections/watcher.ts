@@ -51,7 +51,7 @@ export class Watcher {
             pathname: pathname,
             variables
           }
-          this.store.addEnvFile(file, collectionId)
+          this.store.addOrUpdateEnvFile(file, collectionId)
         } catch (error) {
           console.error(`Failed to add ${pathname} due to: ${error}`)
         }
@@ -101,7 +101,7 @@ export class Watcher {
             pathname: pathname,
             variables
           }
-          this.store.addEnvFile(file, collectionId)
+          this.store.addOrUpdateEnvFile(file, collectionId)
         } catch (error) {
           console.error(`Failed to save ${pathname} due to: ${error}`)
         }

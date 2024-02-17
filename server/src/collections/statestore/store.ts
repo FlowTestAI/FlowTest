@@ -148,7 +148,7 @@ export class InMemoryStateStore {
         }
     }
 
-    public addEnvFile(file, collectionId: string) {
+    public addOrUpdateEnvFile(file, collectionId: string) {
         const collection = this.state.collections.find((c) => c.id === collectionId);
   
         if (collection) {

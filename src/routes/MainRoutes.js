@@ -1,36 +1,35 @@
-import HomeLayout from "../home";
-import SavedFlows from "../home/SavedFlows";
-import Collections from "../home/Collections";
-import AuthKeys from "../home/AuthKeys";
-import FlowTestAI from "../home/FlowTestAI";
+import React from 'react';
+import HomeLayout from '../home';
+import SavedFlows from '../home/SavedFlows';
+import Collections from '../home/Collections';
+import AuthKeys from '../home/AuthKeys';
+import FlowTestAI from '../home/FlowTestAI';
 
-const MainRoutes = () => (
+const MainRoutes = () => ({
+  path: '/',
+  element: <HomeLayout />,
+  children: [
     {
-        path: '/',
-        element: <HomeLayout/>,
-        children: [
-            {
-                path: '/flowtest',
-                element: <SavedFlows />
-            },
-            {
-                path: '/collection',
-                element: <Collections />
-            },
-            {
-                path: '/collection/:id',
-                element: <Collections />
-            },
-            {
-                path: '/authkeys',
-                element: <AuthKeys />
-            },
-            {
-                path: '/flowtest/ai',
-                element: <FlowTestAI />
-            }
-        ] 
-    }
-)
+      path: '/flowtest',
+      element: <SavedFlows />,
+    },
+    {
+      path: '/collection',
+      element: <Collections />,
+    },
+    {
+      path: '/collection/:id',
+      element: <Collections />,
+    },
+    {
+      path: '/authkeys',
+      element: <AuthKeys />,
+    },
+    {
+      path: '/flowtest/ai',
+      element: <FlowTestAI />,
+    },
+  ],
+});
 
 export default MainRoutes;

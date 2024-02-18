@@ -1,7 +1,7 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 import FlowRoutes from './routes';
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom';
 import { StyledEngineProvider, CssBaseline } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import { socketConnection } from './socket.io';
@@ -13,8 +13,8 @@ function App() {
     <BrowserRouter>
       <StyledEngineProvider injectFirst>
         <SnackbarProvider>
-          <CssBaseline/>
-          <FlowRoutes/>
+          <CssBaseline />
+          <FlowRoutes />
         </SnackbarProvider>
       </StyledEngineProvider>
     </BrowserRouter>

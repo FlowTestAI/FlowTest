@@ -37,3 +37,6 @@ uploads/
 # env
 .env
 .env.example
+
+# Ide
+.vscode/

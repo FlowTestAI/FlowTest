@@ -1,60 +1,49 @@
 import * as React from 'react';
-import { Handle, Position } from "reactflow"
+import { Handle, Position } from 'reactflow';
 
 // mui
-import { 
-    Box, 
-    TextField,
-    Card,
-    Typography
-} from "@mui/material"
+import { Box, TextField, Card, Typography } from '@mui/material';
 
-import {
-    Unstable_NumberInput as BaseNumberInput,
-    numberInputClasses,
-} from '@mui/base/Unstable_NumberInput';
+import { Unstable_NumberInput as BaseNumberInput, numberInputClasses } from '@mui/base/Unstable_NumberInput';
 import { styled } from '@mui/system';
 
-const DelayNode = ({data}) => {
+const DelayNode = ({ data }) => {
+  const [value, setValue] = React.useState(data.delay ? data.delay : 0);
+  data.delay = value;
 
-    const [value, setValue] = React.useState(data.delay ? data.delay: 0);
-    data.delay = value;
-
-    return (
-        <>
-            <Handle type="target" position={Position.Left} />
-            <Card 
-                sx={{ 
-                    border: 1,  
-                    borderRadius: 2,
-                    ':hover': {
-                        borderColor: 'primary.main',
-                        boxShadow: 10, // theme.shadows[20]
-                    }  
-                }}
-            >
-                <Typography sx={{fontWeight: 500, textAlign: 'center', marginLeft: 1}} variant='h7'>Delay (ms)</Typography>
-                <Box>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left' }}>
-                        <Box style={{ width: 300, margin: 10, padding: 5 }}>
-                            <NumberInput
-                                aria-label="Demo number input"
-                                value={value}
-                                onChange={(event, val) => setValue(val)}
-                            />
-                        </Box>
-                    </div>
-                </Box>
-            </Card>
-            <Handle type="source" position={Position.Right} />
-        </>
-    );
+  return (
+    <>
+      <Handle type='target' position={Position.Left} />
+      <Card
+        sx={{
+          border: 1,
+          borderRadius: 2,
+          ':hover': {
+            borderColor: 'primary.main',
+            boxShadow: 10, // theme.shadows[20]
+          },
+        }}
+      >
+        <Typography sx={{ fontWeight: 500, textAlign: 'center', marginLeft: 1 }} variant='h7'>
+          Delay (ms)
+        </Typography>
+        <Box>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left' }}>
+            <Box style={{ width: 300, margin: 10, padding: 5 }}>
+              <NumberInput aria-label='Demo number input' value={value} onChange={(event, val) => setValue(val)} />
+            </Box>
+          </div>
+        </Box>
+      </Card>
+      <Handle type='source' position={Position.Right} />
+    </>
+  );
 };
 
 export default DelayNode;
 
 const InputAdornment = styled('div')(
-    ({ theme }) => `
+  ({ theme }) => `
     margin: 8px;
     display: inline-flex;
     align-items: center;
@@ -65,51 +54,51 @@ const InputAdornment = styled('div')(
 );
 
 const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
-    return (
-      <BaseNumberInput
-        slots={{
-          root: StyledInputRoot,
-          input: StyledInputElement,
-          incrementButton: StyledButton,
-          decrementButton: StyledButton,
-        }}
-        slotProps={{
-          incrementButton: {
-            children: '▴',
-          },
-          decrementButton: {
-            children: '▾',
-          },
-        }}
-        {...props}
-        ref={ref}
-      />
-    );
+  return (
+    <BaseNumberInput
+      slots={{
+        root: StyledInputRoot,
+        input: StyledInputElement,
+        incrementButton: StyledButton,
+        decrementButton: StyledButton,
+      }}
+      slotProps={{
+        incrementButton: {
+          children: '▴',
+        },
+        decrementButton: {
+          children: '▾',
+        },
+      }}
+      {...props}
+      ref={ref}
+    />
+  );
 });
 
 const blue = {
-    100: '#DAECFF',
-    200: '#80BFFF',
-    400: '#3399FF',
-    500: '#007FFF',
-    600: '#0072E5',
-  };
-  
-  const grey = {
-    50: '#F3F6F9',
-    100: '#E5EAF2',
-    200: '#DAE2ED',
-    300: '#C7D0DD',
-    400: '#B0B8C4',
-    500: '#9DA8B7',
-    600: '#6B7A90',
-    700: '#434D5B',
-    800: '#303740',
-    900: '#1C2025',
-  };
-  
-  const StyledInputRoot = styled('div')(
-    ({ theme }) => `
+  100: '#DAECFF',
+  200: '#80BFFF',
+  400: '#3399FF',
+  500: '#007FFF',
+  600: '#0072E5',
+};
+
+const grey = {
+  50: '#F3F6F9',
+  100: '#E5EAF2',
+  200: '#DAE2ED',
+  300: '#C7D0DD',
+  400: '#B0B8C4',
+  500: '#9DA8B7',
+  600: '#6B7A90',
+  700: '#434D5B',
+  800: '#303740',
+  900: '#1C2025',
+};
+
+const StyledInputRoot = styled('div')(
+  ({ theme }) => `
     font-family: 'IBM Plex Sans', sans-serif;
     font-weight: 400;
     border-radius: 8px;
@@ -138,10 +127,10 @@ const blue = {
       outline: 0;
     }
   `,
-  );
-  
-  const StyledInputElement = styled('input')(
-    ({ theme }) => `
+);
+
+const StyledInputElement = styled('input')(
+  ({ theme }) => `
     font-size: 0.875rem;
     font-family: inherit;
     font-weight: 400;
@@ -155,10 +144,10 @@ const blue = {
     padding: 8px 12px;
     outline: 0;
   `,
-  );
-  
-  const StyledButton = styled('button')(
-    ({ theme }) => `
+);
+
+const StyledButton = styled('button')(
+  ({ theme }) => `
     display: flex;
     flex-flow: row nowrap;
     justify-content: center;
@@ -222,4 +211,4 @@ const blue = {
       transform: translateY(-1px);
     }
   `,
-  );
+);

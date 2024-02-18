@@ -9,14 +9,14 @@ const SplitPane = () => {
   return (
     <main className='tw-h-full'>
       <Allotment>
-        <Allotment.Pane preferredSize={'30%'} minSize={600}>
+        <Allotment.Pane preferredSize={'30%'} minSize={450}>
           <div className='tw-flex tw-text-xs'>
             <AppNavBar />
-            <Workspace />
+            <WorkspaceDirectory />
           </div>
         </Allotment.Pane>
         <Allotment.Pane>
-          <WorkspaceDirectory />
+          <Workspace />
         </Allotment.Pane>
       </Allotment>
     </main>

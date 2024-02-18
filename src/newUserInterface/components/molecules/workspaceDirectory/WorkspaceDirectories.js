@@ -1,5 +1,6 @@
 import React from 'react';
-import { FolderArrowDownIcon, FolderPlusIcon } from '@heroicons/react/24/outline';
+import { FolderArrowDownIcon } from '@heroicons/react/24/outline';
+import { PlusIcon } from '@heroicons/react/20/solid';
 
 const WorkspaceDirectories = () => {
   return (
@@ -27,8 +28,7 @@ const WorkspaceDirectories = () => {
             <span className=' tw-font-semibold'>New</span>
           </button>
           <button className='tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-whitespace-nowrap tw-rounded tw-bg-cyan-950 tw-px-4 tw-py-2 tw-text-white tw-transition'>
-            <FolderPlusIcon className='tw-h-4 tw-w-4' />
-
+            <PlusIcon className='tw-h-4 tw-w-4' />
             <span className=' tw-font-semibold'>Import</span>
           </button>
         </div>

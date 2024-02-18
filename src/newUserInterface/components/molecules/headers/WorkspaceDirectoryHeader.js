@@ -20,7 +20,7 @@ const WorkspaceDirectoryHeader = () => {
     <div className='tw-border-[rgba(128, 128, 128, 0.35)] tw-flex tw-justify-between tw-border-b tw-p-2 tw-text-cyan-950'>
       <div className='tw-flex tw-items-center tw-gap-x-1'>
         <UserIcon className='tw-h-3 tw-w-3' />
-        <div className='tw-flex tw-items-center tw-justify-start tw-gap-x-1'>
+        <div className='tw-flex tw-items-center tw-justify-start tw-gap-x-1 tw-truncate'>
           {/* Here breadcrumbs will only have three values
            * My workspace > [ Navigation selected value ] > [ name of the collection created by the user ]
            */}

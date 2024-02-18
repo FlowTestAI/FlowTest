@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router';
 import NewUIHome from '../newUserInterface/components/pages/NewUIHome';
 
-const FlowRoutes = {
+const NewUIRoutes = {
   path: '/',
   element: <Outlet />,
   children: [
@@ -13,4 +13,4 @@ const FlowRoutes = {
   ],
 };
 
-export default FlowRoutes;
+export default NewUIRoutes;

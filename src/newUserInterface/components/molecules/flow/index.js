@@ -28,6 +28,7 @@ import DelayNode from './nodes/DelayNode';
 
 // file system
 import concatRoute from '../../../utils/filesystem.js'
+import AuthNode from './nodes/AuthNode';
 
 const StartNode = () => (
   <div style={{width: '150px', borderRadius: '5px', padding: '10px', color: '#555', border:'2px solid #ddd', textAlign:'center', fontSize:'20px', background:'#fff', fontWeight:'bold'}}>
@@ -56,7 +57,8 @@ const Flow = ({rootPath, name}) => {
     requestNode: RequestNode,
     outputNode: OutputNode,
     evaluateNode: EvaluateNode,
-    delayNode: DelayNode
+    delayNode: DelayNode,
+    authNode: AuthNode
   }), []);
   
   const edgeTypes = useMemo(() => (
@@ -159,10 +161,20 @@ const Flow = ({rootPath, name}) => {
     } else {
         const initialNodes = location.state && location.state.initialNodes ? location.state.initialNodes : undefined;
         if (initialNodes != undefined) {
-          const nodes = []
-          const edges = []
-          nodes.push({ id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false })
-          for (let i = 1; i <= initialNodes.length; i++) {
+          const nodes = [
+            { id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
+            { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false }
+          ]
+          const edges = [{
+            id: `reactflow__edge-0-1`,
+            source: `0`,
+            sourceHandle: null,
+            target: `1`,
+            targetHandle: null,
+            type: "buttonedge"
+          }]
+      
+          for (let i = 2; i <= initialNodes.length; i++) {
             nodes.push({
               id: `${i}`,
               type: initialNodes[i-1].type,
@@ -183,8 +195,16 @@ const Flow = ({rootPath, name}) => {
           setEdges(edges);
           setIsDirty(true);
         } else {
-          setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false }])
-          setEdges([])
+          setNodes([{ id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
+          { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false }])
+          setEdges([{
+            id: `reactflow__edge-0-1`,
+            source: `0`,
+            sourceHandle: null,
+            target: `1`,
+            targetHandle: null,
+            type: "buttonedge"
+          }])
           setIsDirty(false);
         }
 

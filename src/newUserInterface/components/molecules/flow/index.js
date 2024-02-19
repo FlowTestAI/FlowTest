@@ -1,13 +1,13 @@
-import React, { useRef, useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom'
 
-// react flow
+// ReactFlow
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
 import { Handle, Position } from "reactflow"
 import 'reactflow/dist/style.css'
 
 // css
-import '../../../../flow/index.css'
+import './index.css'
 
 // notification
 import { useSnackbar } from 'notistack';
@@ -15,25 +15,18 @@ import { useSnackbar } from 'notistack';
 // API
 import flowTestApi from '../../../../api/flowtest';
 
-// icons
-//import { IconDeviceFloppy, IconChevronLeft, IconFiles } from '@tabler/icons-react';
+// ReactFlow Canvas
+import CustomEdge from './edges/ButtonEdge';
 
-//import SelectAuthComponent from './SelectAuthComponent';
-import CustomEdge from '../../../../flow/edges/ButtonEdge';
-
-// theme
-//import theme from './theme';
-
-import AddNodes from '../../../../flow/AddNodes';
-// import SaveDialog from './SaveDialog';
+import AddNodes from './AddNodes';
 import wrapper from '../../../../api/wrapper';
-//import PromptDialog from './PromptDialog';
-import Graph from '../../../../flow/graph/Graph'
-import RequestNode from '../../../../flow/nodes/RequestNode';
-import OutputNode from '../../../../flow/nodes/OutputNode';
-import EvaluateNode from '../../../../flow/nodes/EvaluateNode';
-import DelayNode from '../../../../flow/nodes/DelayNode';
+import Graph from './graph/Graph'
+import RequestNode from './nodes/RequestNode';
+import OutputNode from './nodes/OutputNode';
+import EvaluateNode from './nodes/EvaluateNode';
+import DelayNode from './nodes/DelayNode';
 
+// file system
 import concatRoute from '../../../utils/filesystem.js'
 
 const StartNode = () => (
@@ -46,7 +39,7 @@ const StartNode = () => (
 const Flow = ({rootPath, name}) => {
   const location = useLocation();
 
-  const getFlowTest = wrapper(flowTestApi.getSpecificFlowTest)
+  const getFlowTest = wrapper(flowTestApi.getFlowTest)
 
   // notification
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();

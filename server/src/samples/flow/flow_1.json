@@ -1,231 +1,229 @@
 {
-    "nodes":[
-       {
-          "width":150,
-          "height":54,
-          "id":"0",
-          "type":"startNode",
-          "position":{
-             "x":-1026.7058850629164,
-             "y":-164.63649553898927
-          },
-          "selected":false,
-          "positionAbsolute":{
-             "x":-1026.7058850629164,
-             "y":-164.63649553898927
-          },
-          "dragging":false
-       },
-       {
-          "width":322,
-          "height":415,
-          "id":"1",
-          "type":"requestNode",
-          "position":{
-             "x":-668.03383617349,
-             "y":-287.75081902176953
-          },
-          "data":{
-             "url":"https://petstore3.swagger.io/api/v3/pet",
-             "description":"Add a new pet to the store",
-             "operationId":"addPet",
-             "requestType":"POST",
-             "type":"requestNode",
-             "variables":{
-                
-             },
-             "requestBody":{
-                "type":"raw-json",
-                "body":"{\n  \"id\": 10,\n  \"name\": \"doggie\",\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Dogs\"\n  },\n  \"photoUrls\": [\n    \"string\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 0,\n      \"name\": \"string\"\n    },\n   {\n      \"id\": 1,\n      \"name\": \"string1\"\n    }\n  ],\n  \"status\": \"available\"\n}"
-             }
-          },
-          "selected":false,
-          "dragging":false,
-          "positionAbsolute":{
-             "x":-668.03383617349,
-             "y":-287.75081902176953
+  "nodes": [
+    {
+      "width": 150,
+      "height": 54,
+      "id": "0",
+      "type": "startNode",
+      "position": {
+        "x": -1026.7058850629164,
+        "y": -164.63649553898927
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": -1026.7058850629164,
+        "y": -164.63649553898927
+      },
+      "dragging": false
+    },
+    {
+      "width": 322,
+      "height": 415,
+      "id": "1",
+      "type": "requestNode",
+      "position": {
+        "x": -668.03383617349,
+        "y": -287.75081902176953
+      },
+      "data": {
+        "url": "https://petstore3.swagger.io/api/v3/pet",
+        "description": "Add a new pet to the store",
+        "operationId": "addPet",
+        "requestType": "POST",
+        "type": "requestNode",
+        "variables": {},
+        "requestBody": {
+          "type": "raw-json",
+          "body": "{\n  \"id\": 10,\n  \"name\": \"doggie\",\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Dogs\"\n  },\n  \"photoUrls\": [\n    \"string\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 0,\n      \"name\": \"string\"\n    },\n   {\n      \"id\": 1,\n      \"name\": \"string1\"\n    }\n  ],\n  \"status\": \"available\"\n}"
+        }
+      },
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": -668.03383617349,
+        "y": -287.75081902176953
+      }
+    },
+    {
+      "width": 322,
+      "height": 319,
+      "id": "2",
+      "type": "outputNode",
+      "position": {
+        "x": -242.82996372081467,
+        "y": -55.98049824351338
+      },
+      "data": {
+        "description": "Displays any data received.",
+        "type": "outputNode"
+      },
+      "selected": true,
+      "positionAbsolute": {
+        "x": -242.82996372081467,
+        "y": -55.98049824351338
+      },
+      "dragging": false
+    },
+    {
+      "width": 322,
+      "height": 323,
+      "id": "3",
+      "type": "requestNode",
+      "position": {
+        "x": 139.93052060235985,
+        "y": -374.9992687710825
+      },
+      "data": {
+        "url": "https://petstore3.swagger.io/api/v3/pet/{petId}",
+        "description": "Find pet by ID",
+        "operationId": "getPetById",
+        "requestType": "GET",
+        "type": "requestNode",
+        "variables": {
+          "petId": {
+            "type": "Select",
+            "value": "id"
           }
-       },
-       {
-          "width":322,
-          "height":319,
-          "id":"2",
-          "type":"outputNode",
-          "position":{
-             "x":-242.82996372081467,
-             "y":-55.98049824351338
+        }
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 139.93052060235985,
+        "y": -374.9992687710825
+      },
+      "dragging": false
+    },
+    {
+      "width": 322,
+      "height": 319,
+      "id": "5",
+      "type": "outputNode",
+      "position": {
+        "x": 964.4707227263245,
+        "y": -313.4227385769849
+      },
+      "data": {
+        "description": "Displays any data received.",
+        "type": "outputNode"
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 964.4707227263245,
+        "y": -313.4227385769849
+      },
+      "dragging": false
+    },
+    {
+      "width": 322,
+      "height": 386,
+      "id": "8",
+      "type": "evaluateNode",
+      "position": {
+        "x": 512.9345417063117,
+        "y": -298.69373996212164
+      },
+      "data": {
+        "description": "Evaluate conditional expressions.",
+        "type": "evaluateNode",
+        "variables": {
+          "var1": {
+            "type": "Select",
+            "value": "tags.0.id"
           },
-          "data":{
-             "description":"Displays any data received.",
-             "type":"outputNode"
-          },
-          "selected":true,
-          "positionAbsolute":{
-             "x":-242.82996372081467,
-             "y":-55.98049824351338
-          },
-          "dragging":false
-       },
-       {
-          "width":322,
-          "height":323,
-          "id":"3",
-          "type":"requestNode",
-          "position":{
-             "x":139.93052060235985,
-             "y":-374.9992687710825
-          },
-          "data":{
-             "url":"https://petstore3.swagger.io/api/v3/pet/{petId}",
-             "description":"Find pet by ID",
-             "operationId":"getPetById",
-             "requestType":"GET",
-             "type":"requestNode",
-             "variables":{
-                "petId":{
-                   "type":"Select",
-                   "value":"id"
-                }
-             }
-          },
-          "selected":false,
-          "positionAbsolute":{
-             "x":139.93052060235985,
-             "y":-374.9992687710825
-          },
-          "dragging":false
-       },
-       {
-          "width":322,
-          "height":319,
-          "id":"5",
-          "type":"outputNode",
-          "position":{
-             "x":964.4707227263245,
-             "y":-313.4227385769849
-          },
-          "data":{
-             "description":"Displays any data received.",
-             "type":"outputNode"
-          },
-          "selected":false,
-          "positionAbsolute":{
-             "x":964.4707227263245,
-             "y":-313.4227385769849
-          },
-          "dragging":false
-       },
-       {
-          "width":322,
-          "height":386,
-          "id":"8",
-          "type":"evaluateNode",
-          "position":{
-             "x":512.9345417063117,
-             "y":-298.69373996212164
-          },
-          "data":{
-             "description":"Evaluate conditional expressions.",
-             "type":"evaluateNode",
-             "variables":{
-                "var1":{
-                   "type":"Select",
-                   "value":"tags.0.id"
-                },
-                "var2":{
-                   "type":"String",
-                   "value":"1"
-                }
-             },
-             "operator":"isEqualTo"
-          },
-          "selected":false,
-          "positionAbsolute":{
-             "x":512.9345417063117,
-             "y":-298.69373996212164
-          },
-          "dragging":false
-       },
-       {
-          "width":322,
-          "height":319,
-          "id":"9",
-          "type":"outputNode",
-          "position":{
-             "x":973.6296502492725,
-             "y":102.52047657445075
-          },
-          "data":{
-             "description":"Displays any data received.",
-             "type":"outputNode"
-          },
-          "selected":false,
-          "positionAbsolute":{
-             "x":973.6296502492725,
-             "y":102.52047657445075
-          },
-          "dragging":false
-       }
-    ],
-    "edges":[
-       {
-          "source":"0",
-          "sourceHandle":null,
-          "target":"1",
-          "targetHandle":null,
-          "type":"buttonedge",
-          "id":"reactflow__edge-0-1",
-          "animated":false
-       },
-       {
-          "source":"1",
-          "sourceHandle":null,
-          "target":"2",
-          "targetHandle":null,
-          "type":"buttonedge",
-          "id":"reactflow__edge-1-2",
-          "animated":false
-       },
-       {
-          "source":"2",
-          "sourceHandle":null,
-          "target":"3",
-          "targetHandle":null,
-          "type":"buttonedge",
-          "id":"reactflow__edge-2-3",
-          "animated":false
-       },
-       {
-          "source":"3",
-          "sourceHandle":null,
-          "target":"8",
-          "targetHandle":null,
-          "type":"buttonedge",
-          "id":"reactflow__edge-3-8",
-          "animated":false
-       },
-       {
-          "source":"8",
-          "sourceHandle":"true",
-          "target":"5",
-          "targetHandle":null,
-          "type":"buttonedge",
-          "id":"reactflow__edge-8true-5",
-          "animated":false
-       },
-       {
-          "source":"8",
-          "sourceHandle":"false",
-          "target":"9",
-          "targetHandle":null,
-          "type":"buttonedge",
-          "id":"reactflow__edge-8false-9",
-          "animated":false
-       }
-    ],
-    "viewport":{
-       "x":735.0452733747713,
-       "y":428.765712868111,
-       "zoom":0.676435022856383
+          "var2": {
+            "type": "String",
+            "value": "1"
+          }
+        },
+        "operator": "isEqualTo"
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 512.9345417063117,
+        "y": -298.69373996212164
+      },
+      "dragging": false
+    },
+    {
+      "width": 322,
+      "height": 319,
+      "id": "9",
+      "type": "outputNode",
+      "position": {
+        "x": 973.6296502492725,
+        "y": 102.52047657445075
+      },
+      "data": {
+        "description": "Displays any data received.",
+        "type": "outputNode"
+      },
+      "selected": false,
+      "positionAbsolute": {
+        "x": 973.6296502492725,
+        "y": 102.52047657445075
+      },
+      "dragging": false
     }
- }
+  ],
+  "edges": [
+    {
+      "source": "0",
+      "sourceHandle": null,
+      "target": "1",
+      "targetHandle": null,
+      "type": "buttonedge",
+      "id": "reactflow__edge-0-1",
+      "animated": false
+    },
+    {
+      "source": "1",
+      "sourceHandle": null,
+      "target": "2",
+      "targetHandle": null,
+      "type": "buttonedge",
+      "id": "reactflow__edge-1-2",
+      "animated": false
+    },
+    {
+      "source": "2",
+      "sourceHandle": null,
+      "target": "3",
+      "targetHandle": null,
+      "type": "buttonedge",
+      "id": "reactflow__edge-2-3",
+      "animated": false
+    },
+    {
+      "source": "3",
+      "sourceHandle": null,
+      "target": "8",
+      "targetHandle": null,
+      "type": "buttonedge",
+      "id": "reactflow__edge-3-8",
+      "animated": false
+    },
+    {
+      "source": "8",
+      "sourceHandle": "true",
+      "target": "5",
+      "targetHandle": null,
+      "type": "buttonedge",
+      "id": "reactflow__edge-8true-5",
+      "animated": false
+    },
+    {
+      "source": "8",
+      "sourceHandle": "false",
+      "target": "9",
+      "targetHandle": null,
+      "type": "buttonedge",
+      "id": "reactflow__edge-8false-9",
+      "animated": false
+    }
+  ],
+  "viewport": {
+    "x": 735.0452733747713,
+    "y": 428.765712868111,
+    "zoom": 0.676435022856383
+  }
+}

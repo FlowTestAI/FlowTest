@@ -1,25 +1,25 @@
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm'
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Collection {
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    name: string
+  @Column()
+  name: string;
 
-    @Column({ type: 'text' })
-    collection: string
+  @Column({ type: 'text' })
+  collection: string;
 
-    @Column({ type: 'text' })
-    nodes: string
+  @Column({ type: 'text' })
+  nodes: string;
 
-    @Column({ type: 'text' })
-    rootPath: string
+  @Column({ type: 'text' })
+  rootPath: string;
 
-    @CreateDateColumn()
-    createdDate: Date
+  @CreateDateColumn()
+  createdDate: Date;
 
-    @UpdateDateColumn()
-    updatedDate: Date
+  @UpdateDateColumn()
+  updatedDate: Date;
 }

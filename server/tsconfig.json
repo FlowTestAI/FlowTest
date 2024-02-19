@@ -10,8 +10,5 @@
     "outDir": "dist"
   },
   "lib": ["es2015"],
-  "include": [
-    "src/",
-    "tests/"
-  ]
+  "include": ["src/", "tests/"]
 }

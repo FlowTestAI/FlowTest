@@ -31,15 +31,14 @@ export const isMacOS = () => {
   return osFamily.includes('os x');
 };
 
-
 export const slash = (path: string) => {
-    const isExtendedLengthPath = /^\\\\\?\\/.test(path);
-  
-    if (isExtendedLengthPath) {
-      return path;
-    }
-  
-    return path.replace(/\\/g, '/');
+  const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+
+  if (isExtendedLengthPath) {
+    return path;
+  }
+
+  return path.replace(/\\/g, '/');
 };
 
 export const PATH_SEPARATOR = isWindowsOS() ? '\\' : '/';

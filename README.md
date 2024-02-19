@@ -16,45 +16,50 @@ Leverage GenAI to convert your customer's interactions with your product into ru
 ![alt text](public/flowtest_1.gif)
 
 ## 👨‍💻 Developers
+
 FlowTest has 2 major components -
--   `server`: Node backend to serve API requests
--   `src`: React frontend
+
+- `server`: Node backend to serve API requests
+- `src`: React frontend
 
 ### Prerequisite
--   Install npm
-    ```bash
-    npm install -g npm
-    ```
--   NodeJS >= 18.0.0
+
+- Install npm
+  ```bash
+  npm install -g npm
+  ```
+- NodeJS >= 18.0.0
 
 ### Setup
+
 1. Clone the repository
-    ```bash
-    git clone https://github.com/FlowTestAI/FlowTest.git
-    ```
+   ```bash
+   git clone https://github.com/FlowTestAI/FlowTest.git
+   ```
 2. Go into repository folder
-    ```bash
-    cd FlowTest
-    ```
+   ```bash
+   cd FlowTest
+   ```
 3. Install all dependencies of all modules:
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 4. Rename `.env.example` to `.env` and enter your cerdentials, for instance
-    ```bash
-    OPENAI_API_KEY={API_KEY_VALUE}
-    PORT=3500
-    ...
-    ```
+   ```bash
+   OPENAI_API_KEY={API_KEY_VALUE}
+   PORT=3500
+   ...
+   ```
 5. Start the app:
-    ```bash
-    npm start
-    ```
-    You can now access the app on [http://localhost:3500](http://localhost:3500)
+   ```bash
+   npm start
+   ```
+   You can now access the app on [http://localhost:3500](http://localhost:3500)
 
 ## 🙋 Support
 
 Feel free to ask any questions, raise problems, and request new features in [discussion](https://github.com/FlowTestAI/FlowTest/discussions)
 
 ## 📄 License
+
 Source code in this repository is made available under the [MIT License](LICENSE.md).

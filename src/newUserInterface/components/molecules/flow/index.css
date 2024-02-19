@@ -1,14 +1,3 @@
-.reactflow-parent-wrapper {
-  display: flex;
-  flex-grow: 1;
-  height: 100%;
-}
-
-.reactflow-parent-wrapper .reactflow-wrapper {
-  flex-grow: 1;
-  height: 100%;
-}
-
 .react-flow .react-flow__handle {
   width: 14px;
   height: 30px;

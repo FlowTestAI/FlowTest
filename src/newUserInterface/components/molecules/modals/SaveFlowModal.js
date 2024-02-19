@@ -66,12 +66,12 @@ const SaveFlowModal = () => {
                     <input
                       type='text'
                       id='filename'
-                      className='tw-focus:ring-blue-100 tw-focus:border-blue-100 tw-dark:bg-gray-700 tw-dark:border-gray-600 tw-dark:placeholder-gray-400 tw-dark:text-white tw-dark:focus:ring-blue-100 tw-dark:focus:border-blue-100 tw-block tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-bg-gray-50 tw-p-2.5 tw-text-sm tw-text-gray-900 tw-outline-blue-300 w-full'
+                      className='tw-focus:ring-blue-100 tw-focus:border-blue-100 tw-dark:bg-gray-700 tw-dark:border-gray-600 tw-dark:placeholder-gray-400 tw-dark:text-white tw-dark:focus:ring-blue-100 tw-dark:focus:border-blue-100 w-full tw-block tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-bg-gray-50 tw-p-2.5 tw-text-sm tw-text-gray-900 tw-outline-blue-300'
                       placeholder='File name'
                       required
                     />
                   </div>
-                  <div className='tw-mt-4 tw-flex tw-gap-2 items-center'>
+                  <div className='items-center tw-mt-4 tw-flex tw-gap-2'>
                     <button
                       type='button'
                       className='tw-hover:bg-blue-200 tw-focus:outline-none tw-focus-visible:ring-2 tw-focus-visible:ring-blue-500 tw-focus-visible:ring-offset-2 tw-inline-flex tw-w-full tw-grow tw-basis-0 tw-justify-center tw-rounded-md tw-border tw-border-transparent tw-bg-blue-100 tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-blue-900'

@@ -1,25 +1,25 @@
 .reactflow-parent-wrapper {
-    display: flex;
-    flex-grow: 1;
-    height: 100%;
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
 }
 
 .reactflow-parent-wrapper .reactflow-wrapper {
-    flex-grow: 1;
-    height: 100%;
+  flex-grow: 1;
+  height: 100%;
 }
 
 .react-flow .react-flow__handle {
-    width: 14px;
-    height: 30px;
-    border-radius: 3px;
-    background-color: #784be8;
+  width: 14px;
+  height: 30px;
+  border-radius: 3px;
+  background-color: #784be8;
 }
 
 .react-flow .react-flow__handle-left {
-    left: -6px;
+  left: -6px;
 }
 
 .react-flow .react-flow__handle-right {
-    right: -6px;
+  right: -6px;
 }

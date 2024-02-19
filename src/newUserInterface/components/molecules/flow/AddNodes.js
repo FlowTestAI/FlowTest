@@ -84,8 +84,8 @@ const delayNode = {
 
 const authNode = {
   description: 'Define authentication for the requests',
-  type: 'authNode'
-}
+  type: 'authNode',
+};
 
 const AddNodes = () => {
   const [open, setOpen] = useState(false);
@@ -325,32 +325,23 @@ const AddNodes = () => {
                           </div>
                         </AccordionDetails>
                       </Accordion>
-                      <Accordion key="auth" disableGutters>
-                          <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              aria-controls="panel1a-content-output"
-                              id="panel1a-header-output"
-                          >
-                              <Typography variant='h7'>Authentication</Typography>
-                          </AccordionSummary>
-                          <AccordionDetails>
-                              <div
-                                  key="auth"
-                                  onDragStart={(event) => onDragStart(event, authNode)}
-                                  draggable
-                                  cursor='move'
-                              >
-                                  <ListItemButton>
-                                      <ListItem alignItems='center'>
-                                          <ListItemText
-                                              sx={{ ml: 1 }}
-                                              primary="Auth"
-                                              secondary={authNode.description}
-                                          />
-                                      </ListItem>
-                                  </ListItemButton>
-                              </div>
-                          </AccordionDetails>
+                      <Accordion key='auth' disableGutters>
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                          aria-controls='panel1a-content-output'
+                          id='panel1a-header-output'
+                        >
+                          <Typography variant='h7'>Authentication</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <div key='auth' onDragStart={(event) => onDragStart(event, authNode)} draggable cursor='move'>
+                            <ListItemButton>
+                              <ListItem alignItems='center'>
+                                <ListItemText sx={{ ml: 1 }} primary='Auth' secondary={authNode.description} />
+                              </ListItem>
+                            </ListItemButton>
+                          </div>
+                        </AccordionDetails>
                       </Accordion>
                     </List>
                   </Box>

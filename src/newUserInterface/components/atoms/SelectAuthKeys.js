@@ -10,7 +10,7 @@ const SelectAuthKeys = () => {
       <div className='tw-relative tw-rounded tw-border tw-border-solid tw-border-[#94a3b8]'>
         <Listbox.Button className='tw-sm:text-sm tw-relative tw-w-full tw-cursor-default tw-rounded-lg tw-bg-white tw-py-2 tw-pl-3 tw-pr-10 tw-text-left'>
           <span className='tw-block tw-truncate'>{selected.name}</span>
-          <span className='tw-pointer-events-none tw-absolute tw-right-2 tw-top-3 tw-items-center tw-pr-2 flex'>
+          <span className='flex tw-pointer-events-none tw-absolute tw-right-2 tw-top-3 tw-items-center tw-pr-2'>
             <ChevronUpDownIcon className='tw-h-5 tw-w-5 tw-text-gray-400' aria-hidden='true' />
           </span>
         </Listbox.Button>
@@ -20,7 +20,7 @@ const SelectAuthKeys = () => {
           leaveFrom='tw-opacity-100'
           leaveTo='tw-opacity-0'
         >
-          <Listbox.Options className='tw-sm:text-sm tw-absolute tw-z-10 tw-mt-1 tw-max-h-60 tw-w-full tw-overflow-auto tw-rounded-md tw-bg-white tw-py-1 tw-text-base tw-shadow-lg tw-ring-1 tw-ring-black/5 z-10'>
+          <Listbox.Options className='tw-sm:text-sm z-10 tw-absolute tw-z-10 tw-mt-1 tw-max-h-60 tw-w-full tw-overflow-auto tw-rounded-md tw-bg-white tw-py-1 tw-text-base tw-shadow-lg tw-ring-1 tw-ring-black/5'>
             {authKeys.map((authKey, authKeyIdx) => (
               <Listbox.Option
                 key={authKeyIdx}

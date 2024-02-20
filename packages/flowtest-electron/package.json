@@ -1,0 +1,16 @@
+{
+  "name": "flowtest-electron",
+  "version": "1.0.0",
+  "homepage": ".",
+  "description": "",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^29.0.0"
+  }
+}

@@ -7,7 +7,7 @@ const NewUIRoutes = {
   element: <Outlet />,
   children: [
     {
-      path: '/home',
+      path: '/',
       element: <NewUIHome />,
     },
   ],

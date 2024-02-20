@@ -2,14 +2,19 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
+const Watcher = require('./src/app/watcher');
+const registerRendererEventHandlers = require('./src/ipc/collection');
+
+let mainWindow;
+let watcher;
 
 function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 640,
+  mainWindow = new BrowserWindow({
+    width: 1280,
+    height: 768,
     webPreferences: {
-      //preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
@@ -23,6 +28,9 @@ function createWindow() {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
+  watcher = new Watcher();
+
+  registerRendererEventHandlers(mainWindow, watcher);
 }
 
 // This method will be called when Electron has finished

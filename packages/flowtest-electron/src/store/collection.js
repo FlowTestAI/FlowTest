@@ -27,6 +27,14 @@ class Collections {
       );
     }
   }
+
+  getAll() {
+    return this.store.get('collections') || [];
+  }
+
+  removeAll() {
+    return this.store.set('collections', []);
+  }
 }
 
 module.exports = Collections;

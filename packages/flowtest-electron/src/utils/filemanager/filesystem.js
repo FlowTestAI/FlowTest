@@ -1,5 +1,5 @@
 const fs = require('fs');
-const platform = require('platform');
+const path = require('path');
 
 /**
  * Determine if the given path is directory
@@ -61,17 +61,11 @@ const getDirectoryName = (pathname) => {
 };
 
 const isWindowsOS = () => {
-  const os = platform.os;
-  const osFamily = os.family.toLowerCase();
-
-  return osFamily.includes('windows');
+  return process.platform === 'win32';
 };
 
 const isMacOS = () => {
-  const os = platform.os;
-  const osFamily = os.family.toLowerCase();
-
-  return osFamily.includes('os x');
+  return process.platform === 'darwin';
 };
 
 const slash = (path) => {
@@ -84,15 +78,12 @@ const slash = (path) => {
   return path.replace(/\\/g, '/');
 };
 
-// const PATH_SEPARATOR = isWindowsOS() ? '\\' : '/';
+const PATH_SEPARATOR = isWindowsOS() ? '\\' : '/';
 
 module.exports = {
   isDirectory,
   pathExists,
   concatRoute,
   getSubdirectoriesFromRoot,
-  getDirectoryName,
-  isWindowsOS,
-  isMacOS,
-  slash,
+  PATH_SEPARATOR,
 };

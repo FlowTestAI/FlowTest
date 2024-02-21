@@ -3,12 +3,17 @@ import { useEffect } from 'react';
 
 const registerMainEventHandlers = () => {
   const _createCollection = useCollectionStore((state) => state.createCollection);
+  const _createFolder = useCollectionStore((state) => state.createFolder);
 
   useEffect(() => {
     const { ipcRenderer } = window;
 
-    ipcRenderer.on('main:collection-created', (id, pathname) => {
-      _createCollection(id, pathname);
+    ipcRenderer.on('main:collection-created', (id, name, pathname) => {
+      _createCollection(id, name, pathname);
+    });
+
+    ipcRenderer.on('main:add-directory', (directory, collectionId, subDirsFromRoot, PATH_SEPARATOR) => {
+      _createFolder(directory, collectionId, subDirsFromRoot, PATH_SEPARATOR);
     });
   }, []);
 };

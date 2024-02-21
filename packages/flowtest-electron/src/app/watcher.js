@@ -1,23 +1,42 @@
 const chokidar = require('chokidar');
 const path = require('path');
 const dotenv = require('dotenv');
+const { PATH_SEPARATOR, getSubdirectoriesFromRoot } = require('../utils/filemanager/filesystem');
 
 class Watcher {
   constructor() {
     this.watchers = {};
   }
 
-  add(pathname, collectionId, watchPath) {}
+  add(mainWindow, pathname, collectionId, watchPath) {}
 
-  addDirectory(pathname, collectionId, watchPath) {
-    console.log(`add dir event ${pathname}: ${collectionId}`);
+  addDirectory(mainWindow, pathname, collectionId, watchPath) {
+    const envDirectory = path.join(watchPath, 'environments');
+
+    if (pathname === envDirectory) {
+      return;
+    }
+
+    if (pathname === watchPath) {
+      // we have already added collection object to store
+      return;
+    }
+
+    console.log(`directory ${pathname} added`);
+    const directory = {
+      name: path.basename(pathname),
+      pathname: pathname,
+    };
+
+    const subDirsFromRoot = getSubdirectoriesFromRoot(watchPath, directory.pathname);
+    mainWindow.webContents.send('main:add-directory', directory, collectionId, subDirsFromRoot, PATH_SEPARATOR);
   }
 
-  change(pathname, collectionId, watchPath) {}
+  change(mainWindow, pathname, collectionId, watchPath) {}
 
-  unlink(pathname, collectionId, watchPath) {}
+  unlink(mainWindow, pathname, collectionId, watchPath) {}
 
-  unlinkDir(pathname, collectionId, watchPath) {}
+  unlinkDir(mainWindow, pathname, collectionId, watchPath) {}
 
   addWatcher(mainWindow, watchPath, collectionId) {
     if (this.watchers[watchPath]) {
@@ -39,11 +58,11 @@ class Watcher {
       });
 
       watcher
-        .on('add', (pathname) => this.add(pathname, collectionId, watchPath))
-        .on('addDir', (pathname) => this.addDirectory(pathname, collectionId, watchPath))
-        .on('change', (pathname) => this.change(pathname, collectionId, watchPath))
-        .on('unlink', (pathname) => this.unlink(pathname, collectionId, watchPath))
-        .on('unlinkDir', (pathname) => this.unlinkDir(pathname, collectionId, watchPath));
+        .on('add', (pathname) => this.add(mainWindow, pathname, collectionId, watchPath))
+        .on('addDir', (pathname) => this.addDirectory(mainWindow, pathname, collectionId, watchPath))
+        .on('change', (pathname) => this.change(mainWindow, pathname, collectionId, watchPath))
+        .on('unlink', (pathname) => this.unlink(mainWindow, pathname, collectionId, watchPath))
+        .on('unlinkDir', (pathname) => this.unlinkDir(mainWindow, pathname, collectionId, watchPath));
 
       this.watchers[watchPath] = watcher;
     }, 100);

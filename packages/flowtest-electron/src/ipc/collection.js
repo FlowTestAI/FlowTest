@@ -4,7 +4,6 @@ const { ipcMain, shell, dialog, app } = require('electron');
 const SwaggerParser = require('@apidevtools/swagger-parser');
 const JsonRefs = require('json-refs');
 const createDirectory = require('../utils/filemanager/createdirectory');
-const { concatRoute } = require('../utils/filemanager/filesystem');
 const uuidv4 = require('uuid').v4;
 const Collections = require('../store/collection');
 const parseOpenAPISpec = require('../utils/collection');
@@ -25,7 +24,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
 
       const id = uuidv4();
       const collectionName = api.info.title;
-      const pathname = concatRoute(collectionFolderPath, collectionName);
+      const pathname = path.join(collectionFolderPath, collectionName);
 
       const newCollection = {
         id: id,
@@ -39,10 +38,19 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
       console.log(`Created directory: ${result}`);
       createDirectory('environments', pathname);
 
-      mainWindow.webContents.send('main:collection-created', '1', 'success');
+      mainWindow.webContents.send('main:collection-created', id, path.basename(pathname), pathname);
 
       watcher.addWatcher(mainWindow, pathname, id);
       collectionStore.add(newCollection);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:new-collection', async (event, name, path) => {
+    try {
+      const result = createDirectory(name, path);
+      console.log(`Created directory: ${result}`);
     } catch (error) {
       return Promise.reject(error);
     }

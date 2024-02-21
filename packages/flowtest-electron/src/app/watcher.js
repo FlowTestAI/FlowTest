@@ -7,7 +7,19 @@ class Watcher {
     this.watchers = {};
   }
 
-  addWatcher(watchPath, collectionId) {
+  add(pathname, collectionId, watchPath) {}
+
+  addDirectory(pathname, collectionId, watchPath) {
+    console.log(`add dir event ${pathname}: ${collectionId}`);
+  }
+
+  change(pathname, collectionId, watchPath) {}
+
+  unlink(pathname, collectionId, watchPath) {}
+
+  unlinkDir(pathname, collectionId, watchPath) {}
+
+  addWatcher(mainWindow, watchPath, collectionId) {
     if (this.watchers[watchPath]) {
       this.watchers[watchPath].close();
     }

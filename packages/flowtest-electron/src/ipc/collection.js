@@ -3,11 +3,11 @@ const path = require('path');
 const { ipcMain, shell, dialog, app } = require('electron');
 const SwaggerParser = require('@apidevtools/swagger-parser');
 const JsonRefs = require('json-refs');
-const { default: parseOpenAPISpec } = require('../utils/collection');
 const createDirectory = require('../utils/filemanager/createdirectory');
 const { concatRoute } = require('../utils/filemanager/filesystem');
 const uuidv4 = require('uuid').v4;
 const Collections = require('../store/collection');
+const parseOpenAPISpec = require('../utils/collection');
 
 const collectionStore = new Collections();
 
@@ -35,7 +35,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         nodes: JSON.stringify(parsedNodes),
       };
 
-      const result = createDirectory(newCollection.name, newCollection.pathname);
+      const result = createDirectory(newCollection.name, collectionFolderPath);
       console.log(`Created directory: ${result}`);
       createDirectory('environments', pathname);
 

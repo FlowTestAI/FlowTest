@@ -8,7 +8,7 @@ const registerMainEventHandlers = () => {
     const { ipcRenderer } = window;
 
     ipcRenderer.on('main:collection-created', (id, pathname) => {
-      //_createCollection(id, pathname);
+      _createCollection(id, pathname);
     });
   }, []);
 };

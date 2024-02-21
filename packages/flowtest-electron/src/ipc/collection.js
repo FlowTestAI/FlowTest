@@ -4,6 +4,7 @@ const { ipcMain, shell, dialog, app } = require('electron');
 const SwaggerParser = require('@apidevtools/swagger-parser');
 const JsonRefs = require('json-refs');
 const createDirectory = require('../utils/filemanager/createdirectory');
+const deleteDirectory = require('../utils/filemanager/deletedirectory');
 const uuidv4 = require('uuid').v4;
 const Collections = require('../store/collection');
 const parseOpenAPISpec = require('../utils/collection');
@@ -47,10 +48,34 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
-  ipcMain.handle('renderer:new-collection', async (event, name, path) => {
+  ipcMain.handle('renderer:delete-collection', async (event, collection) => {
+    try {
+      const fullPath = path.join(collection.pathname, collection.name);
+      deleteDirectory(fullPath);
+      console.log(`Deleted directory: ${fullPath}`);
+
+      mainWindow.webContents.send('main:collection-deleted', collection.id);
+
+      watcher.removeWatcher(collection.pathname);
+      collectionStore.remove(collection);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:new-folder', async (event, name, path) => {
     try {
       const result = createDirectory(name, path);
       console.log(`Created directory: ${result}`);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:delete-folder', async (event, path) => {
+    try {
+      const result = deleteDirectory(path);
+      console.log(`Deleted directory: ${path}`);
     } catch (error) {
       return Promise.reject(error);
     }

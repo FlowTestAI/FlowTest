@@ -16,6 +16,17 @@ class Collections {
       }
     }
   }
+
+  remove(collection) {
+    const collections = this.store.get('collections') || [];
+
+    if (!isDirectory(collection.pathname)) {
+      this.store.set(
+        'collections',
+        collections.filter((c) => c.id !== collection.id),
+      );
+    }
+  }
 }
 
 module.exports = Collections;

@@ -14,7 +14,12 @@ const useCollectionStore = create((set, get) => ({
     };
     if (!get().collections.find((c) => c.pathname === pathname)) {
       set((state) => ({ collections: [...state.collections, collectionObj] }));
+      console.log(`Collection added: ${JSON.stringify(get().collections)}`);
     }
+  },
+  deleteCollection(collectionId) {
+    set((state) => ({ collections: state.collections.filter((c) => c.id != collectionId) }));
+    console.log(`Collection removed: ${JSON.stringify(get().collections)}`);
   },
   createFolder: (directory, collectionId, subDirsFromRoot, PATH_SEPARATOR) => {
     const collection = get().collections.find((c) => c.id === collectionId);
@@ -39,9 +44,61 @@ const useCollectionStore = create((set, get) => ({
         currentSubItems = childItem.items;
       }
 
-      console.log(`Collection updated: ${JSON.stringify(get().collections)}`);
+      console.log(`Collection folder created: ${JSON.stringify(get().collections)}`);
+    }
+  },
+  deleteFolder: (directory, collectionId) => {
+    const collection = get().collections.find((c) => c.id === collectionId);
+
+    if (collection) {
+      // if it's the collection itself
+      if (collection.pathname === directory.pathname && collection.name === directory.name) {
+        get().deleteCollection(collection.id);
+      } else {
+        const item = findItemInCollectionTree(directory, collection);
+
+        if (item) {
+          deleteItemInCollectionByPathname(item.pathname, collection);
+          console.log(`Collection folder deleted: ${JSON.stringify(get().collections)}`);
+        }
+      }
     }
   },
 }));
+
+const findItemInCollectionTree = (item, collection) => {
+  let flattenedItems = this.flattenItems(collection.items);
+
+  return flattenedItems.find((i) => i.pathname === item.pathname && i.name === item.name);
+};
+
+const deleteItemInCollectionByPathname = (pathname, collection) => {
+  collection.items = collection.items.filter((i) => i.pathname !== pathname);
+
+  let flattenedItems = this.flattenItems(collection.items);
+  flattenedItems.forEach((i) => {
+    if (i.items && i.items.length) {
+      i.items = i.items.filter((i) => i.pathname !== pathname);
+    }
+  });
+};
+
+const flattenItems = (items = []) => {
+  const flattenedItems = [];
+
+  const flatten = (itms, flattened) => {
+    itms.forEach((i) => {
+      flattened.push(i);
+
+      if (i.items && i.items.length) {
+        flatten(i.items, flattened);
+      }
+    });
+  };
+
+  flatten(items, flattenedItems);
+
+  return flattenedItems;
+};
 
 export default useCollectionStore;

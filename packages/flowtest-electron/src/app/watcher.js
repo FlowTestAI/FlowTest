@@ -36,7 +36,20 @@ class Watcher {
 
   unlink(mainWindow, pathname, collectionId, watchPath) {}
 
-  unlinkDir(mainWindow, pathname, collectionId, watchPath) {}
+  unlinkDir(mainWindow, pathname, collectionId, watchPath) {
+    const envDirectory = path.join(watchPath, 'environments');
+
+    if (pathname === envDirectory) {
+      return;
+    }
+
+    console.log(`dir ${pathname} removed`);
+    const directory = {
+      name: path.basename(pathname),
+      pathname: pathname,
+    };
+    mainWindow.webContents.send('main:delete-directory', directory, collectionId);
+  }
 
   addWatcher(mainWindow, watchPath, collectionId) {
     if (this.watchers[watchPath]) {

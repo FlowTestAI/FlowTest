@@ -102,26 +102,26 @@ const AddNodes = () => {
   // Get All collections
   const [savedCollections, setSavedCollections] = useState([]);
 
-  useEffect(() => {
-    if (getAllCollectionsApi.data) {
-      const retrievedCollections = getAllCollectionsApi.data;
-      console.log('Got saved collections: ', retrievedCollections);
-      setSavedCollections(retrievedCollections);
-    } else if (getAllCollectionsApi.error) {
-      const error = getAllCollectionsApi.error;
-      if (!error.response) {
-        console.log('Failed to get saved collections: ', error);
-      } else {
-        const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`;
-        console.log('Failed to get saved collections: ', errorData);
-      }
-    }
-  }, [getAllCollectionsApi.data, getAllCollectionsApi.error]);
+  // useEffect(() => {
+  //   if (getAllCollectionsApi.data) {
+  //     const retrievedCollections = getAllCollectionsApi.data;
+  //     console.log('Got saved collections: ', retrievedCollections);
+  //     setSavedCollections(retrievedCollections);
+  //   } else if (getAllCollectionsApi.error) {
+  //     const error = getAllCollectionsApi.error;
+  //     if (!error.response) {
+  //       console.log('Failed to get saved collections: ', error);
+  //     } else {
+  //       const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`;
+  //       console.log('Failed to get saved collections: ', errorData);
+  //     }
+  //   }
+  // }, [getAllCollectionsApi.data, getAllCollectionsApi.error]);
 
-  // Initialization
-  useEffect(() => {
-    getAllCollectionsApi.request();
-  }, []);
+  // // Initialization
+  // useEffect(() => {
+  //   getAllCollectionsApi.request();
+  // }, []);
 
   return (
     <>

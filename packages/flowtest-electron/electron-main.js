@@ -14,8 +14,12 @@ function createWindow() {
     width: 1280,
     height: 768,
     webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
+      webviewTag: true,
     },
+    title: 'FlowTestAI',
   });
 
   // and load the index.html of the app.

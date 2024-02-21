@@ -17,7 +17,7 @@ const parseOpenAPISpec = (collection) => {
       Object.entries(operation).map(([requestType, request], _) => {
         const summary = request['summary'];
         const operationId = request['operationId'];
-        var url = this.computeUrl(baseUrl, path);
+        var url = computeUrl(baseUrl, path);
         var variables = {};
 
         // console.log(operationId)
@@ -56,4 +56,4 @@ const parseOpenAPISpec = (collection) => {
   return parsedNodes;
 };
 
-export default parseOpenAPISpec;
+module.exports = parseOpenAPISpec;

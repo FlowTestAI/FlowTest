@@ -84,7 +84,7 @@ const slash = (path) => {
   return path.replace(/\\/g, '/');
 };
 
-const PATH_SEPARATOR = isWindowsOS() ? '\\' : '/';
+// const PATH_SEPARATOR = isWindowsOS() ? '\\' : '/';
 
 module.exports = {
   isDirectory,
@@ -95,5 +95,4 @@ module.exports = {
   isWindowsOS,
   isMacOS,
   slash,
-  PATH_SEPARATOR,
 };

@@ -1,4 +1,4 @@
-export const createCollection = (file, rootPath) => () => {
+export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;
 
   return new Promise((resolve, reject) => {

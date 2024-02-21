@@ -6,7 +6,10 @@ const JsonRefs = require('json-refs');
 const { default: parseOpenAPISpec } = require('../utils/collection');
 const createDirectory = require('../utils/filemanager/createdirectory');
 const { concatRoute } = require('../utils/filemanager/filesystem');
-import { v4 as uuidv4 } from 'uuid';
+const uuidv4 = require('uuid').v4;
+const Collections = require('../store/collection');
+
+const collectionStore = new Collections();
 
 const registerRendererEventHandlers = (mainWindow, watcher) => {
   ipcMain.handle('renderer:create-collection', async (event, openAPISpecFilePath, collectionFolderPath) => {
@@ -25,21 +28,21 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
       const pathname = concatRoute(collectionFolderPath, collectionName);
 
       const newCollection = {
+        id: id,
         name: collectionName,
+        pathname: pathname,
         collection: spec,
         nodes: JSON.stringify(parsedNodes),
-        pathname: pathname,
       };
 
-      createDirectory(newCollection.name, newCollection.pathname);
-
+      const result = createDirectory(newCollection.name, newCollection.pathname);
+      console.log(`Created directory: ${result}`);
       createDirectory('environments', pathname);
 
-      watcher.addWatcher(mainWindow, pathname, id);
-      // store newCollection in electron persistent store
-      //lastOpenedCollections.add(pathname);
+      mainWindow.webContents.send('main:collection-created', '1', 'success');
 
-      //mainWindow.webContents.send('main:collection-opened', dirPath, uid, brunoConfig);
+      watcher.addWatcher(mainWindow, pathname, id);
+      collectionStore.add(newCollection);
     } catch (error) {
       return Promise.reject(error);
     }

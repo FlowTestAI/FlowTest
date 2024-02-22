@@ -1,14 +1,67 @@
 const chokidar = require('chokidar');
 const path = require('path');
 const dotenv = require('dotenv');
-const { PATH_SEPARATOR, getSubdirectoriesFromRoot } = require('../utils/filemanager/filesystem');
+const { PATH_SEPARATOR, getSubdirectoriesFromRoot, getDirectoryName } = require('../utils/filemanager/filesystem');
+const readFile = require('../utils/filemanager/readfile');
 
 class Watcher {
   constructor() {
     this.watchers = {};
   }
 
-  add(mainWindow, pathname, collectionId, watchPath) {}
+  isFlowTestFile(pathname) {
+    if (!pathname || typeof pathname !== 'string') return false;
+    return ['flow'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
+  }
+
+  isEnvFile(pathname, collectionPath) {
+    if (!pathname || typeof pathname !== 'string') return false;
+    const dirname = path.dirname(pathname);
+    const envDirectory = path.join(collectionPath, 'environments');
+
+    return dirname === envDirectory && ['env'].some((ext) => pathname.toLowerCase().endsWith(`.${ext}`));
+  }
+
+  isDotEnvFile(pathname, collectionPath) {
+    const dirname = path.dirname(pathname);
+    const basename = path.basename(pathname);
+
+    return dirname === collectionPath && basename === '.env';
+  }
+
+  add(mainWindow, pathname, collectionId, watchPath) {
+    console.log(`[Watcher] File ${pathname} added`);
+    if (this.isFlowTestFile(pathname)) {
+      const dirname = getDirectoryName(file.pathname);
+      const subDirectories = getSubdirectoriesFromRoot(pathname, dirname);
+      const file = {
+        name: path.basename(pathname),
+        pathname: pathname,
+        subDirectories,
+        sep: PATH_SEPARATOR,
+      };
+      mainWindow.webContents.send('main:create-flowtest', file, collectionId);
+    } else if (this.isEnvFile(pathname, watchPath)) {
+      try {
+        const variables = this.getEnvVariables(pathname);
+        const file = {
+          name: path.basename(pathname),
+          pathname: pathname,
+          variables,
+        };
+        mainWindow.webContents.send('main:addOrUpdate-environment', file, collectionId);
+      } catch (error) {
+        console.error(`Failed to add ${pathname} due to: ${error}`);
+      }
+    } else if (this.isDotEnvFile(pathname, watchPath)) {
+      try {
+        const variables = this.getEnvVariables(pathname);
+        mainWindow.webContents.send('main:addOrUpdate-dotEnvironment', variables, collectionId);
+      } catch (error) {
+        console.error(`Failed to add .env variables due to: ${error}`);
+      }
+    }
+  }
 
   addDirectory(mainWindow, pathname, collectionId, watchPath) {
     const envDirectory = path.join(watchPath, 'environments');
@@ -22,7 +75,7 @@ class Watcher {
       return;
     }
 
-    console.log(`directory ${pathname} added`);
+    console.log(`[Watcher] Directory ${pathname} added`);
     const directory = {
       name: path.basename(pathname),
       pathname: pathname,
@@ -32,9 +85,56 @@ class Watcher {
     mainWindow.webContents.send('main:add-directory', directory, collectionId, subDirsFromRoot, PATH_SEPARATOR);
   }
 
-  change(mainWindow, pathname, collectionId, watchPath) {}
+  change(mainWindow, pathname, collectionId, watchPath) {
+    console.log(`[Watcher] file ${pathname} changed`);
+    if (this.isFlowTestFile(pathname)) {
+      const file = {
+        name: path.basename(pathname),
+        pathname: pathname,
+      };
+      mainWindow.webContents.send('main:update-flowtest', file, collectionId);
+    } else if (this.isEnvFile(pathname, watchPath)) {
+      try {
+        const variables = this.getEnvVariables(pathname);
+        const file = {
+          name: path.basename(pathname),
+          pathname: pathname,
+          variables,
+        };
+        mainWindow.webContents.send('main:addOrUpdate-environment', file, collectionId);
+      } catch (error) {
+        console.error(`Failed to save ${pathname} due to: ${error}`);
+      }
+    } else if (this.isDotEnvFile(pathname, watchPath)) {
+      try {
+        const variables = this.getEnvVariables(pathname);
+        mainWindow.webContents.send('main:addOrUpdate-dotEnvironment', variables, collectionId);
+      } catch (error) {
+        console.error(`Failed to add .env variables due to: ${error}`);
+      }
+    }
+  }
 
-  unlink(mainWindow, pathname, collectionId, watchPath) {}
+  unlink(mainWindow, pathname, collectionId, watchPath) {
+    console.log(`file ${pathname} removed`);
+    if (this.isFlowTestFile(pathname)) {
+      const file = {
+        name: path.basename(pathname),
+        pathname: pathname,
+      };
+      mainWindow.webContents.send('main:delete-flowtest', file, collectionId);
+    } else if (this.isEnvFile(pathname, watchPath)) {
+      try {
+        const file = {
+          name: path.basename(pathname),
+          pathname: pathname,
+        };
+        mainWindow.webContents.send('main:delete-environment', file, collectionId);
+      } catch (error) {
+        console.error(`Failed to save ${pathname} due to: ${error}`);
+      }
+    }
+  }
 
   unlinkDir(mainWindow, pathname, collectionId, watchPath) {
     const envDirectory = path.join(watchPath, 'environments');
@@ -43,12 +143,19 @@ class Watcher {
       return;
     }
 
-    console.log(`dir ${pathname} removed`);
+    console.log(`[Watcher] Directory ${pathname} removed`);
     const directory = {
       name: path.basename(pathname),
       pathname: pathname,
     };
     mainWindow.webContents.send('main:delete-directory', directory, collectionId);
+  }
+
+  getEnvVariables(pathname) {
+    const content = readFile(pathname).content;
+    const buf = Buffer.from(content);
+    const parsed = dotenv.parse(buf);
+    return parsed;
   }
 
   addWatcher(mainWindow, watchPath, collectionId) {

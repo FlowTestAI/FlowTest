@@ -21,6 +21,7 @@
     "electron-store": "^8.1.0",
     "fs": "^0.0.1-security",
     "json-refs": "^3.0.15",
+    "lodash": "^4.17.21",
     "path": "^0.12.7",
     "uuid": "^9.0.1"
   }

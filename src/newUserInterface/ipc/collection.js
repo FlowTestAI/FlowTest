@@ -6,6 +6,12 @@ const registerMainEventHandlers = () => {
   const _deleteCollection = useCollectionStore((state) => state.deleteCollection);
   const _createFolder = useCollectionStore((state) => state.createFolder);
   const _deleteFolder = useCollectionStore((state) => state.deleteFolder);
+  const _addOrUpdateEnvFile = useCollectionStore((state) => state.addOrUpdateEnvFile);
+  const _deleteEnvFile = useCollectionStore((state) => state.deleteEnvFile);
+  const _addOrUpdateDotEnvVariables = useCollectionStore((state) => state.addOrUpdateDotEnvVariables);
+  const _createFlowTest = useCollectionStore((state) => state.createFlowTest);
+  const _updateFlowTest = useCollectionStore((state) => state.updateFlowTest);
+  const _deleteFlowTest = useCollectionStore((state) => state.deleteFlowTest);
 
   useEffect(() => {
     const { ipcRenderer } = window;
@@ -24,6 +30,30 @@ const registerMainEventHandlers = () => {
 
     ipcRenderer.on('main:delete-directory', (directory, collectionId) => {
       _deleteFolder(directory, collectionId);
+    });
+
+    ipcRenderer.on('main:addOrUpdate-environment', (file, collectionId) => {
+      _addOrUpdateEnvFile(file, collectionId);
+    });
+
+    ipcRenderer.on('main:delete-environment', (file, collectionId) => {
+      _deleteEnvFile(file, collectionId);
+    });
+
+    ipcRenderer.on('main:addOrUpdate-dotEnvironment', (variables, collectionId) => {
+      _addOrUpdateDotEnvVariables(variables, collectionId);
+    });
+
+    ipcRenderer.on('main:create-flowtest', (file, collectionId) => {
+      _createFlowTest(file, collectionId);
+    });
+
+    ipcRenderer.on('main:update-flowtest', (file, collectionId) => {
+      _updateFlowTest(file, collectionId);
+    });
+
+    ipcRenderer.on('main:delete-flowtest', (file, collectionId) => {
+      _deleteFlowTest(file, collectionId);
     });
   }, []);
 };

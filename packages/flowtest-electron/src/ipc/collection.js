@@ -8,6 +8,11 @@ const deleteDirectory = require('../utils/filemanager/deletedirectory');
 const uuidv4 = require('uuid').v4;
 const Collections = require('../store/collection');
 const parseOpenAPISpec = require('../utils/collection');
+const { isDirectory, pathExists } = require('../utils/filemanager/filesystem');
+const createFile = require('../utils/filemanager/createfile');
+const updateFile = require('../utils/filemanager/updatefile');
+const deleteFile = require('../utils/filemanager/deletefile');
+const { flowDataToReadableData } = require('../utils/parser');
 
 const collectionStore = new Collections();
 
@@ -76,6 +81,69 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     try {
       const result = deleteDirectory(path);
       console.log(`Deleted directory: ${path}`);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:create-environment', async (event, collectionPath, name) => {
+    try {
+      const envDir = path.join(collectionPath, 'environments');
+      if (!isDirectory(envDir)) {
+        createDirectory('environments', collectionPath);
+      }
+      const result = createFile(`${name}.env`, envDir, '');
+      console.log(`Created file: ${name}.env`);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:update-environment', async (event, collectionPath, name, variables) => {
+    try {
+      const envDir = path.join(collectionPath, 'environments');
+      updateFile(path.join(envDir, name), variables);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:delete-environment', async (event, collectionPath, name) => {
+    try {
+      const envDir = path.join(collectionPath, 'environments');
+      deleteFile(path.join(envDir, `${name}.env`));
+      console.log(`Delete file: ${name}.env`);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:create-flowtest', async (event, name, path, flowData) => {
+    try {
+      if (isDirectory(path)) {
+        const readableData = flowDataToReadableData(flowData);
+        createFile(`${name}.flow`, path, JSON.stringify(readableData, null, 4));
+        console.log(`Created file: ${name}.flow`);
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:update-flowtest', async (event, path, flowData) => {
+    try {
+      const readableData = flowDataToReadableData(flowData);
+      updateFile(path, JSON.stringify(readableData, null, 4));
+      console.log(`Updated file: ${path}`);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:delete-flowtest', async (event, path) => {
+    try {
+      deleteFile(path);
+      console.log(`Delete file: ${path}`);
     } catch (error) {
       return Promise.reject(error);
     }

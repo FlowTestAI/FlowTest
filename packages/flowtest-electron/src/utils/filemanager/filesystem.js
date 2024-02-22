@@ -85,5 +85,6 @@ module.exports = {
   pathExists,
   concatRoute,
   getSubdirectoriesFromRoot,
+  getDirectoryName,
   PATH_SEPARATOR,
 };

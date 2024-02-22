@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'newUserInterface/constants/ImportCollectionTypes';
 import Modal from './Modal';
-import { createCollection } from 'newUserInterface/stores/collections/actions';
+import { createCollection } from 'newUserInterface/service/collection';
 
 const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
   const importYamlFile = useRef(null);
@@ -35,6 +35,7 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
     //   console.log(fileContent);
     // };
     const file = event.target.files[0];
+    // input is yaml file path and directory path chosen by user
     createCollection('/Users/sjain/Desktop/test.yaml', '/Users/sjain/Desktop');
     closeFn();
   };

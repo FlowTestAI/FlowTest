@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import EmptyDirectory from './EmptyDirectory';
 import Directories from './Directories';
-import useCollectionStore from 'newUserInterface/stores/collections';
+import useCollectionStore from 'newUserInterface/stores/CollectionStore';
 
 const WorkspaceDirectories = () => {
   const collections = useCollectionStore((state) => state.collections);

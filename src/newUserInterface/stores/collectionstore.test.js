@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import useCollectionStore from '.';
+import useCollectionStore from './CollectionStore';
 
 describe('Collection store', () => {
   it('should correctly add and delete directory in the collection tree', () => {

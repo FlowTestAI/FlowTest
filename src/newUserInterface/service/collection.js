@@ -1,4 +1,4 @@
-const { default: useCollectionStore } = require('.');
+const { default: useCollectionStore } = require('../stores/CollectionStore');
 
 const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;

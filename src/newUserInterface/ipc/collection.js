@@ -1,4 +1,4 @@
-import useCollectionStore from 'newUserInterface/stores/collections';
+import useCollectionStore from 'newUserInterface/stores/CollectionStore';
 import { useEffect } from 'react';
 
 const registerMainEventHandlers = () => {

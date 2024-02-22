@@ -25,9 +25,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // icons
 import { IconMinus, IconPlus } from '@tabler/icons-react';
 
-import collectionApi from '../../../../api/collection';
-import wrapper from '../../../../api/wrapper';
-
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 const fabStyle = {
@@ -96,8 +93,6 @@ const AddNodes = () => {
     event.dataTransfer.setData('application/reactflow', JSON.stringify(node));
     event.dataTransfer.effectAllowed = 'move';
   };
-
-  const getAllCollectionsApi = wrapper(collectionApi.getAllCollection);
 
   // Get All collections
   const [savedCollections, setSavedCollections] = useState([]);

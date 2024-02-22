@@ -36,14 +36,15 @@
     "zustand": "^4.5.0"
   },
   "scripts": {
-    "start": "npm run build && cd server && npm start",
+    "start": "npm run build && cd packages/flowtest-electron && npm start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postinstall": "cd server && npm install",
+    "postinstall": "cd packages/flowtest-electron && npm install",
     "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
-    "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "clean": "rm -rf node_modules/ && rm -rf packages/flowtest-electron/node_modules/"
   },
   "eslintConfig": {
     "extends": [

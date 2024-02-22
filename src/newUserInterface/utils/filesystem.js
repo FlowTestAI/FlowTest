@@ -8,11 +8,13 @@ function trim(text) {
  * @param   {...string} segments
  * @returns {string}
  */
-export default function concatRoute(...segments) {
+const concatRoute = (...segments) => {
   let path = segments
     .filter((value) => value && String(value).length > 0)
     .map((segment) => '/' + trim(segment))
     .join('');
 
   return '/' + trim(path.replace(/(\/)+/g, '/'));
-}
+};
+
+export default concatRoute;

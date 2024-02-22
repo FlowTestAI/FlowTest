@@ -1,40 +1,29 @@
 import React from 'react';
-import { FolderArrowDownIcon } from '@heroicons/react/24/outline';
-import { PlusIcon } from '@heroicons/react/20/solid';
+import {
+  response_1,
+  response_2,
+  response_3,
+  response_4,
+  response_5,
+} from 'newUserInterface/constants/forTesting/socketResponses';
+import EmptyDirectory from './EmptyDirectory';
+import Directories from './Directories';
 
 const WorkspaceDirectories = () => {
-  return (
-    // Do not Remove, this is for future reference
-    // <ul className='tw-px-2 tw-py-4'>
-    //   <li className='tw-flex tw-justify-between tw-items-center'>
-    //     <div className='tw-flex tw-justify-between tw-items-center tw-gap-x-2'>
-    //       <button>
-    //         <MdArrowForwardIos />
-    //       </button>
-    //       <span>Folder 1 </span>
-    //     </div>
-    //     <WorkspaceDirectoryItems />
-    //   </li>
-    // </ul>
-    // <div className='tw-flex tw-justify-between tw-gap-x-2'>
-    <div className='tw-flex tw-flex-1 tw-flex-col'>
-      <div className='tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4'>
-        <div className='tw-text-xs tw-font-medium'>Create or Import a collection</div>
-        <div className='tw-mt-4 tw-flex tw-flex-col tw-items-stretch tw-gap-4'>
-          {/* For future use of this button */}
-          {/* <button className='tw-rounded tw-bg-cyan-950 tw-px-4 tw-py-1 tw-text-white'>Open</button> */}
-          <button className='tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-whitespace-nowrap tw-rounded tw-bg-cyan-950 tw-px-4 tw-py-2 tw-text-white tw-transition'>
-            <FolderArrowDownIcon className='tw-h-4 tw-w-4' />
-            <span className=' tw-font-semibold'>New</span>
-          </button>
-          <button className='tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-whitespace-nowrap tw-rounded tw-bg-cyan-950 tw-px-4 tw-py-2 tw-text-white tw-transition'>
-            <PlusIcon className='tw-h-4 tw-w-4' />
-            <span className=' tw-font-semibold'>Import</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  /**
+   * For now I am getting the static test data for mocking the functionality and test the UI
+   * but in future {directoriesData} will be updated in the State by the socket update which is WIP
+   */
+  const responses = [response_1, response_2, response_3, response_4, response_5];
+  const max = 4;
+  const min = 0;
+  const getRandomIndex = () => Math.floor(Math.random() * (max - min + 1)) + min;
+  const randomIndex = getRandomIndex();
+  let responseData = responses[randomIndex];
+  // uncomment following line to how Empty directory component will be rendered
+  // responseData = 0;
+
+  return <>{responseData ? <Directories directoriesData={[responseData]} /> : <EmptyDirectory />}</>;
 };
 
 export default WorkspaceDirectories;

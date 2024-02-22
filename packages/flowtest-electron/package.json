@@ -1,0 +1,28 @@
+{
+  "name": "flowtest-electron",
+  "version": "1.0.0",
+  "homepage": ".",
+  "description": "",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "chokidar": "^3.6.0",
+    "dotenv": "^16.4.5",
+    "electron-store": "^8.1.0",
+    "fs": "^0.0.1-security",
+    "json-refs": "^3.0.15",
+    "lodash": "^4.17.21",
+    "path": "^0.12.7",
+    "uuid": "^9.0.1"
+  }
+}

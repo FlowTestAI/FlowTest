@@ -3,8 +3,11 @@ import SplitPane from '../layouts/SplitPane';
 import MainHeader from '../molecules/headers/MainHeader';
 import MainFooter from '../molecules/footers/MainFooter';
 import ModalManager from '../molecules/modals/ModalManager';
+import registerMainEventHandlers from 'newUserInterface/ipc/collection';
 
 const NewUIHome = () => {
+  registerMainEventHandlers();
+
   const [modalOpen, setModal] = useState(false);
 
   const openModal = (event) => {

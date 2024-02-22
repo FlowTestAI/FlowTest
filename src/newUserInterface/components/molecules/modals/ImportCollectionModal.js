@@ -3,11 +3,9 @@ import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'newUserInterface/constants/ImportCollectionTypes';
 import Modal from './Modal';
-import wrapper from 'api/wrapper';
-import collectionApi from 'api/collection';
+import { createCollection } from 'newUserInterface/stores/collections/actions';
 
 const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
-  const createCollectionApi = wrapper(collectionApi.createCollection);
   const importYamlFile = useRef(null);
   const handleImportCollectionClick = (event) => {
     const elem = event.currentTarget;
@@ -37,7 +35,7 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
     //   console.log(fileContent);
     // };
     const file = event.target.files[0];
-    createCollectionApi.request(file, '/Users/sirachit/Documents');
+    createCollection('/Users/sjain/Desktop/test.yaml', '/Users/sjain/Desktop');
     closeFn();
   };
 

@@ -16,8 +16,8 @@ const registerMainEventHandlers = () => {
   useEffect(() => {
     const { ipcRenderer } = window;
 
-    ipcRenderer.on('main:collection-created', (id, name, pathname) => {
-      _createCollection(id, name, pathname);
+    ipcRenderer.on('main:collection-created', (id, name, pathname, nodes) => {
+      _createCollection(id, name, pathname, nodes);
     });
 
     ipcRenderer.on('main:collection-deleted', (collectionId) => {

@@ -55,6 +55,8 @@ const registerMainEventHandlers = () => {
     ipcRenderer.on('main:delete-flowtest', (file, collectionId) => {
       _deleteFlowTest(file, collectionId);
     });
+
+    ipcRenderer.invoke('renderer:browser-window-ready');
   }, []);
 };
 

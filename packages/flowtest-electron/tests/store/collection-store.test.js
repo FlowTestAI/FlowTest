@@ -50,4 +50,38 @@ describe('collection-store', () => {
     store.remove(newestCollection);
     expect(store.getAll()).toEqual([]);
   });
+
+  it('collection set should be unique by pathname', async () => {
+    const store = new Collections();
+    const newCollection = {
+      id: '1234',
+      name: 'test',
+      pathname: `${__dirname}/test`,
+      collection: '',
+      nodes: '{}',
+    };
+
+    const newestCollection = {
+      id: '12345',
+      name: 'test',
+      pathname: `${__dirname}/test`,
+      collection: '',
+      nodes: '{}',
+    };
+
+    store.removeAll();
+    expect(store.getAll()).toEqual([]);
+
+    createDirectory('test', __dirname);
+    store.add(newCollection);
+    expect(store.getAll()).toEqual([newCollection]);
+
+    // collection in the store should be unique by path
+    store.add(newestCollection);
+    expect(store.getAll()).toEqual([newCollection]);
+
+    deleteDirectory(`${__dirname}/test`);
+    store.remove(newCollection);
+    expect(store.getAll()).toEqual([]);
+  });
 });

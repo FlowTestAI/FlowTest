@@ -23,7 +23,7 @@ class Collections {
     if (!isDirectory(collection.pathname)) {
       this.store.set(
         'collections',
-        collections.filter((c) => c.id !== collection.id),
+        collections.filter((c) => c.pathname !== collection.pathname),
       );
     }
   }

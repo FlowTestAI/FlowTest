@@ -116,7 +116,7 @@ class Watcher {
   }
 
   unlink(mainWindow, pathname, collectionId, watchPath) {
-    console.log(`file ${pathname} removed`);
+    console.log(`[Watcher] File ${pathname} removed`);
     if (this.isFlowTestFile(pathname)) {
       const file = {
         name: path.basename(pathname),
@@ -159,33 +159,36 @@ class Watcher {
   }
 
   addWatcher(mainWindow, watchPath, collectionId) {
-    if (this.watchers[watchPath]) {
-      this.watchers[watchPath].close();
+    if (!this.hasWatcher(watchPath)) {
+      console.log(`[Watcher] watcher added for path: ${watchPath} `);
+      if (this.watchers[watchPath]) {
+        this.watchers[watchPath].close();
+      }
+
+      setTimeout(() => {
+        const watcher = chokidar.watch(watchPath, {
+          ignoreInitial: false,
+          usePolling: watchPath.startsWith('\\\\') ? true : false,
+          ignored: (path) => ['node_modules', '.git'].some((s) => path.includes(s)),
+          persistent: true,
+          ignorePermissionErrors: true,
+          awaitWriteFinish: {
+            stabilityThreshold: 80,
+            pollInterval: 10,
+          },
+          depth: 20,
+        });
+
+        watcher
+          .on('add', (pathname) => this.add(mainWindow, pathname, collectionId, watchPath))
+          .on('addDir', (pathname) => this.addDirectory(mainWindow, pathname, collectionId, watchPath))
+          .on('change', (pathname) => this.change(mainWindow, pathname, collectionId, watchPath))
+          .on('unlink', (pathname) => this.unlink(mainWindow, pathname, collectionId, watchPath))
+          .on('unlinkDir', (pathname) => this.unlinkDir(mainWindow, pathname, collectionId, watchPath));
+
+        this.watchers[watchPath] = watcher;
+      }, 100);
     }
-
-    setTimeout(() => {
-      const watcher = chokidar.watch(watchPath, {
-        ignoreInitial: false,
-        usePolling: watchPath.startsWith('\\\\') ? true : false,
-        ignored: (path) => ['node_modules', '.git'].some((s) => path.includes(s)),
-        persistent: true,
-        ignorePermissionErrors: true,
-        awaitWriteFinish: {
-          stabilityThreshold: 80,
-          pollInterval: 10,
-        },
-        depth: 20,
-      });
-
-      watcher
-        .on('add', (pathname) => this.add(mainWindow, pathname, collectionId, watchPath))
-        .on('addDir', (pathname) => this.addDirectory(mainWindow, pathname, collectionId, watchPath))
-        .on('change', (pathname) => this.change(mainWindow, pathname, collectionId, watchPath))
-        .on('unlink', (pathname) => this.unlink(mainWindow, pathname, collectionId, watchPath))
-        .on('unlinkDir', (pathname) => this.unlinkDir(mainWindow, pathname, collectionId, watchPath));
-
-      this.watchers[watchPath] = watcher;
-    }, 100);
   }
 
   hasWatcher(watchPath) {

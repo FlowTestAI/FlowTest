@@ -17,6 +17,23 @@ const { flowDataToReadableData } = require('../utils/parser');
 const collectionStore = new Collections();
 
 const registerRendererEventHandlers = (mainWindow, watcher) => {
+  ipcMain.handle('renderer:browser-window-ready', async (event) => {
+    const savedCollections = collectionStore.getAll();
+
+    for (let i = 0; i < savedCollections.length; i++) {
+      if (isDirectory(savedCollections[i].pathname)) {
+        mainWindow.webContents.send(
+          'main:collection-created',
+          savedCollections[i].id,
+          path.basename(savedCollections[i].pathname),
+          savedCollections[i].pathname,
+        );
+
+        watcher.addWatcher(mainWindow, savedCollections[i].pathname, savedCollections[i].id);
+      }
+    }
+  });
+
   ipcMain.handle('renderer:create-collection', async (event, openAPISpecFilePath, collectionFolderPath) => {
     try {
       const spec = fs.readFileSync(openAPISpecFilePath, 'utf8');

@@ -3,12 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 const useCollectionStore = create((set, get) => ({
   collections: [],
-  createCollection: (id, name, pathname) => {
+  createCollection: (id, name, pathname, nodes) => {
     const collectionObj = {
       version: '1',
       id: id,
       name: name,
       pathname: pathname,
+      nodes: nodes,
       items: [],
       enviroments: [],
     };

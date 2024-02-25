@@ -2,21 +2,22 @@ import { act, renderHook } from '@testing-library/react';
 import useCollectionStore from './CollectionStore';
 
 describe('Collection store', () => {
+  const collectionObj = {
+    version: '1',
+    id: '1',
+    name: 'collection',
+    pathname: '/parent/collection',
+    nodes: [],
+    items: [],
+    enviroments: [],
+  };
+
   it('should correctly add and delete directory in the collection tree', () => {
     const { result } = renderHook(() => useCollectionStore());
 
-    const collectionObj = {
-      version: '1',
-      id: '1',
-      name: 'collection',
-      pathname: '/parent/collection',
-      items: [],
-      enviroments: [],
-    };
-
     // create collection
     act(() => {
-      result.current.createCollection('1', 'collection', '/parent/collection');
+      result.current.createCollection('1', 'collection', '/parent/collection', []);
     });
     let collection = result.current.collections[0];
     expect(collection).toEqual(collectionObj);
@@ -71,18 +72,9 @@ describe('Collection store', () => {
   it('should correctly add/delete/change file in the collection tree', () => {
     const { result } = renderHook(() => useCollectionStore());
 
-    const collectionObj = {
-      version: '1',
-      id: '1',
-      name: 'collection',
-      pathname: '/parent/collection',
-      items: [],
-      enviroments: [],
-    };
-
     // create collection
     act(() => {
-      result.current.createCollection('1', 'collection', '/parent/collection');
+      result.current.createCollection('1', 'collection', '/parent/collection', []);
     });
 
     let directory = {
@@ -179,18 +171,9 @@ describe('Collection store', () => {
   it('should add environment and dotEnv file correctly in collection tree', () => {
     const { result } = renderHook(() => useCollectionStore());
 
-    const collectionObj = {
-      version: '1',
-      id: '1',
-      name: 'collection',
-      pathname: '/parent/collection',
-      items: [],
-      enviroments: [],
-    };
-
     // create collection
     act(() => {
-      result.current.createCollection('1', 'collection', '/parent/collection');
+      result.current.createCollection('1', 'collection', '/parent/collection', []);
     });
 
     let directory = {

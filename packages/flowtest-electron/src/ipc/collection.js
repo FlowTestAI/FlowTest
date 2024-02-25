@@ -27,9 +27,12 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
           savedCollections[i].id,
           path.basename(savedCollections[i].pathname),
           savedCollections[i].pathname,
+          savedCollections[i].nodes,
         );
 
         watcher.addWatcher(mainWindow, savedCollections[i].pathname, savedCollections[i].id);
+      } else {
+        collectionStore.remove(savedCollections[i]);
       }
     }
   });
@@ -54,14 +57,14 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         name: collectionName,
         pathname: pathname,
         collection: spec,
-        nodes: JSON.stringify(parsedNodes),
+        nodes: parsedNodes,
       };
 
       const result = createDirectory(newCollection.name, collectionFolderPath);
       console.log(`Created directory: ${result}`);
       createDirectory('environments', pathname);
 
-      mainWindow.webContents.send('main:collection-created', id, path.basename(pathname), pathname);
+      mainWindow.webContents.send('main:collection-created', id, path.basename(pathname), pathname, parsedNodes);
 
       watcher.addWatcher(mainWindow, pathname, id);
       collectionStore.add(newCollection);

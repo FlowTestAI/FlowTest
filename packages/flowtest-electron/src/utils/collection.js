@@ -23,12 +23,18 @@ const parseOpenAPISpec = (collection) => {
         // console.log(operationId)
         // Get is easy, others are hard
         if (requestType.toUpperCase() === 'GET' && request['parameters']) {
+          let firstQueryParam = true;
           request['parameters'].map((value, _) => {
             // path parameters are included in url
             // handle multiple parameters
             // allow different type of variables in request node like string, int, array etc...
             if (value['in'] === 'query') {
-              url = url.concat(`?${value['name']}={${value['name']}}`);
+              if (firstQueryParam) {
+                url = url.concat(`?${value['name']}={${value['name']}}`);
+                firstQueryParam = false;
+              } else {
+                url = url.concat(`&${value['name']}={${value['name']}}`);
+              }
             }
           });
         }

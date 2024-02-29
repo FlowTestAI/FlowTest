@@ -1,8 +1,13 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
-import { findItemInCollectionTree, deleteItemInCollectionByPathname, findItemInCollectionByPathname } from './utils.js';
+import {
+  findItemInCollectionTree,
+  deleteItemInCollectionByPathname,
+  findItemInCollectionByPathname,
+  flattenItems,
+} from './utils.js';
 import { useEventStore, _removeEvent } from './EventListenerStore.js';
-import { useTabStore, _addFlowTestTab, _closeFlowTestTab } from './TabStore.js';
+import { useTabStore, _addFlowTestTab, _closeCollectionTabs, _closeFlowTestTab, _closeTabs } from './TabStore.js';
 
 const useCollectionStore = create((set, get) => ({
   collections: [],
@@ -24,6 +29,9 @@ const useCollectionStore = create((set, get) => ({
   deleteCollection(collectionId) {
     set((state) => ({ collections: state.collections.filter((c) => c.id != collectionId) }));
     console.log(`Collection removed: ${JSON.stringify(get().collections)}`);
+
+    // check if there any open tabs, if yes close them
+    _closeCollectionTabs(collectionId);
   },
   createFolder: (directory, collectionId, subDirsFromRoot, PATH_SEPARATOR) => {
     const collection = get().collections.find((c) => c.id === collectionId);
@@ -62,8 +70,17 @@ const useCollectionStore = create((set, get) => ({
         const item = findItemInCollectionTree(directory, collection);
 
         if (item) {
+          const flowTestIds = flattenItems(item.items).map((i) => {
+            if (i.type !== 'folder') {
+              i.id;
+            }
+          });
+
           deleteItemInCollectionByPathname(item.pathname, collection);
           console.log(`Collection folder deleted: ${JSON.stringify(get().collections)}`);
+
+          // check if there any open tabs, if yes close them
+          _closeTabs(flowTestIds, collectionId);
         }
       }
     }

@@ -1,8 +1,5 @@
 import { create } from 'zustand';
 
-// id of the tab should be id of collection structure item
-// save draft in collection state item
-// create a file then intercept the event and open the tab
 export const useTabStore = create((set, get) => ({
   tabs: [],
   focusTabId: null,
@@ -36,6 +33,31 @@ export const useTabStore = create((set, get) => ({
       }
     }
   },
+  closeTabs: (ids, collectionId) => {
+    set((state) => ({ tabs: state.tabs.filter((t) => !ids.includes(t.id)) }));
+    if (ids.includes(get().focusTabId)) {
+      const tabs = get().tabs;
+      if (tabs && tabs.length) {
+        const collectionTabs = tabs.filter((t) => t.collectionId === collectionId);
+        if (collectionTabs && collectionTabs.length) {
+          set(() => ({ focusTabId: collectionTabs.slice(-1)[0].id }));
+        } else {
+          set(() => ({ focusTabId: tabs.slice(-1)[0].id }));
+        }
+      } else {
+        set(() => ({ focusTabId: null }));
+      }
+    }
+  },
+  closeCollectionTabs: (collectionId) => {
+    set((state) => ({ tabs: state.tabs.filter((t) => t.collectionId != collectionId) }));
+    const tabs = get().tabs;
+    if (tabs && tabs.length) {
+      set(() => ({ focusTabId: tabs.slice(-1)[0].id }));
+    } else {
+      set(() => ({ focusTabId: null }));
+    }
+  },
   setFocusTab: (id) => {
     set(() => ({ focusTabId: id }));
   },
@@ -43,3 +65,5 @@ export const useTabStore = create((set, get) => ({
 
 export const _addFlowTestTab = useTabStore((state) => state.addFlowTestTab);
 export const _closeFlowTestTab = useTabStore((state) => state.closeFlowTestTab);
+export const _closeTabs = useTabStore((state) => state.closeTabs);
+export const _closeCollectionTabs = useTabStore((state) => state.closeCollectionTabs);

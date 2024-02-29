@@ -24,7 +24,7 @@ export const deleteItemInCollectionByPathname = (pathname, collection) => {
   });
 };
 
-const flattenItems = (items = []) => {
+export const flattenItems = (items = []) => {
   const flattenedItems = [];
 
   const flatten = (itms, flattened) => {

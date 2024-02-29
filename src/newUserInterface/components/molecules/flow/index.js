@@ -24,6 +24,7 @@ import DelayNode from './nodes/DelayNode';
 
 // file system
 import AuthNode from './nodes/AuthNode';
+import { useTabStore } from 'newUserInterface/stores/TabStore';
 
 const StartNode = () => (
   <div
@@ -44,17 +45,34 @@ const StartNode = () => (
   </div>
 );
 
-const Flow = () => {
-  const location = useLocation();
+const Flow = ({ tabId, collectionId, flowData }) => {
+  const setCanvasDirty = () => {
+    const tab = useTabStore.getState().tabs.find((t) => t.id === tabId);
+    if (tab) {
+      tab.isDirty = true;
+      tab.flowData = getFlowData();
+    }
+  };
 
   // notification
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
-  const [flowTest, setFlowTest] = useState({});
-
-  const [isDirty, setIsDirty] = useState(false);
+  const getFlowData = () => {
+    if (reactFlowInstance) {
+      // save might get triggered when the flow is running, don't store animated edges
+      const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
+        return {
+          ...edge,
+          animated: false,
+        };
+      });
+      const rfInstanceObject = reactFlowInstance.toObject();
+      rfInstanceObject.edges = updatedEdges;
+      return rfInstanceObject;
+    }
+  };
 
   const nodeTypes = useMemo(
     () => ({
@@ -133,43 +151,18 @@ const Flow = () => {
       console.debug('Dropped node: ', newNode);
 
       setNodes((nds) => nds.concat(newNode));
-      setIsDirty(true);
+      setCanvasDirty();
     },
     [reactFlowInstance],
   );
 
-  const getAllNodes = () => {
-    reactFlowInstance.getNodes().map((node) => console.log(node));
-    reactFlowInstance.getEdges().map((edge) => console.log(edge));
-  };
-
-  // useEffect(() => {
-  //   if (getFlowTest.data) {
-  //     const retrievedFlowtest = getFlowTest.data;
-  //     const initialFlow = retrievedFlowtest.flowData ? JSON.parse(retrievedFlowtest.flowData) : [];
-  //     console.debug('Get flow nodes: ', initialFlow.nodes);
-  //     console.debug('Get flow edges: ', initialFlow.edges);
-  //     setNodes(initialFlow.nodes || []);
-  //     setEdges(initialFlow.edges || []);
-  //     setFlowTest(retrievedFlowtest);
-  //   } else if (getFlowTest.error) {
-  //     const error = getFlowTest.error;
-  //     if (!error.response) {
-  //       enqueueSnackbar(`Failed to get flowtest: ${error}`, { variant: 'error' });
-  //     } else {
-  //       const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`;
-  //       enqueueSnackbar(`Failed to get flowtest: ${errorData}`, { variant: 'error' });
-  //     }
-  //   }
-  // }, [getFlowTest.data, getFlowTest.error]);
-
   // Initialization
   useEffect(() => {
-    // if (rootPath && name) {
-    //   //getFlowTest.request(concatRoute(rootPath, name));
-    // } else {
-    const initialNodes = location.state && location.state.initialNodes ? location.state.initialNodes : undefined;
-    if (initialNodes != undefined) {
+    if (flowData && flowData.nodes && flowData.edges) {
+      setNodes(flowData.nodes);
+      setEdges(flowData.edges);
+    } else if (flowData && flowData.nodes) {
+      // AI prompt generated
       const nodes = [
         { id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
         { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false },
@@ -185,12 +178,12 @@ const Flow = () => {
         },
       ];
 
-      for (let i = 2; i <= initialNodes.length; i++) {
+      for (let i = 2; i <= flowData.nodes.length; i++) {
         nodes.push({
           id: `${i}`,
-          type: initialNodes[i - 1].type,
+          type: flowData.nodes[i - 1].type,
           position: { x: 150 + i * 500, y: 50 },
-          data: initialNodes[i - 1],
+          data: flowData.nodes[i - 1],
         });
 
         edges.push({
@@ -204,7 +197,7 @@ const Flow = () => {
       }
       setNodes(nodes);
       setEdges(edges);
-      setIsDirty(true);
+      setCanvasDirty();
     } else {
       setNodes([
         { id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
@@ -220,13 +213,8 @@ const Flow = () => {
           type: 'buttonedge',
         },
       ]);
-      setIsDirty(false);
+      setCanvasDirty();
     }
-
-    setFlowTest({
-      name: 'Untitled Flow',
-    });
-    //}
   }, []);
 
   const isValidConnection = (connection) => {
@@ -282,7 +270,7 @@ const Flow = () => {
         onInit={setReactFlowInstance}
         onDrop={onDrop}
         onDragOver={onDragOver}
-        onNodeDragStop={() => setIsDirty(true)}
+        onNodeDragStop={() => setCanvasDirty()}
         isValidConnection={isValidConnection}
         fitView
       >
@@ -305,7 +293,7 @@ const Flow = () => {
           </ControlButton>
         </Controls>
         <Background variant='dots' gap={12} size={1} />
-        <AddNodes />
+        <AddNodes collectionId={collectionId} />
       </ReactFlow>
     </div>
   );

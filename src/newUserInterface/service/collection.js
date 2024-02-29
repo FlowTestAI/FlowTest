@@ -1,4 +1,7 @@
-const { default: useCollectionStore } = require('../stores/CollectionStore');
+import useCollectionStore from '../stores/CollectionStore';
+import { v4 as uuidv4 } from 'uuid';
+import { findItemInCollectionByPathname } from 'newUserInterface/stores/utils';
+import { _addEvent } from '../stores/EventListenerStore';
 
 const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;
@@ -12,6 +15,8 @@ const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
 };
 
 const deleteCollection = (collectionId) => {
+  // delete collection
+  // if folder is deleted, intercept the event then close all the collection tabs and remove it from state tree
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -19,21 +24,39 @@ const deleteCollection = (collectionId) => {
   if (collection) {
     return new Promise((resolve, reject) => {
       ipcRenderer.invoke('renderer:delete-collection', collection).then(resolve).catch(reject);
+      _addEvent({
+        id: uuidv4(),
+        type: 'DELETE_COLLECTION',
+        collectionId: collectionId,
+        pathname: collection.pathname,
+      });
     });
   } else {
     return Promise.reject(new Error('Collection not found'));
   }
 };
 
-const createFolder = (folderName, folderPath) => {
+const createFolder = (folderName, folderPath, collectionId) => {
   const { ipcRenderer } = window;
 
-  return new Promise((resolve, reject) => {
-    ipcRenderer.invoke('renderer:create-folder', folderName, folderPath).then(resolve).catch(reject);
-  });
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+  if (collection) {
+    const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
+    const sameFolderExists = folderPathItem.items.find((i) => i.type === 'folder' && i.name === folderName);
+    if (sameFolderExists) {
+      return Promise.reject(new Error('A folder with the same name already exists'));
+    } else {
+      return new Promise((resolve, reject) => {
+        ipcRenderer.invoke('renderer:create-folder', folderName, folderPath).then(resolve).catch(reject);
+      });
+    }
+  } else {
+    return Promise.reject(new Error('Collection not found'));
+  }
 };
 
 const deleteFolder = (folderPath) => {
+  /// Once folder is deleted, remove all active tabs for flowtests under that folder
   const { ipcRenderer } = window;
 
   return new Promise((resolve, reject) => {
@@ -86,28 +109,94 @@ const deleteEnvironmentFile = (name, collectionId) => {
   }
 };
 
-const createFlowTest = (name, path, flowData) => {
+const createFlowTest = (name, folderPath, collectionId) => {
   const { ipcRenderer } = window;
 
-  return new Promise((resolve, reject) => {
-    ipcRenderer.invoke('renderer:create-flowtest', name, path, flowData).then(resolve).catch(reject);
-  });
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+  if (collection) {
+    const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
+    const sameFlowTestExists = folderPathItem.items.find((i) => i.type !== 'folder' && i.name === name);
+    if (sameFlowTestExists) {
+      return Promise.reject(new Error('A flowtest with the same name already exists'));
+    } else {
+      return new Promise((resolve, reject) => {
+        ipcRenderer.invoke('renderer:create-flowtest', name, path).then(resolve).catch(reject);
+        _addEvent({
+          id: uuidv4(),
+          type: 'OPEN_NEW_FLOWTEST',
+          collectionId,
+          name,
+          path: folderPath,
+        });
+      });
+    }
+  } else {
+    return Promise.reject(new Error('Collection not found'));
+  }
 };
 
-const updateFlowTest = (path, flowData) => {
+const readFlowTest = (pathname, collectionId) => {
   const { ipcRenderer } = window;
 
-  return new Promise((resolve, reject) => {
-    ipcRenderer.invoke('renderer:update-flowtest', path, flowData).then(resolve).catch(reject);
-  });
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+  if (collection) {
+    const flowtest = findItemInCollectionByPathname(collection, pathname);
+    if (flowtest) {
+      return new Promise((resolve, reject) => {
+        ipcRenderer.invoke('renderer:read-flowtest', pathname, collectionId).then(resolve).catch(reject);
+        _addEvent({
+          id: uuidv4(),
+          type: 'OPEN_SAVED_FLOWTEST',
+          collectionId,
+          name: flowtest.name,
+          pathname: flowtest.pathname,
+        });
+      });
+    } else {
+      return Promise.reject(new Error('A flowtest with this path does not exist'));
+    }
+  } else {
+    return Promise.reject(new Error('Collection not found'));
+  }
 };
 
-const deleteFlowTest = (path) => {
+// rename flowtest
+// tab id is flowtest id, so when rename event happens
+
+const updateFlowTest = (pathname, flowData, collectionId) => {
   const { ipcRenderer } = window;
 
-  return new Promise((resolve, reject) => {
-    ipcRenderer.invoke('renderer:delete-flowtest', path).then(resolve).catch(reject);
-  });
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+  if (collection) {
+    const flowtest = findItemInCollectionByPathname(collection, pathname);
+    if (flowtest) {
+      return new Promise((resolve, reject) => {
+        ipcRenderer.invoke('renderer:update-flowtest', pathname, flowData).then(resolve).catch(reject);
+      });
+    } else {
+      return Promise.reject(new Error('A flowtest with this path does not exist'));
+    }
+  } else {
+    return Promise.reject(new Error('Collection not found'));
+  }
+};
+
+const deleteFlowTest = (pathname, collectionId) => {
+  const { ipcRenderer } = window;
+
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+  if (collection) {
+    const flowtest = findItemInCollectionByPathname(collection, pathname);
+    if (flowtest) {
+      return new Promise((resolve, reject) => {
+        ipcRenderer.invoke('renderer:delete-flowtest', pathname).then(resolve).catch(reject);
+      });
+    } else {
+      return Promise.reject(new Error('A flowtest with this path does not exist'));
+    }
+  } else {
+    return Promise.reject(new Error('Collection not found'));
+  }
 };
 
 module.exports = {
@@ -119,6 +208,7 @@ module.exports = {
   updateEnvironmentFile,
   deleteEnvironmentFile,
   createFlowTest,
+  readFlowTest,
   updateFlowTest,
   deleteFlowTest,
 };

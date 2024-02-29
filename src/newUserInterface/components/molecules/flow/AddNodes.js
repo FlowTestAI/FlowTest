@@ -26,6 +26,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IconMinus, IconPlus } from '@tabler/icons-react';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import useCollectionStore from 'newUserInterface/stores/CollectionStore';
 
 const fabStyle = {
   position: 'absolute',
@@ -84,7 +85,7 @@ const authNode = {
   type: 'authNode',
 };
 
-const AddNodes = () => {
+const AddNodes = ({ collectionId }) => {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
   const ps = useRef();
@@ -94,29 +95,8 @@ const AddNodes = () => {
     event.dataTransfer.effectAllowed = 'move';
   };
 
-  // Get All collections
-  const [savedCollections, setSavedCollections] = useState([]);
-
-  // useEffect(() => {
-  //   if (getAllCollectionsApi.data) {
-  //     const retrievedCollections = getAllCollectionsApi.data;
-  //     console.log('Got saved collections: ', retrievedCollections);
-  //     setSavedCollections(retrievedCollections);
-  //   } else if (getAllCollectionsApi.error) {
-  //     const error = getAllCollectionsApi.error;
-  //     if (!error.response) {
-  //       console.log('Failed to get saved collections: ', error);
-  //     } else {
-  //       const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`;
-  //       console.log('Failed to get saved collections: ', errorData);
-  //     }
-  //   }
-  // }, [getAllCollectionsApi.data, getAllCollectionsApi.error]);
-
-  // // Initialization
-  // useEffect(() => {
-  //   getAllCollectionsApi.request();
-  // }, []);
+  const collections = useCollectionStore((state) => state.collections);
+  const collection = collections.find((c) => c.id === collectionId);
 
   return (
     <>
@@ -213,7 +193,7 @@ const AddNodes = () => {
                           ))}
                         </AccordionDetails>
                       </Accordion>
-                      {savedCollections.map((collection, index) => (
+                      {collection != undefined && (
                         <Accordion key={collection.id} disableGutters>
                           <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
@@ -250,7 +230,7 @@ const AddNodes = () => {
                             ))}
                           </AccordionDetails>
                         </Accordion>
-                      ))}
+                      )}
                       <Accordion key='output' disableGutters>
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon />}

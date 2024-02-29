@@ -10,6 +10,7 @@ const registerMainEventHandlers = () => {
   const _deleteEnvFile = useCollectionStore((state) => state.deleteEnvFile);
   const _addOrUpdateDotEnvVariables = useCollectionStore((state) => state.addOrUpdateDotEnvVariables);
   const _createFlowTest = useCollectionStore((state) => state.createFlowTest);
+  const _readFlowTest = useCollectionStore((state) => state.readFlowTest);
   const _updateFlowTest = useCollectionStore((state) => state.updateFlowTest);
   const _deleteFlowTest = useCollectionStore((state) => state.deleteFlowTest);
 
@@ -46,6 +47,10 @@ const registerMainEventHandlers = () => {
 
     ipcRenderer.on('main:create-flowtest', (file, collectionId) => {
       _createFlowTest(file, collectionId);
+    });
+
+    ipcRenderer.on('main:read-flowtest', (pathname, collectionId, flowData) => {
+      _readFlowTest(pathname, collectionId, flowData);
     });
 
     ipcRenderer.on('main:update-flowtest', (file, collectionId) => {

@@ -62,8 +62,3 @@ export const useTabStore = create((set, get) => ({
     set(() => ({ focusTabId: id }));
   },
 }));
-
-export const _addFlowTestTab = useTabStore((state) => state.addFlowTestTab);
-export const _closeFlowTestTab = useTabStore((state) => state.closeFlowTestTab);
-export const _closeTabs = useTabStore((state) => state.closeTabs);
-export const _closeCollectionTabs = useTabStore((state) => state.closeCollectionTabs);

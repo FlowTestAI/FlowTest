@@ -6,8 +6,8 @@ import {
   findItemInCollectionByPathname,
   flattenItems,
 } from './utils.js';
-import { useEventStore, _removeEvent } from './EventListenerStore.js';
-import { useTabStore, _addFlowTestTab, _closeCollectionTabs, _closeFlowTestTab, _closeTabs } from './TabStore.js';
+import { useEventStore } from './EventListenerStore.js';
+import { useTabStore } from './TabStore.js';
 
 const useCollectionStore = create((set, get) => ({
   collections: [],
@@ -31,7 +31,7 @@ const useCollectionStore = create((set, get) => ({
     console.log(`Collection removed: ${JSON.stringify(get().collections)}`);
 
     // check if there any open tabs, if yes close them
-    _closeCollectionTabs(collectionId);
+    useTabStore.getState().closeCollectionTabs(collectionId);
   },
   createFolder: (directory, collectionId, subDirsFromRoot, PATH_SEPARATOR) => {
     const collection = get().collections.find((c) => c.id === collectionId);
@@ -80,7 +80,7 @@ const useCollectionStore = create((set, get) => ({
           console.log(`Collection folder deleted: ${JSON.stringify(get().collections)}`);
 
           // check if there any open tabs, if yes close them
-          _closeTabs(flowTestIds, collectionId);
+          useTabStore.getState().closeTabs(flowTestIds, collectionId);
         }
       }
     }
@@ -171,8 +171,8 @@ const useCollectionStore = create((set, get) => ({
               e.path === currentPath,
           );
         if (event) {
-          _addFlowTestTab(flowtest, collectionId);
-          _removeEvent(event.id);
+          useTabStore.getState().addFlowTestTab(flowtest, collectionId);
+          useEventStore.getState().removeEvent(event.id);
         }
       }
     }
@@ -195,14 +195,14 @@ const useCollectionStore = create((set, get) => ({
               e.pathname === item.pathname,
           );
         if (event) {
-          _addFlowTestTab(
+          useTabStore.getState().addFlowTestTab(
             {
               ...item,
               flowData,
             },
             collectionId,
           );
-          _removeEvent(event.id);
+          useEventStore.getState().removeEvent(event.id);
         }
       }
     }
@@ -236,7 +236,7 @@ const useCollectionStore = create((set, get) => ({
         console.log(`Collection updated: ${JSON.stringify(collection)}`);
 
         // remove any open tab of this flowtest
-        _closeFlowTestTab(item.id, collectionId);
+        useTabStore.getState().closeFlowTestTab(item.id, collectionId);
       }
     }
   },

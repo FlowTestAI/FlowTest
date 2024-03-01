@@ -1,9 +1,9 @@
 import useCollectionStore from '../stores/CollectionStore';
 import { v4 as uuidv4 } from 'uuid';
 import { findItemInCollectionByPathname } from 'newUserInterface/stores/utils';
-import { _addEvent } from '../stores/EventListenerStore';
+import { useEventStore } from 'newUserInterface/stores/EventListenerStore';
 
-const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
+export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;
 
   return new Promise((resolve, reject) => {
@@ -14,7 +14,7 @@ const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   });
 };
 
-const deleteCollection = (collectionId) => {
+export const deleteCollection = (collectionId) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -28,7 +28,7 @@ const deleteCollection = (collectionId) => {
   }
 };
 
-const createFolder = (folderName, folderPath, collectionId) => {
+export const createFolder = (folderName, folderPath, collectionId) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -47,7 +47,7 @@ const createFolder = (folderName, folderPath, collectionId) => {
   }
 };
 
-const deleteFolder = (folderPath, collectionId) => {
+export const deleteFolder = (folderPath, collectionId) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -65,7 +65,7 @@ const deleteFolder = (folderPath, collectionId) => {
   }
 };
 
-const createEnvironmentFile = (name, collectionId) => {
+export const createEnvironmentFile = (name, collectionId) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -79,7 +79,7 @@ const createEnvironmentFile = (name, collectionId) => {
   }
 };
 
-const updateEnvironmentFile = (name, collectionId, variables) => {
+export const updateEnvironmentFile = (name, collectionId, variables) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -96,7 +96,7 @@ const updateEnvironmentFile = (name, collectionId, variables) => {
   }
 };
 
-const deleteEnvironmentFile = (name, collectionId) => {
+export const deleteEnvironmentFile = (name, collectionId) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -110,7 +110,7 @@ const deleteEnvironmentFile = (name, collectionId) => {
   }
 };
 
-const createFlowTest = (name, folderPath, collectionId) => {
+export const createFlowTest = (name, folderPath, collectionId) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -122,7 +122,7 @@ const createFlowTest = (name, folderPath, collectionId) => {
     } else {
       return new Promise((resolve, reject) => {
         ipcRenderer.invoke('renderer:create-flowtest', name, folderPath).then(resolve).catch(reject);
-        _addEvent({
+        useEventStore.getState().addEvent({
           id: uuidv4(),
           type: 'OPEN_NEW_FLOWTEST',
           collectionId,
@@ -136,7 +136,7 @@ const createFlowTest = (name, folderPath, collectionId) => {
   }
 };
 
-const readFlowTest = (pathname, collectionId) => {
+export const readFlowTest = (pathname, collectionId) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -145,7 +145,7 @@ const readFlowTest = (pathname, collectionId) => {
     if (flowtest) {
       return new Promise((resolve, reject) => {
         ipcRenderer.invoke('renderer:read-flowtest', pathname, collectionId).then(resolve).catch(reject);
-        _addEvent({
+        useEventStore.getState().addEvent({
           id: uuidv4(),
           type: 'OPEN_SAVED_FLOWTEST',
           collectionId,
@@ -164,7 +164,7 @@ const readFlowTest = (pathname, collectionId) => {
 // rename flowtest
 // tab id is flowtest id, so when rename event happens
 
-const updateFlowTest = (pathname, flowData, collectionId) => {
+export const updateFlowTest = (pathname, flowData, collectionId) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -182,7 +182,7 @@ const updateFlowTest = (pathname, flowData, collectionId) => {
   }
 };
 
-const deleteFlowTest = (pathname, collectionId) => {
+export const deleteFlowTest = (pathname, collectionId) => {
   const { ipcRenderer } = window;
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
@@ -198,18 +198,4 @@ const deleteFlowTest = (pathname, collectionId) => {
   } else {
     return Promise.reject(new Error('Collection not found'));
   }
-};
-
-module.exports = {
-  createCollection,
-  deleteCollection,
-  createFolder,
-  deleteFolder,
-  createEnvironmentFile,
-  updateEnvironmentFile,
-  deleteEnvironmentFile,
-  createFlowTest,
-  readFlowTest,
-  updateFlowTest,
-  deleteFlowTest,
 };

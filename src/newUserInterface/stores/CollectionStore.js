@@ -1,5 +1,13 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  findItemInCollectionTree,
+  deleteItemInCollectionByPathname,
+  findItemInCollectionByPathname,
+  flattenItems,
+} from './utils.js';
+import { useEventStore } from './EventListenerStore.js';
+import { useTabStore } from './TabStore.js';
 
 const useCollectionStore = create((set, get) => ({
   collections: [],
@@ -21,6 +29,9 @@ const useCollectionStore = create((set, get) => ({
   deleteCollection(collectionId) {
     set((state) => ({ collections: state.collections.filter((c) => c.id != collectionId) }));
     console.log(`Collection removed: ${JSON.stringify(get().collections)}`);
+
+    // check if there any open tabs, if yes close them
+    useTabStore.getState().closeCollectionTabs(collectionId);
   },
   createFolder: (directory, collectionId, subDirsFromRoot, PATH_SEPARATOR) => {
     const collection = get().collections.find((c) => c.id === collectionId);
@@ -59,8 +70,17 @@ const useCollectionStore = create((set, get) => ({
         const item = findItemInCollectionTree(directory, collection);
 
         if (item) {
+          const flowTestIds = flattenItems(item.items).map((i) => {
+            if (i.type !== 'folder') {
+              i.id;
+            }
+          });
+
           deleteItemInCollectionByPathname(item.pathname, collection);
           console.log(`Collection folder deleted: ${JSON.stringify(get().collections)}`);
+
+          // check if there any open tabs, if yes close them
+          useTabStore.getState().closeTabs(flowTestIds, collectionId);
         }
       }
     }
@@ -130,14 +150,60 @@ const useCollectionStore = create((set, get) => ({
 
       if (!currentSubItems.find((f) => f.name === file.name)) {
         const timestamp = Date.now();
-        currentSubItems.push({
+        const flowtest = {
           id: uuidv4(),
           createdAt: timestamp,
           modifiedAt: timestamp,
           name: file.name,
           pathname: file.pathname,
-        });
+        };
+        currentSubItems.push(flowtest);
         console.log(`Collection updated: ${JSON.stringify(collection)}`);
+
+        // check if there are any open tab requests
+        const event = useEventStore
+          .getState()
+          .events.find(
+            (e) =>
+              e.type === 'OPEN_NEW_FLOWTEST' &&
+              e.collectionId === collectionId &&
+              e.name === file.name &&
+              e.path === currentPath,
+          );
+        if (event) {
+          useTabStore.getState().addFlowTestTab(flowtest, collectionId);
+          useEventStore.getState().removeEvent(event.id);
+        }
+      }
+    }
+  },
+  readFlowTest: (pathname, collectionId, flowData) => {
+    const collection = get().collections.find((c) => c.id === collectionId);
+
+    if (collection) {
+      const item = findItemInCollectionByPathname(pathname);
+
+      if (item) {
+        // check if there are any open tab requests
+        const event = useEventStore
+          .getState()
+          .events.find(
+            (e) =>
+              e.type === 'OPEN_SAVED_FLOWTEST' &&
+              e.collectionId === collectionId &&
+              e.name === item.name &&
+              e.pathname === item.pathname,
+          );
+        if (event) {
+          useTabStore.getState().addFlowTestTab(
+            {
+              ...item,
+              flowData,
+            },
+            collectionId,
+          );
+          useEventStore.getState().removeEvent(event.id);
+        }
       }
     }
   },
@@ -150,6 +216,12 @@ const useCollectionStore = create((set, get) => ({
       if (item) {
         item.modifiedAt = Date.now();
         console.log(`Collection updated: ${JSON.stringify(collection)}`);
+
+        // check if there are any open tabs, if yes mark them saved
+        const tab = useTabStore.getState().tabs.find((t) => t.id === item.id);
+        if (tab) {
+          tab.isDirty = false;
+        }
       }
     }
   },
@@ -162,44 +234,12 @@ const useCollectionStore = create((set, get) => ({
       if (item) {
         deleteItemInCollectionByPathname(item.pathname, collection);
         console.log(`Collection updated: ${JSON.stringify(collection)}`);
+
+        // remove any open tab of this flowtest
+        useTabStore.getState().closeFlowTestTab(item.id, collectionId);
       }
     }
   },
 }));
-
-const findItemInCollectionTree = (item, collection) => {
-  let flattenedItems = flattenItems(collection.items);
-
-  return flattenedItems.find((i) => i.pathname === item.pathname && i.name === item.name);
-};
-
-const deleteItemInCollectionByPathname = (pathname, collection) => {
-  collection.items = collection.items.filter((i) => i.pathname !== pathname);
-
-  let flattenedItems = flattenItems(collection.items);
-  flattenedItems.forEach((i) => {
-    if (i.items && i.items.length) {
-      i.items = i.items.filter((i) => i.pathname !== pathname);
-    }
-  });
-};
-
-const flattenItems = (items = []) => {
-  const flattenedItems = [];
-
-  const flatten = (itms, flattened) => {
-    itms.forEach((i) => {
-      flattened.push(i);
-
-      if (i.items && i.items.length) {
-        flatten(i.items, flattened);
-      }
-    });
-  };
-
-  flatten(items, flattenedItems);
-
-  return flattenedItems;
-};
 
 export default useCollectionStore;

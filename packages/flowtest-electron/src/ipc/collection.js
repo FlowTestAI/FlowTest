@@ -12,7 +12,8 @@ const { isDirectory, pathExists } = require('../utils/filemanager/filesystem');
 const createFile = require('../utils/filemanager/createfile');
 const updateFile = require('../utils/filemanager/updatefile');
 const deleteFile = require('../utils/filemanager/deletefile');
-const { flowDataToReadableData } = require('../utils/parser');
+const { flowDataToReadableData, readableDataToFlowData } = require('../utils/parser');
+const readFile = require('../utils/filemanager/readfile');
 
 const collectionStore = new Collections();
 
@@ -141,7 +142,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
   ipcMain.handle('renderer:create-flowtest', async (event, name, path, flowData) => {
     try {
       if (isDirectory(path)) {
-        const readableData = flowDataToReadableData(flowData);
+        const readableData = flowData ? flowDataToReadableData(flowData) : {};
         createFile(`${name}.flow`, path, JSON.stringify(readableData, null, 4));
         console.log(`Created file: ${name}.flow`);
       }
@@ -150,20 +151,29 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
-  ipcMain.handle('renderer:update-flowtest', async (event, path, flowData) => {
+  ipcMain.handle('renderer:read-flowtest', async (event, pathname, collectionId) => {
     try {
-      const readableData = flowDataToReadableData(flowData);
-      updateFile(path, JSON.stringify(readableData, null, 4));
-      console.log(`Updated file: ${path}`);
+      const flowData = readableDataToFlowData(readFile(pathname));
+      mainWindow.webContents.send('main:read-flowtest', pathname, collectionId, flowData);
     } catch (error) {
       return Promise.reject(error);
     }
   });
 
-  ipcMain.handle('renderer:delete-flowtest', async (event, path) => {
+  ipcMain.handle('renderer:update-flowtest', async (event, pathname, flowData) => {
     try {
-      deleteFile(path);
-      console.log(`Delete file: ${path}`);
+      const readableData = flowDataToReadableData(flowData);
+      updateFile(pathname, JSON.stringify(readableData, null, 4));
+      console.log(`Updated file: ${pathname}`);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:delete-flowtest', async (event, pathname) => {
+    try {
+      deleteFile(pathname);
+      console.log(`Delete file: ${pathname}`);
     } catch (error) {
       return Promise.reject(error);
     }

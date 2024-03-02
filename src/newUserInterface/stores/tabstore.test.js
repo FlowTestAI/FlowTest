@@ -48,12 +48,12 @@ describe('Tab store', () => {
     expect(result.current.focusTabId).toEqual(flowtest2.id);
 
     act(() => {
-      result.current.closeFlowTestTab(flowtest2.id, collectionId1);
+      result.current.closeTab(flowtest2.id, collectionId1);
     });
     expect(result.current.focusTabId).toEqual(flowtest1.id);
 
     act(() => {
-      result.current.closeFlowTestTab(flowtest1.id, collectionId1);
+      result.current.closeTab(flowtest1.id, collectionId1);
     });
     expect(result.current.focusTabId).toEqual(flowtest.id);
   });

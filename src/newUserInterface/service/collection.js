@@ -71,9 +71,20 @@ export const createEnvironmentFile = (name, collectionId) => {
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   if (collection) {
-    return new Promise((resolve, reject) => {
-      ipcRenderer.invoke('renderer:create-environment', collection.pathname, name).then(resolve).catch(reject);
-    });
+    const existingEnv = collection.enviroments.find((e) => e.name === name);
+    if (existingEnv) {
+      return Promise.reject(new Error('An environment with the same name already exists'));
+    } else {
+      return new Promise((resolve, reject) => {
+        ipcRenderer.invoke('renderer:create-environment', collection.pathname, name).then(resolve).catch(reject);
+        useEventStore.getState().addEvent({
+          id: uuidv4(),
+          type: 'OPEN_NEW_ENVIRONMENT',
+          collectionId,
+          name,
+        });
+      });
+    }
   } else {
     return Promise.reject(new Error('Collection not found'));
   }
@@ -85,12 +96,17 @@ export const updateEnvironmentFile = (name, collectionId, variables) => {
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   if (collection) {
-    return new Promise((resolve, reject) => {
-      ipcRenderer
-        .invoke('renderer:update-environment', collection.pathname, name, variables)
-        .then(resolve)
-        .catch(reject);
-    });
+    const existingEnv = collection.enviroments.find((e) => e.name === name);
+    if (existingEnv) {
+      return new Promise((resolve, reject) => {
+        ipcRenderer
+          .invoke('renderer:update-environment', collection.pathname, name, variables)
+          .then(resolve)
+          .catch(reject);
+      });
+    } else {
+      return Promise.reject(new Error('An environment with the name does not exists'));
+    }
   } else {
     return Promise.reject(new Error('Collection not found'));
   }
@@ -102,9 +118,14 @@ export const deleteEnvironmentFile = (name, collectionId) => {
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   if (collection) {
-    return new Promise((resolve, reject) => {
-      ipcRenderer.invoke('renderer:delete-environment', collection.pathname, name).then(resolve).catch(reject);
-    });
+    const existingEnv = collection.enviroments.find((e) => e.name === name);
+    if (existingEnv) {
+      return new Promise((resolve, reject) => {
+        ipcRenderer.invoke('renderer:delete-environment', collection.pathname, name).then(resolve).catch(reject);
+      });
+    } else {
+      return Promise.reject(new Error('An environment with the name does not exists'));
+    }
   } else {
     return Promise.reject(new Error('Collection not found'));
   }

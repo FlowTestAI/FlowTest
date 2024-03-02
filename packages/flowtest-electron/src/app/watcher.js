@@ -152,7 +152,7 @@ class Watcher {
   }
 
   getEnvVariables(pathname) {
-    const content = readFile(pathname).content;
+    const content = readFile(pathname);
     const buf = Buffer.from(content);
     const parsed = dotenv.parse(buf);
     return parsed;

@@ -20,6 +20,12 @@ describe('Tab store', () => {
     pathname: '/parent/collection1/test2.flow',
   };
 
+  const env = {
+    id: '9',
+    name: 'test',
+    pathname: '/parent/collection1/environments/test.env',
+  };
+
   const collectionId = '1234';
   const collectionId1 = '12345';
 
@@ -44,6 +50,16 @@ describe('Tab store', () => {
     act(() => {
       result.current.addFlowTestTab(flowtest1, collectionId1);
       result.current.addFlowTestTab(flowtest2, collectionId1);
+    });
+    expect(result.current.focusTabId).toEqual(flowtest2.id);
+
+    act(() => {
+      result.current.addEnvTab(env, collectionId1);
+    });
+    expect(result.current.focusTabId).toEqual(env.id);
+
+    act(() => {
+      result.current.closeTab(env.id, collectionId1);
     });
     expect(result.current.focusTabId).toEqual(flowtest2.id);
 

@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
-import ImportCollectionTypes from 'components/organisms/constants/ImportCollectionTypes';
+import ImportCollectionTypes from 'constants/ImportCollectionTypes';
 import Modal from './Modal';
 import { createCollection } from 'service/collection';
 

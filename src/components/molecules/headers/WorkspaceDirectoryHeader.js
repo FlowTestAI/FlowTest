@@ -2,7 +2,7 @@ import React from 'react';
 import { UserIcon } from '@heroicons/react/20/solid';
 import { ChevronRightIcon } from '@heroicons/react/16/solid';
 import { useNavigationStore } from 'stores/AppNavBarStore';
-import { AppNavBarItems } from 'components/organisms/constants/AppNavBar';
+import { AppNavBarItems } from 'constants/AppNavBar';
 
 const WorkspaceDirectoryHeader = () => {
   const navigationSelectedValue = useNavigationStore((state) => {

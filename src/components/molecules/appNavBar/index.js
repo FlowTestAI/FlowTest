@@ -3,7 +3,7 @@ import { Square3Stack3DIcon, RectangleStackIcon, ClockIcon } from '@heroicons/re
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import { useNavigationStore } from 'stores/AppNavBarStore';
-import { AppNavBarItems } from 'components/organisms/constants/AppNavBar';
+import { AppNavBarItems } from 'constants/AppNavBar';
 
 // ToDo: May be make this section collapsable and only show Icons when collapsed
 const AppNavBar = () => {

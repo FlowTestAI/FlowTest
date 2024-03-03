@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FLOW_FILE_SUFFIX_REGEX } from 'components/organisms/constants/Common';
+import { FLOW_FILE_SUFFIX_REGEX } from 'constants/Common';
 import { ArchiveBoxIcon, FolderIcon, DocumentIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import OptionsMenu from './OptionsMenu';
 

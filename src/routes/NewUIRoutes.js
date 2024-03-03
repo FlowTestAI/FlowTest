@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router';
-import NewUIHome from '../newUserInterface/components/pages/NewUIHome';
+import NewUIHome from '../components/pages/NewUIHome';
 
 const NewUIRoutes = {
   path: '/',

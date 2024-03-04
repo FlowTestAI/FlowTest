@@ -11,6 +11,8 @@ import { useTabStore } from './TabStore.js';
 
 const useCollectionStore = create((set, get) => ({
   collections: [],
+  userSelectedDirectory: '',
+  userSelectedYamlFilePath: '',
   createCollection: (id, name, pathname, nodes) => {
     const collectionObj = {
       version: '1',
@@ -256,6 +258,8 @@ const useCollectionStore = create((set, get) => ({
       }
     }
   },
+  updateUserSelectedDirectory: (directoryPath) => set(() => ({ userSelectedDirectory: directoryPath })),
+  updateUserSelectedYamlFilePath: (filePath) => set(() => ({ userSelectedYamlFilePath: filePath })),
 }));
 
 export default useCollectionStore;

@@ -177,4 +177,40 @@ describe('watcher', () => {
 
     deleteDirectory(collectionPath);
   });
+
+  it('should watch add and change dotenv file', async () => {
+    createDirectory(DIRECTORY_NAME, __dirname);
+    createFile('.env', collectionPath, 'k1=v1\nk2=v2\nk3=v3');
+    watcher.add(mainWindow, path.join(collectionPath, '.env'), collectionId, collectionPath);
+    expect(mainWindow.webContents.send).toHaveBeenCalledTimes(1);
+    expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+      'main:addOrUpdate-dotEnvironment',
+      {
+        k1: 'v1',
+        k2: 'v2',
+        k3: 'v3',
+      },
+      '1234',
+    );
+
+    //.env is only allowed in collection root path
+    mainWindow.webContents.send.mockClear();
+    watcher.add(mainWindow, path.join(collectionPath, 'folder', '.env'), collectionId, collectionPath);
+    expect(mainWindow.webContents.send).toHaveBeenCalledTimes(0);
+
+    updateFile(path.join(collectionPath, '.env'), 'k2=v2\nk4=v4\nk6=v6');
+    watcher.change(mainWindow, path.join(collectionPath, '.env'), collectionId, collectionPath);
+    expect(mainWindow.webContents.send).toHaveBeenCalledTimes(1);
+    expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+      'main:addOrUpdate-dotEnvironment',
+      {
+        k2: 'v2',
+        k4: 'v4',
+        k6: 'v6',
+      },
+      '1234',
+    );
+
+    deleteDirectory(collectionPath);
+  });
 });

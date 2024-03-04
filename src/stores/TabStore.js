@@ -17,7 +17,18 @@ export const useTabStore = create((set, get) => ({
     set((state) => ({ tabs: [...state.tabs, newTab] }));
     set(() => ({ focusTabId: newTab.id }));
   },
-  closeFlowTestTab: (id, collectionId) => {
+  addEnvTab: (env, collectionId) => {
+    const newTab = {
+      id: env.id,
+      collectionId: collectionId,
+      type: 'environment',
+      name: env.name,
+    };
+
+    set((state) => ({ tabs: [...state.tabs, newTab] }));
+    set(() => ({ focusTabId: newTab.id }));
+  },
+  closeTab: (id, collectionId) => {
     set((state) => ({ tabs: state.tabs.filter((t) => t.id !== id) }));
     if (get().focusTabId === id) {
       const tabs = get().tabs;

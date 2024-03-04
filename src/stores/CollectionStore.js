@@ -96,13 +96,24 @@ const useCollectionStore = create((set, get) => ({
         console.log(`Collection env updated: ${JSON.stringify(collection)}`);
       } else {
         const timestamp = Date.now();
-        collection.enviroments.push({
+        const env = {
           id: uuidv4(),
           createdAt: timestamp,
           modifiedAt: timestamp,
           ...file,
-        });
+        };
+        collection.enviroments.push(env);
         console.log(`Collection env added: ${JSON.stringify(collection)}`);
+        // check if there are any open tab requests
+        const event = useEventStore
+          .getState()
+          .events.find(
+            (e) => e.type === 'OPEN_NEW_ENVIRONMENT' && e.collectionId === collectionId && e.name === file.name,
+          );
+        if (event) {
+          useTabStore.getState().addEnvTab(env, collectionId);
+          useEventStore.getState().removeEvent(event.id);
+        }
       }
     }
   },
@@ -110,10 +121,15 @@ const useCollectionStore = create((set, get) => ({
     const collection = get().collections.find((c) => c.id === collectionId);
 
     if (collection && collection.enviroments) {
-      collection.enviroments = collection.enviroments.filter(
-        (e) => e.name !== file.name && e.pathname !== file.pathname,
-      );
-      console.log(`Collection updated: ${JSON.stringify(collection)}`);
+      const existingEnv = collection.enviroments.find((e) => e.name === file.name && e.pathname === file.pathname);
+      if (existingEnv) {
+        collection.enviroments = collection.enviroments.filter(
+          (e) => e.name !== file.name && e.pathname !== file.pathname,
+        );
+        console.log(`Collection updated: ${JSON.stringify(collection)}`);
+        // remove any open tab of this env
+        useTabStore.getState().closeTab(existingEnv.id, collectionId);
+      }
     }
   },
   addOrUpdateDotEnvVariables: (variables, collectionId) => {
@@ -236,7 +252,7 @@ const useCollectionStore = create((set, get) => ({
         console.log(`Collection updated: ${JSON.stringify(collection)}`);
 
         // remove any open tab of this flowtest
-        useTabStore.getState().closeFlowTestTab(item.id, collectionId);
+        useTabStore.getState().closeTab(item.id, collectionId);
       }
     }
   },

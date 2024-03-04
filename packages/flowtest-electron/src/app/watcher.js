@@ -1,7 +1,7 @@
 const chokidar = require('chokidar');
 const path = require('path');
 const dotenv = require('dotenv');
-const { PATH_SEPARATOR, getSubdirectoriesFromRoot, getDirectoryName } = require('../utils/filemanager/filesystem');
+const { PATH_SEPARATOR, getSubdirectoriesFromRoot } = require('../utils/filemanager/filesystem');
 const readFile = require('../utils/filemanager/readfile');
 
 class Watcher {
@@ -32,8 +32,8 @@ class Watcher {
   add(mainWindow, pathname, collectionId, watchPath) {
     console.log(`[Watcher] File ${pathname} added`);
     if (this.isFlowTestFile(pathname)) {
-      const dirname = getDirectoryName(file.pathname);
-      const subDirectories = getSubdirectoriesFromRoot(pathname, dirname);
+      const dirname = path.dirname(pathname);
+      const subDirectories = getSubdirectoriesFromRoot(watchPath, dirname);
       const file = {
         name: path.basename(pathname),
         pathname: pathname,
@@ -152,7 +152,7 @@ class Watcher {
   }
 
   getEnvVariables(pathname) {
-    const content = readFile(pathname).content;
+    const content = readFile(pathname);
     const buf = Buffer.from(content);
     const parsed = dotenv.parse(buf);
     return parsed;

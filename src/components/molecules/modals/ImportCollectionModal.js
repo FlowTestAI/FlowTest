@@ -2,11 +2,10 @@ import React, { Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'constants/ImportCollectionTypes';
-import useCollectionStore from 'stores/CollectionStore';
 import Modal from './Modal';
+import { createCollection } from 'service/collection';
 
 const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
-  const updateUserSelectedYamlFilePath = useCollectionStore((state) => state.updateUserSelectedYamlFilePath);
   const importYamlFile = useRef(null);
   const handleImportCollectionClick = (event) => {
     const elem = event.currentTarget;
@@ -26,25 +25,28 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
     importYamlFile.current.click();
   };
 
-  const handleFileSelection = async (event) => {
-    // Un-comment following to read/console the content of the file
-    // const reader = new FileReader();
-    // reader.readAsText(file, 'UTF-8');
-    // reader.onload = (readerEvent) => {
-    //   const fileContent = readerEvent.target.result;
-    //   console.log('<== fileContent ==>');
-    //   console.log(fileContent);
-    // };
-    const filePath = event.target.files[0].path;
-    updateUserSelectedYamlFilePath(filePath);
+  const selectDirectory = () => {
+    const { ipcRenderer } = window;
 
-    // input is yaml file path and directory path chosen by user
-    // createCollection(filePath, '/Users/sirachit/Desktop');
-    closeFn();
-    // This solution will only work in Electron not in webapp
-    window.postMessage({
-      type: 'open-directory-selection-dialog',
+    return new Promise((resolve, reject) => {
+      ipcRenderer.invoke('renderer:open-directory-selection-dialog').then(resolve).catch(reject);
     });
+  };
+
+  const handleFileSelection = async (event) => {
+    const yamlPath = event.target.files[0].path;
+
+    closeFn();
+
+    // This solution will only work in Electron not in webapp
+
+    selectDirectory()
+      .then((dirPath) => {
+        createCollection(yamlPath, dirPath);
+      })
+      .catch((error) => {
+        console.log(`Failed to create collection: ${error}`);
+      });
   };
 
   return (
@@ -92,7 +94,13 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
                         Import a YAML file
                         {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
                         <div className='tw-hidden'>
-                          <input type='file' id='file' ref={importYamlFile} onChange={handleFileSelection} />
+                          <input
+                            type='file'
+                            id='file'
+                            accept='.yaml,.yml'
+                            ref={importYamlFile}
+                            onChange={handleFileSelection}
+                          />
                         </div>
                       </li>
                       {/* For future refer */}

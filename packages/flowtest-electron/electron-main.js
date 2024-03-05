@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
 const Watcher = require('./src/app/watcher');
@@ -55,14 +55,8 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-ipcMain.on('main:open-directory-selection-dialog', async (event, arg) => {
-  const result = await dialog.showOpenDialog(mainWindow, {
-    properties: ['openDirectory'],
-  });
-  mainWindow.webContents.send('main:user-selected-directory', result.filePaths[0]);
+  //if (process.platform !== 'darwin')
+  app.quit();
 });
 
 // In this file you can include the rest of your app's specific main process

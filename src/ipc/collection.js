@@ -13,7 +13,6 @@ const registerMainEventHandlers = () => {
   const _readFlowTest = useCollectionStore((state) => state.readFlowTest);
   const _updateFlowTest = useCollectionStore((state) => state.updateFlowTest);
   const _deleteFlowTest = useCollectionStore((state) => state.deleteFlowTest);
-  const _updateUserSelectedDirectory = useCollectionStore((state) => state.updateUserSelectedDirectory);
 
   useEffect(() => {
     const { ipcRenderer } = window;
@@ -63,10 +62,6 @@ const registerMainEventHandlers = () => {
     });
 
     ipcRenderer.invoke('renderer:browser-window-ready');
-
-    ipcRenderer.on('main:user-selected-directory', (path) => {
-      _updateUserSelectedDirectory(path);
-    });
   }, []);
 };
 

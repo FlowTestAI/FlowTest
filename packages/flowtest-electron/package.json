@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
+    "axios": "^1.6.7",
     "chokidar": "^3.6.0",
     "dotenv": "^16.4.5",
     "electron-store": "^8.1.0",

@@ -87,6 +87,7 @@ const variableElem = (data, varName) => {
     data.variables[varName].value = selectedValue;
     setVariableValue(selectedValue);
   };
+
   return (
     <div className='tw-mb-4 tw-flex tw-items-center tw-justify-center tw-rounded-md tw-border tw-border-neutral-500 tw-text-sm tw-text-neutral-500 tw-outline-0 focus:tw-ring-0'>
       {varType === 'Boolean' ? (
@@ -94,7 +95,7 @@ const variableElem = (data, varName) => {
           onChange={handleBooleanValueSelection}
           name='boolean-val'
           className='nodrag tw-h-12 tw-w-full tw-rounded-br-md tw-rounded-tr-md  tw-p-2.5 tw-px-1 '
-          default={variableValue}
+          value={variableValue}
         >
           <option value='true'>True</option>
           <option value='false'>False</option>
@@ -106,6 +107,7 @@ const variableElem = (data, varName) => {
           className='nodrag nowheel tw-block tw-h-12 tw-w-full tw-rounded-bl-md tw-rounded-tl-md  tw-p-2.5'
           name='variable-value'
           placeholder={varName}
+          value={variableValue}
           onChange={(event) => {
             const updatedValue = event.target.value;
             if (!data.variables[varName]) {
@@ -133,6 +135,7 @@ const variableElem = (data, varName) => {
         onChange={handleInputTypeSelection}
         name='var-input-type'
         className='nodrag tw-h-8 tw-w-full tw-rounded-br-md tw-rounded-tr-md tw-border-l tw-border-l-neutral-500 tw-p-0 tw-px-1'
+        value={varType}
       >
         <option value='Select'>Select</option>
         <option value='String'>String</option>

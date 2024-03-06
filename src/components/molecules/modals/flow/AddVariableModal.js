@@ -2,7 +2,6 @@ import React, { useState, Fragment } from 'react';
 import Modal from 'components/molecules/modals/Modal';
 import { Dialog, Transition } from '@headlessui/react';
 import 'tippy.js/dist/tippy.css';
-import { useRequestNodeStore } from 'stores/flow/RequestNodeStore';
 
 const variableTypes = [
   {
@@ -23,10 +22,9 @@ const variableTypes = [
   },
 ];
 
-const AddVariableModal = ({ closeFn = () => null, open = false }) => {
+const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd }) => {
   const [variableName, setVariableName] = useState('');
   const [variableType, setVariableType] = useState('String');
-  const addToVariablesData = useRequestNodeStore((state) => state.addToVariablesData);
 
   return (
     <Modal open={open}>
@@ -72,8 +70,9 @@ const AddVariableModal = ({ closeFn = () => null, open = false }) => {
                       onChange={(e) => setVariableName(e.target.value)}
                     />
                     <select
-                      onClick={(event) => {
+                      onChange={(event) => {
                         const selectedValue = event.target.value;
+                        //console.log(`variable type selected: ${selectedValue}`);
                         setVariableType(selectedValue);
                       }}
                       name='var-input-type'
@@ -100,9 +99,9 @@ const AddVariableModal = ({ closeFn = () => null, open = false }) => {
                       className='tw-inline-flex tw-w-full tw-grow tw-basis-0 tw-justify-center tw-rounded-md tw-border tw-border-transparent tw-bg-green-100 tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-green-900 hover:tw-bg-green-400'
                       onClick={() => {
                         if (variableName.trim() != '') {
-                          console.log(`\n \n ${variableName} && ${variableType}`);
+                          // console.log(`Adding ${variableName} && ${variableType}`);
                           // setVariableModalData(variableName, variableType);
-                          addToVariablesData(variableName, variableType);
+                          onVariableAdd(variableName, variableType);
                         }
                         closeFn();
                       }}

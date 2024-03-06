@@ -14,7 +14,6 @@ const DelayNode = ({ data }) => {
   const handleDelayInMsInputChange = (event) => {
     event.preventDefault();
     const delayInMs = event.target.value;
-    console.log(`\n handleDelayInMsInputChange :: ${delayInMs} \n`);
     setValue(delayInMs);
   };
 

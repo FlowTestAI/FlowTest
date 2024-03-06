@@ -12,9 +12,9 @@ const Directory = ({ directory, depth }) => {
           <div
             className='tw-my-1 tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-rounded tw-bg-slate-100 tw-text-cyan-700 hover:tw-bg-cyan-950 hover:tw-text-white'
             onClick={(event) => {
-              console.log(JSON.stringify(event.target.dataset));
+              //console.log(JSON.stringify(event.target.dataset));
               const clickFrom = event.target.dataset?.clickFrom;
-              console.log(`Clicked on the DIRECTORY ITEM clickFrom ==>` + clickFrom);
+              //console.log(`Clicked on the DIRECTORY ITEM clickFrom ==>` + clickFrom);
               if (!clickFrom || clickFrom !== 'options-menu') {
                 return setIsExpanded((prev) => !prev);
               }

@@ -254,7 +254,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
         onDragOver={onDragOver}
         onNodeDragStop={() => setCanvasDirty()}
         isValidConnection={isValidConnection}
-        fitView
+        //fitView
       >
         <Controls>
           <ControlButton

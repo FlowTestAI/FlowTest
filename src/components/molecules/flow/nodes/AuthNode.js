@@ -28,17 +28,8 @@ const AuthNode = ({ data }) => {
   const handleSelection = (event) => {
     const selectedValue = event.target?.value;
     setAuth(selectedValue);
-  };
-
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = (authOption) => {
-    setAuth(authOption);
     data.auth = {};
-    data.auth.type = authOption;
-    setAnchorEl(null);
+    data.auth.type = selectedValue;
   };
 
   return (
@@ -55,7 +46,7 @@ const AuthNode = ({ data }) => {
           <select
             onChange={handleSelection}
             name='auth-type'
-            default={auth}
+            value={auth}
             className='tw-w-full tw-rounded-lg tw-border tw-border-neutral-500 tw-px-1 tw-py-2 tw-text-neutral-500 tw-outline-0 focus:tw-ring-0'
           >
             <option value='no-auth'>No Auth</option>
@@ -69,12 +60,14 @@ const AuthNode = ({ data }) => {
               placeholder={data.auth.username ? data.auth.username : 'Username'}
               className='nodrag nowheel  tw-mb-2 tw-block tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-bg-gray-50 tw-p-2.5 tw-text-sm tw-text-gray-900 tw-outline-blue-300 focus:tw-border-blue-100 focus:tw-ring-blue-100'
               name='username'
+              onChange={(e) => handleChange(e.target.value, 'username')}
             />
             <input
               type='password'
               placeholder={data.auth.password ? data.auth.password : 'Password'}
               className='nodrag nowheel tw-block tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-bg-gray-50 tw-p-2.5 tw-text-sm tw-text-gray-900 tw-outline-blue-300 focus:tw-border-blue-100 focus:tw-ring-blue-100'
               name='password'
+              onChange={(e) => handleChange(e.target.value, 'password')}
             />
           </div>
         )}

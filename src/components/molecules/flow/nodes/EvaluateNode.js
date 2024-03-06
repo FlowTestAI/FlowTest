@@ -154,7 +154,7 @@ const EvaluateNode = ({ data }) => {
       handleLeft={true}
       handleLeftData={{ type: 'target' }}
       handleRight={true}
-      handleRightData={{ type: 'source', id: '', styles: { bottom: 40, top: 'auto' } }}
+      handleRightData={{ type: 'source', id: 'true', styles: { bottom: 40, top: 'auto' } }}
     >
       <div className='tw-pb-2'>
         <div>

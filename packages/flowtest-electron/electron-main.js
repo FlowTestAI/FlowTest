@@ -21,6 +21,7 @@ function createWindow() {
     },
     title: 'FlowTestAI',
   });
+
   mainWindow.maximize();
 
   // and load the index.html of the app.

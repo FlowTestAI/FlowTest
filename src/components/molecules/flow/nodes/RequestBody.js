@@ -77,7 +77,7 @@ const RequestBody = ({ nodeData }) => {
     nodeData.requestBody.type = option;
     setBodyType(option);
 
-    console.log(`handleClose:: ${option}`);
+    //console.log(`handleClose:: ${option}`);
 
     if (option == 'raw-json') {
       nodeData.requestBody.body = jsonValue;
@@ -87,10 +87,6 @@ const RequestBody = ({ nodeData }) => {
       nodeData.requestBody.body.value = fileValue;
       nodeData.requestBody.body.name = fileName;
     }
-  };
-
-  const handleFileUploadClick = (event) => {
-    uploadFileForRequestNode.current.click();
   };
 
   return (
@@ -159,14 +155,15 @@ const RequestBody = ({ nodeData }) => {
           <div className='tw-py-2'>
             <button
               className='tw-flex tw-w-full tw-cursor-pointer tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-border tw-border-neutral-500 tw-bg-slate-100 tw-p-2 hover:tw-bg-slate-200'
-              onClick={handleFileUploadClick}
-              data-import-type='yaml'
+              onClick={() => {
+                uploadFileForRequestNode.current.click();
+              }}
             >
               <DocumentArrowUpIcon className='tw-h-4 tw-w-4 tw-text-center' />
               Upload File
               {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
               <div className='tw-hidden'>
-                <input type='file' id='file' ref={uploadFileForRequestNode} onChange={(e) => handleFileUpload(e)} />
+                <input type='file' id='file' ref={uploadFileForRequestNode} onChange={handleFileUpload} />
               </div>
             </button>
           </div>

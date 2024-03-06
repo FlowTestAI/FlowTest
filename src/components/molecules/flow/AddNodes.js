@@ -4,6 +4,7 @@ import { PlusIcon, MinusIcon } from '@heroicons/react/20/solid';
 import { Fragment } from 'react';
 import { Disclosure } from '@headlessui/react';
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
+import useCollectionStore from 'stores/CollectionStore';
 
 // ToDo: Move these constants to constants file/folder
 const requestNodes = [
@@ -49,7 +50,7 @@ const authNode = {
   type: 'authNode',
 };
 
-const AddNodes = () => {
+const AddNodes = ({ collectionId }) => {
   // const [open, setOpen] = useState(false);
   // const anchorRef = useRef(null);
   // const ps = useRef();
@@ -59,29 +60,8 @@ const AddNodes = () => {
     event.dataTransfer.effectAllowed = 'move';
   };
 
-  // Get All collections
-  const [savedCollections, setSavedCollections] = useState([]);
-
-  // useEffect(() => {
-  //   if (getAllCollectionsApi.data) {
-  //     const retrievedCollections = getAllCollectionsApi.data;
-  //     console.log('Got saved collections: ', retrievedCollections);
-  //     setSavedCollections(retrievedCollections);
-  //   } else if (getAllCollectionsApi.error) {
-  //     const error = getAllCollectionsApi.error;
-  //     if (!error.response) {
-  //       console.log('Failed to get saved collections: ', error);
-  //     } else {
-  //       const errorData = error.response.data || `${error.response.status}: ${error.response.statusText}`;
-  //       console.log('Failed to get saved collections: ', errorData);
-  //     }
-  //   }
-  // }, [getAllCollectionsApi.data, getAllCollectionsApi.error]);
-
-  // // Initialization
-  // useEffect(() => {
-  //   getAllCollectionsApi.request();
-  // }, []);
+  // Get all requests of this collections
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   return (
     <>
@@ -141,44 +121,42 @@ const AddNodes = () => {
                         )}
                       </Disclosure>
                       {/* Saved Collections */}
-                      {savedCollections && savedCollections.length > 0
-                        ? savedCollections.map((collection) => (
-                            <Disclosure as='div' key='collection.id'>
-                              {({ open }) => (
-                                <>
-                                  <Disclosure.Button className='tw-flex tw-w-full tw-justify-between tw-border-b tw-border-t tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-left tw-text-lg tw-font-medium hover:tw-bg-gray-100 focus:tw-outline-none focus-visible:tw-ring'>
-                                    <span>{collection.name}</span>
-                                    <ChevronUpIcon
-                                      className={`${open ? 'tw-rotate-180 tw-transform' : ''} tw-h-5 tw-w-5 `}
-                                    />
-                                  </Disclosure.Button>
-                                  <Disclosure.Panel className='tw-border-l tw-border-r tw-px-4 tw-pb-2 tw-pt-4 tw-text-sm'>
-                                    <div>
-                                      {JSON.parse(collection.nodes).map((node, index1) => (
-                                        <div
-                                          key={`${node.requestType} - ${node.operationId}`}
-                                          onDragStart={(event) => {
-                                            const newNode = {
-                                              ...node,
-                                              type: 'requestNode',
-                                            };
-                                            onDragStart(event, newNode);
-                                          }}
-                                          draggable
-                                          cursor='move'
-                                          className='tw-border-b tw-py-2'
-                                        >
-                                          <div className='primary-text tw-text-base tw-font-semibold'>{`${node.requestType} - ${node.operationId}`}</div>
-                                          <div className='secondary-text tw-text-xs'>{node.description}</div>
-                                        </div>
-                                      ))}
+                      {collection && (
+                        <Disclosure as='div' key='collection.id'>
+                          {({ open }) => (
+                            <>
+                              <Disclosure.Button className='tw-flex tw-w-full tw-justify-between tw-border-b tw-border-t tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-left tw-text-lg tw-font-medium hover:tw-bg-gray-100 focus:tw-outline-none focus-visible:tw-ring'>
+                                <span>{collection.name}</span>
+                                <ChevronUpIcon
+                                  className={`${open ? 'tw-rotate-180 tw-transform' : ''} tw-h-5 tw-w-5 `}
+                                />
+                              </Disclosure.Button>
+                              <Disclosure.Panel className='tw-border-l tw-border-r tw-px-4 tw-pb-2 tw-pt-4 tw-text-sm'>
+                                <div>
+                                  {JSON.parse(collection.nodes).map((node, index1) => (
+                                    <div
+                                      key={`${node.requestType} - ${node.operationId}`}
+                                      onDragStart={(event) => {
+                                        const newNode = {
+                                          ...node,
+                                          type: 'requestNode',
+                                        };
+                                        onDragStart(event, newNode);
+                                      }}
+                                      draggable
+                                      cursor='move'
+                                      className='tw-border-b tw-py-2'
+                                    >
+                                      <div className='primary-text tw-text-base tw-font-semibold'>{`${node.requestType} - ${node.operationId}`}</div>
+                                      <div className='secondary-text tw-text-xs'>{node.description}</div>
                                     </div>
-                                  </Disclosure.Panel>
-                                </>
-                              )}
-                            </Disclosure>
-                          ))
-                        : ''}
+                                  ))}
+                                </div>
+                              </Disclosure.Panel>
+                            </>
+                          )}
+                        </Disclosure>
+                      )}
                       {/* Output */}
                       <Disclosure as='div'>
                         {({ open }) => (

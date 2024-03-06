@@ -18,6 +18,17 @@ const readFile = require('../utils/filemanager/readfile');
 const collectionStore = new Collections();
 
 const registerRendererEventHandlers = (mainWindow, watcher) => {
+  ipcMain.handle('renderer:open-directory-selection-dialog', async (event, arg) => {
+    try {
+      const result = await dialog.showOpenDialog(mainWindow, {
+        properties: ['openDirectory'],
+      });
+      return result.filePaths[0];
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
   ipcMain.handle('renderer:browser-window-ready', async (event) => {
     const savedCollections = collectionStore.getAll();
 

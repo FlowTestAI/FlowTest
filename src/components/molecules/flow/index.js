@@ -1,9 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-
-// ReactFlow
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
-import { Handle, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 // css
@@ -25,24 +21,10 @@ import DelayNode from './nodes/DelayNode';
 // file system
 import AuthNode from './nodes/AuthNode';
 import { useTabStore } from 'stores/TabStore';
+import FlowNode from 'components/atoms/flow/FlowNode';
 
 const StartNode = () => (
-  <div
-    style={{
-      width: '150px',
-      borderRadius: '5px',
-      padding: '10px',
-      color: '#555',
-      border: '2px solid #ddd',
-      textAlign: 'center',
-      fontSize: '20px',
-      background: '#fff',
-      fontWeight: 'bold',
-    }}
-  >
-    <div>Start</div>
-    <Handle style={{}} type='source' position={Position.Right} />
-  </div>
+  <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
 );
 
 const Flow = ({ tabId, collectionId, flowData }) => {
@@ -272,7 +254,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
         onDragOver={onDragOver}
         onNodeDragStop={() => setCanvasDirty()}
         isValidConnection={isValidConnection}
-        fitView
+        //fitView
       >
         <Controls>
           <ControlButton

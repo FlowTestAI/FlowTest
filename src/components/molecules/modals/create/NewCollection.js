@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { InboxArrowDownIcon } from '@heroicons/react/20/solid';
 import Tippy from '@tippyjs/react';

@@ -1,47 +1,21 @@
-import * as React from 'react';
-
-// mui
-import {
-  Box,
-  TextField,
-  MenuItem,
-  Menu,
-  IconButton,
-  Divider,
-  Typography,
-  FormControl,
-  Button,
-  OutlinedInput,
-  InputAdornment,
-  FormHelperText,
-} from '@mui/material';
-
-import { grey } from '@mui/material/colors';
-
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { IconUpload } from '@tabler/icons-react';
+import React, { Fragment, useState, useRef } from 'react';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
+import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
+import { Menu, Transition } from '@headlessui/react';
 
 const requestBodyTypeOptions = ['None', 'form-data', 'raw-json', 'raw-txt'];
 
-const ITEM_HEIGHT = 48;
-
 const RequestBody = ({ nodeData }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [bodyType, setBodyType] = React.useState(nodeData.requestBody ? nodeData.requestBody.type : 'None');
-
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const uploadFileForRequestNode = useRef(null);
+  const [bodyType, setBodyType] = useState(nodeData.requestBody ? nodeData.requestBody.type : 'None');
 
   // form-data
-  const [fileName, setFileName] = React.useState(
+  const [fileName, setFileName] = useState(
     nodeData.requestBody && nodeData.requestBody.body && nodeData.requestBody.body.name
       ? nodeData.requestBody.body.name
       : '',
   );
-  const [fileValue, setFileValue] = React.useState(
+  const [fileValue, setFileValue] = useState(
     nodeData.requestBody && nodeData.requestBody.body && nodeData.requestBody.body.value
       ? nodeData.requestBody.body.name
       : '',
@@ -77,7 +51,7 @@ const RequestBody = ({ nodeData }) => {
     }
   };
 
-  const [fileKey, setFileKey] = React.useState(
+  const [fileKey, setFileKey] = useState(
     bodyType === 'form-data' && nodeData.requestBody && nodeData.requestBody.body ? nodeData.requestBody.body.key : '',
   );
   const handleFormDataKey = (e) => {
@@ -89,9 +63,10 @@ const RequestBody = ({ nodeData }) => {
   };
 
   // raw-json
-  const [jsonValue, setJsonValue] = React.useState(
+  const [jsonValue, setJsonValue] = useState(
     bodyType === 'raw-json' && nodeData.requestBody && nodeData.requestBody.body ? nodeData.requestBody.body : '{}',
   );
+
   const handleRawJson = (e) => {
     setJsonValue(e.target.value);
     nodeData.requestBody.body = e.target.value;
@@ -101,7 +76,8 @@ const RequestBody = ({ nodeData }) => {
     nodeData.requestBody = {};
     nodeData.requestBody.type = option;
     setBodyType(option);
-    setAnchorEl(null);
+
+    //console.log(`handleClose:: ${option}`);
 
     if (option == 'raw-json') {
       nodeData.requestBody.body = jsonValue;
@@ -115,112 +91,82 @@ const RequestBody = ({ nodeData }) => {
 
   return (
     <>
-      <Divider />
-      <Box sx={{ background: grey[100], p: 1 }}>
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-          <Typography
-            sx={{
-              fontWeight: 500,
-              textAlign: 'center',
-            }}
-          >
-            Body
-          </Typography>
-          <div>
-            <IconButton
-              aria-label='more'
-              id='long-button'
-              aria-controls={open ? 'long-menu' : undefined}
-              aria-expanded={open ? 'true' : undefined}
-              aria-haspopup='true'
-              onClick={handleClick}
+      <div className='tw-border-t tw-border-neutral-300 tw-bg-slate-100 tw-px-2 tw-py-4'>
+        <div className='tw-flex tw-items-center tw-justify-between tw-font-medium'>
+          <h3>Body</h3>
+          <Menu as='div' className='tw-relative tw-inline-block tw-text-left'>
+            <Menu.Button data-click-from='body-type-menu' className='tw-p-2'>
+              <EllipsisVerticalIcon className='tw-h-4 tw-w-4' aria-hidden='true' data-click-from='body-type-menu' />
+            </Menu.Button>
+            <Transition
+              as={Fragment}
+              enter='tw-transition tw-ease-out tw-duration-100'
+              enterFrom='tw-transform tw-opacity-0 tw-scale-95'
+              enterTo='tw-transform tw-opacity-100 tw-scale-100'
+              leave='tw-transition tw-ease-in tw-duration-75'
+              leaveFrom='tw-transform tw-opacity-100 tw-scale-100'
+              leaveTo='tw-transform tw-opacity-0 tw-scale-95'
             >
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              id='long-menu'
-              MenuListProps={{
-                'aria-labelledby': 'long-button',
-              }}
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              PaperProps={{
-                style: {
-                  maxHeight: ITEM_HEIGHT * 4.5,
-                  width: '20ch',
-                },
-              }}
-            >
-              {requestBodyTypeOptions.map((bodyTypeOption) => (
-                <MenuItem key={bodyTypeOption} onClick={() => handleClose(bodyTypeOption)}>
-                  {bodyTypeOption}
-                </MenuItem>
-              ))}
-            </Menu>
-          </div>
+              <Menu.Items
+                className='tw-focus:outline-none tw-absolute tw-right-0 tw-z-10 tw-mt-2 tw-w-56 tw-origin-top-right tw-divide-y tw-divide-gray-100 tw-rounded-md tw-bg-white tw-px-1 tw-py-1 tw-shadow-lg tw-ring-1 tw-ring-black/5'
+                data-click-from='body-type-menu'
+              >
+                {requestBodyTypeOptions.map((bodyTypeOption, index) => (
+                  <Menu.Item key={index} data-click-from='body-type-menu' onClick={() => handleClose(bodyTypeOption)}>
+                    <button
+                      className='tw-group tw-flex tw-w-full tw-items-center tw-rounded-md tw-px-2 tw-py-2 tw-text-sm tw-text-gray-900 hover:tw-bg-slate-100'
+                      data-click-from='body-type-menu'
+                    >
+                      {bodyTypeOption}
+                    </button>
+                  </Menu.Item>
+                ))}
+              </Menu.Items>
+            </Transition>
+          </Menu>
         </div>
-      </Box>
-      <Divider />
+      </div>
       {bodyType === 'raw-json' && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left' }}>
-          <Box style={{ width: 300, margin: 10, padding: 5 }}>
-            <TextField
-              id='outlined-multiline-static'
-              label={bodyType}
-              multiline
-              rows={4}
-              value={jsonValue}
-              fullWidth
-              className='nodrag nowheel'
-              onChange={(e) => handleRawJson(e)}
-              inputProps={{ style: { fontSize: 11 } }}
-            />
-          </Box>
+        <div className='tw-border tw-border-t tw-border-neutral-300 tw-bg-slate-50 tw-p-2'>
+          <textarea
+            placeholder={bodyType}
+            className='nodrag nowheel tw-w-full tw-p-2'
+            name='username'
+            onChange={(e) => handleRawJson(e)}
+            rows={4}
+            value={jsonValue}
+          />
         </div>
       )}
       {bodyType === 'form-data' && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left' }}>
-          <Box style={{ width: 300, margin: 10, padding: 5 }}>
-            <div>
-              <OutlinedInput
-                id='outlined-adornment-weight'
-                value={fileKey}
-                endAdornment={<InputAdornment position='end'>File</InputAdornment>}
-                aria-describedby='outlined-weight-helper-text'
-                inputProps={{
-                  'aria-label': 'weight',
-                }}
-                fullWidth
-                size='small'
-                className='nodrag nowheel'
-                onChange={(e) => handleFormDataKey(e)}
-              />
-              <FormHelperText id='outlined-weight-helper-text'>Key</FormHelperText>
+        <div className='tw-border-t tw-border-neutral-300 tw-bg-slate-50 tw-p-2'>
+          <div className='tw-flex tw-items-center tw-justify-between tw-rounded-md tw-border tw-border-neutral-500 tw-text-sm tw-text-neutral-500 tw-outline-0 focus:tw-ring-0'>
+            <input
+              placeholder='key'
+              className='nodrag nowheel tw-bg-slate-50 tw-pl-4'
+              name='variable-value'
+              onChange={(e) => handleFormDataKey(e)}
+              value={fileKey}
+            />
+            <div className='tw-rounded-br-md tw-rounded-tr-md tw-border-l tw-border-l-neutral-500 tw-px-4 tw-py-2'>
+              File
             </div>
-            <FormControl sx={{ mt: 1, width: '100%' }} size='small'>
-              <span
-                style={{
-                  fontSize: '0.9rem',
-                  fontStyle: 'italic',
-                  color: grey[800],
-                  marginBottom: '1rem',
-                }}
-              >
-                {fileName != '' ? fileName : 'Choose a file to upload'}
-              </span>
-              <Button
-                variant='outlined'
-                component='label'
-                fullWidth
-                startIcon={<IconUpload />}
-                sx={{ marginRight: '1rem' }}
-              >
-                {'Upload File'}
-                <input type='file' hidden onChange={(e) => handleFileUpload(e)} />
-              </Button>
-            </FormControl>
-          </Box>
+          </div>
+          <div className='tw-py-2'>
+            <button
+              className='tw-flex tw-w-full tw-cursor-pointer tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-border tw-border-neutral-500 tw-bg-slate-100 tw-p-2 hover:tw-bg-slate-200'
+              onClick={() => {
+                uploadFileForRequestNode.current.click();
+              }}
+            >
+              <DocumentArrowUpIcon className='tw-h-4 tw-w-4 tw-text-center' />
+              Upload File
+              {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
+              <div className='tw-hidden'>
+                <input type='file' id='file' ref={uploadFileForRequestNode} onChange={handleFileUpload} />
+              </div>
+            </button>
+          </div>
         </div>
       )}
     </>

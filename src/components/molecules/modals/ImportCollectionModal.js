@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, useRef } from 'react';
+import React, { Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'constants/ImportCollectionTypes';
@@ -25,19 +25,28 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
     importYamlFile.current.click();
   };
 
-  const handleOnChangeForImportYaml = (event) => {
-    // Un-comment following to read/console the content of the file
-    // const reader = new FileReader();
-    // reader.readAsText(file, 'UTF-8');
-    // reader.onload = (readerEvent) => {
-    //   const fileContent = readerEvent.target.result;
-    //   console.log('<== fileContent ==>');
-    //   console.log(fileContent);
-    // };
-    const file = event.target.files[0];
-    // input is yaml file path and directory path chosen by user
-    createCollection('/Users/sjain/Desktop/test.yaml', '/Users/sjain/Desktop');
+  const selectDirectory = () => {
+    const { ipcRenderer } = window;
+
+    return new Promise((resolve, reject) => {
+      ipcRenderer.invoke('renderer:open-directory-selection-dialog').then(resolve).catch(reject);
+    });
+  };
+
+  const handleFileSelection = async (event) => {
+    const yamlPath = event.target.files[0].path;
+
     closeFn();
+
+    // This solution will only work in Electron not in webapp
+
+    selectDirectory()
+      .then((dirPath) => {
+        createCollection(yamlPath, dirPath);
+      })
+      .catch((error) => {
+        console.log(`Failed to create collection: ${error}`);
+      });
   };
 
   return (
@@ -84,13 +93,15 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
                         <DocumentArrowUpIcon className='tw-h-4 tw-w-4' />
                         Import a YAML file
                         {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
-                        <input
-                          type='file'
-                          id='file'
-                          ref={importYamlFile}
-                          style={{ display: 'none' }}
-                          onChange={handleOnChangeForImportYaml}
-                        />
+                        <div className='tw-hidden'>
+                          <input
+                            type='file'
+                            id='file'
+                            accept='.yaml,.yml'
+                            ref={importYamlFile}
+                            onChange={handleFileSelection}
+                          />
+                        </div>
                       </li>
                       {/* For future refer */}
                       {/* <li className='tw-flex tw-cursor-pointer tw-items-center tw-justify-start tw-gap-2 tw-p-2 hover:tw-bg-slate-100'>

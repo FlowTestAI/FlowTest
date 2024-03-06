@@ -1,47 +1,12 @@
-import React, { useRef, useState, useEffect } from 'react';
-
-//mui
-import {
-  Fab,
-  Popper,
-  Fade,
-  Paper,
-  Typography,
-  Box,
-  Stack,
-  List,
-  ListItemButton,
-  ListItem,
-  ListItemText,
-  Divider,
-  Card,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-} from '@mui/material';
-import { blue, green } from '@mui/material/colors';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-// icons
-import { IconMinus, IconPlus } from '@tabler/icons-react';
-
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import React, { useState } from 'react';
+import { Popover, Transition } from '@headlessui/react';
+import { PlusIcon, MinusIcon } from '@heroicons/react/20/solid';
+import { Fragment } from 'react';
+import { Disclosure } from '@headlessui/react';
+import { ChevronUpIcon } from '@heroicons/react/20/solid';
 import useCollectionStore from 'stores/CollectionStore';
 
-const fabStyle = {
-  position: 'absolute',
-  bottom: 20,
-  right: 15,
-};
-
-const fabGreenStyle = {
-  color: 'common.white',
-  bgcolor: blue[500],
-  '&:hover': {
-    bgcolor: blue[600],
-  },
-};
-
+// ToDo: Move these constants to constants file/folder
 const requestNodes = [
   {
     requestType: 'GET',
@@ -86,246 +51,212 @@ const authNode = {
 };
 
 const AddNodes = ({ collectionId }) => {
-  const [open, setOpen] = useState(false);
-  const anchorRef = useRef(null);
-  const ps = useRef();
+  // const [open, setOpen] = useState(false);
+  // const anchorRef = useRef(null);
+  // const ps = useRef();
 
   const onDragStart = (event, node) => {
     event.dataTransfer.setData('application/reactflow', JSON.stringify(node));
     event.dataTransfer.effectAllowed = 'move';
   };
 
-  const collections = useCollectionStore((state) => state.collections);
-  const collection = collections.find((c) => c.id === collectionId);
+  // Get all requests of this collections
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   return (
     <>
-      <Fab
-        color='inherit'
-        aria-label='Add'
-        title='Add Node'
-        sx={{ ...fabStyle, ...fabGreenStyle }}
-        onClick={() => setOpen(!open)}
-        ref={anchorRef}
-      >
-        {open ? <IconMinus /> : <IconPlus />}
-      </Fab>
-      <Popper
-        open={open}
-        anchorEl={anchorRef.current}
-        placement='top'
-        transition
-        disablePortal
-        popperOptions={{
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                offset: [-40, 14],
-              },
-            },
-          ],
-        }}
-        sx={{ zIndex: 1000 }}
-      >
-        {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={350}>
-            <Paper>
-              <Card elevation={16}>
-                <Box sx={{ p: 2 }}>
-                  <Stack>
-                    <Typography variant='h6' align='center'>
-                      Add Nodes
-                    </Typography>
-                  </Stack>
-                </Box>
-                <PerfectScrollbar
-                  containerRef={(el) => {
-                    ps.current = el;
-                  }}
-                  style={{ height: '100%', maxHeight: 'calc(100vh - 320px)', overflowX: 'hidden' }}
-                >
-                  <Box sx={{ p: 2 }}>
-                    <List
-                      sx={{
-                        width: '100%',
-                        maxWidth: 370,
-                        borderRadius: '10px',
-                        padding: '16px',
-                        '& .MuiListItemSecondaryAction-root': {
-                          top: 22,
-                        },
-                        '& .MuiDivider-root': {
-                          my: 0,
-                        },
-                        '& .list-container': {
-                          pl: 7,
-                        },
-                      }}
-                    >
-                      <Accordion key='requests' disableGutters>
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          aria-controls='panel1a-content'
-                          id='panel1a-header'
-                        >
-                          <Typography variant='h7'>Requests</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          {requestNodes.map((node, index) => (
-                            <div
-                              key={`${node.requestType}-${index}`}
-                              onDragStart={(event) => onDragStart(event, node)}
-                              draggable
-                              cursor='move'
-                            >
-                              <ListItemButton>
-                                <ListItem alignItems='center'>
-                                  <ListItemText
-                                    sx={{ ml: 1 }}
-                                    primary={node.requestType}
-                                    secondary={node.description}
-                                  />
-                                </ListItem>
-                              </ListItemButton>
-                              {index === requestNodes.length - 1 ? null : <Divider />}
-                            </div>
-                          ))}
-                        </AccordionDetails>
-                      </Accordion>
-                      {collection != undefined && (
-                        <Accordion key={collection.id} disableGutters>
-                          <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls={`panel1a-content-${collection.id}`}
-                            id={`panel1a-header-${collection.id}`}
-                          >
-                            <Typography variant='h7'>{collection.name}</Typography>
-                          </AccordionSummary>
-                          <AccordionDetails>
-                            {JSON.parse(collection.nodes).map((node, index1) => (
+      <div className='tw-absolute tw-bottom-4 tw-right-4 tw-z-[2000] tw-max-w-sm tw-px-4 '>
+        <Popover className='tw-relative'>
+          {({ open }) => (
+            <>
+              <Popover.Button className='tw-group tw-inline-flex tw-items-center tw-rounded-full tw-bg-orange-700 tw-p-3 tw-text-base tw-font-medium tw-text-white hover:tw-text-white focus:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-white/75'>
+                {open ? (
+                  <MinusIcon
+                    className='tw-h-8 tw-w-8 tw-transition tw-duration-300 tw-ease-in-out'
+                    aria-hidden='true'
+                  />
+                ) : (
+                  <PlusIcon className='tw-h-8 tw-w-8 tw-transition tw-duration-300 tw-ease-in-out' aria-hidden='true' />
+                )}
+              </Popover.Button>
+              <Transition
+                as={Fragment}
+                enter='transition ease-out duration-200'
+                enterFrom='opacity-0 translate-y-1'
+                enterTo='opacity-100 translate-y-0'
+                leave='transition ease-in duration-150'
+                leaveFrom='opacity-100 translate-y-0'
+                leaveTo='opacity-0 translate-y-1'
+              >
+                <Popover.Panel className='tw-absolute tw-bottom-full tw-w-screen tw-max-w-sm tw-translate-x-[-90%] tw-transform tw-rounded-lg tw-bg-white tw-shadow-2xl'>
+                  <>
+                    <div className='tw-mx-auto tw-max-h-[60vh] tw-w-full tw-max-w-md tw-overflow-scroll tw-rounded-2xl tw-p-2'>
+                      <h3 className='tw-border-[rgba(128, 128, 128, 0.35)] tw-border-b tw-pb-4 tw-text-center tw-text-lg tw-font-semibold tw-text-gray-900'>
+                        Add Nodes
+                      </h3>
+                      {/* Requests */}
+                      <Disclosure as='div' className='tw-mt-4'>
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button className='tw-flex tw-w-full tw-justify-between tw-border-b tw-border-t tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-left tw-text-lg tw-font-medium hover:tw-bg-gray-100 focus:tw-outline-none focus-visible:tw-ring'>
+                              <span>Requests</span>
+                              <ChevronUpIcon className={`${open ? 'tw-rotate-180 tw-transform' : ''} tw-h-5 tw-w-5`} />
+                            </Disclosure.Button>
+
+                            <Disclosure.Panel className='tw-border-l tw-border-r tw-px-4 tw-pb-2 tw-pt-4 tw-text-sm'>
+                              {requestNodes.map((node, index) => (
+                                <div
+                                  key={`${node.requestType}-${index}`}
+                                  onDragStart={(event) => onDragStart(event, node)}
+                                  draggable
+                                  cursor='move'
+                                  className='tw-border-b tw-py-2'
+                                >
+                                  <div className='primary-text tw-text-base tw-font-semibold'>{node.requestType}</div>
+                                  <div className='secondary-text tw-text-xs'>{node.description}</div>
+                                </div>
+                              ))}
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                      {/* Saved Collections */}
+                      {collection && (
+                        <Disclosure as='div' key='collection.id'>
+                          {({ open }) => (
+                            <>
+                              <Disclosure.Button className='tw-flex tw-w-full tw-justify-between tw-border-b tw-border-t tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-left tw-text-lg tw-font-medium hover:tw-bg-gray-100 focus:tw-outline-none focus-visible:tw-ring'>
+                                <span>{collection.name}</span>
+                                <ChevronUpIcon
+                                  className={`${open ? 'tw-rotate-180 tw-transform' : ''} tw-h-5 tw-w-5 `}
+                                />
+                              </Disclosure.Button>
+                              <Disclosure.Panel className='tw-border-l tw-border-r tw-px-4 tw-pb-2 tw-pt-4 tw-text-sm'>
+                                <div>
+                                  {JSON.parse(collection.nodes).map((node, index1) => (
+                                    <div
+                                      key={`${node.requestType} - ${node.operationId}`}
+                                      onDragStart={(event) => {
+                                        const newNode = {
+                                          ...node,
+                                          type: 'requestNode',
+                                        };
+                                        onDragStart(event, newNode);
+                                      }}
+                                      draggable
+                                      cursor='move'
+                                      className='tw-border-b tw-py-2'
+                                    >
+                                      <div className='primary-text tw-text-base tw-font-semibold'>{`${node.requestType} - ${node.operationId}`}</div>
+                                      <div className='secondary-text tw-text-xs'>{node.description}</div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </Disclosure.Panel>
+                            </>
+                          )}
+                        </Disclosure>
+                      )}
+                      {/* Output */}
+                      <Disclosure as='div'>
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button className='tw-flex tw-w-full tw-justify-between tw-border-b tw-border-t tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-left tw-text-lg tw-font-medium hover:tw-bg-gray-100 focus:tw-outline-none focus-visible:tw-ring'>
+                              <span>Output</span>
+                              <ChevronUpIcon className={`${open ? 'tw-rotate-180 tw-transform' : ''} tw-h-5 tw-w-5 `} />
+                            </Disclosure.Button>
+                            <Disclosure.Panel className='tw-border-l tw-border-r tw-px-4 tw-pb-2 tw-pt-4 tw-text-sm'>
                               <div
-                                key={`${node.requestType} - ${node.operationId}`}
-                                onDragStart={(event) => {
-                                  const newNode = {
-                                    ...node,
-                                    type: 'requestNode',
-                                  };
-                                  onDragStart(event, newNode);
-                                }}
+                                key='output'
+                                onDragStart={(event) => onDragStart(event, outputNode)}
                                 draggable
                                 cursor='move'
+                                className='tw-border-b tw-py-2'
                               >
-                                <ListItemButton>
-                                  <ListItem alignItems='center'>
-                                    <ListItemText
-                                      sx={{ ml: 1 }}
-                                      primary={`${node.requestType} - ${node.operationId}`}
-                                      secondary={node.description}
-                                    />
-                                  </ListItem>
-                                </ListItemButton>
-                                {index1 === JSON.parse(collection.nodes).length - 1 ? null : <Divider />}
+                                <div className='primary-text tw-text-base tw-font-semibold'>Output</div>
+                                <div className='secondary-text tw-text-xs'>{outputNode.description}</div>
                               </div>
-                            ))}
-                          </AccordionDetails>
-                        </Accordion>
-                      )}
-                      <Accordion key='output' disableGutters>
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          aria-controls='panel1a-content-output'
-                          id='panel1a-header-output'
-                        >
-                          <Typography variant='h7'>Output</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <div
-                            key='output'
-                            onDragStart={(event) => onDragStart(event, outputNode)}
-                            draggable
-                            cursor='move'
-                          >
-                            <ListItemButton>
-                              <ListItem alignItems='center'>
-                                <ListItemText sx={{ ml: 1 }} primary='Output' secondary={outputNode.description} />
-                              </ListItem>
-                            </ListItemButton>
-                          </div>
-                        </AccordionDetails>
-                      </Accordion>
-                      <Accordion key='evaluate' disableGutters>
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          aria-controls='panel1a-content-output'
-                          id='panel1a-header-output'
-                        >
-                          <Typography variant='h7'>Evaluate</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <div
-                            key='evaluate'
-                            onDragStart={(event) => onDragStart(event, evaluateNode)}
-                            draggable
-                            cursor='move'
-                          >
-                            <ListItemButton>
-                              <ListItem alignItems='center'>
-                                <ListItemText sx={{ ml: 1 }} primary='Evaluate' secondary={evaluateNode.description} />
-                              </ListItem>
-                            </ListItemButton>
-                          </div>
-                        </AccordionDetails>
-                      </Accordion>
-                      <Accordion key='delay' disableGutters>
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          aria-controls='panel1a-content-output'
-                          id='panel1a-header-output'
-                        >
-                          <Typography variant='h7'>Delay</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <div
-                            key='delay'
-                            onDragStart={(event) => onDragStart(event, delayNode)}
-                            draggable
-                            cursor='move'
-                          >
-                            <ListItemButton>
-                              <ListItem alignItems='center'>
-                                <ListItemText sx={{ ml: 1 }} primary='Delay' secondary={delayNode.description} />
-                              </ListItem>
-                            </ListItemButton>
-                          </div>
-                        </AccordionDetails>
-                      </Accordion>
-                      <Accordion key='auth' disableGutters>
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          aria-controls='panel1a-content-output'
-                          id='panel1a-header-output'
-                        >
-                          <Typography variant='h7'>Authentication</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <div key='auth' onDragStart={(event) => onDragStart(event, authNode)} draggable cursor='move'>
-                            <ListItemButton>
-                              <ListItem alignItems='center'>
-                                <ListItemText sx={{ ml: 1 }} primary='Auth' secondary={authNode.description} />
-                              </ListItem>
-                            </ListItemButton>
-                          </div>
-                        </AccordionDetails>
-                      </Accordion>
-                    </List>
-                  </Box>
-                </PerfectScrollbar>
-              </Card>
-            </Paper>
-          </Fade>
-        )}
-      </Popper>
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                      {/* Evaluate */}
+                      <Disclosure as='div'>
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button className='tw-flex tw-w-full tw-justify-between tw-border-b tw-border-t tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-left tw-text-lg tw-font-medium hover:tw-bg-gray-100 focus:tw-outline-none focus-visible:tw-ring'>
+                              <span>Evaluate</span>
+                              <ChevronUpIcon className={`${open ? 'tw-rotate-180 tw-transform' : ''} tw-h-5 tw-w-5 `} />
+                            </Disclosure.Button>
+                            <Disclosure.Panel className='tw-border-l tw-border-r tw-px-4 tw-pb-2 tw-pt-4 tw-text-sm'>
+                              <div
+                                key='evaluate'
+                                onDragStart={(event) => onDragStart(event, evaluateNode)}
+                                draggable
+                                cursor='move'
+                                className='tw-border-b tw-py-2'
+                              >
+                                <div className='primary-text tw-text-base tw-font-semibold'>Evaluate</div>
+                                <div className='secondary-text tw-text-xs'>{evaluateNode.description}</div>
+                              </div>
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                      {/* Delay */}
+                      <Disclosure as='div'>
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button className='tw-flex tw-w-full tw-justify-between tw-border-b tw-border-t tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-left tw-text-lg tw-font-medium hover:tw-bg-gray-100 focus:tw-outline-none focus-visible:tw-ring'>
+                              <span>Delay</span>
+                              <ChevronUpIcon className={`${open ? 'tw-rotate-180 tw-transform' : ''} tw-h-5 tw-w-5 `} />
+                            </Disclosure.Button>
+                            <Disclosure.Panel className='tw-border-l tw-border-r tw-px-4 tw-pb-2 tw-pt-4 tw-text-sm'>
+                              <div
+                                key='delay'
+                                onDragStart={(event) => onDragStart(event, delayNode)}
+                                draggable
+                                cursor='move'
+                                className='tw-border-b tw-py-2'
+                              >
+                                <div className='primary-text tw-text-base tw-font-semibold'>Delay</div>
+                                <div className='secondary-text tw-text-xs'>{delayNode.description}</div>
+                              </div>
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                      {/* Authentication */}
+                      <Disclosure as='div'>
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button className='tw-flex tw-w-full tw-justify-between tw-border-b tw-border-t tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-left tw-text-lg tw-font-medium hover:tw-bg-gray-100 focus:tw-outline-none focus-visible:tw-ring'>
+                              <span>Authentication</span>
+                              <ChevronUpIcon className={`${open ? 'tw-rotate-180 tw-transform' : ''} tw-h-5 tw-w-5 `} />
+                            </Disclosure.Button>
+                            <Disclosure.Panel className='tw-border-l tw-border-r tw-px-4 tw-pb-2 tw-pt-4 tw-text-sm'>
+                              <div
+                                key='auth'
+                                onDragStart={(event) => onDragStart(event, authNode)}
+                                draggable
+                                cursor='move'
+                                className='tw-border-b tw-py-2'
+                              >
+                                <div className='primary-text tw-text-base tw-font-semibold'>Auth</div>
+                                <div className='secondary-text tw-text-xs'>{authNode.description}</div>
+                              </div>
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                    </div>
+                  </>
+                </Popover.Panel>
+              </Transition>
+            </>
+          )}
+        </Popover>
+      </div>
     </>
   );
 };

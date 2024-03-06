@@ -184,7 +184,6 @@ export const readFlowTest = (pathname, collectionId) => {
 
 // rename flowtest
 // tab id is flowtest id, so when rename event happens
-
 export const updateFlowTest = (pathname, flowData, collectionId) => {
   const { ipcRenderer } = window;
 

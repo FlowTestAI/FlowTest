@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 const { ipcMain, shell, dialog, app } = require('electron');
 const SwaggerParser = require('@apidevtools/swagger-parser');
 const JsonRefs = require('json-refs');
@@ -16,6 +17,22 @@ const { flowDataToReadableData, readableDataToFlowData } = require('../utils/par
 const readFile = require('../utils/filemanager/readfile');
 
 const collectionStore = new Collections();
+
+const timeout = 60000;
+
+const newAbortSignal = () => {
+  const abortController = new AbortController();
+  setTimeout(() => abortController.abort(), timeout || 0);
+
+  return abortController.signal;
+};
+
+/** web platform: blob. */
+const convertBase64ToBlob = async (base64) => {
+  const response = await fetch(base64);
+  const blob = await response.blob();
+  return blob;
+};
 
 const registerRendererEventHandlers = (mainWindow, watcher) => {
   ipcMain.handle('renderer:open-directory-selection-dialog', async (event, arg) => {
@@ -187,6 +204,47 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
       console.log(`Delete file: ${pathname}`);
     } catch (error) {
       return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:run-http-request', async (event, request) => {
+    try {
+      if (request.headers['Content-type'] === 'multipart/form-data') {
+        const requestData = new FormData();
+        const file = await convertBase64ToBlob(request.data.value);
+        requestData.append(request.data.key, file, request.data.name);
+
+        request.data = requestData;
+      }
+
+      // assuming 'application/json' type
+      const options = {
+        ...request,
+        signal: newAbortSignal(),
+      };
+
+      const result = await axios(options);
+      return {
+        status: result.status,
+        statusText: result.statusText,
+        data: result.data,
+      };
+    } catch (error) {
+      if (error?.response) {
+        return {
+          error: {
+            status: error.response.status,
+            statusText: error.response.statusText,
+            data: error.response.data,
+          },
+        };
+      } else {
+        return {
+          error: {
+            message: 'An unknown error occurred while running the request',
+          },
+        };
+      }
     }
   });
 };

@@ -3,16 +3,15 @@ import Operators from '../constants/operators.js';
 // assumption is that apis are giving json as output
 
 class Graph {
-  constructor(nodes, edges, onGraphComplete, authKey, runRequest) {
+  constructor(nodes, edges, onGraphComplete) {
     this.nodes = nodes;
     this.edges = edges;
     this.onGraphComplete = onGraphComplete;
-    this.authKey = authKey;
-    this.runRequest = runRequest;
     this.logs = [];
     this.timeout = 60000; // 1m timeout
     this.startTime = Date.now();
     this.graphRunNodeOutput = {};
+    this.auth = undefined;
   }
 
   #checkTimeout() {
@@ -54,11 +53,13 @@ class Graph {
         'Content-type': contentType,
       },
       data: requestData,
-      auth: {
-        username: this.authKey ? this.authKey.accessId : '',
-        password: this.authKey ? this.authKey.accessKey : '',
-      },
     };
+
+    if (this.auth.type === 'basic-auth') {
+      options.auth = {};
+      options.auth.username = this.auth.username;
+      options.auth.password = this.auth.password;
+    }
 
     this.logs.push(`${restMethod} ${finalUrl}`);
     return options;
@@ -115,55 +116,41 @@ class Graph {
     return evalVariables;
   }
 
+  #runHttpRequest(request) {
+    const { ipcRenderer } = window;
+
+    return new Promise((resolve, reject) => {
+      ipcRenderer.invoke('renderer:run-http-request', request).then(resolve).catch(reject);
+    });
+  }
+
   async #computeRequestNode(node, prevNodeOutputData) {
-    try {
-      // step1 evaluate variables of this node
-      const evalVariables = this.#computeNodeVariables(node.data.variables, prevNodeOutputData);
+    // step1 evaluate variables of this node
+    const evalVariables = this.#computeNodeVariables(node.data.variables, prevNodeOutputData);
 
-      // step2 replace variables in url with value
-      let finalUrl = node.data.url;
-      Object.entries(evalVariables).map(([vname, vvalue], index) => {
-        finalUrl = finalUrl.replace(`{${vname}}`, vvalue);
-      });
+    // step2 replace variables in url with value
+    let finalUrl = node.data.url;
+    Object.entries(evalVariables).map(([vname, vvalue], index) => {
+      finalUrl = finalUrl.replace(`{${vname}}`, vvalue);
+    });
 
-      // step 3
-      const options = this.#formulateRequest(node, finalUrl);
+    // step 3
+    const options = this.#formulateRequest(node, finalUrl);
 
-      console.debug('Evaluated variables: ', evalVariables);
-      console.debug('Evaluated Url: ', finalUrl);
-      //const res = await axios(options);
-      const res = await this.runRequest(JSON.stringify(options));
-      this.logs.push(`Request successful: ${JSON.stringify(res.data)}`);
-      console.debug('Response: ', res);
-      return ['Success', node, res];
-    } catch (error) {
+    console.debug('Evaluated variables: ', evalVariables);
+    console.debug('Evaluated Url: ', finalUrl);
+
+    const res = await this.#runHttpRequest(options);
+
+    if (res.error) {
       console.debug('Failure at node: ', node);
-      console.debug('Error encountered: ', error);
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.debug(error.response.data);
-        console.debug(error.response.status);
-        console.debug(error.response.headers);
-        this.logs.push(
-          `Request failed. Status: ${error.response.status}, Data: ${JSON.stringify(error.response.data)}`,
-        );
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.debug('Response: ', error.request);
-        this.logs.push(`Request failed: ${error.request}`);
-      } else if (error.message) {
-        // Something happened in setting up the request that triggered an Error
-        console.debug('Response: ', error.message);
-        this.logs.push(`Request failed: ${error.message}`);
-      } else {
-        // Something not related to axios request
-        console.debug('Failure: ', error);
-        this.logs.push(`Request failed: ${error}`);
-      }
-      return ['Failed', node, error];
+      console.debug('Error encountered: ', JSON.stringify(res.error));
+      this.logs.push(`Request failed: ${JSON.stringify(res.error)}`);
+      return ['Failed', node, res.error];
+    } else {
+      this.logs.push(`Request successful: ${JSON.stringify(res)}`);
+      console.debug('Response: ', JSON.stringify(res));
+      return ['Success', node, res];
     }
   }
 
@@ -257,6 +244,11 @@ class Graph {
         result = ['Success', node, prevNodeOutput];
       }
 
+      if (node.type === 'authNode') {
+        this.auth = node.data.auth;
+        result = ['Success', node, prevNodeOutput];
+      }
+
       if (node.type === 'requestNode') {
         result = await this.#computeRequestNode(node, prevNodeOutputData);
       }
@@ -278,7 +270,7 @@ class Graph {
       if (connectingEdge != undefined) {
         const nextNode = this.nodes.find(
           (node) =>
-            ['requestNode', 'outputNode', 'evaluateNode', 'delayNode'].includes(node.type) &&
+            ['requestNode', 'outputNode', 'evaluateNode', 'delayNode', 'authNode'].includes(node.type) &&
             node.id === connectingEdge.target,
         );
         this.graphRunNodeOutput[node.id] = result[2] && result[2].data ? result[2].data : {};
@@ -298,7 +290,6 @@ class Graph {
     });
     this.graphRunNodeOutput = {};
 
-    console.debug('Using authkey: ', this.authKey);
     this.logs.push('Start Flowtest');
     const startNode = this.nodes.find((node) => node.type === 'startNode');
     if (startNode == undefined) {

@@ -260,13 +260,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
           <ControlButton
             onClick={() => {
               runnableEdges(true);
-              const g = new Graph(
-                reactFlowInstance.getNodes(),
-                reactFlowInstance.getEdges(),
-                onGraphComplete,
-                { accessId: '', accessKey: '' },
-                undefined,
-              );
+              const g = new Graph(reactFlowInstance.getNodes(), reactFlowInstance.getEdges(), onGraphComplete);
               g.run();
             }}
             title='run'

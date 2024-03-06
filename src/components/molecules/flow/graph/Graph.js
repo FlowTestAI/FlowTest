@@ -1,6 +1,7 @@
-import Operators from '../constants/operators.js';
-
 // assumption is that apis are giving json as output
+
+import { computeEvaluateNode } from './compute/evaluatenode';
+import { computeRequestNode } from './compute/requestnode';
 
 class Graph {
   constructor(nodes, edges, onGraphComplete) {
@@ -16,165 +17,6 @@ class Graph {
 
   #checkTimeout() {
     return Date.now() - this.startTime > this.timeout;
-  }
-
-  #formulateRequest(node, finalUrl) {
-    let restMethod = node.data.requestType.toLowerCase();
-    let contentType = 'application/json';
-    let requestData = undefined;
-
-    if (restMethod === 'get') {
-      if (node.data.requestBody) {
-        if (node.data.requestBody.type === 'raw-json') {
-          contentType = 'application/json';
-          requestData = node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}');
-        }
-      }
-    } else if (restMethod === 'post' || restMethod === 'put') {
-      if (node.data.requestBody) {
-        if (node.data.requestBody.type === 'form-data') {
-          contentType = 'multipart/form-data';
-          requestData = {
-            key: node.data.requestBody.body.key,
-            value: node.data.requestBody.body.value,
-            name: node.data.requestBody.body.name,
-          };
-        } else if (node.data.requestBody.type === 'raw-json') {
-          contentType = 'application/json';
-          requestData = node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}');
-        }
-      }
-    }
-
-    const options = {
-      method: restMethod,
-      url: finalUrl,
-      headers: {
-        'Content-type': contentType,
-      },
-      data: requestData,
-    };
-
-    if (this.auth.type === 'basic-auth') {
-      options.auth = {};
-      options.auth.username = this.auth.username;
-      options.auth.password = this.auth.password;
-    }
-
-    this.logs.push(`${restMethod} ${finalUrl}`);
-    return options;
-  }
-
-  #computeNodeVariable(variable, prevNodeOutputData) {
-    if (variable.type.toLowerCase() === 'string') {
-      return variable.value;
-    }
-
-    if (variable.type.toLowerCase() === 'number') {
-      return variable.value;
-    }
-
-    if (variable.type.toLowerCase() === 'bool') {
-      return Boolean(variable.value);
-    }
-
-    if (variable.type.toLowerCase() === 'select') {
-      if (prevNodeOutputData == undefined || Object.keys(prevNodeOutputData).length === 0) {
-        this.logs.push(
-          `Cannot evaluate variable ${variable} as previous node output data ${JSON.stringify(prevNodeOutputData)} is empty`,
-        );
-        throw 'Error evaluating node variables';
-      }
-      const jsonTree = variable.value.split('.');
-      const getVal = (parent, pos) => {
-        if (pos == jsonTree.length) {
-          return parent;
-        }
-        const key = jsonTree[pos];
-        if (key == '') {
-          return parent;
-        }
-
-        return getVal(parent[key], pos + 1);
-      };
-      const result = getVal(prevNodeOutputData, 0);
-      if (result == undefined) {
-        this.logs.push(
-          `Cannot evaluate variable ${JSON.stringify(variable)} as previous node output data ${JSON.stringify(prevNodeOutputData)} did not contain the variable`,
-        );
-        throw 'Error evaluating node variables';
-      }
-      return result;
-    }
-  }
-
-  #computeNodeVariables(variables, prevNodeOutputData) {
-    let evalVariables = {};
-    Object.entries(variables).map(([vname, variable], index) => {
-      evalVariables[vname] = this.#computeNodeVariable(variable, prevNodeOutputData);
-    });
-    return evalVariables;
-  }
-
-  #runHttpRequest(request) {
-    const { ipcRenderer } = window;
-
-    return new Promise((resolve, reject) => {
-      ipcRenderer.invoke('renderer:run-http-request', request).then(resolve).catch(reject);
-    });
-  }
-
-  async #computeRequestNode(node, prevNodeOutputData) {
-    // step1 evaluate variables of this node
-    const evalVariables = this.#computeNodeVariables(node.data.variables, prevNodeOutputData);
-
-    // step2 replace variables in url with value
-    let finalUrl = node.data.url;
-    Object.entries(evalVariables).map(([vname, vvalue], index) => {
-      finalUrl = finalUrl.replace(`{${vname}}`, vvalue);
-    });
-
-    // step 3
-    const options = this.#formulateRequest(node, finalUrl);
-
-    console.debug('Evaluated variables: ', evalVariables);
-    console.debug('Evaluated Url: ', finalUrl);
-
-    const res = await this.#runHttpRequest(options);
-
-    if (res.error) {
-      console.debug('Failure at node: ', node);
-      console.debug('Error encountered: ', JSON.stringify(res.error));
-      this.logs.push(`Request failed: ${JSON.stringify(res.error)}`);
-      return ['Failed', node, res.error];
-    } else {
-      this.logs.push(`Request successful: ${JSON.stringify(res)}`);
-      console.debug('Response: ', JSON.stringify(res));
-      return ['Success', node, res];
-    }
-  }
-
-  #computeEvaluateNode(node, prevNodeOutputData) {
-    const evalVariables = this.#computeNodeVariables(node.data.variables, prevNodeOutputData);
-    const var1 = evalVariables.var1;
-    const var2 = evalVariables.var2;
-
-    const operator = node.data.operator;
-    if (operator == undefined) {
-      throw 'Operator undefined';
-    }
-    this.logs.push(
-      `Evaluate var1: ${JSON.stringify(var1)} of type: ${typeof var1}, var2: ${JSON.stringify(var2)} of type: ${typeof var2} with operator: ${operator}`,
-    );
-    if (operator == Operators.isEqualTo) {
-      return var1 === var2;
-    } else if (operator == Operators.isNotEqualTo) {
-      return var1 != var2;
-    } else if (operator == Operators.isGreaterThan) {
-      return var1 > var2;
-    } else if (operator == Operators.isLessThan) {
-      return var1 < var2;
-    }
   }
 
   #computeConnectingEdge(node, result) {
@@ -225,7 +67,7 @@ class Graph {
       }
 
       if (node.type === 'evaluateNode') {
-        if (this.#computeEvaluateNode(node, prevNodeOutputData)) {
+        if (computeEvaluateNode(node, prevNodeOutputData, this.logs)) {
           this.logs.push('Result: true');
           result = ['Success', node, prevNodeOutput, true];
         } else {
@@ -250,7 +92,7 @@ class Graph {
       }
 
       if (node.type === 'requestNode') {
-        result = await this.#computeRequestNode(node, prevNodeOutputData);
+        result = await computeRequestNode(node, prevNodeOutputData, this.auth, this.logs);
       }
 
       if (this.#checkTimeout()) {
@@ -308,6 +150,7 @@ class Graph {
         }
         this.logs.push('End Flowtest');
         this.logs.push(`Total time: ${Date.now() - this.startTime} ms`);
+        console.log(this.logs);
         this.onGraphComplete(result, this.logs);
       });
     } else {

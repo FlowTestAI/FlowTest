@@ -8,19 +8,19 @@ import 'tippy.js/dist/tippy.css';
 
 const WorkspaceContentHeader = () => {
   return (
-    <div className='tw-border-[rgba(128, 128, 128, 0.35)] tw-flex tw-items-center tw-justify-between tw-gap-4 tw-border-b tw-px-6 tw-py-2'>
+    <div className='flex items-center justify-between gap-4 px-6 py-2 border-b border-neutral-300'>
       <EditableTextItem initialText='Untitled Flow' />
-      <div className='tw-flex tw-items-center tw-justify-between tw-gap-x-4'>
+      <div className='flex items-center justify-between gap-x-4'>
         <SelectAuthKeys />
         <SaveFlowModal />
         <button>
           <Tippy content='Coming Soon!' placement='top'>
-            <DocumentArrowDownIcon className='tw-h-5 tw-w-5' />
+            <DocumentArrowDownIcon className='w-5 h-5' />
           </Tippy>
         </button>
         <button>
           <Tippy content='Coming Soon!' placement='top'>
-            <DocumentArrowUpIcon className='tw-h-5 tw-w-5' />
+            <DocumentArrowUpIcon className='w-5 h-5' />
           </Tippy>
         </button>
       </div>

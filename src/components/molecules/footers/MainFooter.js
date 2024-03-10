@@ -2,7 +2,7 @@ import React from 'react';
 
 const MainFooter = () => {
   return (
-    <footer className='tw-border-[rgba(128, 128, 128, 0.35)] tw-flex tw-border-t tw-p-2 tw-text-xs'>
+    <footer className='flex p-2 text-xs border-t border-neutral-300'>
       <p>Footer</p>
     </footer>
   );

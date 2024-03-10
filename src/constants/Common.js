@@ -6,3 +6,13 @@ export const CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ = {
 };
 
 export const INPUT_DEFAULT_TYPE = 'Text';
+
+export const BUTTON_TYPES = {
+  primary: 'primary',
+  secondary: 'secondary',
+  tertiary: 'tertiary',
+  info: 'info',
+  success: 'success',
+  warning: 'warning',
+  error: 'error',
+};

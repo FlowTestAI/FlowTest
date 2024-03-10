@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router';
-import NewUIHome from '../components/pages/NewUIHome';
+import Home from '../components/pages/Home';
 
 const NewUIRoutes = {
   path: '/',
@@ -8,7 +8,7 @@ const NewUIRoutes = {
   children: [
     {
       path: '/',
-      element: <NewUIHome />,
+      element: <Home />,
     },
   ],
 };

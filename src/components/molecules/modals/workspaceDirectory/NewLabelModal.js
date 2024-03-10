@@ -1,33 +1,12 @@
-import React, { useState, Fragment } from 'react';
-import Modal from 'components/molecules/modals/Modal';
+import React, { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import 'tippy.js/dist/tippy.css';
+import { createFolder, createFlowTest, createCollection } from 'service/collection';
 
-const variableTypes = [
-  {
-    value: 'String',
-    label: 'String',
-  },
-  {
-    value: 'Select',
-    label: 'Select',
-  },
-  {
-    value: 'Number',
-    label: 'Number',
-  },
-  {
-    value: 'Boolean',
-    label: 'Boolean',
-  },
-];
-
-const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd }) => {
-  const [variableName, setVariableName] = useState('');
-  const [variableType, setVariableType] = useState('String');
+const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectionId, menuOption }) => {
+  const [folderName, setFolderName] = useState('');
 
   return (
-    <Modal open={open}>
+    <div>
       <Transition appear show={open} as={Fragment}>
         <Dialog as='div' className='relative z-10' onClose={closeFn}>
           <Transition.Child
@@ -53,37 +32,25 @@ const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd })
                 leaveFrom='opacity-100 scale-100'
                 leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='w-full p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl max-w-min rounded-2xl'>
+                <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
                   <Dialog.Title
                     as='h3'
                     className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
                   >
-                    Create a new variable for request node
+                    Create a new folder
                   </Dialog.Title>
-                  <div className='mt-6 flex w-24 min-w-[40vw] items-center justify-center rounded-md border border-neutral-500 text-sm text-neutral-500 outline-0 focus:ring-0'>
+                  <div className='mt-6'>
                     <input
-                      id='keyName'
                       type='text'
-                      className='nodrag nowheel block h-12 w-full rounded-bl-md rounded-tl-md  p-2.5'
-                      name='keyName'
-                      placeholder='Enter variable name'
-                      onChange={(e) => setVariableName(e.target.value)}
-                    />
-                    <select
+                      className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-100 dark:focus:ring-blue-100'
+                      placeholder='label'
+                      required
                       onChange={(event) => {
-                        const selectedValue = event.target.value;
-                        setVariableType(selectedValue);
+                        const folderName = event.target.value;
+                        setFolderName(folderName);
+                        console.log(`\n \n ${folderName}`);
                       }}
-                      name='var-input-type'
-                      defaultValue={variableType}
-                      className='nodrag h-12 w-full max-w-[30%] rounded-br-md rounded-tr-md border-l border-l-neutral-500 p-0 px-1'
-                    >
-                      {variableTypes.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
                   <div className='flex items-center gap-2 mt-6'>
                     <button
@@ -97,13 +64,21 @@ const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd })
                       type='button'
                       className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-green-400'
                       onClick={() => {
-                        if (variableName.trim() != '') {
-                          onVariableAdd(variableName, variableType);
+                        console.log(
+                          `modalType :: ${menuOption} :: folderName :: ${folderName} :: pathName :: ${pathName} :: collectionId :: ${collectionId}`,
+                        );
+                        if (menuOption === 'collection') {
+                          // createCollection();
+                          console.log(`\n Create a new collection by the name : ${folderName} \n`);
+                        } else if (menuOption === 'folder') {
+                          createFolder(folderName, pathName, collectionId);
+                        } else if (menuOption === 'file') {
+                          createFlowTest(folderName, pathName, collectionId);
                         }
                         closeFn();
                       }}
                     >
-                      Add variable
+                      Create
                     </button>
                   </div>
                 </Dialog.Panel>
@@ -112,8 +87,8 @@ const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd })
           </div>
         </Dialog>
       </Transition>
-    </Modal>
+    </div>
   );
 };
 
-export default AddVariableModal;
+export default NewLabelModal;

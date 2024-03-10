@@ -1,55 +1,92 @@
 import React from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { EllipsisVerticalIcon, FolderPlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/20/solid';
+import { FolderPlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
+import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 
-const OptionsMenu = () => {
+const OptionsMenu = ({ directory, itemType }) => {
+  const menuItemsStyles =
+    'group flex w-full items-center rounded px-2 py-2 text-sm text-gray-900 transition duration-200 ease-out hover:bg-slate-100';
   return (
-    <Menu as='div' className='tw-relative tw-inline-block tw-text-left'>
-      <Menu.Button data-click-from='options-menu' className='tw-p-2'>
-        <EllipsisVerticalIcon className='tw-h-4 tw-w-4' aria-hidden='true' data-click-from='options-menu' />
+    <Menu
+      as='div'
+      className='relative inline-block text-left transition duration-200 ease-out rounded rounded-l-none hover:bg-slate-200'
+    >
+      <Menu.Button data-click-from='options-menu' className='p-2' data-item-type={itemType}>
+        <EllipsisVerticalIcon
+          className='w-4 h-4'
+          aria-hidden='true'
+          data-click-from='options-menu'
+          data-item-type={itemType}
+        />
       </Menu.Button>
       <Transition
         as={Fragment}
-        enter='tw-transition tw-ease-out tw-duration-100'
-        enterFrom='tw-transform tw-opacity-0 tw-scale-95'
-        enterTo='tw-transform tw-opacity-100 tw-scale-100'
-        leave='tw-transition tw-ease-in tw-duration-75'
-        leaveFrom='tw-transform tw-opacity-100 tw-scale-100'
-        leaveTo='tw-transform tw-opacity-0 tw-scale-95'
+        enter='transition ease-out duration-100'
+        enterFrom='transform opacity-0 scale-95'
+        enterTo='transform opacity-100 scale-100'
+        leave='transition ease-in duration-75'
+        leaveFrom='transform opacity-100 scale-100'
+        leaveTo='transform opacity-0 scale-95'
       >
         <Menu.Items
-          className='tw-focus:outline-none tw-absolute tw-right-0 tw-z-10 tw-mt-2 tw-w-56 tw-origin-top-right tw-divide-y tw-divide-gray-100 tw-rounded-md tw-bg-white tw-shadow-lg tw-ring-1 tw-ring-black/5'
+          className='absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none'
           data-click-from='options-menu'
+          data-item-type={itemType}
         >
-          <div className='tw-px-1 tw-py-1' data-click-from='options-menu'>
-            <Menu.Item data-click-from='options-menu'>
+          <div className='px-1 py-1' data-click-from='options-menu' data-item-type={itemType}>
+            <Menu.Item data-click-from='options-menu' data-item-type={itemType}>
               <button
-                className='tw-group tw-flex tw-w-full tw-items-center tw-rounded-md tw-px-2 tw-py-2 tw-text-sm tw-text-gray-900'
+                className={menuItemsStyles}
                 data-click-from='options-menu'
+                data-options-menu-item={DirectoryOptionsActions.addNewFolder.value}
+                data-path-name={directory.pathname}
+                data-item-type={itemType}
               >
-                <FolderPlusIcon className='tw-mr-2 tw-h-4 tw-w-4' aria-hidden='true' data-click-from='options-menu' />
-                New Folder
+                <FolderPlusIcon
+                  className='w-4 h-4 mr-2'
+                  aria-hidden='true'
+                  data-click-from='options-menu'
+                  data-item-type={itemType}
+                />
+                {DirectoryOptionsActions.addNewFolder.displayValue}
               </button>
             </Menu.Item>
-            <Menu.Item data-click-from='options-menu'>
+            <Menu.Item data-click-from='options-menu' data-item-type={itemType}>
               <button
-                className='tw-group tw-flex tw-w-full tw-items-center tw-rounded-md tw-px-2 tw-py-2 tw-text-sm tw-text-gray-900'
+                className={menuItemsStyles}
                 data-click-from='options-menu'
+                data-options-menu-item={DirectoryOptionsActions.addNewFlow.value}
+                data-path-name={directory.pathname}
+                data-item-type={itemType}
               >
-                <PencilSquareIcon className='tw-mr-2 tw-h-4 tw-w-4' aria-hidden='true' data-click-from='options-menu' />
-                New Flow test
+                <PencilSquareIcon
+                  className='w-4 h-4 mr-2'
+                  aria-hidden='true'
+                  data-click-from='options-menu'
+                  data-item-type={itemType}
+                />
+                {DirectoryOptionsActions.addNewFlow.displayValue}
               </button>
             </Menu.Item>
           </div>
-          <div className='tw-px-1 tw-py-1' data-click-from='options-menu'>
-            <Menu.Item data-click-from='options-menu'>
+          <div className='px-1 py-1' data-click-from='options-menu' data-item-type={itemType}>
+            <Menu.Item data-click-from='options-menu' data-item-type={itemType}>
               <button
-                className='tw-group tw-flex tw-w-full tw-items-center tw-rounded-md tw-px-2 tw-py-2 tw-text-sm tw-text-gray-900'
+                className={menuItemsStyles}
                 data-click-from='options-menu'
+                data-options-menu-item={DirectoryOptionsActions.deleteFolder.value}
+                data-path-name={directory.pathname}
+                data-item-type={itemType}
               >
-                <TrashIcon className='tw-mr-2 tw-h-4 tw-w-4' aria-hidden='true' data-click-from='options-menu' />
-                Delete
+                <TrashIcon
+                  className='w-4 h-4 mr-2'
+                  aria-hidden='true'
+                  data-click-from='options-menu'
+                  data-item-type={itemType}
+                />
+                {DirectoryOptionsActions.deleteFolder.displayValue}
               </button>
             </Menu.Item>
           </div>

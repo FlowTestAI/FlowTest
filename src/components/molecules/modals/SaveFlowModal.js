@@ -3,16 +3,29 @@ import { Dialog, Transition } from '@headlessui/react';
 import { InboxArrowDownIcon } from '@heroicons/react/20/solid';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { useTabStore } from 'stores/TabStore';
+import { updateFlowTest } from 'service/collection';
 
 const SaveFlowModal = () => {
   let [isOpen, setIsOpen] = useState(false);
+  const focusTabId = useTabStore((state) => state.focusTabId);
+  const tabs = useTabStore((state) => state.tabs);
 
   function closeModal() {
     setIsOpen(false);
   }
 
-  function openModal() {
-    setIsOpen(true);
+  function saveHandle() {
+    console.log(`saveHandle :: ${focusTabId}`);
+    console.log(`saveHandle :: ${JSON.stringify(tabs)}`);
+    // if un named file ==> open the modal
+    // setIsOpen(true);
+    // else save the data
+    const tab = tabs.find((tab) => tab.id === focusTabId);
+
+    console.log(`saveHandle 3 :: ${tab}`);
+    console.log(`saveHandle 3 :: ${JSON.stringify(tab)}`);
+    updateFlowTest(tab.pathname, tab.flowData, tab.collectionId);
   }
 
   // ToDo: Save the file with the given file name
@@ -22,66 +35,63 @@ const SaveFlowModal = () => {
 
   return (
     <div>
-      <div className='tw-flex tw-items-center tw-justify-center'>
-        <button type='button' onClick={openModal}>
+      <div className='flex items-center justify-center'>
+        <button type='button' onClick={saveHandle}>
           <Tippy content='Save' placement='top'>
-            <InboxArrowDownIcon className='tw-h-5 tw-w-5' />
+            <InboxArrowDownIcon className='w-5 h-5' />
           </Tippy>
         </button>
       </div>
 
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as='div' className='tw-relative tw-z-10' onClose={closeModal}>
+        <Dialog as='div' className='relative z-10' onClose={closeModal}>
           <Transition.Child
             as={Fragment}
-            enter='tw-ease-out tw-duration-300'
-            enterFrom='tw-opacity-0'
-            enterTo='tw-opacity-100'
-            leave='tw-ease-in tw-duration-200'
-            leaveFrom='tw-opacity-100'
-            leaveTo='tw-opacity-0'
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
           >
-            <div className='tw-fixed tw-inset-0 tw-bg-black/25' />
+            <div className='fixed inset-0 bg-black/25' />
           </Transition.Child>
 
-          <div className='tw-fixed tw-inset-0 tw-overflow-y-auto'>
-            <div className='tw-flex tw-min-h-full tw-items-center tw-justify-center tw-p-4 tw-text-center'>
+          <div className='fixed inset-0 overflow-y-auto'>
+            <div className='flex items-center justify-center min-h-full p-4 text-center'>
               <Transition.Child
                 as={Fragment}
-                enter='tw-ease-out tw-duration-300'
-                enterFrom='tw-opacity-0 tw-scale-95'
-                enterTo='tw-opacity-100 tw-scale-100'
-                leave='tw-ease-in tw-duration-200'
-                leaveFrom='tw-opacity-100 tw-scale-100'
-                leaveTo='tw-opacity-0 tw-scale-95'
+                enter='ease-out duration-300'
+                enterFrom='opacity-0 scale-95'
+                enterTo='opacity-100 scale-100'
+                leave='ease-in duration-200'
+                leaveFrom='opacity-100 scale-100'
+                leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='tw-w-full tw-max-w-md tw-transform tw-overflow-hidden tw-rounded-2xl tw-bg-white tw-p-6 tw-text-left tw-align-middle tw-shadow-xl tw-transition-all'>
-                  <Dialog.Title
-                    as='h3'
-                    className='tw-text-centre tw-text-lg tw-font-medium tw-leading-6 tw-text-gray-900'
-                  >
+                <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
+                  <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 text-centre'>
                     Save New Flow Test
                   </Dialog.Title>
-                  <div className='tw-mt-2'>
+                  <div className='mt-2'>
                     <input
                       type='text'
                       id='filename'
-                      className='tw-focus:ring-blue-100 tw-focus:border-blue-100 tw-dark:bg-gray-700 tw-dark:border-gray-600 tw-dark:placeholder-gray-400 tw-dark:text-white tw-dark:focus:ring-blue-100 tw-dark:focus:border-blue-100 w-full tw-block tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-bg-gray-50 tw-p-2.5 tw-text-sm tw-text-gray-900 tw-outline-blue-300'
+                      className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-100 dark:focus:ring-blue-100'
                       placeholder='File name'
                       required
                     />
                   </div>
-                  <div className='items-center tw-mt-4 tw-flex tw-gap-2'>
+                  <div className='flex items-center gap-2 mt-4'>
                     <button
                       type='button'
-                      className='tw-hover:bg-blue-200 tw-focus:outline-none tw-focus-visible:ring-2 tw-focus-visible:ring-blue-500 tw-focus-visible:ring-offset-2 tw-inline-flex tw-w-full tw-grow tw-basis-0 tw-justify-center tw-rounded-md tw-border tw-border-transparent tw-bg-blue-100 tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-blue-900'
+                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md grow basis-0 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
                       onClick={closeModal}
                     >
                       Cancel
                     </button>
                     <button
                       type='button'
-                      className='tw-hover:bg-blue-200 tw-focus:outline-none tw-focus-visible:ring-2 tw-focus-visible:ring-blue-500 tw-focus-visible:ring-offset-2 tw-inline-flex tw-w-full tw-grow tw-basis-0 tw-justify-center tw-rounded-md tw-border tw-border-transparent tw-bg-green-100 tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-green-900'
+                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
                       onClick={handleSave}
                     >
                       Save

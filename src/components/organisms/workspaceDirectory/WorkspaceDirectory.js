@@ -4,7 +4,7 @@ import WorkspaceDirectories from 'components/molecules/workspaceDirectory/Worksp
 
 const WorkspaceDirectory = () => {
   return (
-    <div className='tw-flex-auto'>
+    <div className='flex-auto'>
       <WorkspaceDirectoryHeader />
       <WorkspaceDirectories />
     </div>

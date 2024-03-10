@@ -240,7 +240,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
   };
 
   return (
-    <div className='tw-flex-auto'>
+    <div className='flex-auto'>
       <ReactFlow
         nodes={nodes}
         edges={edges}

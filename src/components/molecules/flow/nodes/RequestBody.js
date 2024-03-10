@@ -91,30 +91,30 @@ const RequestBody = ({ nodeData }) => {
 
   return (
     <>
-      <div className='tw-border-t tw-border-neutral-300 tw-bg-slate-100 tw-px-2 tw-py-4'>
-        <div className='tw-flex tw-items-center tw-justify-between tw-font-medium'>
+      <div className='px-2 py-4 border-t border-neutral-300 bg-slate-100'>
+        <div className='flex items-center justify-between font-medium'>
           <h3>Body</h3>
-          <Menu as='div' className='tw-relative tw-inline-block tw-text-left'>
-            <Menu.Button data-click-from='body-type-menu' className='tw-p-2'>
-              <EllipsisVerticalIcon className='tw-h-4 tw-w-4' aria-hidden='true' data-click-from='body-type-menu' />
+          <Menu as='div' className='relative inline-block text-left'>
+            <Menu.Button data-click-from='body-type-menu' className='p-2'>
+              <EllipsisVerticalIcon className='w-4 h-4' aria-hidden='true' data-click-from='body-type-menu' />
             </Menu.Button>
             <Transition
               as={Fragment}
-              enter='tw-transition tw-ease-out tw-duration-100'
-              enterFrom='tw-transform tw-opacity-0 tw-scale-95'
-              enterTo='tw-transform tw-opacity-100 tw-scale-100'
-              leave='tw-transition tw-ease-in tw-duration-75'
-              leaveFrom='tw-transform tw-opacity-100 tw-scale-100'
-              leaveTo='tw-transform tw-opacity-0 tw-scale-95'
+              enter='transition ease-out duration-100'
+              enterFrom='transform opacity-0 scale-95'
+              enterTo='transform opacity-100 scale-100'
+              leave='transition ease-in duration-75'
+              leaveFrom='transform opacity-100 scale-100'
+              leaveTo='transform opacity-0 scale-95'
             >
               <Menu.Items
-                className='tw-focus:outline-none tw-absolute tw-right-0 tw-z-10 tw-mt-2 tw-w-56 tw-origin-top-right tw-divide-y tw-divide-gray-100 tw-rounded-md tw-bg-white tw-px-1 tw-py-1 tw-shadow-lg tw-ring-1 tw-ring-black/5'
+                className='absolute right-0 z-10 w-56 px-1 py-1 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none ring-1 ring-black/5'
                 data-click-from='body-type-menu'
               >
                 {requestBodyTypeOptions.map((bodyTypeOption, index) => (
                   <Menu.Item key={index} data-click-from='body-type-menu' onClick={() => handleClose(bodyTypeOption)}>
                     <button
-                      className='tw-group tw-flex tw-w-full tw-items-center tw-rounded-md tw-px-2 tw-py-2 tw-text-sm tw-text-gray-900 hover:tw-bg-slate-100'
+                      className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group hover:bg-slate-100'
                       data-click-from='body-type-menu'
                     >
                       {bodyTypeOption}
@@ -127,10 +127,10 @@ const RequestBody = ({ nodeData }) => {
         </div>
       </div>
       {bodyType === 'raw-json' && (
-        <div className='tw-border tw-border-t tw-border-neutral-300 tw-bg-slate-50 tw-p-2'>
+        <div className='p-2 border border-t border-neutral-300 bg-slate-50'>
           <textarea
             placeholder={bodyType}
-            className='nodrag nowheel tw-w-full tw-p-2'
+            className='w-full p-2 nodrag nowheel'
             name='username'
             onChange={(e) => handleRawJson(e)}
             rows={4}
@@ -139,30 +139,30 @@ const RequestBody = ({ nodeData }) => {
         </div>
       )}
       {bodyType === 'form-data' && (
-        <div className='tw-border-t tw-border-neutral-300 tw-bg-slate-50 tw-p-2'>
-          <div className='tw-flex tw-items-center tw-justify-between tw-rounded-md tw-border tw-border-neutral-500 tw-text-sm tw-text-neutral-500 tw-outline-0 focus:tw-ring-0'>
+        <div className='p-2 border-t border-neutral-300 bg-slate-50'>
+          <div className='flex items-center justify-between text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
             <input
               placeholder='key'
-              className='nodrag nowheel tw-bg-slate-50 tw-pl-4'
+              className='pl-4 nodrag nowheel bg-slate-50'
               name='variable-value'
               onChange={(e) => handleFormDataKey(e)}
               value={fileKey}
             />
-            <div className='tw-rounded-br-md tw-rounded-tr-md tw-border-l tw-border-l-neutral-500 tw-px-4 tw-py-2'>
+            <div className='px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>
               File
             </div>
           </div>
-          <div className='tw-py-2'>
+          <div className='py-2'>
             <button
-              className='tw-flex tw-w-full tw-cursor-pointer tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-border tw-border-neutral-500 tw-bg-slate-100 tw-p-2 hover:tw-bg-slate-200'
+              className='flex items-center justify-center w-full gap-2 p-2 border rounded-md cursor-pointer border-neutral-500 bg-slate-100 hover:bg-slate-200'
               onClick={() => {
                 uploadFileForRequestNode.current.click();
               }}
             >
-              <DocumentArrowUpIcon className='tw-h-4 tw-w-4 tw-text-center' />
+              <DocumentArrowUpIcon className='w-4 h-4 text-center' />
               Upload File
               {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
-              <div className='tw-hidden'>
+              <div className='hidden'>
                 <input type='file' id='file' ref={uploadFileForRequestNode} onChange={handleFileUpload} />
               </div>
             </button>

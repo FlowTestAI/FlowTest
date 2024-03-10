@@ -4,7 +4,7 @@ import WorkspaceContent from 'components/molecules/workspace/WorkspaceContent';
 
 const Workspace = () => {
   return (
-    <div className='tw-flex tw-h-full tw-flex-col'>
+    <div className='flex flex-col h-full'>
       <WorkspaceHeader />
       <WorkspaceContent />
     </div>

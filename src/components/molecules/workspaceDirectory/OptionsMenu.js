@@ -11,11 +11,11 @@ const OptionsMenu = ({ directory, itemType }) => {
   return (
     <Menu
       as='div'
-      className='relative inline-block text-left transition duration-200 ease-out rounded rounded-l-none hover:bg-slate-200'
+      className='relative inline-block rounded rounded-l-none text-left transition duration-200 ease-out hover:bg-slate-200'
     >
       <Menu.Button data-click-from='options-menu' className='p-2' data-item-type={itemType}>
         <EllipsisVerticalIcon
-          className='w-4 h-4'
+          className='h-4 w-4'
           aria-hidden='true'
           data-click-from='options-menu'
           data-item-type={itemType}
@@ -31,7 +31,7 @@ const OptionsMenu = ({ directory, itemType }) => {
         leaveTo='transform opacity-0 scale-95'
       >
         <Menu.Items
-          className='absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none'
+          className='absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none'
           data-click-from='options-menu'
           data-item-type={itemType}
         >
@@ -45,7 +45,7 @@ const OptionsMenu = ({ directory, itemType }) => {
                 data-item-type={itemType}
               >
                 <FolderPlusIcon
-                  className='w-4 h-4 mr-2'
+                  className='mr-2 h-4 w-4'
                   aria-hidden='true'
                   data-click-from='options-menu'
                   data-item-type={itemType}
@@ -62,7 +62,7 @@ const OptionsMenu = ({ directory, itemType }) => {
                 data-item-type={itemType}
               >
                 <PencilSquareIcon
-                  className='w-4 h-4 mr-2'
+                  className='mr-2 h-4 w-4'
                   aria-hidden='true'
                   data-click-from='options-menu'
                   data-item-type={itemType}
@@ -76,17 +76,17 @@ const OptionsMenu = ({ directory, itemType }) => {
               <button
                 className={menuItemsStyles}
                 data-click-from='options-menu'
-                data-options-menu-item={DirectoryOptionsActions.deleteFolder.value}
+                data-options-menu-item={DirectoryOptionsActions.delete.value}
                 data-path-name={directory.pathname}
                 data-item-type={itemType}
               >
                 <TrashIcon
-                  className='w-4 h-4 mr-2'
+                  className='mr-2 h-4 w-4'
                   aria-hidden='true'
                   data-click-from='options-menu'
                   data-item-type={itemType}
                 />
-                {DirectoryOptionsActions.deleteFolder.displayValue}
+                {DirectoryOptionsActions.delete.displayValue}
               </button>
             </Menu.Item>
           </div>

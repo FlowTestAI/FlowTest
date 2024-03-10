@@ -14,7 +14,7 @@ const Directory = ({ directory, depth }) => {
         // this is for collections tab thus we have archive box icon
         return (
           <div
-            className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
+            className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
             onClick={(event) => {
               const clickFromElementDataSet = event.target.dataset;
               const clickFrom = clickFromElementDataSet?.clickFrom;
@@ -24,7 +24,7 @@ const Directory = ({ directory, depth }) => {
             }}
           >
             <div className='flex items-center justify-start gap-2 px-2 py-1'>
-              <ArchiveBoxIcon className='w-4 h-4' />
+              <ArchiveBoxIcon className='h-4 w-4' />
               <span>{name}</span>
             </div>
             <OptionsMenu
@@ -39,7 +39,7 @@ const Directory = ({ directory, depth }) => {
       // This is for document or file
       return (
         <div
-          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
+          className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
           onClick={(event) => {
             const clickFromElementDataSet = event.target.dataset;
             const clickFrom = clickFromElementDataSet?.clickFrom;
@@ -49,7 +49,7 @@ const Directory = ({ directory, depth }) => {
           }}
         >
           <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <DocumentIcon className='w-4 h-4' />
+            <DocumentIcon className='h-4 w-4' />
             <span>{name}</span>
           </div>
           <OptionsMenu data-click-from='options-menu' directory={directory} data-item-type='file' itemType={'file'} />
@@ -60,7 +60,7 @@ const Directory = ({ directory, depth }) => {
     if (type === 'folder') {
       return (
         <div
-          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
+          className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
           onClick={() => {
             const clickFrom = event.target.dataset?.clickFrom;
             if (!clickFrom || clickFrom !== 'options-menu') {
@@ -69,7 +69,7 @@ const Directory = ({ directory, depth }) => {
           }}
         >
           <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <FolderIcon className='w-4 h-4' />
+            <FolderIcon className='h-4 w-4' />
             <span data-type-name={type}>{name}</span>
           </div>
           <OptionsMenu

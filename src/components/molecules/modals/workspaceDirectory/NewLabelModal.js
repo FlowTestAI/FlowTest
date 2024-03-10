@@ -1,9 +1,9 @@
 import React, { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { createFolder, createFlowTest, createCollection } from 'service/collection';
+import { createFolder, createFlowTest } from 'service/collection';
 
 const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectionId, menuOption }) => {
-  const [folderName, setFolderName] = useState('');
+  const [labelValue, setLabelValue] = useState('');
 
   return (
     <div>
@@ -22,7 +22,7 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
           </Transition.Child>
 
           <div className='fixed inset-0 overflow-y-auto'>
-            <div className='flex items-center justify-center min-h-full p-4 text-center'>
+            <div className='flex min-h-full items-center justify-center p-4 text-center'>
               <Transition.Child
                 as={Fragment}
                 enter='ease-out duration-300'
@@ -32,10 +32,10 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                 leaveFrom='opacity-100 scale-100'
                 leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
+                <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
                   <Dialog.Title
                     as='h3'
-                    className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
+                    className='border-b border-neutral-300 pb-4 text-center text-lg font-semibold text-gray-900'
                   >
                     Create a new folder
                   </Dialog.Title>
@@ -46,34 +46,37 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                       placeholder='label'
                       required
                       onChange={(event) => {
-                        const folderName = event.target.value;
-                        setFolderName(folderName);
-                        console.log(`\n \n ${folderName}`);
+                        const labelValue = event.target.value;
+                        setLabelValue(labelValue);
+                        console.log(`\n \n ${labelValue}`);
                       }}
                     />
                   </div>
-                  <div className='flex items-center gap-2 mt-6'>
+                  <div className='mt-6 flex items-center gap-2'>
                     <button
                       type='button'
-                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-blue-900 border border-transparent rounded-md grow basis-0 bg-sky-100 hover:bg-sky-300'
+                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-sky-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-sky-300'
                       onClick={closeFn}
                     >
                       Cancel
                     </button>
                     <button
                       type='button'
-                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-green-400'
+                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-400'
                       onClick={() => {
                         console.log(
-                          `modalType :: ${menuOption} :: folderName :: ${folderName} :: pathName :: ${pathName} :: collectionId :: ${collectionId}`,
+                          `modalType :: ${menuOption} :: labelValue :: ${labelValue} :: pathName :: ${pathName} :: collectionId :: ${collectionId}`,
                         );
-                        if (menuOption === 'collection') {
-                          // createCollection();
-                          console.log(`\n Create a new collection by the name : ${folderName} \n`);
-                        } else if (menuOption === 'folder') {
-                          createFolder(folderName, pathName, collectionId);
+                        if (menuOption === 'folder') {
+                          console.log(`\n Creating a new folder by the name : ${labelValue} \n`);
+                          createFolder(labelValue, pathName, collectionId);
                         } else if (menuOption === 'file') {
-                          createFlowTest(folderName, pathName, collectionId);
+                          console.log(`\n Creating a new flow by the name : ${labelValue} \n`);
+                          createFlowTest(labelValue, pathName, collectionId);
+                        } else if (menuOption === 'collection') {
+                          // createCollection();
+                          // wont be needing it here but just putting it for testing
+                          console.log(`\n Creating a new collection by the name : ${labelValue} \n`);
                         }
                         closeFn();
                       }}

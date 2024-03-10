@@ -4,10 +4,10 @@ export const DirectoryOptionsActions = {
     value: 'new-folder',
     dataSetValue: 'new-folder',
   },
-  deleteFolder: {
+  delete: {
     displayValue: 'Delete',
-    value: 'delete-folder',
-    dataSetValue: 'delete-folder',
+    value: 'delete',
+    dataSetValue: 'delete',
   },
   addNewFlow: {
     displayValue: 'New Flow',

@@ -23,20 +23,14 @@ const WorkspaceHeader = () => {
   }, [collections, focusTabId, tabs]);
 
   return (
-    <div className='flex items-center justify-between gap-8 pr-4 border-b border-neutral-300 bg-slate-100'>
+    <div className='flex items-center justify-between gap-8 border-b border-neutral-300 bg-slate-100 pr-4'>
       <div className='flex items-center'>
         <FlowTab />
-        {/* <button className='cursor-not-allowed'>
+        <button className='flex cursor-not-allowed flex-col items-center bg-slate-100 p-3.5 text-center text-slate-400'>
           <Tippy content='Coming Soon!' placement='right'>
-            <PlusIcon className='w-5 h-5' />
+            <PlusIcon className='h-5 w-5' />
           </Tippy>
-        </button> */}
-        <div
-          data-tip='Coming Soon!'
-          className='tooltip tooltip-right tooltip-info flex flex-col items-center bg-slate-100 p-3.5 text-center text-slate-400'
-        >
-          <PlusIcon className='w-5 h-5' />
-        </div>
+        </button>
       </div>
       <SelectEnvironment environments={environmentData} />
     </div>

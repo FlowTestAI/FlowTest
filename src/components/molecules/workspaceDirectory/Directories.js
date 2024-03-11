@@ -11,15 +11,26 @@ const Directories = ({ directoriesData }) => {
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
 
   const handleDeleteMenuItem = (menuItemType, path, collectionId) => {
-    console.log(`\n handleDeleteMenuItem \n`);
     if (menuItemType === 'collection') {
-      console.log(`\n DELETING collection :: selectedCollectionId : ${collectionId} \n`);
-      deleteCollection(collectionId);
+      deleteCollection(collectionId)
+        .then((result) => {
+          console.log(`Deleted collection: collectionId = ${collectionId} \n`);
+        })
+        .catch((error) => {
+          // TODO: show error in UI
+          console.log(`Error deleting collection = ${collectionId}: ${error}`);
+        });
     }
 
     if (menuItemType === 'folder') {
-      console.log(`\n DELETING folder :: selectedPathName : ${path} :: selectedCollectionId : ${collectionId} \n`);
-      deleteFolder(path, collectionId);
+      deleteFolder(path, collectionId)
+        .then((result) => {
+          console.log(`Deleted folder: path = ${path}, collectionId = ${collectionId} \n`);
+        })
+        .catch((error) => {
+          // TODO: show error in UI
+          console.log(`Error deleting folder = ${path}: ${error}`);
+        });
     }
 
     if (menuItemType === 'file') {
@@ -31,37 +42,31 @@ const Directories = ({ directoriesData }) => {
   return (
     <div
       onClick={(event) => {
-        console.log(`\n Directories \n`);
         const clickFromElementDataSet = event.target.dataset;
         const clickFrom = clickFromElementDataSet?.clickFrom;
 
         if (clickFrom && clickFrom === 'options-menu') {
-          console.log(`\n Directories :: options-menu \n`);
           const itemType = clickFromElementDataSet?.itemType;
           const optionsMenuItem = clickFromElementDataSet?.optionsMenuItem;
           const pathName = clickFromElementDataSet?.pathName;
 
           setSelectedPathName(pathName);
-          console.log(`\n Directories :: options-menu :: pathName : ${pathName} \n`);
           setSelectedCollectionId(directoriesData[0].id);
           setSelectedMenuItem(optionsMenuItem);
-          console.log(`\n Directories :: options-menu :: optionsMenuItem : ${optionsMenuItem} \n`);
 
           switch (optionsMenuItem) {
             case DirectoryOptionsActions.addNewFolder.value:
-              console.log(`\n NEW_FOLDER \n`);
               setNewLabelModal(true);
               break;
             case DirectoryOptionsActions.addNewFlow.value:
-              console.log(`\n NEW_FLOW \n`);
               setNewLabelModal(true);
               break;
             case DirectoryOptionsActions.delete.value:
-              console.log(`\n DELETE_FOLDER \n`);
               handleDeleteMenuItem(itemType, pathName, directoriesData[0].id);
               break;
             default:
-              console.log(`\n DEFAULT \n`);
+              // need to return an error here
+              console.log(`DEFAULT OPTION`);
           }
         }
       }}

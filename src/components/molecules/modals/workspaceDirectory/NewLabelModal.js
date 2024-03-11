@@ -48,7 +48,6 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                       onChange={(event) => {
                         const labelValue = event.target.value;
                         setLabelValue(labelValue);
-                        console.log(`\n \n ${labelValue}`);
                       }}
                     />
                   </div>
@@ -67,11 +66,21 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                         console.log(
                           `modalType :: ${menuOption} :: labelValue :: ${labelValue} :: pathName :: ${pathName} :: collectionId :: ${collectionId}`,
                         );
-                        if (menuOption === 'folder') {
-                          console.log(`\n Creating a new folder by the name : ${labelValue} \n`);
-                          createFolder(labelValue, pathName, collectionId);
-                        } else if (menuOption === 'file') {
-                          console.log(`\n Creating a new flow by the name : ${labelValue} \n`);
+                        if (menuOption === 'new-folder') {
+                          createFolder(labelValue, pathName, collectionId)
+                            .then((result) => {
+                              console.log(
+                                `Created a new folder: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId} \n`,
+                              );
+                            })
+                            .catch((error) => {
+                              // TODO: show error in UI
+                              console.log(`Error creating new folder: ${error}`);
+                            });
+                        } else if (menuOption === 'new-flow') {
+                          console.log(
+                            `Creating a new flow: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId} \n`,
+                          );
                           createFlowTest(labelValue, pathName, collectionId);
                         } else if (menuOption === 'collection') {
                           // createCollection();

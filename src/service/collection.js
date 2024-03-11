@@ -15,53 +15,68 @@ export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
 };
 
 export const deleteCollection = (collectionId) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
-  if (collection) {
-    return new Promise((resolve, reject) => {
-      ipcRenderer.invoke('renderer:delete-collection', collection).then(resolve).catch(reject);
-    });
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+    if (collection) {
+      return new Promise((resolve, reject) => {
+        ipcRenderer.invoke('renderer:delete-collection', collection).then(resolve).catch(reject);
+      });
+    } else {
+      return Promise.reject(new Error('Collection not found'));
+    }
+  } catch (error) {
+    console.log(`Error deleting collection: ${collectionId}`);
+    // TODO: show error in UI
   }
 };
 
 export const createFolder = (folderName, folderPath, collectionId) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-  if (collection) {
-    const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
-    const sameFolderExists = folderPathItem.items.find((i) => i.type === 'folder' && i.name === folderName);
-    if (sameFolderExists) {
-      return Promise.reject(new Error('A folder with the same name already exists'));
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    if (collection) {
+      const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
+      const sameFolderExists = folderPathItem.items.find((i) => i.type === 'folder' && i.name === folderName);
+      if (sameFolderExists) {
+        return Promise.reject(new Error('A folder with the same name already exists'));
+      } else {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.invoke('renderer:create-folder', folderName, folderPath).then(resolve).catch(reject);
+        });
+      }
     } else {
-      return new Promise((resolve, reject) => {
-        ipcRenderer.invoke('renderer:create-folder', folderName, folderPath).then(resolve).catch(reject);
-      });
+      return Promise.reject(new Error('Collection not found'));
     }
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+  } catch (error) {
+    console.log(`Error creating new folder: ${error}`);
+    // TODO: show error in UI
   }
 };
 
 export const deleteFolder = (folderPath, collectionId) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-  if (collection) {
-    const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
-    if (folderPathItem) {
-      return new Promise((resolve, reject) => {
-        ipcRenderer.invoke('renderer:delete-folder', folderPath).then(resolve).catch(reject);
-      });
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    if (collection) {
+      const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
+      if (folderPathItem) {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.invoke('renderer:delete-folder', folderPath).then(resolve).catch(reject);
+        });
+      } else {
+        return Promise.reject(new Error('Folder with the given path does not exist'));
+      }
     } else {
-      return Promise.reject(new Error('Folder with the given path does not exist'));
+      return Promise.reject(new Error('Collection not found'));
     }
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+  } catch (error) {
+    console.log(`Error deleting new folder: ${error}`);
+    // TODO: show error in UI
   }
 };
 

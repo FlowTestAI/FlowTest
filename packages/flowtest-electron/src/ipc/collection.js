@@ -104,9 +104,8 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
 
   ipcMain.handle('renderer:delete-collection', async (event, collection) => {
     try {
-      const fullPath = path.join(collection.pathname, collection.name);
-      deleteDirectory(fullPath);
-      console.log(`Deleted directory: ${fullPath}`);
+      deleteDirectory(collection.pathname);
+      console.log(`Deleted directory: ${collection.pathname}`);
 
       mainWindow.webContents.send('main:collection-deleted', collection.id);
 
@@ -117,7 +116,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
-  ipcMain.handle('renderer:new-folder', async (event, name, path) => {
+  ipcMain.handle('renderer:create-folder', async (event, name, path) => {
     try {
       const result = createDirectory(name, path);
       console.log(`Created directory: ${result}`);

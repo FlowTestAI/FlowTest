@@ -15,11 +15,11 @@ const WorkspaceHeader = () => {
 
   useEffect(() => {
     const tab = tabs?.find((tab) => tab.id === focusTabId);
-    console.log(`tab?.collectionId :: ${tab?.collectionId}`);
-    console.log(`collection.id:: ${JSON.stringify(collections)}`);
+    // console.log(`tab?.collectionId :: ${tab?.collectionId}`);
+    // console.log(`collection.id:: ${JSON.stringify(collections)}`);
     const environments = collections?.find((collection) => tab?.collectionId === collection.id);
     environmentData = environments?.length ? environments.enviroments : [];
-    console.log(`environmentData :: ${environmentData}`);
+    // console.log(`environmentData :: ${environmentData}`);
   }, [collections, focusTabId, tabs]);
 
   return (

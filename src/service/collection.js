@@ -147,53 +147,63 @@ export const deleteEnvironmentFile = (name, collectionId) => {
 };
 
 export const createFlowTest = (name, folderPath, collectionId) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-  if (collection) {
-    const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
-    const sameFlowTestExists = folderPathItem.items.find((i) => i.type !== 'folder' && i.name === name);
-    if (sameFlowTestExists) {
-      return Promise.reject(new Error('A flowtest with the same name already exists'));
-    } else {
-      return new Promise((resolve, reject) => {
-        ipcRenderer.invoke('renderer:create-flowtest', name, folderPath).then(resolve).catch(reject);
-        useEventStore.getState().addEvent({
-          id: uuidv4(),
-          type: 'OPEN_NEW_FLOWTEST',
-          collectionId,
-          name,
-          path: folderPath,
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    if (collection) {
+      const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
+      const sameFlowTestExists = folderPathItem.items.find((i) => i.type === 'flowtest' && i.name === `${name}.flow`);
+      if (sameFlowTestExists) {
+        return Promise.reject(new Error('A flowtest with the same name already exists'));
+      } else {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.invoke('renderer:create-flowtest', name, folderPath).then(resolve).catch(reject);
+          useEventStore.getState().addEvent({
+            id: uuidv4(),
+            type: 'OPEN_NEW_FLOWTEST',
+            collectionId,
+            name: `${name}.flow`,
+            path: folderPath,
+          });
         });
-      });
+      }
+    } else {
+      return Promise.reject(new Error('Collection not found'));
     }
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+  } catch (error) {
+    console.log(`Error creating new flowtest: ${error}`);
+    // TODO: show error in UI
   }
 };
 
 export const readFlowTest = (pathname, collectionId) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-  if (collection) {
-    const flowtest = findItemInCollectionByPathname(collection, pathname);
-    if (flowtest) {
-      return new Promise((resolve, reject) => {
-        ipcRenderer.invoke('renderer:read-flowtest', pathname, collectionId).then(resolve).catch(reject);
-        useEventStore.getState().addEvent({
-          id: uuidv4(),
-          type: 'OPEN_SAVED_FLOWTEST',
-          collectionId,
-          name: flowtest.name,
-          pathname: flowtest.pathname,
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    if (collection) {
+      const flowtest = findItemInCollectionByPathname(collection, pathname);
+      if (flowtest) {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.invoke('renderer:read-flowtest', pathname, collectionId).then(resolve).catch(reject);
+          useEventStore.getState().addEvent({
+            id: uuidv4(),
+            type: 'OPEN_SAVED_FLOWTEST',
+            collectionId,
+            name: flowtest.name,
+            pathname: flowtest.pathname,
+          });
         });
-      });
+      } else {
+        return Promise.reject(new Error('A flowtest with this path does not exist'));
+      }
     } else {
-      return Promise.reject(new Error('A flowtest with this path does not exist'));
+      return Promise.reject(new Error('Collection not found'));
     }
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+  } catch (error) {
+    console.log(`Error reading flowtest: ${error}`);
+    // TODO: show error in UI
   }
 };
 
@@ -218,19 +228,24 @@ export const updateFlowTest = (pathname, flowData, collectionId) => {
 };
 
 export const deleteFlowTest = (pathname, collectionId) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-  if (collection) {
-    const flowtest = findItemInCollectionByPathname(collection, pathname);
-    if (flowtest) {
-      return new Promise((resolve, reject) => {
-        ipcRenderer.invoke('renderer:delete-flowtest', pathname).then(resolve).catch(reject);
-      });
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    if (collection) {
+      const flowtest = findItemInCollectionByPathname(collection, pathname);
+      if (flowtest) {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.invoke('renderer:delete-flowtest', pathname).then(resolve).catch(reject);
+        });
+      } else {
+        return Promise.reject(new Error('A flowtest with this path does not exist'));
+      }
     } else {
-      return Promise.reject(new Error('A flowtest with this path does not exist'));
+      return Promise.reject(new Error('Collection not found'));
     }
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+  } catch (error) {
+    console.log(`Error deleting flowtest: ${error}`);
+    // TODO: show error in UI
   }
 };

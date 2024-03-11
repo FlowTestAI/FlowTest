@@ -6,7 +6,7 @@ import useCollectionStore from 'stores/CollectionStore';
 const WorkspaceDirectories = () => {
   const collections = useCollectionStore((state) => state.collections);
 
-  return <>{collections.length != 0 ? <Directories directoriesData={collections} /> : <EmptyDirectory />} </>;
+  return <>{collections.length != 0 ? <Directories collections={collections} /> : <EmptyDirectory />} </>;
 };
 
 export default WorkspaceDirectories;

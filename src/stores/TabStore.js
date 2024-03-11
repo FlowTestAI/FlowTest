@@ -32,6 +32,18 @@ export const useTabStore = create((set, get) => ({
   ],
   focusTabId: null,
   addFlowTestTab: (flowtest, collectionId) => {
+    const existingTab = get().tabs.find(
+      (t) =>
+        t.id === flowtest.id &&
+        t.name === flowtest.name &&
+        t.pathname === flowtest.pathname &&
+        t.collectionId === collectionId &&
+        t.type === 'flowtest',
+    );
+    if (existingTab) {
+      set(() => ({ focusTabId: existingTab.id }));
+      return;
+    }
     const newTab = {
       id: flowtest.id,
       collectionId: collectionId,

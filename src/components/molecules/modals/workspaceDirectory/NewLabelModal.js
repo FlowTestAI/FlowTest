@@ -78,10 +78,16 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                               console.log(`Error creating new folder: ${error}`);
                             });
                         } else if (menuOption === 'new-flow') {
-                          console.log(
-                            `Creating a new flow: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId} \n`,
-                          );
-                          createFlowTest(labelValue, pathName, collectionId);
+                          createFlowTest(labelValue, pathName, collectionId)
+                            .then((result) => {
+                              console.log(
+                                `Created a new flowtest: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId} \n`,
+                              );
+                            })
+                            .catch((error) => {
+                              // TODO: show error in UI
+                              console.log(`Error creating new flowtest: ${error}`);
+                            });
                         } else if (menuOption === 'collection') {
                           // createCollection();
                           // wont be needing it here but just putting it for testing

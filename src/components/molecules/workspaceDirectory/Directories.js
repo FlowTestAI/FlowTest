@@ -4,7 +4,7 @@ import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 import NewLabelModal from '../modals/workspaceDirectory/NewLabelModal';
 import { deleteCollection, deleteFolder, deleteFlowTest } from 'service/collection';
 
-const Directories = ({ directoriesData }) => {
+const Directories = ({ collections }) => {
   const [newLabelModalOpen, setNewLabelModal] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState('');
   const [selectedPathName, setSelectedPathName] = useState('');
@@ -14,7 +14,7 @@ const Directories = ({ directoriesData }) => {
     if (menuItemType === 'collection') {
       deleteCollection(collectionId)
         .then((result) => {
-          console.log(`Deleted collection: collectionId = ${collectionId} \n`);
+          console.log(`Deleted collection: collectionId = ${collectionId}`);
         })
         .catch((error) => {
           // TODO: show error in UI
@@ -25,7 +25,7 @@ const Directories = ({ directoriesData }) => {
     if (menuItemType === 'folder') {
       deleteFolder(path, collectionId)
         .then((result) => {
-          console.log(`Deleted folder: path = ${path}, collectionId = ${collectionId} \n`);
+          console.log(`Deleted folder: path = ${path}, collectionId = ${collectionId}`);
         })
         .catch((error) => {
           // TODO: show error in UI
@@ -34,8 +34,14 @@ const Directories = ({ directoriesData }) => {
     }
 
     if (menuItemType === 'file') {
-      console.log(`\n DELETING file :: selectedPathName : ${path} :: selectedCollectionId : ${collectionId} \n`);
-      deleteFlowTest(path, collectionId);
+      deleteFlowTest(path, collectionId)
+        .then((result) => {
+          console.log(`Deleted flowtest: path = ${path}, collectionId = ${collectionId}`);
+        })
+        .catch((error) => {
+          // TODO: show error in UI
+          console.log(`Error deleting flowtest = ${path}: ${error}`);
+        });
     }
   };
 
@@ -51,7 +57,7 @@ const Directories = ({ directoriesData }) => {
           const pathName = clickFromElementDataSet?.pathName;
 
           setSelectedPathName(pathName);
-          setSelectedCollectionId(directoriesData[0].id);
+          setSelectedCollectionId(collections[0].id);
           setSelectedMenuItem(optionsMenuItem);
 
           switch (optionsMenuItem) {
@@ -62,7 +68,7 @@ const Directories = ({ directoriesData }) => {
               setNewLabelModal(true);
               break;
             case DirectoryOptionsActions.delete.value:
-              handleDeleteMenuItem(itemType, pathName, directoriesData[0].id);
+              handleDeleteMenuItem(itemType, pathName, collections[0].id);
               break;
             default:
               // need to return an error here
@@ -72,8 +78,8 @@ const Directories = ({ directoriesData }) => {
       }}
     >
       <ul className='menu w-full'>
-        {directoriesData.map((directory) => (
-          <Directory key={directory.id} directory={directory} depth={1} />
+        {collections.map((collection) => (
+          <Directory key={collection.id} collectionId={collection.id} item={collection} depth={1} />
         ))}
       </ul>
       <NewLabelModal

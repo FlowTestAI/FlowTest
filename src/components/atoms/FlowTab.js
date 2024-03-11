@@ -10,7 +10,7 @@ const FlowTab = () => {
   const activeTabStyles =
     'before:absolute before:h-[0.25rem] before:w-full before:bg-slate-300 before:content-[""] before:bottom-0 before:left-0';
   const tabCommonStyles =
-    'tab flex items-center gap-x-2 border-r border-neutral-300 bg-transparent pr-0 tracking-wider transition duration-500 ease-in';
+    'tab flex items-center gap-x-2 border-r border-neutral-300 bg-transparent pr-0 tracking-[0.15em] transition duration-500 ease-in text-sm';
   return (
     <div role='tablist' className='tabs tabs-lg'>
       {tabs.map((tab, index) => {

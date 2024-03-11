@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PropTypes } from 'prop-types';
 import { FLOW_FILE_SUFFIX_REGEX } from 'constants/Common';
 import { ArchiveBoxIcon, FolderIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import OptionsMenu from './OptionsMenu';
@@ -101,6 +102,11 @@ const Directory = ({ directory, depth }) => {
       </li>
     </>
   );
+};
+
+Directory.propTypes = {
+  directory: PropTypes.object.isRequired,
+  depth: PropTypes.number.isRequired,
 };
 
 export default Directory;

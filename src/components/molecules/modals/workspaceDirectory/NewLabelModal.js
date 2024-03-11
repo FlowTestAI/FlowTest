@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from 'react';
+import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { createFolder, createFlowTest } from 'service/collection';
 
@@ -92,6 +93,14 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
       </Transition>
     </div>
   );
+};
+
+NewLabelModal.propTypes = {
+  closeFn: PropTypes.func.isRequired,
+  open: PropTypes.boolean.isRequired,
+  pathName: PropTypes.string.isRequired,
+  collectionId: PropTypes.string.isRequired,
+  menuOption: PropTypes.string.isRequired,
 };
 
 export default NewLabelModal;

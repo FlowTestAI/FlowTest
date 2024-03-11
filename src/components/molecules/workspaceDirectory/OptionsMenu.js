@@ -1,4 +1,5 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { FolderPlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -94,6 +95,11 @@ const OptionsMenu = ({ directory, itemType }) => {
       </Transition>
     </Menu>
   );
+};
+
+OptionsMenu.propTypes = {
+  directory: PropTypes.object.isRequired,
+  itemType: PropTypes.string.isRequired,
 };
 
 export default OptionsMenu;

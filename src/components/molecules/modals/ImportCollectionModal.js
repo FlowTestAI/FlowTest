@@ -1,4 +1,5 @@
 import React, { Fragment, useRef } from 'react';
+import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'constants/ImportCollectionTypes';
@@ -63,7 +64,7 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
         </Transition.Child>
 
         <div className='fixed inset-0 overflow-y-auto'>
-          <div className='flex items-center justify-center min-h-full p-4 text-center'>
+          <div className='flex min-h-full items-center justify-center p-4 text-center'>
             <Transition.Child
               as={Fragment}
               enter='ease-out duration-300'
@@ -73,21 +74,21 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
+              <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
                 <Dialog.Title
                   as='h3'
-                  className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
+                  className='border-b border-neutral-300 pb-4 text-center text-lg font-semibold text-gray-900'
                 >
                   Collections
                 </Dialog.Title>
                 <div className='mt-4'>
                   <ul className='text-sm font-medium'>
                     <li
-                      className='flex items-center justify-start gap-2 p-2 border border-transparent rounded-md cursor-pointer hover:bg-slate-100'
+                      className='flex cursor-pointer items-center justify-start gap-2 rounded-md border border-transparent p-2 hover:bg-slate-100'
                       onClick={handleImportCollectionClick}
                       data-import-type='yaml'
                     >
-                      <DocumentArrowUpIcon className='w-4 h-4' />
+                      <DocumentArrowUpIcon className='h-4 w-4' />
                       Import a YAML file
                       {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
                       <div className='hidden'>
@@ -132,6 +133,11 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
       </Dialog>
     </Transition>
   );
+};
+
+ImportCollectionModal.propTypes = {
+  closeFn: PropTypes.func.isRequired,
+  open: PropTypes.boolean.isRequired,
 };
 
 export default ImportCollectionModal;

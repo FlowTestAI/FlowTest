@@ -128,7 +128,7 @@ const AddNodes = ({ collectionId }) => {
                               </Disclosure.Button>
                               <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                                 <div>
-                                  {JSON.parse(collection.nodes).map((node, index1) => (
+                                  {collection.nodes.map((node, index1) => (
                                     <div
                                       key={`${node.requestType} - ${node.operationId}`}
                                       onDragStart={(event) => {

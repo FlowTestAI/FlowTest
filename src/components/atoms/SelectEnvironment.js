@@ -3,28 +3,28 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { Square3Stack3DIcon } from '@heroicons/react/24/outline';
 
-const environments = [
-  {
-    id: 'feebd601-63c5-4a4f-8def-1dde4f317567',
-    createdAt: 1710096201431,
-    modifiedAt: 1710096201431,
-    name: 'test.env',
-    pathname:
-      '/Users/sirachit/Desktop/Personal Devo/FlowTest/test/folder-test/Simple API overview/environments/test.env',
-    variables: { k1: 'v1', k2: 'v2', k3: 'v3' },
-  },
-  {
-    id: 'feebd601-63c5-4a4f-8def-1dde4f317567',
-    createdAt: 1710096202431,
-    modifiedAt: 1710096202431,
-    name: 'test2.env',
-    pathname:
-      '/Users/sirachit/Desktop/Personal Devo/FlowTest/test/folder-test/Simple API overview/environments/test2.env',
-    variables: { k1: 'v1', k2: 'v2', k3: 'v3' },
-  },
-];
+// const environments = [
+//   {
+//     id: 'feebd601-63c5-4a4f-8def-1dde4f317567',
+//     createdAt: 1710096201431,
+//     modifiedAt: 1710096201431,
+//     name: 'test.env',
+//     pathname:
+//       '/Users/sirachit/Desktop/Personal Devo/FlowTest/test/folder-test/Simple API overview/environments/test.env',
+//     variables: { k1: 'v1', k2: 'v2', k3: 'v3' },
+//   },
+//   {
+//     id: 'feebd601-63c5-4a4f-8def-1dde4f317567',
+//     createdAt: 1710096202431,
+//     modifiedAt: 1710096202431,
+//     name: 'test2.env',
+//     pathname:
+//       '/Users/sirachit/Desktop/Personal Devo/FlowTest/test/folder-test/Simple API overview/environments/test2.env',
+//     variables: { k1: 'v1', k2: 'v2', k3: 'v3' },
+//   },
+// ];
 
-const SelectEnvironment = () => {
+const SelectEnvironment = ({ environments }) => {
   const [selected, setSelected] = useState(null);
   return (
     <Listbox value={selected} onChange={setSelected}>

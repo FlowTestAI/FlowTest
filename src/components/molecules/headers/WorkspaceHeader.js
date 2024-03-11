@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { PlusIcon } from '@heroicons/react/20/solid';
-import FlowTab from '../../atoms/FlowTab';
+import Tabs from '../../atoms/Tabs';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import SelectEnvironment from 'components/atoms/SelectEnvironment';
@@ -25,7 +25,7 @@ const WorkspaceHeader = () => {
   return (
     <div className='flex items-center justify-between gap-8 border-b border-neutral-300 bg-slate-100 pr-4'>
       <div className='flex items-center'>
-        <FlowTab />
+        <Tabs />
         <button className='flex cursor-not-allowed flex-col items-center bg-slate-100 p-3.5 text-center text-slate-400'>
           <Tippy content='Coming Soon!' placement='right'>
             <PlusIcon className='h-5 w-5' />

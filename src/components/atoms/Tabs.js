@@ -2,7 +2,7 @@ import React from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useTabStore } from 'stores/TabStore';
 
-const FlowTab = () => {
+const Tabs = () => {
   const tabs = useTabStore((state) => state.tabs);
   const setFocusTab = useTabStore((state) => state.setFocusTab);
   const focusTabId = useTabStore((state) => state.focusTabId);
@@ -15,18 +15,21 @@ const FlowTab = () => {
     <div role='tablist' className='tabs tabs-lg'>
       {tabs.map((tab, index) => {
         return (
-          <a
-            role='tab'
-            className={`${tabCommonStyles} ${focusTabId === tab.id ? activeTabStyles : ''}`}
-            key={index}
-            data-id={tab.id}
-            data-collection-id={tab.collectionId}
-            onClick={() => {
-              setFocusTab(tab.id);
-              console.log(`CLICKED THE ${tab.id}`);
-            }}
-          >
-            {tab.name}
+          <>
+            <a
+              role='tab'
+              className={`${tabCommonStyles} ${focusTabId === tab.id ? activeTabStyles : ''}`}
+              key={index}
+              data-id={tab.id}
+              data-collection-id={tab.collectionId}
+              onClick={() => {
+                setFocusTab(tab.id);
+                console.log(`CLICKED THE ${tab.id}`);
+              }}
+            >
+              {tab.name}
+            </a>
+            {/* close needs to be a separate clickable component other wise it gets confused with above */}
             <div
               className='flex h-full items-center px-2 hover:rounded hover:rounded-l-none hover:bg-slate-200'
               onClick={() => {
@@ -35,11 +38,11 @@ const FlowTab = () => {
             >
               <XMarkIcon className='h-4 w-4' />
             </div>
-          </a>
+          </>
         );
       })}
     </div>
   );
 };
 
-export default FlowTab;
+export default Tabs;

@@ -17,6 +17,8 @@
     "axios": "^1.5.1",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.29.1",
+    "immer": "^10.0.4",
+    "lodash": "^4.17.21",
     "notistack": "^3.0.1",
     "postcss": "^8.4.35",
     "react": "^18.2.0",
@@ -32,7 +34,7 @@
     "socket.io-client": "^4.7.4",
     "tailwindcss": "^3.4.1",
     "web-vitals": "^2.1.4",
-    "zustand": "^4.5.0"
+    "zustand": "^4.5.2"
   },
   "scripts": {
     "start": "npm run build && cd packages/flowtest-electron && npm start",

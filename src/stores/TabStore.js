@@ -2,36 +2,48 @@ import { create } from 'zustand';
 
 export const useTabStore = create((set, get) => ({
   tabs: [
-    {
-      id: '1',
-      collectionId: '1eb5becb-e27a-4197-8dd0-358000b3ede3',
-      type: 'flowtest',
-      name: 'flowtest1',
-      pathname: 'flowtest.pathname1',
-      isDirty: false,
-      flowData: 'THIS IS FLOW TEST 1',
-    },
-    {
-      id: '2',
-      collectionId: '1eb5becb-e27a-4197-8dd0-358000b3ede3',
-      type: 'flowtest',
-      name: 'flowtest2',
-      pathname: 'flowtest.pathname2',
-      isDirty: false,
-      flowData: 'THIS IS FLOW TEST 2',
-    },
-    {
-      id: '3',
-      collectionId: '1eb5becb-e27a-4197-8dd0-358000b3ede3',
-      type: 'flowtest',
-      name: 'flowtest3',
-      pathname: 'flowtest.pathname3',
-      isDirty: false,
-      flowData: 'THIS IS FLOW TEST 3',
-    },
+    // {
+    //   id: '1',
+    //   collectionId: '1eb5becb-e27a-4197-8dd0-358000b3ede3',
+    //   type: 'flowtest',
+    //   name: 'flowtest1',
+    //   pathname: 'flowtest.pathname1',
+    //   isDirty: false,
+    //   flowData: 'THIS IS FLOW TEST 1',
+    // },
+    // {
+    //   id: '2',
+    //   collectionId: '1eb5becb-e27a-4197-8dd0-358000b3ede3',
+    //   type: 'flowtest',
+    //   name: 'flowtest2',
+    //   pathname: 'flowtest.pathname2',
+    //   isDirty: false,
+    //   flowData: 'THIS IS FLOW TEST 2',
+    // },
+    // {
+    //   id: '3',
+    //   collectionId: '1eb5becb-e27a-4197-8dd0-358000b3ede3',
+    //   type: 'flowtest',
+    //   name: 'flowtest3',
+    //   pathname: 'flowtest.pathname3',
+    //   isDirty: false,
+    //   flowData: 'THIS IS FLOW TEST 3',
+    // },
   ],
   focusTabId: null,
   addFlowTestTab: (flowtest, collectionId) => {
+    const existingTab = get().tabs.find(
+      (t) =>
+        t.id === flowtest.id &&
+        t.name === flowtest.name &&
+        t.pathname === flowtest.pathname &&
+        t.collectionId === collectionId &&
+        t.type === 'flowtest',
+    );
+    if (existingTab) {
+      set(() => ({ focusTabId: existingTab.id }));
+      return;
+    }
     const newTab = {
       id: flowtest.id,
       collectionId: collectionId,

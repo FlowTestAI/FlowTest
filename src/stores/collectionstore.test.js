@@ -5,11 +5,12 @@ describe('Collection store', () => {
   const collectionObj = {
     version: '1',
     id: '1',
+    type: 'collection',
     name: 'collection',
     pathname: '/parent/collection',
     nodes: [],
     items: [],
-    enviroments: [],
+    environments: [],
   };
 
   it('should correctly add and delete directory in the collection tree', () => {
@@ -32,6 +33,7 @@ describe('Collection store', () => {
     });
 
     collection = result.current.collections[0];
+    expect(collection.items[0].type).toEqual('folder');
     expect(collection.items[0].name).toEqual(directory.name);
     expect(collection.items[0].pathname).toEqual(directory.pathname);
 
@@ -123,14 +125,17 @@ describe('Collection store', () => {
 
     const collection = result.current.collections[0];
     const file1ModifiedTime = collection.items[0].items[1].modifiedAt;
+    expect(collection.items[0].items[1].type).toEqual('flowtest');
     expect(collection.items[0].items[1].name).toEqual('test1.flow');
     expect(collection.items[0].items[1].pathname).toEqual('/parent/collection/test-suite-1/test1.flow');
 
+    expect(collection.items[0].items[0].items[1].type).toEqual('flowtest');
     expect(collection.items[0].items[0].items[1].name).toEqual('test2.flow');
     expect(collection.items[0].items[0].items[1].pathname).toEqual(
       '/parent/collection/test-suite-1/test-suite-2/test2.flow',
     );
 
+    expect(collection.items[0].items[0].items[0].items[0].type).toEqual('flowtest');
     expect(collection.items[0].items[0].items[0].items[0].name).toEqual('test3.flow');
     expect(collection.items[0].items[0].items[0].items[0].pathname).toEqual(
       '/parent/collection/test-suite-1/test-suite-2/test-suite-3/test3.flow',
@@ -208,7 +213,8 @@ describe('Collection store', () => {
     });
 
     const collection = result.current.collections[0];
-    expect(collection.enviroments[0].variables).toEqual(variables);
+    expect(collection.environments[0].type).toEqual('environment');
+    expect(collection.environments[0].variables).toEqual(variables);
     expect(collection.dotEnvVariables).toEqual(dotEnvVars);
 
     act(() => {
@@ -235,7 +241,8 @@ describe('Collection store', () => {
       );
     });
 
-    expect(result.current.collections[0].enviroments[0].variables).toEqual({
+    expect(result.current.collections[0].environments[0].type).toEqual('environment');
+    expect(result.current.collections[0].environments[0].variables).toEqual({
       ...variables,
       k3: 'v3',
     });
@@ -253,7 +260,7 @@ describe('Collection store', () => {
         collectionObj.id,
       );
     });
-    expect(result.current.collections[0].enviroments).toEqual([]);
+    expect(result.current.collections[0].environments).toEqual([]);
 
     // try to remove a env file should not error out
     act(() => {
@@ -265,7 +272,7 @@ describe('Collection store', () => {
         collectionObj.id,
       );
     });
-    expect(result.current.collections[0].enviroments).toEqual([]);
+    expect(result.current.collections[0].environments).toEqual([]);
 
     directory = {
       name: 'collection',

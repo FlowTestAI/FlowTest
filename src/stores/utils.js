@@ -9,7 +9,7 @@ export const findItemInCollectionByPathname = (collection, pathname) => {
     return collection;
   } else {
     const flattenedItems = flattenItems(collection.items);
-    return find(flattenedItems, (i) => i.pathname === pathname);
+    return flattenedItems.find((i) => i.pathname === pathname);
   }
 };
 

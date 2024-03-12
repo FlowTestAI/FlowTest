@@ -3,29 +3,26 @@ import { Dialog, Transition } from '@headlessui/react';
 import { InboxArrowDownIcon } from '@heroicons/react/20/solid';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { useTabStore } from 'stores/TabStore';
 import { updateFlowTest } from 'service/collection';
 
-const SaveFlowModal = () => {
+const SaveFlowModal = ({ tab }) => {
   let [isOpen, setIsOpen] = useState(false);
-  const focusTabId = useTabStore((state) => state.focusTabId);
-  const tabs = useTabStore((state) => state.tabs);
 
   function closeModal() {
     setIsOpen(false);
   }
 
   function saveHandle() {
-    console.log(`saveHandle :: ${focusTabId}`);
-    console.log(`saveHandle :: ${JSON.stringify(tabs)}`);
-    // if un named file ==> open the modal
-    // setIsOpen(true);
-    // else save the data
-    const tab = tabs.find((tab) => tab.id === focusTabId);
-
     console.log(`saveHandle 3 :: ${tab}`);
     console.log(`saveHandle 3 :: ${JSON.stringify(tab)}`);
-    updateFlowTest(tab.pathname, tab.flowData, tab.collectionId);
+    updateFlowTest(tab.pathname, tab.flowData, tab.collectionId)
+      .then((result) => {
+        console.log(`Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}`);
+      })
+      .catch((error) => {
+        // TODO: show error in UI
+        console.log(`Error updating flowtest = ${tab.pathname}: ${error}`);
+      });
   }
 
   // ToDo: Save the file with the given file name

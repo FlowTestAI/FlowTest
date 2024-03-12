@@ -181,7 +181,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
   ipcMain.handle('renderer:read-flowtest', async (event, pathname, collectionId) => {
     try {
       const content = readFile(pathname);
-      const flowData = content === '{}' ? undefined : readableDataToFlowData(content);
+      const flowData = content === '{}' ? undefined : readableDataToFlowData(JSON.parse(content));
       mainWindow.webContents.send('main:read-flowtest', pathname, collectionId, flowData);
     } catch (error) {
       return Promise.reject(error);

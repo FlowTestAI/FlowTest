@@ -10,7 +10,7 @@ const WorkspaceContent = () => {
   return (
     <div className='flex flex-col h-full'>
       <WorkspaceContentHeader />
-      {console.log(focusTab)}
+      {/* {console.log(focusTab)} */}
       {focusTab && <Flow tabId={focusTab.id} collectionId={focusTab.collectionId} flowData={focusTab.flowData} />}
       {/* <div className='rachit-test'>{focusTabId}</div> */}
     </div>

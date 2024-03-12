@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { cloneDeep, isEqual } from 'lodash';
 
 // css
 import './index.css';
@@ -27,12 +28,96 @@ const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
 );
 
+const init = (flowData) => {
+  // Initialization
+  if (flowData && flowData.nodes && flowData.edges) {
+    return {
+      nodes: flowData.nodes,
+      edges: flowData.edges,
+    };
+  } else if (flowData && flowData.nodes && !flowData.edges) {
+    // AI prompt generated
+    const nodes = [
+      { id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
+      { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false },
+    ];
+    const edges = [
+      {
+        id: `reactflow__edge-0-1`,
+        source: `0`,
+        sourceHandle: null,
+        target: `1`,
+        targetHandle: null,
+        type: 'buttonedge',
+      },
+    ];
+    for (let i = 2; i <= flowData.nodes.length; i++) {
+      nodes.push({
+        id: `${i}`,
+        type: flowData.nodes[i - 1].type,
+        position: { x: 150 + i * 500, y: 50 },
+        data: flowData.nodes[i - 1],
+      });
+      edges.push({
+        id: `reactflow__edge-${i - 1}-${i}`,
+        source: `${i - 1}`,
+        sourceHandle: null,
+        target: `${i}`,
+        targetHandle: null,
+        type: 'buttonedge',
+      });
+    }
+    return {
+      nodes: flowData.nodes,
+      edges: flowData.edges,
+    };
+  } else {
+    return {
+      nodes: [
+        { id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
+        { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false },
+      ],
+      edges: [
+        {
+          id: `reactflow__edge-0-1`,
+          source: `0`,
+          sourceHandle: null,
+          target: `1`,
+          targetHandle: null,
+          type: 'buttonedge',
+        },
+      ],
+    };
+  }
+};
+
 const Flow = ({ tabId, collectionId, flowData }) => {
+  useEffect(() => {
+    // Action to perform on tab change
+    console.log(`Tab changed to: ${tabId}`);
+    console.log(flowData);
+    // perform actions based on the new tabId
+    const result = init(cloneDeep(flowData));
+    setNodes(result.nodes);
+    setEdges(result.edges);
+  }, [tabId]);
+
   const setCanvasDirty = () => {
+    console.debug('set canvas dirty');
     const tab = useTabStore.getState().tabs.find((t) => t.id === tabId);
     if (tab) {
       tab.isDirty = true;
-      tab.flowData = getFlowData();
+      tab.flowData = {
+        nodes: nodes.map((node) => {
+          return { ...node };
+        }),
+        edges: edges.map((edge) => {
+          return {
+            ...edge,
+            animated: false,
+          };
+        }),
+      };
     }
   };
 
@@ -40,21 +125,6 @@ const Flow = ({ tabId, collectionId, flowData }) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-
-  const getFlowData = () => {
-    if (reactFlowInstance) {
-      // save might get triggered when the flow is running, don't store animated edges
-      const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
-        return {
-          ...edge,
-          animated: false,
-        };
-      });
-      const rfInstanceObject = reactFlowInstance.toObject();
-      rfInstanceObject.edges = updatedEdges;
-      return rfInstanceObject;
-    }
-  };
 
   const nodeTypes = useMemo(
     () => ({
@@ -75,8 +145,20 @@ const Flow = ({ tabId, collectionId, flowData }) => {
     [],
   );
 
-  const [nodes, setNodes, onNodesChange] = useNodesState();
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  useEffect(() => {
+    // skip inital render
+    if (isEqual(nodes, []) && isEqual(edges, [])) {
+      return;
+    }
+    if (flowData && isEqual(nodes, flowData.nodes) && isEqual(edges, flowData.edges)) {
+      console.debug('canvas is unchanged');
+      return;
+    }
+    setCanvasDirty();
+  }, [nodes, edges]);
 
   const onConnect = (params) => {
     const newEdge = {
@@ -133,71 +215,9 @@ const Flow = ({ tabId, collectionId, flowData }) => {
       console.debug('Dropped node: ', newNode);
 
       setNodes((nds) => nds.concat(newNode));
-      setCanvasDirty();
     },
     [reactFlowInstance],
   );
-
-  // Initialization
-  useEffect(() => {
-    if (flowData && flowData.nodes && flowData.edges) {
-      setNodes(flowData.nodes);
-      setEdges(flowData.edges);
-    } else if (flowData && flowData.nodes) {
-      // AI prompt generated
-      const nodes = [
-        { id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
-        { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false },
-      ];
-      const edges = [
-        {
-          id: `reactflow__edge-0-1`,
-          source: `0`,
-          sourceHandle: null,
-          target: `1`,
-          targetHandle: null,
-          type: 'buttonedge',
-        },
-      ];
-
-      for (let i = 2; i <= flowData.nodes.length; i++) {
-        nodes.push({
-          id: `${i}`,
-          type: flowData.nodes[i - 1].type,
-          position: { x: 150 + i * 500, y: 50 },
-          data: flowData.nodes[i - 1],
-        });
-
-        edges.push({
-          id: `reactflow__edge-${i - 1}-${i}`,
-          source: `${i - 1}`,
-          sourceHandle: null,
-          target: `${i}`,
-          targetHandle: null,
-          type: 'buttonedge',
-        });
-      }
-      setNodes(nodes);
-      setEdges(edges);
-      setCanvasDirty();
-    } else {
-      setNodes([
-        { id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
-        { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false },
-      ]);
-      setEdges([
-        {
-          id: `reactflow__edge-0-1`,
-          source: `0`,
-          sourceHandle: null,
-          target: `1`,
-          targetHandle: null,
-          type: 'buttonedge',
-        },
-      ]);
-      setCanvasDirty();
-    }
-  }, []);
 
   const isValidConnection = (connection) => {
     let canConnect = true;

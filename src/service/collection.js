@@ -210,20 +210,25 @@ export const readFlowTest = (pathname, collectionId) => {
 // rename flowtest
 // tab id is flowtest id, so when rename event happens
 export const updateFlowTest = (pathname, flowData, collectionId) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-  if (collection) {
-    const flowtest = findItemInCollectionByPathname(collection, pathname);
-    if (flowtest) {
-      return new Promise((resolve, reject) => {
-        ipcRenderer.invoke('renderer:update-flowtest', pathname, flowData).then(resolve).catch(reject);
-      });
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    if (collection) {
+      const flowtest = findItemInCollectionByPathname(collection, pathname);
+      if (flowtest) {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.invoke('renderer:update-flowtest', pathname, flowData).then(resolve).catch(reject);
+        });
+      } else {
+        return Promise.reject(new Error('A flowtest with this path does not exist'));
+      }
     } else {
-      return Promise.reject(new Error('A flowtest with this path does not exist'));
+      return Promise.reject(new Error('Collection not found'));
     }
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+  } catch (error) {
+    console.log(`Error updating flowtest: ${error}`);
+    // TODO: show error in UI
   }
 };
 

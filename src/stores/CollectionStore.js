@@ -239,22 +239,26 @@ const useCollectionStore = create((set, get) => ({
     }
   },
   updateFlowTest: (file, collectionId) => {
-    const collection = get().collections.find((c) => c.id === collectionId);
+    set(
+      produce((state) => {
+        const collection = state.collections.find((c) => c.id === collectionId);
 
-    if (collection) {
-      const item = findItemInCollectionTree(file, collection);
+        if (collection) {
+          const item = findItemInCollectionTree(file, collection);
 
-      if (item) {
-        item.modifiedAt = Date.now();
-        console.log(`Collection updated: ${JSON.stringify(collection)}`);
+          if (item) {
+            item.modifiedAt = Date.now();
+            console.log(`Collection updated: ${JSON.stringify(collection)}`);
 
-        // check if there are any open tabs, if yes mark them saved
-        const tab = useTabStore.getState().tabs.find((t) => t.id === item.id);
-        if (tab) {
-          tab.isDirty = false;
+            // check if there are any open tabs, if yes mark them saved
+            const tab = useTabStore.getState().tabs.find((t) => t.id === item.id);
+            if (tab) {
+              tab.isDirty = false;
+            }
+          }
         }
-      }
-    }
+      }),
+    );
   },
   deleteFlowTest: (file, collectionId) => {
     set(

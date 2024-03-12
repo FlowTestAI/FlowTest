@@ -1,4 +1,5 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 
 // ToDo: can be more generalized
 const Button = ({ children, btnType, isDisabled, onClickHandle, fullWidth }) => {
@@ -32,4 +33,11 @@ const Button = ({ children, btnType, isDisabled, onClickHandle, fullWidth }) => 
   );
 };
 
+Button.propTypes = {
+  children: PropTypes.node.isRequired,
+  btnType: PropTypes.string.isRequired,
+  isDisabled: PropTypes.boolean.isRequired,
+  onClickHandle: PropTypes.func,
+  fullWidth: PropTypes.boolean,
+};
 export default Button;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PropTypes } from 'prop-types';
 import Directory from 'components/molecules/workspaceDirectory/Directory';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 import NewLabelModal from '../modals/workspaceDirectory/NewLabelModal';
@@ -91,6 +92,10 @@ const Directories = ({ collections }) => {
       />
     </div>
   );
+};
+
+Directories.propTypes = {
+  directoriesData: PropTypes.object.isRequired,
 };
 
 export default Directories;

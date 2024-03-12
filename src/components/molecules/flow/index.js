@@ -109,7 +109,8 @@ const Flow = ({ tabId, collectionId, flowData }) => {
       tab.isDirty = true;
       tab.flowData = {
         nodes: nodes.map((node) => {
-          return { ...node };
+          const _node = JSON.parse(JSON.stringify(node));
+          return { ..._node };
         }),
         edges: edges.map((edge) => {
           return {
@@ -153,7 +154,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
     if (isEqual(nodes, []) && isEqual(edges, [])) {
       return;
     }
-    if (flowData && isEqual(nodes, flowData.nodes) && isEqual(edges, flowData.edges)) {
+    if (flowData && isEqual(JSON.parse(JSON.stringify(nodes)), flowData.nodes) && isEqual(edges, flowData.edges)) {
       console.debug('canvas is unchanged');
       return;
     }

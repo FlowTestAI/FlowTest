@@ -248,7 +248,7 @@ const useCollectionStore = create((set, get) => ({
 
           if (item) {
             item.modifiedAt = Date.now();
-            console.log(`Collection updated: ${JSON.stringify(collection)}`);
+            // console.log(`Collection updated: ${JSON.stringify(collection)}`);
 
             // check if there are any open tabs, if yes mark them saved
             const tab = useTabStore.getState().tabs.find((t) => t.id === item.id);

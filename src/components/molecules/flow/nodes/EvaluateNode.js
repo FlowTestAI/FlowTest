@@ -23,7 +23,7 @@ const operatorMenu = (data) => {
       <select
         onChange={handleOperatorSelection}
         name='auth-type'
-        default={selectedOperatorValue}
+        value={selectedOperatorValue}
         className='w-full h-12 px-1 py-2 border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'
       >
         <option value={CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value}>

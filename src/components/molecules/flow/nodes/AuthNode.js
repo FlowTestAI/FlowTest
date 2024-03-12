@@ -42,12 +42,12 @@ const AuthNode = ({ data }) => {
         handleRightData={{ type: 'source' }}
       >
         {/* Content of the flow Node */}
-        <div className='tw-mb-2'>
+        <div className='mb-2'>
           <select
             onChange={handleSelection}
             name='auth-type'
             value={auth}
-            className='tw-w-full tw-rounded-lg tw-border tw-border-neutral-500 tw-px-1 tw-py-2 tw-text-neutral-500 tw-outline-0 focus:tw-ring-0'
+            className='w-full px-1 py-2 border rounded-lg border-neutral-500 text-neutral-500 outline-0 focus:ring-0'
           >
             <option value='no-auth'>No Auth</option>
             <option value='basic-auth'>Basic Auth</option>
@@ -58,14 +58,14 @@ const AuthNode = ({ data }) => {
             <input
               type='text'
               placeholder={data.auth.username ? data.auth.username : 'Username'}
-              className='nodrag nowheel  tw-mb-2 tw-block tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-bg-gray-50 tw-p-2.5 tw-text-sm tw-text-gray-900 tw-outline-blue-300 focus:tw-border-blue-100 focus:tw-ring-blue-100'
+              className='nodrag nowheel  mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
               name='username'
               onChange={(e) => handleChange(e.target.value, 'username')}
             />
             <input
               type='password'
               placeholder={data.auth.password ? data.auth.password : 'Password'}
-              className='nodrag nowheel tw-block tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-bg-gray-50 tw-p-2.5 tw-text-sm tw-text-gray-900 tw-outline-blue-300 focus:tw-border-blue-100 focus:tw-ring-blue-100'
+              className='nodrag nowheel block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
               name='password'
               onChange={(e) => handleChange(e.target.value, 'password')}
             />

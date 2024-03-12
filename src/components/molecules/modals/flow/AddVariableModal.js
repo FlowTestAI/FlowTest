@@ -29,42 +29,42 @@ const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd })
   return (
     <Modal open={open}>
       <Transition appear show={open} as={Fragment}>
-        <Dialog as='div' className='tw-relative tw-z-10' onClose={closeFn}>
+        <Dialog as='div' className='relative z-10' onClose={closeFn}>
           <Transition.Child
             as={Fragment}
-            enter='tw-ease-out tw-duration-300'
-            enterFrom='tw-opacity-0'
-            enterTo='tw-opacity-100'
-            leave='tw-ease-in tw-duration-200'
-            leaveFrom='tw-opacity-100'
-            leaveTo='tw-opacity-0'
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
           >
-            <div className='tw-fixed tw-inset-0 tw-bg-black/25' />
+            <div className='fixed inset-0 bg-black/25' />
           </Transition.Child>
 
-          <div className='tw-fixed tw-inset-0 tw-overflow-y-auto'>
-            <div className='tw-flex tw-min-h-full tw-items-center tw-justify-center tw-p-4 tw-text-center'>
+          <div className='fixed inset-0 overflow-y-auto'>
+            <div className='flex items-center justify-center min-h-full p-4 text-center'>
               <Transition.Child
                 as={Fragment}
-                enter='tw-ease-out tw-duration-300'
-                enterFrom='tw-opacity-0 tw-scale-95'
-                enterTo='tw-opacity-100 tw-scale-100'
-                leave='tw-ease-in tw-duration-200'
-                leaveFrom='tw-opacity-100 tw-scale-100'
-                leaveTo='tw-opacity-0 tw-scale-95'
+                enter='ease-out duration-300'
+                enterFrom='opacity-0 scale-95'
+                enterTo='opacity-100 scale-100'
+                leave='ease-in duration-200'
+                leaveFrom='opacity-100 scale-100'
+                leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='tw-w-full tw-max-w-min tw-transform tw-overflow-hidden tw-rounded-2xl tw-bg-white tw-p-6 tw-text-left tw-align-middle tw-shadow-xl tw-transition-all'>
+                <Dialog.Panel className='w-full p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl max-w-min rounded-2xl'>
                   <Dialog.Title
                     as='h3'
-                    className='tw-border-[rgba(128, 128, 128, 0.35)] tw-border-b tw-pb-4 tw-text-center tw-text-lg tw-font-semibold tw-text-gray-900'
+                    className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
                   >
                     Create a new variable for request node
                   </Dialog.Title>
-                  <div className='tw-mt-6 tw-flex tw-w-24 tw-min-w-[40vw] tw-items-center tw-justify-center tw-rounded-md tw-border tw-border-neutral-500 tw-text-sm tw-text-neutral-500 tw-outline-0 focus:tw-ring-0'>
+                  <div className='mt-6 flex w-24 min-w-[40vw] items-center justify-center rounded-md border border-neutral-500 text-sm text-neutral-500 outline-0 focus:ring-0'>
                     <input
                       id='keyName'
                       type='text'
-                      className='nodrag nowheel tw-block tw-h-12 tw-w-full tw-rounded-bl-md tw-rounded-tl-md  tw-p-2.5'
+                      className='nodrag nowheel block h-12 w-full rounded-bl-md rounded-tl-md  p-2.5'
                       name='keyName'
                       placeholder='Enter variable name'
                       onChange={(e) => setVariableName(e.target.value)}
@@ -72,12 +72,11 @@ const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd })
                     <select
                       onChange={(event) => {
                         const selectedValue = event.target.value;
-                        //console.log(`variable type selected: ${selectedValue}`);
                         setVariableType(selectedValue);
                       }}
                       name='var-input-type'
                       defaultValue={variableType}
-                      className='nodrag tw-h-12 tw-w-full tw-max-w-[30%] tw-rounded-br-md tw-rounded-tr-md tw-border-l tw-border-l-neutral-500 tw-p-0 tw-px-1'
+                      className='nodrag h-12 w-full max-w-[30%] rounded-br-md rounded-tr-md border-l border-l-neutral-500 p-0 px-1'
                     >
                       {variableTypes.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -86,21 +85,19 @@ const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd })
                       ))}
                     </select>
                   </div>
-                  <div className='items-center tw-mt-6 tw-flex tw-gap-2'>
+                  <div className='flex items-center gap-2 mt-6'>
                     <button
                       type='button'
-                      className='tw-inline-flex tw-w-full tw-grow tw-basis-0 tw-justify-center tw-rounded-md tw-border tw-border-transparent tw-bg-sky-100 tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-blue-900 hover:tw-bg-sky-300'
+                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-blue-900 border border-transparent rounded-md grow basis-0 bg-sky-100 hover:bg-sky-300'
                       onClick={closeFn}
                     >
                       Cancel
                     </button>
                     <button
                       type='button'
-                      className='tw-inline-flex tw-w-full tw-grow tw-basis-0 tw-justify-center tw-rounded-md tw-border tw-border-transparent tw-bg-green-100 tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-green-900 hover:tw-bg-green-400'
+                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-green-400'
                       onClick={() => {
                         if (variableName.trim() != '') {
-                          // console.log(`Adding ${variableName} && ${variableType}`);
-                          // setVariableModalData(variableName, variableType);
                           onVariableAdd(variableName, variableType);
                         }
                         closeFn();

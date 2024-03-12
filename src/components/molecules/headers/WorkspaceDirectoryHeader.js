@@ -4,6 +4,10 @@ import { ChevronRightIcon } from '@heroicons/react/16/solid';
 import { useNavigationStore } from 'stores/AppNavBarStore';
 import { AppNavBarItems } from 'constants/AppNavBar';
 
+/** Here breadcrumbs will only have three values
+ * My workspace > [ Navigation selected value ] > [ name of the collection created by the user ]
+ * ToDo: Make the breadcrumbs items clickable and iterable
+ * */
 const WorkspaceDirectoryHeader = () => {
   const navigationSelectedValue = useNavigationStore((state) => {
     const navigationVal = state.selectedNavVal;
@@ -16,16 +20,16 @@ const WorkspaceDirectoryHeader = () => {
         return AppNavBarItems.environments.displayValue;
     }
   });
+
   return (
-    <div className='tw-border-[rgba(128, 128, 128, 0.35)] tw-flex tw-justify-between tw-border-b tw-p-2 tw-text-cyan-950'>
-      <div className='tw-flex tw-items-center tw-gap-x-1'>
-        <UserIcon className='tw-h-3 tw-w-3' />
-        <div className='tw-flex tw-items-center tw-justify-start tw-gap-x-1 tw-truncate'>
-          {/* Here breadcrumbs will only have three values
-           * My workspace > [ Navigation selected value ] > [ name of the collection created by the user ]
-           */}
-          My Workspace <ChevronRightIcon className='tw-h-3 tw-w-3' /> {navigationSelectedValue}
-        </div>
+    <div className='flex justify-between p-2 border-b border-neutral-300 text-cyan-950'>
+      <div className='flex items-center justify-start gap-1'>
+        <a className='flex items-center justify-between gap-1 link-hover link'>
+          <UserIcon className='w-3 h-3' />
+          <span>My Workspace</span>
+        </a>
+        <ChevronRightIcon className='w-3 h-3' />
+        <a className='link-hover link'>{navigationSelectedValue}</a>
       </div>
     </div>
   );

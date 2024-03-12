@@ -1,8 +1,8 @@
 import React, { Fragment, useRef } from 'react';
+import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'constants/ImportCollectionTypes';
-import Modal from './Modal';
 import { createCollection } from 'service/collection';
 
 const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
@@ -39,7 +39,6 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
     closeFn();
 
     // This solution will only work in Electron not in webapp
-
     selectDirectory()
       .then((dirPath) => {
         createCollection(yamlPath, dirPath);
@@ -50,62 +49,61 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
   };
 
   return (
-    <Modal open={open}>
-      <Transition appear show={open} as={Fragment}>
-        <Dialog as='div' className='tw-relative tw-z-10' onClose={closeFn}>
-          <Transition.Child
-            as={Fragment}
-            enter='tw-ease-out tw-duration-300'
-            enterFrom='tw-opacity-0'
-            enterTo='tw-opacity-100'
-            leave='tw-ease-in tw-duration-200'
-            leaveFrom='tw-opacity-100'
-            leaveTo='tw-opacity-0'
-          >
-            <div className='tw-fixed tw-inset-0 tw-bg-black/25' />
-          </Transition.Child>
+    <Transition appear show={open} as={Fragment}>
+      <Dialog as='div' className='relative z-10' onClose={closeFn}>
+        <Transition.Child
+          as={Fragment}
+          enter='ease-out duration-300'
+          enterFrom='opacity-0'
+          enterTo='opacity-100'
+          leave='ease-in duration-200'
+          leaveFrom='opacity-100'
+          leaveTo='opacity-0'
+        >
+          <div className='fixed inset-0 bg-black/25' />
+        </Transition.Child>
 
-          <div className='tw-fixed tw-inset-0 tw-overflow-y-auto'>
-            <div className='tw-flex tw-min-h-full tw-items-center tw-justify-center tw-p-4 tw-text-center'>
-              <Transition.Child
-                as={Fragment}
-                enter='tw-ease-out tw-duration-300'
-                enterFrom='tw-opacity-0 tw-scale-95'
-                enterTo='tw-opacity-100 tw-scale-100'
-                leave='tw-ease-in tw-duration-200'
-                leaveFrom='tw-opacity-100 tw-scale-100'
-                leaveTo='tw-opacity-0 tw-scale-95'
-              >
-                <Dialog.Panel className='tw-w-full tw-max-w-md tw-transform tw-overflow-hidden tw-rounded-2xl tw-bg-white tw-p-6 tw-text-left tw-align-middle tw-shadow-xl tw-transition-all'>
-                  <Dialog.Title
-                    as='h3'
-                    className='tw-border-[rgba(128, 128, 128, 0.35)] tw-border-b tw-pb-4 tw-text-center tw-text-lg tw-font-semibold tw-text-gray-900'
-                  >
-                    Collections
-                  </Dialog.Title>
-                  <div className='tw-mt-4'>
-                    <ul className='tw-text-sm tw-font-medium'>
-                      <li
-                        className='tw-flex tw-cursor-pointer tw-items-center tw-justify-start tw-gap-2 tw-rounded-md tw-border tw-border-transparent tw-p-2 hover:tw-bg-slate-100'
-                        onClick={handleImportCollectionClick}
-                        data-import-type='yaml'
-                      >
-                        <DocumentArrowUpIcon className='tw-h-4 tw-w-4' />
-                        Import a YAML file
-                        {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
-                        <div className='tw-hidden'>
-                          <input
-                            type='file'
-                            id='file'
-                            accept='.yaml,.yml'
-                            ref={importYamlFile}
-                            onChange={handleFileSelection}
-                          />
-                        </div>
-                      </li>
-                      {/* For future refer */}
-                      {/* <li className='tw-flex tw-cursor-pointer tw-items-center tw-justify-start tw-gap-2 tw-p-2 hover:tw-bg-slate-100'>
-                      <DocumentArrowUpIcon className='tw-h-4 tw-w-4' />
+        <div className='fixed inset-0 overflow-y-auto'>
+          <div className='flex min-h-full items-center justify-center p-4 text-center'>
+            <Transition.Child
+              as={Fragment}
+              enter='ease-out duration-300'
+              enterFrom='opacity-0 scale-95'
+              enterTo='opacity-100 scale-100'
+              leave='ease-in duration-200'
+              leaveFrom='opacity-100 scale-100'
+              leaveTo='opacity-0 scale-95'
+            >
+              <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
+                <Dialog.Title
+                  as='h3'
+                  className='border-b border-neutral-300 pb-4 text-center text-lg font-semibold text-gray-900'
+                >
+                  Collections
+                </Dialog.Title>
+                <div className='mt-4'>
+                  <ul className='text-sm font-medium'>
+                    <li
+                      className='flex cursor-pointer items-center justify-start gap-2 rounded-md border border-transparent p-2 hover:bg-slate-100'
+                      onClick={handleImportCollectionClick}
+                      data-import-type='yaml'
+                    >
+                      <DocumentArrowUpIcon className='h-4 w-4' />
+                      Import a YAML file
+                      {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
+                      <div className='hidden'>
+                        <input
+                          type='file'
+                          id='file'
+                          accept='.yaml,.yml'
+                          ref={importYamlFile}
+                          onChange={handleFileSelection}
+                        />
+                      </div>
+                    </li>
+                    {/* For future refer */}
+                    {/* <li className='flex items-center justify-start gap-2 p-2 cursor-pointer hover:bg-slate-100'>
+                      <DocumentArrowUpIcon className='w-4 h-4' />
                       Import from Open API
                       <input
                         type='file'
@@ -115,8 +113,8 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
                         onChange={handleOnChangeForImportYaml}
                       />
                     </li>
-                    <li className='tw-flex tw-cursor-pointer tw-items-center tw-justify-start tw-gap-2 tw-p-2 hover:tw-bg-slate-100'>
-                      <DocumentArrowUpIcon className='tw-h-4 tw-w-4' />
+                    <li className='flex items-center justify-start gap-2 p-2 cursor-pointer hover:bg-slate-100'>
+                      <DocumentArrowUpIcon className='w-4 h-4' />
                       Import from Postman
                       <input
                         type='file'
@@ -126,16 +124,20 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
                         onChange={handleOnChangeForImportYaml}
                       />
                     </li> */}
-                    </ul>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
+                  </ul>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
           </div>
-        </Dialog>
-      </Transition>
-    </Modal>
+        </div>
+      </Dialog>
+    </Transition>
   );
+};
+
+ImportCollectionModal.propTypes = {
+  closeFn: PropTypes.func.isRequired,
+  open: PropTypes.boolean.isRequired,
 };
 
 export default ImportCollectionModal;

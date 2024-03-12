@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export const useEventStore = create((set, get) => ({
+export const useEventStore = create((set) => ({
   events: [],
   addEvent: (event) => {
     set((state) => ({ events: [...state.events, event] }));

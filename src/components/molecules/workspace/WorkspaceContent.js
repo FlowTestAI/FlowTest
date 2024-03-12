@@ -1,12 +1,19 @@
 import React from 'react';
-import Flow from 'components/molecules/flow';
+// import Flow from 'components/molecules/flow';
 import WorkspaceContentHeader from 'components/molecules/headers/WorkspaceContentHeader';
+import { useTabStore } from 'stores/TabStore';
 
 const WorkspaceContent = () => {
+  const focusTabId = useTabStore((state) => state.focusTabId);
   return (
-    <div className='tw-flex tw-h-full tw-flex-col'>
+    <div className='flex flex-col h-full'>
       <WorkspaceContentHeader />
-      <Flow />
+      {/* <Flow
+        tabId={selectedTabData.id}
+        collectionId={selectedTabData.collectionId}
+        flowData={selectedTabData.flowData}
+      /> */}
+      <div className='rachit-test'>{focusTabId}</div>
     </div>
   );
 };

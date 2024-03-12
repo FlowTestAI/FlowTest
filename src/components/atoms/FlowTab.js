@@ -1,11 +1,43 @@
 import React from 'react';
-import { ShareIcon } from '@heroicons/react/20/solid';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useTabStore } from 'stores/TabStore';
 
 const FlowTab = () => {
+  const tabs = useTabStore((state) => state.tabs);
+  const setFocusTab = useTabStore((state) => state.setFocusTab);
+  const focusTabId = useTabStore((state) => state.focusTabId);
+  const closeTab = useTabStore((state) => state.closeTab);
+  const activeTabStyles =
+    'before:absolute before:h-[0.25rem] before:w-full before:bg-slate-300 before:content-[""] before:bottom-0 before:left-0';
+  const tabCommonStyles =
+    'tab flex items-center gap-x-2 border-r border-neutral-300 bg-transparent pr-0 tracking-[0.15em] transition duration-500 ease-in text-sm';
   return (
-    <div className='tw-border-[rgba(128, 128, 128, 0.35)] tw-flex tw-items-center tw-gap-x-2 tw-border-r tw-px-8 tw-py-4'>
-      <ShareIcon className='tw-h-5 tw-w-5' />
-      New Flow
+    <div role='tablist' className='tabs tabs-lg'>
+      {tabs.map((tab, index) => {
+        return (
+          <a
+            role='tab'
+            className={`${tabCommonStyles} ${focusTabId === tab.id ? activeTabStyles : ''}`}
+            key={index}
+            data-id={tab.id}
+            data-collection-id={tab.collectionId}
+            onClick={() => {
+              setFocusTab(tab.id);
+              console.log(`CLICKED THE ${tab.id}`);
+            }}
+          >
+            {tab.name}
+            <div
+              className='flex h-full items-center px-2 hover:rounded hover:rounded-l-none hover:bg-slate-200'
+              onClick={() => {
+                closeTab(tab.id, tab.collectionId);
+              }}
+            >
+              <XMarkIcon className='h-4 w-4' />
+            </div>
+          </a>
+        );
+      })}
     </div>
   );
 };

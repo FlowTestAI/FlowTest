@@ -19,12 +19,12 @@ const operatorMenu = (data) => {
   };
 
   return (
-    <div className='tw-mb-4'>
+    <div className='mb-4'>
       <select
         onChange={handleOperatorSelection}
         name='auth-type'
         default={selectedOperatorValue}
-        className='tw-h-12 tw-w-full tw-rounded-md tw-border tw-border-neutral-500 tw-px-1 tw-py-2 tw-text-neutral-500 tw-outline-0 focus:tw-ring-0'
+        className='w-full h-12 px-1 py-2 border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'
       >
         <option value={CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value}>
           {CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.displayValue}
@@ -89,12 +89,12 @@ const variableElem = (data, varName) => {
   };
 
   return (
-    <div className='tw-mb-4 tw-flex tw-items-center tw-justify-center tw-rounded-md tw-border tw-border-neutral-500 tw-text-sm tw-text-neutral-500 tw-outline-0 focus:tw-ring-0'>
+    <div className='flex items-center justify-center mb-4 text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
       {varType === 'Boolean' ? (
         <select
           onChange={handleBooleanValueSelection}
           name='boolean-val'
-          className='nodrag tw-h-12 tw-w-full tw-rounded-br-md tw-rounded-tr-md  tw-p-2.5 tw-px-1 '
+          className='nodrag h-12 w-full rounded-br-md rounded-tr-md  p-2.5 px-1 '
           value={variableValue}
         >
           <option value='true'>True</option>
@@ -104,7 +104,7 @@ const variableElem = (data, varName) => {
         <input
           id='outlined-adornment-weight'
           type={inputType}
-          className='nodrag nowheel tw-block tw-h-12 tw-w-full tw-rounded-bl-md tw-rounded-tl-md  tw-p-2.5'
+          className='nodrag nowheel block h-12 w-full rounded-bl-md rounded-tl-md  p-2.5'
           name='variable-value'
           placeholder={varName}
           value={variableValue}
@@ -134,7 +134,7 @@ const variableElem = (data, varName) => {
       <select
         onChange={handleInputTypeSelection}
         name='var-input-type'
-        className='nodrag tw-h-8 tw-w-full tw-rounded-br-md tw-rounded-tr-md tw-border-l tw-border-l-neutral-500 tw-p-0 tw-px-1'
+        className='w-full h-8 p-0 px-1 border-l nodrag rounded-br-md rounded-tr-md border-l-neutral-500'
         value={varType}
       >
         <option value='Select'>Select</option>
@@ -159,14 +159,14 @@ const EvaluateNode = ({ data }) => {
       handleRight={true}
       handleRightData={{ type: 'source', id: 'true', styles: { bottom: 40, top: 'auto' } }}
     >
-      <div className='tw-pb-2'>
+      <div className='pb-2'>
         <div>
           <div>{variableElem(data, 'var1')}</div>
           <div>{operatorMenu(data)}</div>
           <div>{variableElem(data, 'var2')}</div>
         </div>
-        <div className='tw-text-right'>
-          <div className='tw-pb-4'>True</div>
+        <div className='text-right'>
+          <div className='pb-4'>True</div>
           <div>False</div>
         </div>
       </div>

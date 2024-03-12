@@ -7,10 +7,10 @@ import WorkspaceDirectory from '../organisms/workspaceDirectory/WorkspaceDirecto
 
 const SplitPane = () => {
   return (
-    <main className='tw-h-full'>
+    <main className='h-full'>
       <Allotment>
         <Allotment.Pane preferredSize={'450px'} minSize={450}>
-          <div className='tw-flex tw-text-xs'>
+          <div className='flex text-xs'>
             <AppNavBar />
             <WorkspaceDirectory />
           </div>

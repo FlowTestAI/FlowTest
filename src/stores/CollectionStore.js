@@ -9,6 +9,7 @@ import {
 } from './utils.js';
 import { useEventStore } from './EventListenerStore.js';
 import { useTabStore } from './TabStore.js';
+import { OBJ_TYPES } from 'constants/Common.js';
 
 const useCollectionStore = create((set, get) => ({
   collections: [],
@@ -16,7 +17,7 @@ const useCollectionStore = create((set, get) => ({
     const collectionObj = {
       version: '1',
       id: id,
-      type: 'collection',
+      type: OBJ_TYPES.collection,
       name: name,
       pathname: pathname,
       nodes: nodes,
@@ -44,13 +45,13 @@ const useCollectionStore = create((set, get) => ({
           let currentPath = collection.pathname;
           let currentSubItems = collection.items;
           for (const directoryName of subDirsFromRoot) {
-            let childItem = currentSubItems.find((f) => f.type === 'folder' && f.name === directoryName);
+            let childItem = currentSubItems.find((f) => f.type === OBJ_TYPES.folder && f.name === directoryName);
             if (!childItem) {
               childItem = {
                 id: uuidv4(),
                 pathname: `${currentPath}${PATH_SEPARATOR}${directoryName}`,
                 name: directoryName,
-                type: 'folder',
+                type: OBJ_TYPES.folder,
                 items: [],
               };
               currentSubItems.push(childItem);
@@ -78,7 +79,7 @@ const useCollectionStore = create((set, get) => ({
 
             if (item) {
               const flowTestIds = flattenItems(item.items).map((i) => {
-                if (i.type !== 'folder') {
+                if (i.type !== OBJ_TYPES.folder) {
                   i.id;
                 }
               });
@@ -107,7 +108,7 @@ const useCollectionStore = create((set, get) => ({
         const timestamp = Date.now();
         const env = {
           id: uuidv4(),
-          type: 'environment',
+          type: OBJ_TYPES.environment,
           createdAt: timestamp,
           modifiedAt: timestamp,
           ...file,
@@ -160,13 +161,13 @@ const useCollectionStore = create((set, get) => ({
           let currentPath = collection.pathname;
           let currentSubItems = collection.items;
           for (const directoryName of file.subDirectories) {
-            let childItem = currentSubItems.find((f) => f.type === 'folder' && f.name === directoryName);
+            let childItem = currentSubItems.find((f) => f.type === OBJ_TYPES.folder && f.name === directoryName);
             if (!childItem) {
               childItem = {
                 id: uuidv4(),
                 pathname: `${currentPath}${PATH_SEPARATOR}${directoryName}`,
                 name: directoryName,
-                type: 'folder',
+                type: OBJ_TYPES.folder,
                 items: [],
               };
               currentSubItems.push(childItem);
@@ -180,7 +181,7 @@ const useCollectionStore = create((set, get) => ({
             const timestamp = Date.now();
             const flowtest = {
               id: uuidv4(),
-              type: 'flowtest',
+              type: OBJ_TYPES.flowtest,
               createdAt: timestamp,
               modifiedAt: timestamp,
               name: file.name,

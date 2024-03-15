@@ -2,6 +2,7 @@ import useCollectionStore from '../stores/CollectionStore';
 import { v4 as uuidv4 } from 'uuid';
 import { findItemInCollectionByPathname } from 'stores/utils';
 import { useEventStore } from 'stores/EventListenerStore';
+import { OBJ_TYPES } from 'constants/Common';
 
 export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;
@@ -40,7 +41,7 @@ export const createFolder = (folderName, folderPath, collectionId) => {
     const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
     if (collection) {
       const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
-      const sameFolderExists = folderPathItem.items.find((i) => i.type === 'folder' && i.name === folderName);
+      const sameFolderExists = folderPathItem.items.find((i) => i.type === OBJ_TYPES.folder && i.name === folderName);
       if (sameFolderExists) {
         return Promise.reject(new Error('A folder with the same name already exists'));
       } else {
@@ -153,7 +154,9 @@ export const createFlowTest = (name, folderPath, collectionId) => {
     const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
     if (collection) {
       const folderPathItem = findItemInCollectionByPathname(collection, folderPath);
-      const sameFlowTestExists = folderPathItem.items.find((i) => i.type === 'flowtest' && i.name === `${name}.flow`);
+      const sameFlowTestExists = folderPathItem.items.find(
+        (i) => i.type === OBJ_TYPES.flowtest && i.name === `${name}.flow`,
+      );
       if (sameFlowTestExists) {
         return Promise.reject(new Error('A flowtest with the same name already exists'));
       } else {

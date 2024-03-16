@@ -53,8 +53,8 @@ export const computeRequestNode = async (node, prevNodeOutputData, env, auth, lo
   const evalVariables = computeNodeVariables(node.data.variables, prevNodeOutputData);
 
   const variablesDict = {
-    ...evalVariables,
     ...env?.variables,
+    ...evalVariables,
   };
 
   // step2 replace variables in url with value

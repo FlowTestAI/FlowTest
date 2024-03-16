@@ -63,7 +63,7 @@ const AuthNode = ({ data }) => {
               onChange={(e) => handleChange(e.target.value, 'username')}
             />
             <input
-              type='password'
+              type='text'
               placeholder={data.auth.password ? data.auth.password : 'Password'}
               className='nodrag nowheel block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
               name='password'

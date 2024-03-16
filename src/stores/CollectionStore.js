@@ -96,60 +96,72 @@ const useCollectionStore = create((set, get) => ({
     );
   },
   addOrUpdateEnvFile: (file, collectionId) => {
-    const collection = get().collections.find((c) => c.id === collectionId);
+    set(
+      produce((state) => {
+        const collection = state.collections.find((c) => c.id === collectionId);
 
-    if (collection) {
-      const existingEnv = collection.environments.find((e) => e.name === file.name && e.pathname === file.pathname);
-      if (existingEnv) {
-        existingEnv.modifiedAt = Date.now();
-        existingEnv.variables = file.variables;
-        console.log(`Collection env updated: ${JSON.stringify(collection)}`);
-      } else {
-        const timestamp = Date.now();
-        const env = {
-          id: uuidv4(),
-          type: OBJ_TYPES.environment,
-          createdAt: timestamp,
-          modifiedAt: timestamp,
-          ...file,
-        };
-        collection.environments.push(env);
-        console.log(`Collection env added: ${JSON.stringify(collection)}`);
-        // check if there are any open tab requests
-        const event = useEventStore
-          .getState()
-          .events.find(
-            (e) => e.type === 'OPEN_NEW_ENVIRONMENT' && e.collectionId === collectionId && e.name === file.name,
-          );
-        if (event) {
-          useTabStore.getState().addEnvTab(env, collectionId);
-          useEventStore.getState().removeEvent(event.id);
+        if (collection) {
+          const existingEnv = collection.environments.find((e) => e.name === file.name && e.pathname === file.pathname);
+          if (existingEnv) {
+            existingEnv.modifiedAt = Date.now();
+            existingEnv.variables = file.variables;
+            console.log(`Collection env updated: ${JSON.stringify(existingEnv)}`);
+          } else {
+            const timestamp = Date.now();
+            const env = {
+              id: uuidv4(),
+              type: OBJ_TYPES.environment,
+              createdAt: timestamp,
+              modifiedAt: timestamp,
+              ...file,
+            };
+            collection.environments.push(env);
+            console.log(`Collection env added: ${JSON.stringify(env)}`);
+            // check if there are any open tab requests
+            const event = useEventStore
+              .getState()
+              .events.find(
+                (e) => e.type === 'OPEN_NEW_ENVIRONMENT' && e.collectionId === collectionId && e.name === file.name,
+              );
+            if (event) {
+              useTabStore.getState().addEnvTab(env, collectionId);
+              useEventStore.getState().removeEvent(event.id);
+            }
+          }
         }
-      }
-    }
+      }),
+    );
   },
   deleteEnvFile: (file, collectionId) => {
-    const collection = get().collections.find((c) => c.id === collectionId);
+    set(
+      produce((state) => {
+        const collection = state.collections.find((c) => c.id === collectionId);
 
-    if (collection && collection.environments) {
-      const existingEnv = collection.environments.find((e) => e.name === file.name && e.pathname === file.pathname);
-      if (existingEnv) {
-        collection.environments = collection.environments.filter(
-          (e) => e.name !== file.name && e.pathname !== file.pathname,
-        );
-        console.log(`Collection updated: ${JSON.stringify(collection)}`);
-        // remove any open tab of this env
-        useTabStore.getState().closeTab(existingEnv.id, collectionId);
-      }
-    }
+        if (collection && collection.environments) {
+          const existingEnv = collection.environments.find((e) => e.name === file.name && e.pathname === file.pathname);
+          if (existingEnv) {
+            collection.environments = collection.environments.filter(
+              (e) => e.name !== file.name && e.pathname !== file.pathname,
+            );
+            console.log(`Collection env removed: ${JSON.stringify(existingEnv)}`);
+            // remove any open tab of this env
+            useTabStore.getState().closeTab(existingEnv.id, collectionId);
+          }
+        }
+      }),
+    );
   },
   addOrUpdateDotEnvVariables: (variables, collectionId) => {
-    const collection = get().collections.find((c) => c.id === collectionId);
+    set(
+      produce((state) => {
+        const collection = state.collections.find((c) => c.id === collectionId);
 
-    if (collection) {
-      collection.dotEnvVariables = variables;
-      console.log(`Collection dotenv variables added/updated: ${JSON.stringify(collection)}`);
-    }
+        if (collection) {
+          collection.dotEnvVariables = variables;
+          console.log(`Collection dotenv variables added/updated: ${JSON.stringify(collection.dotEnvVariables)}`);
+        }
+      }),
+    );
   },
   createFlowTest: (file, collectionId) => {
     set(

@@ -62,7 +62,7 @@ export const computeRequestNode = async (node, prevNodeOutputData, auth, logs) =
   // step2 replace variables in url with value
   let finalUrl = node.data.url;
   Object.entries(evalVariables).map(([vname, vvalue], index) => {
-    finalUrl = finalUrl.replace(`{${vname}}`, vvalue);
+    finalUrl = finalUrl.replace(`{{${vname}}}`, vvalue);
   });
 
   // step 3

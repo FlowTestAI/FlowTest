@@ -52,3 +52,16 @@ export const computeNodeVariables = (variables, prevNodeOutputData) => {
   });
   return evalVariables;
 };
+
+export const computeEnvVariable = (variable, env) => {
+  if (env) {
+    const varValue = env.variables[`${variable}`];
+    if (varValue) {
+      return varValue;
+    } else {
+      throw `Cannot find variable ${variable} in env variables`;
+    }
+  } else {
+    throw 'No env is selected';
+  }
+};

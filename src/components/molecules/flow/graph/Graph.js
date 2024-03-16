@@ -1,10 +1,13 @@
 // assumption is that apis are giving json as output
 
+import useCollectionStore from 'stores/CollectionStore';
+import { useTabStore } from 'stores/TabStore';
+import { computeAuthNode } from './compute/authnode';
 import { computeEvaluateNode } from './compute/evaluatenode';
 import { computeRequestNode } from './compute/requestnode';
 
 class Graph {
-  constructor(nodes, edges, onGraphComplete) {
+  constructor(nodes, edges, collectionId, onGraphComplete) {
     this.nodes = nodes;
     this.edges = edges;
     this.onGraphComplete = onGraphComplete;
@@ -13,6 +16,10 @@ class Graph {
     this.startTime = Date.now();
     this.graphRunNodeOutput = {};
     this.auth = undefined;
+    this.env = useCollectionStore
+      .getState()
+      .collections.find((c) => c.id === collectionId)
+      ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
   }
 
   #checkTimeout() {
@@ -87,12 +94,12 @@ class Graph {
       }
 
       if (node.type === 'authNode') {
-        this.auth = node.data.auth;
+        this.auth = computeAuthNode(node.data.auth, this.env);
         result = ['Success', node, prevNodeOutput];
       }
 
       if (node.type === 'requestNode') {
-        result = await computeRequestNode(node, prevNodeOutputData, this.auth, this.logs);
+        result = await computeRequestNode(node, prevNodeOutputData, this.env, this.auth, this.logs);
       }
 
       if (this.#checkTimeout()) {

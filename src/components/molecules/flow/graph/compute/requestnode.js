@@ -8,31 +8,24 @@ const runHttpRequest = (request) => {
   });
 };
 
-const formulateRequest = (node, finalUrl, auth, logs) => {
+const formulateRequest = (node, finalUrl, variablesDict, auth, logs) => {
   let restMethod = node.data.requestType.toLowerCase();
   let contentType = 'application/json';
   let requestData = undefined;
 
-  if (restMethod === 'get') {
-    if (node.data.requestBody) {
-      if (node.data.requestBody.type === 'raw-json') {
-        contentType = 'application/json';
-        requestData = node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}');
-      }
-    }
-  } else if (restMethod === 'post' || restMethod === 'put') {
-    if (node.data.requestBody) {
-      if (node.data.requestBody.type === 'form-data') {
-        contentType = 'multipart/form-data';
-        requestData = {
-          key: node.data.requestBody.body.key,
-          value: node.data.requestBody.body.value,
-          name: node.data.requestBody.body.name,
-        };
-      } else if (node.data.requestBody.type === 'raw-json') {
-        contentType = 'application/json';
-        requestData = node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}');
-      }
+  if (node.data.requestBody) {
+    if (node.data.requestBody.type === 'raw-json') {
+      contentType = 'application/json';
+      requestData = node.data.requestBody.body
+        ? JSON.parse(computeVariables(node.data.requestBody.body, variablesDict))
+        : JSON.parse('{}');
+    } else if (node.data.requestBody.type === 'form-data') {
+      contentType = 'multipart/form-data';
+      requestData = {
+        key: computeVariables(node.data.requestBody.body.key, variablesDict),
+        value: node.data.requestBody.body.value,
+        name: node.data.requestBody.body.name,
+      };
     }
   }
 
@@ -68,7 +61,7 @@ export const computeRequestNode = async (node, prevNodeOutputData, env, auth, lo
   const finalUrl = computeVariables(node.data.url, variablesDict);
 
   // step 3
-  const options = formulateRequest(node, finalUrl, auth, logs);
+  const options = formulateRequest(node, finalUrl, variablesDict, auth, logs);
 
   console.debug('Avialable variables: ', variablesDict);
   console.debug('Evaluated Url: ', finalUrl);

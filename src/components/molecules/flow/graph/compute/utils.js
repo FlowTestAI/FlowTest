@@ -17,7 +17,7 @@ const computeNodeVariable = (variable, prevNodeOutputData) => {
         console.debug(
           `Cannot evaluate variable ${variable} as previous node output data ${JSON.stringify(prevNodeOutputData)} is empty`,
         );
-        throw `Cannot evaluate variable ${variable.value}`;
+        throw Error(`Cannot evaluate variable ${variable.value}`);
       }
       const jsonTree = variable.value.split('.');
       const getVal = (parent, pos) => {
@@ -36,11 +36,11 @@ const computeNodeVariable = (variable, prevNodeOutputData) => {
         console.debug(
           `Cannot evaluate variable ${JSON.stringify(variable)} as previous node output data ${JSON.stringify(prevNodeOutputData)} did not contain the variable`,
         );
-        throw `Cannot evaluate variable ${variable.value}`;
+        throw Error(`Cannot evaluate variable ${variable.value}`);
       }
       return result;
     } catch (error) {
-      throw `Cannot evaluate variable ${variable.value}`;
+      throw Error(`Cannot evaluate variable ${variable.value}`);
     }
   }
 };
@@ -53,15 +53,22 @@ export const computeNodeVariables = (variables, prevNodeOutputData) => {
   return evalVariables;
 };
 
-export const computeEnvVariable = (variable, env) => {
-  if (env) {
-    const varValue = env.variables[`${variable}`];
-    if (varValue) {
-      return varValue;
+export const computeVariables = (str, variablesDict) => {
+  const regex = /\{\{(.+)\}\}/;
+  const foundRegex = regex.exec(str);
+  if (foundRegex) {
+    const match = str.match(/{{([^}]+)}}/);
+    if (variablesDict) {
+      const varValue = variablesDict[`${match[1]}`];
+      if (varValue) {
+        return computeVariables(str.replaceAll(match[0], varValue), variablesDict);
+      } else {
+        throw Error(`Cannot find value of variable ${match[1]}`);
+      }
     } else {
-      throw `Cannot find variable ${variable} in env variables`;
+      throw Error(`Cannot compute variable ${match[1]} as dict is empty`);
     }
   } else {
-    throw 'No env is selected';
+    return str;
   }
 };

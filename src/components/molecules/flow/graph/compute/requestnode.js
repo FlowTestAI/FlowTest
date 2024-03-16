@@ -1,4 +1,4 @@
-import { computeNodeVariables } from './utils';
+import { computeNodeVariables, computeVariables } from './utils';
 
 const runHttpRequest = (request) => {
   const { ipcRenderer } = window;
@@ -55,20 +55,22 @@ const formulateRequest = (node, finalUrl, auth, logs) => {
   return options;
 };
 
-export const computeRequestNode = async (node, prevNodeOutputData, auth, logs) => {
+export const computeRequestNode = async (node, prevNodeOutputData, env, auth, logs) => {
   // step1 evaluate variables of this node
   const evalVariables = computeNodeVariables(node.data.variables, prevNodeOutputData);
 
+  const variablesDict = {
+    ...evalVariables,
+    ...env?.variables,
+  };
+
   // step2 replace variables in url with value
-  let finalUrl = node.data.url;
-  Object.entries(evalVariables).map(([vname, vvalue], index) => {
-    finalUrl = finalUrl.replace(`{{${vname}}}`, vvalue);
-  });
+  const finalUrl = computeVariables(node.data.url, variablesDict);
 
   // step 3
   const options = formulateRequest(node, finalUrl, auth, logs);
 
-  console.debug('Evaluated variables: ', evalVariables);
+  console.debug('Avialable variables: ', variablesDict);
   console.debug('Evaluated Url: ', finalUrl);
 
   const res = await runHttpRequest(options);

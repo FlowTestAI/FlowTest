@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
-import { FLOW_FILE_SUFFIX_REGEX } from 'constants/Common';
+import { FLOW_FILE_SUFFIX_REGEX, OBJ_TYPES } from 'constants/Common';
 import { ArchiveBoxIcon, FolderIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import OptionsMenu from './OptionsMenu';
 import { readFlowTest } from 'service/collection';
@@ -9,7 +9,7 @@ const Directory = ({ collectionId, item, depth }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getListDisplayTitle = () => {
-    if (item.type === 'collection') {
+    if (item.type === OBJ_TYPES.collection) {
       // this is for collections tab thus we have archive box icon
       return (
         <div
@@ -29,14 +29,14 @@ const Directory = ({ collectionId, item, depth }) => {
           <OptionsMenu
             data-click-from='options-menu'
             directory={item}
-            data-item-type='collections'
-            itemType={'collection'}
+            data-item-type={OBJ_TYPES.collection}
+            itemType={OBJ_TYPES.collection}
           />
         </div>
       );
     }
 
-    if (item.type === 'flowtest' && item.name.match(FLOW_FILE_SUFFIX_REGEX)) {
+    if (item.type === OBJ_TYPES.flowtest && item.name.match(FLOW_FILE_SUFFIX_REGEX)) {
       return (
         <div
           className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
@@ -57,12 +57,17 @@ const Directory = ({ collectionId, item, depth }) => {
             <DocumentIcon className='h-4 w-4' />
             <span>{item.name}</span>
           </div>
-          <OptionsMenu data-click-from='options-menu' directory={item} data-item-type='file' itemType={'file'} />
+          <OptionsMenu
+            data-click-from='options-menu'
+            directory={item}
+            data-item-type={OBJ_TYPES.flowtest}
+            itemType={OBJ_TYPES.flowtest}
+          />
         </div>
       );
     }
 
-    if (item.type === 'folder') {
+    if (item.type === OBJ_TYPES.folder) {
       return (
         <div
           className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
@@ -77,7 +82,12 @@ const Directory = ({ collectionId, item, depth }) => {
             <FolderIcon className='h-4 w-4' />
             <span data-type-name={item.type}>{item.name}</span>
           </div>
-          <OptionsMenu data-click-from='options-menu' directory={item} data-item-type='folder' itemType={'folder'} />
+          <OptionsMenu
+            data-click-from='options-menu'
+            directory={item}
+            data-item-type={OBJ_TYPES.folder}
+            itemType={OBJ_TYPES.folder}
+          />
         </div>
       );
     }

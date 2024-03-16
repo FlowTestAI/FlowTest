@@ -16,3 +16,10 @@ export const BUTTON_TYPES = {
   warning: 'warning',
   error: 'error',
 };
+
+export const OBJ_TYPES = {
+  collection: 'collection',
+  flowtest: 'flowtest',
+  folder: 'folder',
+  environment: 'environment',
+};

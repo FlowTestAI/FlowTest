@@ -1,4 +1,4 @@
-import { computeNodeVariables } from './utils';
+import { computeNodeVariables, computeVariables } from './utils';
 
 const runHttpRequest = (request) => {
   const { ipcRenderer } = window;
@@ -8,31 +8,24 @@ const runHttpRequest = (request) => {
   });
 };
 
-const formulateRequest = (node, finalUrl, auth, logs) => {
+const formulateRequest = (node, finalUrl, variablesDict, auth, logs) => {
   let restMethod = node.data.requestType.toLowerCase();
   let contentType = 'application/json';
   let requestData = undefined;
 
-  if (restMethod === 'get') {
-    if (node.data.requestBody) {
-      if (node.data.requestBody.type === 'raw-json') {
-        contentType = 'application/json';
-        requestData = node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}');
-      }
-    }
-  } else if (restMethod === 'post' || restMethod === 'put') {
-    if (node.data.requestBody) {
-      if (node.data.requestBody.type === 'form-data') {
-        contentType = 'multipart/form-data';
-        requestData = {
-          key: node.data.requestBody.body.key,
-          value: node.data.requestBody.body.value,
-          name: node.data.requestBody.body.name,
-        };
-      } else if (node.data.requestBody.type === 'raw-json') {
-        contentType = 'application/json';
-        requestData = node.data.requestBody.body ? JSON.parse(node.data.requestBody.body) : JSON.parse('{}');
-      }
+  if (node.data.requestBody) {
+    if (node.data.requestBody.type === 'raw-json') {
+      contentType = 'application/json';
+      requestData = node.data.requestBody.body
+        ? JSON.parse(computeVariables(node.data.requestBody.body, variablesDict))
+        : JSON.parse('{}');
+    } else if (node.data.requestBody.type === 'form-data') {
+      contentType = 'multipart/form-data';
+      requestData = {
+        key: computeVariables(node.data.requestBody.body.key, variablesDict),
+        value: node.data.requestBody.body.value,
+        name: node.data.requestBody.body.name,
+      };
     }
   }
 
@@ -55,20 +48,22 @@ const formulateRequest = (node, finalUrl, auth, logs) => {
   return options;
 };
 
-export const computeRequestNode = async (node, prevNodeOutputData, auth, logs) => {
+export const computeRequestNode = async (node, prevNodeOutputData, env, auth, logs) => {
   // step1 evaluate variables of this node
   const evalVariables = computeNodeVariables(node.data.variables, prevNodeOutputData);
 
+  const variablesDict = {
+    ...env?.variables,
+    ...evalVariables,
+  };
+
   // step2 replace variables in url with value
-  let finalUrl = node.data.url;
-  Object.entries(evalVariables).map(([vname, vvalue], index) => {
-    finalUrl = finalUrl.replace(`{${vname}}`, vvalue);
-  });
+  const finalUrl = computeVariables(node.data.url, variablesDict);
 
   // step 3
-  const options = formulateRequest(node, finalUrl, auth, logs);
+  const options = formulateRequest(node, finalUrl, variablesDict, auth, logs);
 
-  console.debug('Evaluated variables: ', evalVariables);
+  console.debug('Avialable variables: ', variablesDict);
   console.debug('Evaluated Url: ', finalUrl);
 
   const res = await runHttpRequest(options);

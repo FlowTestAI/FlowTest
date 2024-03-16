@@ -148,9 +148,7 @@ const RequestBody = ({ nodeData }) => {
               onChange={(e) => handleFormDataKey(e)}
               value={fileKey}
             />
-            <div className='px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>
-              File
-            </div>
+            <div className='px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>File</div>
           </div>
           <div className='py-2'>
             <button
@@ -166,6 +164,7 @@ const RequestBody = ({ nodeData }) => {
                 <input type='file' id='file' ref={uploadFileForRequestNode} onChange={handleFileUpload} />
               </div>
             </button>
+            {fileName != '' ? fileName : 'Choose a file to upload'}
           </div>
         </div>
       )}

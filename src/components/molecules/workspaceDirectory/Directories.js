@@ -4,6 +4,7 @@ import Directory from 'components/molecules/workspaceDirectory/Directory';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 import NewLabelModal from '../modals/workspaceDirectory/NewLabelModal';
 import { deleteCollection, deleteFolder, deleteFlowTest } from 'service/collection';
+import { OBJ_TYPES } from 'constants/Common';
 
 const Directories = ({ collections }) => {
   const [newLabelModalOpen, setNewLabelModal] = useState(false);
@@ -12,7 +13,7 @@ const Directories = ({ collections }) => {
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
 
   const handleDeleteMenuItem = (menuItemType, path, collectionId) => {
-    if (menuItemType === 'collection') {
+    if (menuItemType === OBJ_TYPES.collection) {
       deleteCollection(collectionId)
         .then((result) => {
           console.log(`Deleted collection: collectionId = ${collectionId}`);
@@ -23,7 +24,7 @@ const Directories = ({ collections }) => {
         });
     }
 
-    if (menuItemType === 'folder') {
+    if (menuItemType === OBJ_TYPES.folder) {
       deleteFolder(path, collectionId)
         .then((result) => {
           console.log(`Deleted folder: path = ${path}, collectionId = ${collectionId}`);
@@ -34,7 +35,7 @@ const Directories = ({ collections }) => {
         });
     }
 
-    if (menuItemType === 'file') {
+    if (menuItemType === OBJ_TYPES.flowtest) {
       deleteFlowTest(path, collectionId)
         .then((result) => {
           console.log(`Deleted flowtest: path = ${path}, collectionId = ${collectionId}`);

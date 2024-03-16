@@ -1,36 +1,10 @@
+import { OBJ_TYPES } from 'constants/Common';
 import { create } from 'zustand';
 
 export const useTabStore = create((set, get) => ({
-  tabs: [
-    // {
-    //   id: '1',
-    //   collectionId: '1eb5becb-e27a-4197-8dd0-358000b3ede3',
-    //   type: 'flowtest',
-    //   name: 'flowtest1',
-    //   pathname: 'flowtest.pathname1',
-    //   isDirty: false,
-    //   flowData: 'THIS IS FLOW TEST 1',
-    // },
-    // {
-    //   id: '2',
-    //   collectionId: '1eb5becb-e27a-4197-8dd0-358000b3ede3',
-    //   type: 'flowtest',
-    //   name: 'flowtest2',
-    //   pathname: 'flowtest.pathname2',
-    //   isDirty: false,
-    //   flowData: 'THIS IS FLOW TEST 2',
-    // },
-    // {
-    //   id: '3',
-    //   collectionId: '1eb5becb-e27a-4197-8dd0-358000b3ede3',
-    //   type: 'flowtest',
-    //   name: 'flowtest3',
-    //   pathname: 'flowtest.pathname3',
-    //   isDirty: false,
-    //   flowData: 'THIS IS FLOW TEST 3',
-    // },
-  ],
+  tabs: [],
   focusTabId: null,
+  selectedEnv: null,
   addFlowTestTab: (flowtest, collectionId) => {
     const existingTab = get().tabs.find(
       (t) =>
@@ -38,7 +12,7 @@ export const useTabStore = create((set, get) => ({
         t.name === flowtest.name &&
         t.pathname === flowtest.pathname &&
         t.collectionId === collectionId &&
-        t.type === 'flowtest',
+        t.type === OBJ_TYPES.flowtest,
     );
     if (existingTab) {
       set(() => ({ focusTabId: existingTab.id }));
@@ -47,7 +21,7 @@ export const useTabStore = create((set, get) => ({
     const newTab = {
       id: flowtest.id,
       collectionId: collectionId,
-      type: 'flowtest',
+      type: OBJ_TYPES.flowtest,
       name: flowtest.name,
       pathname: flowtest.pathname,
       isDirty: false,
@@ -61,7 +35,7 @@ export const useTabStore = create((set, get) => ({
     const newTab = {
       id: env.id,
       collectionId: collectionId,
-      type: 'environment',
+      type: OBJ_TYPES.environment,
       name: env.name,
     };
 
@@ -111,5 +85,8 @@ export const useTabStore = create((set, get) => ({
   },
   setFocusTab: (id) => {
     set(() => ({ focusTabId: id }));
+  },
+  setSelectedEnv: (name) => {
+    set(() => ({ selectedEnv: name }));
   },
 }));

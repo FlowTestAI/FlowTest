@@ -8,6 +8,14 @@ const computeUrl = (baseUrl, path) => {
   }
 };
 
+const replaceSingleToDoubleCurlyBraces = (str) => {
+  // Replace opening curly braces
+  str = str.replace(/{/g, '{{');
+  // Replace closing curly braces
+  str = str.replace(/}/g, '}}');
+  return str;
+};
+
 const parseOpenAPISpec = (collection) => {
   let parsedNodes = [];
   try {
@@ -17,7 +25,7 @@ const parseOpenAPISpec = (collection) => {
       Object.entries(operation).map(([requestType, request], _) => {
         const summary = request['summary'];
         const operationId = request['operationId'];
-        var url = computeUrl(baseUrl, path);
+        var url = replaceSingleToDoubleCurlyBraces(computeUrl(baseUrl, path));
         var variables = {};
 
         // console.log(operationId)
@@ -30,10 +38,10 @@ const parseOpenAPISpec = (collection) => {
             // allow different type of variables in request node like string, int, array etc...
             if (value['in'] === 'query') {
               if (firstQueryParam) {
-                url = url.concat(`?${value['name']}={${value['name']}}`);
+                url = url.concat(`?${value['name']}={{${value['name']}}}`);
                 firstQueryParam = false;
               } else {
-                url = url.concat(`&${value['name']}={${value['name']}}`);
+                url = url.concat(`&${value['name']}={{${value['name']}}}`);
               }
             }
           });

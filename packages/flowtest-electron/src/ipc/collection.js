@@ -15,8 +15,10 @@ const updateFile = require('../utils/filemanager/updatefile');
 const deleteFile = require('../utils/filemanager/deletefile');
 const { flowDataToReadableData, readableDataToFlowData } = require('../utils/parser');
 const readFile = require('../utils/filemanager/readfile');
+const FlowtestAI = require('../utils/flowtestai');
 
 const collectionStore = new Collections();
+const flowTestAI = new FlowtestAI();
 
 const timeout = 60000;
 
@@ -85,7 +87,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         id: id,
         name: collectionName,
         pathname: pathname,
-        collection: spec,
+        openapi_spec: resolvedSpec.resolved,
         nodes: parsedNodes,
       };
 
@@ -245,6 +247,19 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
           },
         };
       }
+    }
+  });
+
+  ipcMain.handle('renderer:create-flowtest-ai', async (event, instruction, collectionId) => {
+    try {
+      const collection = collectionStore.getAll().find((c) => c.id === collectionId);
+      if (collection) {
+        return await flowTestAI.generate(collection.openapi_spec, instruction);
+      } else {
+        return Promise.reject(new Error('Collection not found'));
+      }
+    } catch (error) {
+      return Promise.reject(error);
     }
   });
 };

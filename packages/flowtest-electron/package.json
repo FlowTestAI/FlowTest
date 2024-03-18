@@ -22,7 +22,9 @@
     "electron-store": "^8.1.0",
     "fs": "^0.0.1-security",
     "json-refs": "^3.0.15",
+    "langchain": "^0.1.28",
     "lodash": "^4.17.21",
+    "openai": "^4.29.1",
     "path": "^0.12.7",
     "uuid": "^9.0.1"
   }

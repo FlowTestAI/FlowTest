@@ -23,3 +23,7 @@ export const OBJ_TYPES = {
   folder: 'folder',
   environment: 'environment',
 };
+
+export const GENAI_MODELS = {
+  openai: 'OPENAI',
+};

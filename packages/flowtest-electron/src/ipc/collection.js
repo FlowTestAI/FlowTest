@@ -15,8 +15,10 @@ const updateFile = require('../utils/filemanager/updatefile');
 const deleteFile = require('../utils/filemanager/deletefile');
 const { flowDataToReadableData, readableDataToFlowData } = require('../utils/parser');
 const readFile = require('../utils/filemanager/readfile');
+const FlowtestAI = require('../utils/flowtestai');
 
 const collectionStore = new Collections();
+const flowTestAI = new FlowtestAI();
 
 const timeout = 60000;
 
@@ -85,7 +87,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         id: id,
         name: collectionName,
         pathname: pathname,
-        collection: spec,
+        openapi_spec: resolvedSpec.resolved,
         nodes: parsedNodes,
       };
 
@@ -161,6 +163,24 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
       const envDir = path.join(collectionPath, 'environments');
       deleteFile(path.join(envDir, `${name}.env`));
       console.log(`Delete file: ${name}.env`);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:addOrUpdate-dotEnvironment', async (event, collectionPath, variables) => {
+    try {
+      const pathname = path.join(collectionPath, '.env');
+      // variables should be of format `k1=v1\nk2=v2`;
+
+      // Append to the .env file or create it if it doesn't exist
+      fs.appendFile(pathname, variables, (err) => {
+        if (err) {
+          console.error('Error writing to .env file:', err);
+          return Promise.reject(error);
+        }
+        console.log('.env file has been updated');
+      });
     } catch (error) {
       return Promise.reject(error);
     }
@@ -245,6 +265,19 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
           },
         };
       }
+    }
+  });
+
+  ipcMain.handle('renderer:generate-nodes-ai', async (event, instruction, collectionId, model) => {
+    try {
+      const collection = collectionStore.getAll().find((c) => c.id === collectionId);
+      if (collection) {
+        return await flowTestAI.generate(collection.openapi_spec, instruction, model);
+      } else {
+        return Promise.reject(new Error('Collection not found'));
+      }
+    } catch (error) {
+      return Promise.reject(error);
     }
   });
 };

@@ -147,6 +147,23 @@ export const deleteEnvironmentFile = (name, collectionId) => {
   }
 };
 
+export const addOrUpdateDotEnvironmentFile = (collectionId, variables) => {
+  const { ipcRenderer } = window;
+
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+
+  if (collection) {
+    return new Promise((resolve, reject) => {
+      ipcRenderer
+        .invoke('renderer:addOrUpdate-dotEnvironment', collection.pathname, variables)
+        .then(resolve)
+        .catch(reject);
+    });
+  } else {
+    return Promise.reject(new Error('Collection not found'));
+  }
+};
+
 export const createFlowTest = (name, folderPath, collectionId) => {
   try {
     const { ipcRenderer } = window;

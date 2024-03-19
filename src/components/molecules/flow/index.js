@@ -156,7 +156,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
 
   useEffect(() => {
     // skip inital render
-    if (isEqual(nodes, []) && isEqual(edges, [])) {
+    if (flowData === undefined || (isEqual(nodes, []) && isEqual(edges, []))) {
       return;
     }
     if (flowData && isEqual(JSON.parse(JSON.stringify(nodes)), flowData.nodes) && isEqual(edges, flowData.edges)) {

@@ -87,7 +87,7 @@ export const createEnvironmentFile = (name, collectionId) => {
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   if (collection) {
-    const existingEnv = collection.enviroments.find((e) => e.name === name);
+    const existingEnv = collection.environments.find((e) => e.name === `${name}.env`);
     if (existingEnv) {
       return Promise.reject(new Error('An environment with the same name already exists'));
     } else {
@@ -134,7 +134,7 @@ export const deleteEnvironmentFile = (name, collectionId) => {
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   if (collection) {
-    const existingEnv = collection.enviroments.find((e) => e.name === name);
+    const existingEnv = collection.environments.find((e) => e.name === name);
     if (existingEnv) {
       return new Promise((resolve, reject) => {
         ipcRenderer.invoke('renderer:delete-environment', collection.pathname, name).then(resolve).catch(reject);

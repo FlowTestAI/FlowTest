@@ -39,7 +39,7 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                     as='h3'
                     className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
                   >
-                    Create a new folder
+                    {`Create a ${menuOption}`}
                   </Dialog.Title>
                   <div className='mt-6'>
                     <input
@@ -97,7 +97,6 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                           // wont be needing it here but just putting it for testing
                           console.log(`\n Creating a new collection by the name : ${labelValue} \n`);
                         } else if (menuOption === DirectoryOptionsActions.addNewEnvironment.value) {
-                          console.log(`\n Creating a new environment file by the name : ${labelValue} \n`);
                           createEnvironmentFile(labelValue, collectionId)
                             .then((result) => {
                               console.log(
@@ -106,7 +105,6 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                             })
                             .catch((error) => {
                               // TODO: show error in UI
-                              console.log(`\n \n \n RACHIIIIITT \n \n \n`);
                               console.log(`Error creating new environment: ${error}`);
                               closeFn();
                             });

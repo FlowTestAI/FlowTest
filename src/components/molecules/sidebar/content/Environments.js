@@ -17,14 +17,9 @@ const Environments = ({ collections }) => {
         const clickFrom = clickFromElementDataSet?.clickFrom;
 
         if (clickFrom && clickFrom === 'env-options-menu') {
-          console.log(`\n Environments CLICK FROM : ${clickFrom} \n`);
           const itemType = clickFromElementDataSet?.itemType;
           const optionsMenuItem = clickFromElementDataSet?.optionsMenuItem;
           const pathName = clickFromElementDataSet?.pathName;
-
-          console.log(
-            `\n Environments: ${itemType} : ${optionsMenuItem} : ${JSON.stringify(clickFromElementDataSet)} \n`,
-          );
 
           setSelectedPathName(pathName);
           setSelectedCollectionId(collections[0].id);

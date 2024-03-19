@@ -46,10 +46,7 @@ const Environment = ({ collectionId, collection }) => {
                     <div
                       className='relative inline-block p-2 text-left transition duration-200 ease-out rounded rounded-l-none hover:bg-slate-200'
                       onClick={() => {
-                        console.log(
-                          `Deleting environment: name = ${environment.name}, path = ${environment.pathname}, collectionId = ${collectionId}`,
-                        );
-                        deleteEnvironmentFile(environment.pathname, collectionId)
+                        deleteEnvironmentFile(environment.name, collectionId)
                           .then((result) => {
                             console.log(
                               `Deleted environment: name = ${environment.name}, path = ${environment.pathname}, collectionId = ${collectionId}, result: ${result}`,

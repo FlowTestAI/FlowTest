@@ -6,7 +6,6 @@ import Content from 'components/molecules/sidebar/content';
 
 const SideBar = () => {
   const collections = useCollectionStore((state) => state.collections);
-  console.log(JSON.stringify(collections));
   return (
     <div className='flex-auto'>
       <SideBarHeader />

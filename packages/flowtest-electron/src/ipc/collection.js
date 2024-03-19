@@ -161,8 +161,8 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
   ipcMain.handle('renderer:delete-environment', async (event, collectionPath, name) => {
     try {
       const envDir = path.join(collectionPath, 'environments');
-      deleteFile(path.join(envDir, `${name}.env`));
-      console.log(`Delete file: ${name}.env`);
+      deleteFile(path.join(envDir, name));
+      console.log(`Delete file: ${name}`);
     } catch (error) {
       return Promise.reject(error);
     }

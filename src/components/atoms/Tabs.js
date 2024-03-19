@@ -16,8 +16,7 @@ const Tabs = () => {
     'before:absolute before:h-[0.25rem] before:w-full before:bg-slate-300 before:content-[""] before:bottom-0 before:left-0';
   const tabCommonStyles =
     'tab flex items-center gap-x-2 border-r border-neutral-300 bg-transparent pr-0 tracking-[0.15em] transition duration-500 ease-in text-sm';
-  const messageForConfirmActionModal =
-    'Changes for the flow test are not saved, are you sure that you wants to close it?';
+  const messageForConfirmActionModal = 'You have unsaved changes in the flowtest, are you sure you want to close it?';
   const handleCloseTab = (event) => {
     event.stopPropagation();
     event.preventDefault();
@@ -70,9 +69,6 @@ const Tabs = () => {
         open={confirmActionModalOpen}
         message={messageForConfirmActionModal}
         actionFn={() => {
-          console.log(
-            `I AHVEN BEEN CLICIKED : closingTabId: ${closingTabId} : closingCollectionId: ${closingCollectionId}`,
-          );
           closeTab(closingTabId, closingCollectionId);
           setConfirmActionModalOpen(false);
         }}

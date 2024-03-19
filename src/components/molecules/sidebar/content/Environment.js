@@ -4,9 +4,15 @@ import { ArchiveBoxIcon, DocumentIcon, TrashIcon } from '@heroicons/react/24/out
 import { OBJ_TYPES } from 'constants/Common';
 import { deleteEnvironmentFile } from 'service/collection';
 import EnvOptionsMenu from 'components/atoms/sidebar/environments/EnvOptionsMenu';
+import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 
 const Environment = ({ collectionId, collection }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [confirmActionModalOpen, setConfirmActionModalOpen] = useState(false);
+  const [envToDelete, setEnvToDelete] = useState('');
+
+  const messageForConfirmActionModal = 'Do you wish to delete this environment';
+
   return (
     <>
       <li>
@@ -46,18 +52,8 @@ const Environment = ({ collectionId, collection }) => {
                     <div
                       className='relative inline-block p-2 text-left transition duration-200 ease-out rounded rounded-l-none hover:bg-slate-200'
                       onClick={() => {
-                        deleteEnvironmentFile(environment.name, collectionId)
-                          .then((result) => {
-                            console.log(
-                              `Deleted environment: name = ${environment.name}, path = ${environment.pathname}, collectionId = ${collectionId}, result: ${result}`,
-                            );
-                          })
-                          .catch((error) => {
-                            // TODO: show error in UI
-                            console.log(
-                              `Error deleting environment:  name = ${environment.name}, path = ${environment.pathname}, collectionId = ${collectionId} and error: ${error}`,
-                            );
-                          });
+                        setEnvToDelete(environment.name);
+                        setConfirmActionModalOpen(true);
                       }}
                     >
                       <TrashIcon className='w-4 h-4' aria-hidden='true' />
@@ -69,6 +65,26 @@ const Environment = ({ collectionId, collection }) => {
           </>
         )}
       </li>
+      <ConfirmActionModal
+        closeFn={() => setConfirmActionModalOpen(false)}
+        open={confirmActionModalOpen}
+        message={messageForConfirmActionModal}
+        actionFn={() => {
+          deleteEnvironmentFile(envToDelete, collectionId)
+            .then((result) => {
+              console.log(
+                `Deleted environment: name = ${envToDelete}, collectionId = ${collectionId}, result: ${result}`,
+              );
+            })
+            .catch((error) => {
+              // TODO: show error in UI
+              console.log(
+                `Error deleting environment:  name = ${envToDelete}, collectionId = ${collectionId} and error: ${error}`,
+              );
+            });
+          setConfirmActionModalOpen(false);
+        }}
+      />
     </>
   );
 };

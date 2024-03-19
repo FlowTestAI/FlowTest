@@ -5,12 +5,18 @@ import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 import { deleteCollection, deleteFolder, deleteFlowTest } from 'service/collection';
 import NewLabelModal from 'components/molecules/modals/sidebar/NewLabelModal';
 import Collection from './Collection';
+import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 
 const Collections = ({ collections }) => {
   const [newLabelModalOpen, setNewLabelModal] = useState(false);
+  const [confirmActionModalOpen, setConfirmActionModalOpen] = useState(false);
+
   const [selectedMenuItem, setSelectedMenuItem] = useState('');
   const [selectedPathName, setSelectedPathName] = useState('');
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
+  const [selectedItemType, setSelectedItemType] = useState('');
+
+  const messageForConfirmActionModal = `Do you wish to delete ${selectedItemType}`;
 
   const handleDeleteMenuItem = (menuItemType, path, collectionId) => {
     if (menuItemType === OBJ_TYPES.collection) {
@@ -70,7 +76,8 @@ const Collections = ({ collections }) => {
               setNewLabelModal(true);
               break;
             case DirectoryOptionsActions.delete.value:
-              handleDeleteMenuItem(itemType, pathName, collections[0].id);
+              setSelectedItemType(itemType);
+              setConfirmActionModalOpen(true);
               break;
             default:
               // need to return an error here
@@ -90,6 +97,15 @@ const Collections = ({ collections }) => {
         pathName={selectedPathName}
         collectionId={selectedCollectionId}
         menuOption={selectedMenuItem}
+      />
+      <ConfirmActionModal
+        closeFn={() => setConfirmActionModalOpen(false)}
+        open={confirmActionModalOpen}
+        message={messageForConfirmActionModal}
+        actionFn={() => {
+          handleDeleteMenuItem(selectedItemType, selectedPathName, selectedCollectionId);
+          setConfirmActionModalOpen(false);
+        }}
       />
     </div>
   );

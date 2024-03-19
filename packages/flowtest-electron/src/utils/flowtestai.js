@@ -3,11 +3,7 @@ const dotenv = require('dotenv');
 const { MemoryVectorStore } = require('langchain/vectorstores/memory');
 const { OpenAIEmbeddings } = require('@langchain/openai');
 
-dotenv.config();
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+//dotenv.config();
 
 const SYSTEM_MESSAGE = `You are a helpful assistant. \ 
         Respond to the following prompt by using function_call and then summarize actions. \ 
@@ -17,10 +13,14 @@ const SYSTEM_MESSAGE = `You are a helpful assistant. \
 const MAX_CALLS = 10;
 
 class FlowtestAI {
-  async generate(collection, user_instruction) {
-    const available_functions = await this.get_available_functions(collection);
-    const functions = await this.filter_functions(available_functions, user_instruction);
-    return await this.process_user_instruction(functions, user_instruction);
+  async generate(collection, user_instruction, model) {
+    if (model.name === 'OPENAI') {
+      const available_functions = await this.get_available_functions(collection);
+      const functions = await this.filter_functions(available_functions, user_instruction, model.apiKey);
+      return await this.process_user_instruction(functions, user_instruction, model.apiKey);
+    } else {
+      throw Error(`Model ${model.name} not supported`);
+    }
   }
 
   async get_available_functions(collection) {
@@ -69,7 +69,7 @@ class FlowtestAI {
     return functions;
   }
 
-  async filter_functions(functions, instruction) {
+  async filter_functions(functions, instruction, apiKey) {
     const chunkSize = 32;
     const chunks = [];
 
@@ -84,7 +84,7 @@ class FlowtestAI {
       documents,
       [],
       new OpenAIEmbeddings({
-        openAIApiKey: process.env.OPENAI_API_KEY,
+        openAIApiKey: apiKey,
       }),
     );
 
@@ -98,7 +98,11 @@ class FlowtestAI {
     return selectedFunctions;
   }
 
-  async get_openai_response(functions, messages) {
+  async get_openai_response(functions, messages, apiKey) {
+    const openai = new OpenAI({
+      apiKey,
+    });
+
     return await openai.chat.completions.create({
       model: 'gpt-3.5-turbo-16k-0613',
       functions: functions,
@@ -108,7 +112,7 @@ class FlowtestAI {
     });
   }
 
-  async process_user_instruction(functions, instruction) {
+  async process_user_instruction(functions, instruction, apiKey) {
     let result = [];
     let num_calls = 0;
     const messages = [
@@ -117,7 +121,7 @@ class FlowtestAI {
     ];
 
     while (num_calls < MAX_CALLS) {
-      const response = await this.get_openai_response(functions, messages);
+      const response = await this.get_openai_response(functions, messages, apiKey);
       // console.log(response)
       const message = response['choices'][0]['message'];
 

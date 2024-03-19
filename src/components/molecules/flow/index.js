@@ -23,6 +23,9 @@ import DelayNode from './nodes/DelayNode';
 import AuthNode from './nodes/AuthNode';
 import { useTabStore } from 'stores/TabStore';
 import FlowNode from 'components/atoms/flow/FlowNode';
+import { Popover } from '@headlessui/react';
+import { generateFlowData } from './flowtestai';
+import { GENAI_MODELS } from 'constants/Common';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -51,25 +54,25 @@ const init = (flowData) => {
         type: 'buttonedge',
       },
     ];
-    for (let i = 2; i <= flowData.nodes.length; i++) {
+    for (let i = 0; i < flowData.nodes.length; i++) {
       nodes.push({
-        id: `${i}`,
-        type: flowData.nodes[i - 1].type,
-        position: { x: 150 + i * 500, y: 50 },
-        data: flowData.nodes[i - 1],
+        id: `${i + 2}`,
+        type: flowData.nodes[i].type,
+        position: { x: 150 + (i + 1) * 500, y: 50 },
+        data: flowData.nodes[i],
       });
       edges.push({
-        id: `reactflow__edge-${i - 1}-${i}`,
-        source: `${i - 1}`,
+        id: `reactflow__edge-${i + 1}-${i + 2}`,
+        source: `${i + 1}`,
         sourceHandle: null,
-        target: `${i}`,
+        target: `${i + 2}`,
         targetHandle: null,
         type: 'buttonedge',
       });
     }
     return {
-      nodes: flowData.nodes,
-      edges: flowData.edges,
+      nodes,
+      edges,
     };
   } else {
     return {
@@ -295,6 +298,25 @@ const Flow = ({ tabId, collectionId, flowData }) => {
           </ControlButton>
         </Controls>
         <Background variant='dots' gap={12} size={1} />
+        <div className='absolute right-4 z-[2000] max-w-sm px-4 '>
+          <button
+            type='button'
+            onClick={() => {
+              generateFlowData('Add a pet then get all pets with status available', GENAI_MODELS.openai, collectionId)
+                .then((flowData) => {
+                  const result = init(flowData);
+                  console.log(result);
+                  setNodes(result.nodes);
+                  setEdges(result.edges);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }}
+          >
+            FlowTestAI
+          </button>
+        </div>
         <AddNodes collectionId={collectionId} />
       </ReactFlow>
     </div>

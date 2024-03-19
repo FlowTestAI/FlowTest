@@ -15,7 +15,10 @@ describe('generate', () => {
     console.log('API name: %s, Version: %s', api.info.title, api.info.version);
     const resolvedSpec = (await JsonRefs.resolveRefs(api)).resolved;
 
-    let result = await f.generate(resolvedSpec, USER_INSTRUCTION);
+    let result = await f.generate(resolvedSpec, USER_INSTRUCTION, {
+      name: 'OPENAI',
+      apiKey: '',
+    });
     const nodeNames = result.map((node) => node.name);
     expect(nodeNames).toEqual(['addPet', 'getPetById', 'findPetsByStatus']);
   }, 60000);

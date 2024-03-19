@@ -250,11 +250,11 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
-  ipcMain.handle('renderer:create-flowtest-ai', async (event, instruction, collectionId) => {
+  ipcMain.handle('renderer:generate-nodes-ai', async (event, instruction, collectionId, model) => {
     try {
       const collection = collectionStore.getAll().find((c) => c.id === collectionId);
       if (collection) {
-        return await flowTestAI.generate(collection.openapi_spec, instruction);
+        return await flowTestAI.generate(collection.openapi_spec, instruction, model);
       } else {
         return Promise.reject(new Error('Collection not found'));
       }

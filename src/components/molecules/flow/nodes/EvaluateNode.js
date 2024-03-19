@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PropTypes } from 'prop-types';
 import { Handle, Position } from 'reactflow';
 import Operators from '../constants/operators';
 import FlowNode from 'components/atoms/flow/FlowNode';
@@ -173,6 +174,10 @@ const EvaluateNode = ({ data }) => {
       <Handle type='source' position={Position.Right} id='false' style={{ bottom: 0, top: 'auto' }} />
     </FlowNode>
   );
+};
+
+EvaluateNode.propTypes = {
+  data: PropTypes.object.isRequired,
 };
 
 export default EvaluateNode;

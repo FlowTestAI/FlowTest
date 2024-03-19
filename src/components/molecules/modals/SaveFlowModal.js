@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from 'react';
+import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { InboxArrowDownIcon } from '@heroicons/react/20/solid';
 import Tippy from '@tippyjs/react';
@@ -13,11 +14,9 @@ const SaveFlowModal = ({ tab }) => {
   }
 
   function saveHandle() {
-    console.log(`saveHandle 3 :: ${tab}`);
-    console.log(`saveHandle 3 :: ${JSON.stringify(tab)}`);
     updateFlowTest(tab.pathname, tab.flowData, tab.collectionId)
       .then((result) => {
-        console.log(`Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}`);
+        console.log(`Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}, result: ${result}`);
       })
       .catch((error) => {
         // TODO: show error in UI
@@ -102,6 +101,10 @@ const SaveFlowModal = ({ tab }) => {
       </Transition>
     </div>
   );
+};
+
+SaveFlowModal.propTypes = {
+  tab: PropTypes.object.isRequired,
 };
 
 export default SaveFlowModal;

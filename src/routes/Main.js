@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router';
 import Home from '../components/pages/Home';
 
-const NewUIRoutes = {
+const Main = {
   path: '/',
   element: <Outlet />,
   children: [
@@ -13,4 +13,4 @@ const NewUIRoutes = {
   ],
 };
 
-export default NewUIRoutes;
+export default Main;

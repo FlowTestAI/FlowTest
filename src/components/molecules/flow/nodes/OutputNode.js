@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { PropTypes } from 'prop-types';
 import FlowNode from 'components/atoms/flow/FlowNode';
 
 const OutputNode = ({ data }) => {
@@ -24,6 +25,10 @@ const OutputNode = ({ data }) => {
       </div>
     </FlowNode>
   );
+};
+
+OutputNode.propTypes = {
+  data: PropTypes.object.isRequired,
 };
 
 export default OutputNode;

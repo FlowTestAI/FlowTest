@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath, getSmoothStepPath, MarkerType } from 'reactflow';
+import { BaseEdge, EdgeLabelRenderer, getSmoothStepPath } from 'reactflow';
 
 import './buttonedge.css';
 
@@ -8,6 +8,7 @@ const onEdgeClick = (evt, id) => {
   alert(`remove ${id}`);
 };
 
+// eslint-disable-next-line react/prop-types
 export default function CustomEdge({
   id,
   sourceX,

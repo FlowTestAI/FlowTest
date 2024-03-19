@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useRef } from 'react';
+import { PropTypes } from 'prop-types';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
@@ -108,7 +109,7 @@ const RequestBody = ({ nodeData }) => {
               leaveTo='transform opacity-0 scale-95'
             >
               <Menu.Items
-                className='absolute right-0 z-10 w-56 px-1 py-1 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none ring-1 ring-black/5'
+                className='absolute right-0 z-10 w-56 px-1 py-1 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none'
                 data-click-from='body-type-menu'
               >
                 {requestBodyTypeOptions.map((bodyTypeOption, index) => (
@@ -170,6 +171,10 @@ const RequestBody = ({ nodeData }) => {
       )}
     </>
   );
+};
+
+RequestBody.propTypes = {
+  nodeData: PropTypes.object.isRequired,
 };
 
 export default RequestBody;

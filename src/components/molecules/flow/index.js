@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import { PropTypes } from 'prop-types';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { cloneDeep, isEqual } from 'lodash';
@@ -126,6 +127,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
   };
 
   // notification
+  // eslint-disable-next-line no-unused-vars
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
@@ -247,8 +249,9 @@ const Flow = ({ tabId, collectionId, flowData }) => {
   };
 
   // graph
-
+  // eslint-disable-next-line no-unused-vars
   const [graphRun, setGraphRun] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [graphRunLogs, setGraphRunLogs] = useState(undefined);
 
   const onGraphComplete = (result, logs) => {
@@ -322,6 +325,12 @@ const Flow = ({ tabId, collectionId, flowData }) => {
       </ReactFlow>
     </div>
   );
+};
+
+Flow.propTypes = {
+  tabId: PropTypes.string.isRequired,
+  collectionId: PropTypes.string.isRequired,
+  flowData: PropTypes.object.isRequired,
 };
 
 export default Flow;

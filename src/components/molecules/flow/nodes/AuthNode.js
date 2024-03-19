@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { PropTypes } from 'prop-types';
 import FlowNode from 'components/atoms/flow/FlowNode';
 
 const AuthNode = ({ data }) => {
@@ -13,7 +14,7 @@ const AuthNode = ({ data }) => {
     }
   };
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  // const [anchorEl, setAnchorEl] = React.useState(null);
   const [auth, setAuth] = React.useState(initState());
 
   /**
@@ -74,6 +75,10 @@ const AuthNode = ({ data }) => {
       </FlowNode>
     </>
   );
+};
+
+AuthNode.propTypes = {
+  data: PropTypes.object.isRequired,
 };
 
 export default AuthNode;

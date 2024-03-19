@@ -47,7 +47,7 @@ const computeNodeVariable = (variable, prevNodeOutputData) => {
 
 export const computeNodeVariables = (variables, prevNodeOutputData) => {
   let evalVariables = {};
-  Object.entries(variables).map(([vname, variable], index) => {
+  Object.entries(variables).map(([vname, variable]) => {
     evalVariables[vname] = computeNodeVariable(variable, prevNodeOutputData);
   });
   return evalVariables;

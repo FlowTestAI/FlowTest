@@ -1,4 +1,5 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Handle, Position } from 'reactflow';
 
 const FlowNode = ({ children, title, handleLeft, handleLeftData, handleRight, handleRightData }) => {
@@ -25,6 +26,15 @@ const FlowNode = ({ children, title, handleLeft, handleLeftData, handleRight, ha
       )}
     </>
   );
+};
+
+FlowNode.propTypes = {
+  children: PropTypes.node.isRequired,
+  title: PropTypes.string.isRequired,
+  handleLeft: PropTypes.node.isRequired,
+  handleLeftData: PropTypes.object.isRequired,
+  handleRight: PropTypes.node.isRequired,
+  handleRightData: PropTypes.object.isRequired,
 };
 
 export default FlowNode;

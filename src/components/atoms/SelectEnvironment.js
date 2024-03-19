@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from 'react';
+import { PropTypes } from 'prop-types';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { Square3Stack3DIcon } from '@heroicons/react/24/outline';
@@ -51,6 +52,10 @@ const SelectEnvironment = ({ environments }) => {
       </div>
     </Listbox>
   );
+};
+
+SelectEnvironment.propTypes = {
+  environments: PropTypes.Array.isRequired,
 };
 
 export default SelectEnvironment;

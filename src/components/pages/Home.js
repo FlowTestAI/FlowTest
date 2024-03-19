@@ -6,9 +6,8 @@ import registerMainEventHandlers from 'ipc/collection';
 
 const Home = () => {
   registerMainEventHandlers();
-
   return (
-    <div className='flex h-full flex-col'>
+    <div className='flex flex-col h-full'>
       <MainHeader />
       <SplitPane />
       <MainFooter />

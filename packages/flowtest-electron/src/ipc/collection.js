@@ -168,6 +168,24 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
+  ipcMain.handle('renderer:addOrUpdate-dotEnvironment', async (event, collectionPath, variables) => {
+    try {
+      const pathname = path.join(collectionPath, '.env');
+      // variables should be of format `k1=v1\nk2=v2`;
+
+      // Append to the .env file or create it if it doesn't exist
+      fs.appendFile(pathname, variables, (err) => {
+        if (err) {
+          console.error('Error writing to .env file:', err);
+          return Promise.reject(error);
+        }
+        console.log('.env file has been updated');
+      });
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
   ipcMain.handle('renderer:create-flowtest', async (event, name, path, flowData) => {
     try {
       if (isDirectory(path)) {

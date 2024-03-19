@@ -310,6 +310,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
                   setEdges(result.edges);
                 })
                 .catch((error) => {
+                  // TODO: show error in UI
                   console.log(error);
                 });
             }}

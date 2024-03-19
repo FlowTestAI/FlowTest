@@ -59,11 +59,9 @@ export const generateFlowData = async (instruction, modelName, collectionId) => 
         return Promise.reject(new Error(`model: ${modelName} not supported`));
       }
     } else {
-      return Promise.reject(new Error('A flowtest with this path does not exist'));
+      return Promise.reject(new Error('Collection not found'));
     }
   } catch (error) {
-    console.log(`Error generating flowData: ${error}`);
-    // TODO: show error in UI
-    return Promise.reject(error);
+    return Promise.reject(`Error generating flowData: ${error}`);
   }
 };

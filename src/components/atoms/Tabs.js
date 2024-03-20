@@ -47,7 +47,7 @@ const Tabs = () => {
               role='tab'
               onClick={() => {
                 setFocusTab(tab.id);
-                console.log(`CLICKED THE ${tab.id}`);
+                console.debug(`Selected tab: ${tab.id}`);
               }}
               data-id={tab.id}
               data-collection-id={tab.collectionId}

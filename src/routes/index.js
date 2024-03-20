@@ -1,6 +1,6 @@
 import { useRoutes } from 'react-router';
-import NewUIRoutes from 'routes/NewUIRoutes';
+import Main from 'routes/Main';
 
 export default function Routes() {
-  return useRoutes([NewUIRoutes]);
+  return useRoutes([Main]);
 }

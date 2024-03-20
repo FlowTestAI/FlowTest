@@ -1,7 +1,8 @@
 import React, { Fragment, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
-import { createFolder, createFlowTest } from 'service/collection';
+import { createFolder, createFlowTest, createEnvironmentFile } from 'service/collection';
+import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 
 const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectionId, menuOption }) => {
   const [labelValue, setLabelValue] = useState('');
@@ -23,7 +24,7 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
           </Transition.Child>
 
           <div className='fixed inset-0 overflow-y-auto'>
-            <div className='flex min-h-full items-center justify-center p-4 text-center'>
+            <div className='flex items-center justify-center min-h-full p-4 text-center'>
               <Transition.Child
                 as={Fragment}
                 enter='ease-out duration-300'
@@ -33,12 +34,12 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                 leaveFrom='opacity-100 scale-100'
                 leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
+                <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
                   <Dialog.Title
                     as='h3'
-                    className='border-b border-neutral-300 pb-4 text-center text-lg font-semibold text-gray-900'
+                    className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
                   >
-                    Create a new folder
+                    {`Create a ${menuOption}`}
                   </Dialog.Title>
                   <div className='mt-6'>
                     <input
@@ -52,17 +53,17 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                       }}
                     />
                   </div>
-                  <div className='mt-6 flex items-center gap-2'>
+                  <div className='flex items-center gap-2 mt-6'>
                     <button
                       type='button'
-                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-sky-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-sky-300'
+                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-blue-900 border border-transparent rounded-md grow basis-0 bg-sky-100 hover:bg-sky-300'
                       onClick={closeFn}
                     >
                       Cancel
                     </button>
                     <button
                       type='button'
-                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-400'
+                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-green-400'
                       onClick={() => {
                         console.log(
                           `modalType :: ${menuOption} :: labelValue :: ${labelValue} :: pathName :: ${pathName} :: collectionId :: ${collectionId}`,
@@ -71,28 +72,42 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                           createFolder(labelValue, pathName, collectionId)
                             .then((result) => {
                               console.log(
-                                `Created a new folder: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId} \n`,
+                                `Created a new folder: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId}, result: ${result} \n`,
                               );
                             })
                             .catch((error) => {
                               // TODO: show error in UI
                               console.log(`Error creating new folder: ${error}`);
+                              closeFn();
                             });
                         } else if (menuOption === 'new-flow') {
                           createFlowTest(labelValue, pathName, collectionId)
                             .then((result) => {
                               console.log(
-                                `Created a new flowtest: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId} \n`,
+                                `Created a new flowtest: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId}, result: ${result} \n`,
                               );
                             })
                             .catch((error) => {
                               // TODO: show error in UI
                               console.log(`Error creating new flowtest: ${error}`);
+                              closeFn();
                             });
                         } else if (menuOption === 'collection') {
                           // createCollection();
                           // wont be needing it here but just putting it for testing
                           console.log(`\n Creating a new collection by the name : ${labelValue} \n`);
+                        } else if (menuOption === DirectoryOptionsActions.addNewEnvironment.value) {
+                          createEnvironmentFile(labelValue, collectionId)
+                            .then((result) => {
+                              console.log(
+                                `Created a new environment: name = ${labelValue}, collectionId = ${collectionId}, result: ${result} \n`,
+                              );
+                            })
+                            .catch((error) => {
+                              // TODO: show error in UI
+                              console.log(`Error creating new environment: ${error}`);
+                              closeFn();
+                            });
                         }
                         closeFn();
                       }}

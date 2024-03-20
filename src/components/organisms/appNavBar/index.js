@@ -1,6 +1,6 @@
 import React from 'react';
 import { Square3Stack3DIcon, RectangleStackIcon, ClockIcon } from '@heroicons/react/20/solid';
-import { useNavigationStore } from 'stores/AppNavBarStore';
+import useNavigationStore from 'stores/AppNavBarStore';
 import { AppNavBarItems } from 'constants/AppNavBar';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
@@ -16,7 +16,7 @@ const AppNavBar = () => {
   };
 
   return (
-    <nav className='relative flex h-screen w-28 flex-col border-r border-neutral-300 text-cyan-950'>
+    <nav className='relative flex flex-col h-screen border-r w-28 border-neutral-300 text-cyan-950'>
       <button className='relative' onClick={handleOnClick} data-nav-item={AppNavBarItems.collections.value}>
         <div
           className={`${
@@ -25,7 +25,7 @@ const AppNavBar = () => {
               : 'hover:bg-cyan-950 hover:text-white'
           } flex w-full flex-col items-center px-2 py-4 text-center`}
         >
-          <RectangleStackIcon className='mb-2 h-4 w-4' />
+          <RectangleStackIcon className='w-4 h-4 mb-2' />
           <div>{AppNavBarItems.collections.displayValue}</div>
         </div>
       </button>
@@ -37,14 +37,14 @@ const AppNavBar = () => {
               : 'hover:bg-cyan-950 hover:text-white'
           } flex w-full flex-col items-center px-2 py-4 text-center`}
         >
-          <Square3Stack3DIcon className='mb-2 h-4 w-4' />
+          <Square3Stack3DIcon className='w-4 h-4 mb-2' />
           <div>{AppNavBarItems.environments.displayValue}</div>
         </div>
       </button>
-      <button className='cursor-not-allowed px-2 py-4' data-nav-item={AppNavBarItems.history.value}>
+      <button className='px-2 py-4 cursor-not-allowed' data-nav-item={AppNavBarItems.history.value}>
         <Tippy content='Coming Soon!' placement='right'>
           <div className='flex flex-col items-center text-center text-slate-400'>
-            <ClockIcon className='mb-2 h-4 w-4' />
+            <ClockIcon className='w-4 h-4 mb-2' />
             <div>{AppNavBarItems.history.displayValue}</div>
           </div>
         </Tippy>

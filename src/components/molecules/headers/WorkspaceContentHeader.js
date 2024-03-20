@@ -1,10 +1,11 @@
 import React from 'react';
 import { DocumentArrowDownIcon, DocumentArrowUpIcon } from '@heroicons/react/20/solid';
-import EditableTextItem from '../../atoms/EditableTextItem';
-import SelectAuthKeys from '../../atoms/SelectAuthKeys';
-import SaveFlowModal from '../modals/SaveFlowModal';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import SaveFlowModal from '../modals/SaveFlowModal';
+// import EditableTextItem from '../../atoms/EditableTextItem';
+// import SelectAuthKeys from '../../atoms/SelectAuthKeys';
+
 import { useTabStore } from 'stores/TabStore';
 
 const WorkspaceContentHeader = () => {
@@ -14,11 +15,10 @@ const WorkspaceContentHeader = () => {
 
   return (
     <div className='flex items-center justify-between gap-4 px-6 py-2 border-b border-neutral-300'>
-      {focusTab && (
+      {focusTab ? (
         <>
-          <div className='text-xl'>{focusTab.name}</div>
+          <div className='text-base tracking-[0.15em]'>{focusTab.name}</div>
           <div className='flex items-center justify-between gap-x-4'>
-            {/* <SelectAuthKeys /> */}
             <SaveFlowModal tab={focusTab} />
             <button>
               <Tippy content='Coming Soon!' placement='top'>
@@ -32,6 +32,8 @@ const WorkspaceContentHeader = () => {
             </button>
           </div>
         </>
+      ) : (
+        <div className='text-base tracking-[0.15em]'>Please select a Flow test or create a new one</div>
       )}
     </div>
   );

@@ -14,4 +14,9 @@ export const DirectoryOptionsActions = {
     value: 'new-flow',
     dataSetValue: 'new-flow',
   },
+  addNewEnvironment: {
+    displayValue: 'New Environment',
+    value: 'new-environment',
+    dataSetValue: 'new-environment',
+  },
 };

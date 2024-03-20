@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { PropTypes } from 'prop-types';
 import FlowNode from 'components/atoms/flow/FlowNode';
 
 /**
@@ -36,6 +37,10 @@ const DelayNode = ({ data }) => {
       </div>
     </FlowNode>
   );
+};
+
+DelayNode.propTypes = {
+  data: PropTypes.object.isRequired,
 };
 
 export default DelayNode;

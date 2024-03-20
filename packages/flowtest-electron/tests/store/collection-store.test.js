@@ -11,7 +11,7 @@ describe('collection-store', () => {
       id: '1234',
       name: 'test',
       pathname: `${__dirname}/test`,
-      collection: '',
+      openapi_spec: '',
       nodes: '{}',
     };
 
@@ -19,7 +19,7 @@ describe('collection-store', () => {
       id: '12345',
       name: 'test1',
       pathname: `${__dirname}/test1`,
-      collection: '',
+      openapi_spec: '',
       nodes: '{}',
     };
 
@@ -38,17 +38,14 @@ describe('collection-store', () => {
     store.add(newestCollection);
     expect(store.getAll()).toEqual([newCollection, newestCollection]);
 
-    // removing a collection whose directory still exist
-    store.remove(newCollection);
-    expect(store.getAll()).toEqual([newCollection, newestCollection]);
-
-    deleteDirectory(`${__dirname}/test`);
     store.remove(newCollection);
     expect(store.getAll()).toEqual([newestCollection]);
 
-    deleteDirectory(`${__dirname}/test1`);
     store.remove(newestCollection);
     expect(store.getAll()).toEqual([]);
+
+    deleteDirectory(`${__dirname}/test`);
+    deleteDirectory(`${__dirname}/test1`);
   });
 
   it('collection set should be unique by pathname', async () => {
@@ -57,7 +54,7 @@ describe('collection-store', () => {
       id: '1234',
       name: 'test',
       pathname: `${__dirname}/test`,
-      collection: '',
+      openapi_spec: '',
       nodes: '{}',
     };
 
@@ -65,7 +62,7 @@ describe('collection-store', () => {
       id: '12345',
       name: 'test',
       pathname: `${__dirname}/test`,
-      collection: '',
+      openapi_spec: '',
       nodes: '{}',
     };
 
@@ -80,8 +77,9 @@ describe('collection-store', () => {
     store.add(newestCollection);
     expect(store.getAll()).toEqual([newCollection]);
 
-    deleteDirectory(`${__dirname}/test`);
     store.remove(newCollection);
     expect(store.getAll()).toEqual([]);
+
+    deleteDirectory(`${__dirname}/test`);
   });
 });

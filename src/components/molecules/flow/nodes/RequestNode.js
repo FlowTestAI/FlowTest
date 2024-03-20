@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { PropTypes } from 'prop-types';
 import RequestBody from './RequestBody';
 import FlowNode from 'components/atoms/flow/FlowNode';
 import { getInputType } from 'utils/common';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
-import { ModalNames } from 'constants/ModalNames';
 import { getDefaultValue } from 'utils/common';
 import AddVariableModal from 'components/molecules/modals/flow/AddVariableModal';
 
@@ -31,6 +31,7 @@ const RequestNode = ({ data }) => {
 
   const handleDeleteVariable = (event, id) => {
     setVariables((currentVariables) => {
+      // eslint-disable-next-line no-unused-vars
       const { [id]: _, ...newVariables } = currentVariables;
       return newVariables;
     });
@@ -141,6 +142,10 @@ const RequestNode = ({ data }) => {
       />
     </FlowNode>
   );
+};
+
+RequestNode.propTypes = {
+  data: PropTypes.object.isRequired,
 };
 
 export default RequestNode;

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Popover, Transition } from '@headlessui/react';
 import { PlusIcon, MinusIcon } from '@heroicons/react/20/solid';
 import { Fragment } from 'react';
@@ -128,7 +129,7 @@ const AddNodes = ({ collectionId }) => {
                               </Disclosure.Button>
                               <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                                 <div>
-                                  {collection.nodes.map((node, index1) => (
+                                  {collection.nodes.map((node) => (
                                     <div
                                       key={`${node.requestType} - ${node.operationId}`}
                                       onDragStart={(event) => {
@@ -254,6 +255,10 @@ const AddNodes = ({ collectionId }) => {
       </div>
     </>
   );
+};
+
+AddNodes.propTypes = {
+  collectionId: PropTypes.string.isRequired,
 };
 
 export default AddNodes;

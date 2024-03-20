@@ -15,6 +15,27 @@ export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   });
 };
 
+export const openCollection = (openAPISpecFilePath, collectionFolderPath) => {
+  try {
+    const collection = useCollectionStore.getState().collections.find((c) => c.pathname === collectionFolderPath);
+    if (collection) {
+      return Promise.reject(new Error(`A collection with path: ${collectionFolderPath} already exists`));
+    } else {
+      const { ipcRenderer } = window;
+
+      return new Promise((resolve, reject) => {
+        ipcRenderer
+          .invoke('renderer:open-collection', openAPISpecFilePath, collectionFolderPath)
+          .then(resolve)
+          .catch(reject);
+      });
+    }
+  } catch (error) {
+    console.log(`Error opening collection: ${error}`);
+    // TODO: show error in UI
+  }
+};
+
 export const deleteCollection = (collectionId) => {
   try {
     const { ipcRenderer } = window;
@@ -29,7 +50,7 @@ export const deleteCollection = (collectionId) => {
       return Promise.reject(new Error('Collection not found'));
     }
   } catch (error) {
-    console.log(`Error deleting collection: ${collectionId}`);
+    console.log(`Error deleting collection: ${error}`);
     // TODO: show error in UI
   }
 };
@@ -87,7 +108,7 @@ export const createEnvironmentFile = (name, collectionId) => {
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   if (collection) {
-    const existingEnv = collection.enviroments.find((e) => e.name === name);
+    const existingEnv = collection.environments.find((e) => e.name === `${name}.env`);
     if (existingEnv) {
       return Promise.reject(new Error('An environment with the same name already exists'));
     } else {
@@ -134,7 +155,7 @@ export const deleteEnvironmentFile = (name, collectionId) => {
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   if (collection) {
-    const existingEnv = collection.enviroments.find((e) => e.name === name);
+    const existingEnv = collection.environments.find((e) => e.name === name);
     if (existingEnv) {
       return new Promise((resolve, reject) => {
         ipcRenderer.invoke('renderer:delete-environment', collection.pathname, name).then(resolve).catch(reject);

@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
-import FlowRoutes from './routes';
+import Routes from './routes';
 import { HashRouter } from 'react-router-dom';
 
 function App() {
   return (
     <HashRouter>
-      <FlowRoutes />
+      <Routes />
     </HashRouter>
   );
 }

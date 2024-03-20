@@ -3,9 +3,9 @@ import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'constants/ImportCollectionTypes';
-import { createCollection } from 'service/collection';
+import { createCollection, openCollection } from 'service/collection';
 
-const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
+const OpenCollectionModal = ({ closeFn = () => null, open = false }) => {
   const importYamlFile = useRef(null);
   const handleImportCollectionClick = (event) => {
     const elem = event.currentTarget;
@@ -43,11 +43,13 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
       .then((dirPath) => {
         // if user presses cancel in choosing directory dialog, this is returned undefined
         if (dirPath) {
-          createCollection(yamlPath, dirPath);
+          openCollection(yamlPath, dirPath).catch((error) => {
+            console.log(`Failed to open collection: ${error}`);
+          });
         }
       })
       .catch((error) => {
-        console.log(`Failed to create collection: ${error}`);
+        console.log(`Failed to open collection: ${error}`);
       });
   };
 
@@ -92,7 +94,7 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
                       data-import-type='yaml'
                     >
                       <DocumentArrowUpIcon className='h-4 w-4' />
-                      Import an OpenAPI spec to start a new collection
+                      Attach OpenAPI spec with exisiting collection
                       {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
                       <div className='hidden'>
                         <input
@@ -104,29 +106,6 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
                         />
                       </div>
                     </li>
-                    {/* For future refer */}
-                    {/* <li className='flex items-center justify-start gap-2 p-2 cursor-pointer hover:bg-slate-100'>
-                      <DocumentArrowUpIcon className='w-4 h-4' />
-                      Import from Open API
-                      <input
-                        type='file'
-                        id='file'
-                        ref={importYamlFile}
-                        style={{ display: 'none' }}
-                        onChange={handleOnChangeForImportYaml}
-                      />
-                    </li>
-                    <li className='flex items-center justify-start gap-2 p-2 cursor-pointer hover:bg-slate-100'>
-                      <DocumentArrowUpIcon className='w-4 h-4' />
-                      Import from Postman
-                      <input
-                        type='file'
-                        id='file'
-                        ref={importYamlFile}
-                        style={{ display: 'none' }}
-                        onChange={handleOnChangeForImportYaml}
-                      />
-                    </li> */}
                   </ul>
                 </div>
               </Dialog.Panel>
@@ -138,9 +117,9 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
   );
 };
 
-ImportCollectionModal.propTypes = {
+OpenCollectionModal.propTypes = {
   closeFn: PropTypes.func.isRequired,
   open: PropTypes.boolean.isRequired,
 };
 
-export default ImportCollectionModal;
+export default OpenCollectionModal;

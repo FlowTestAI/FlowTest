@@ -297,7 +297,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
             }}
             title='run'
           >
-            <div>Run</div>
+            Run
           </ControlButton>
         </Controls>
         <Background variant='dots' gap={12} size={1} />

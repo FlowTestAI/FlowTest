@@ -104,10 +104,44 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
+  ipcMain.handle('renderer:open-collection', async (event, openAPISpecFilePath, collectionFolderPath) => {
+    try {
+      if (isDirectory(collectionFolderPath)) {
+        // async/await syntax
+        const api = await SwaggerParser.validate(openAPISpecFilePath);
+        // console.log("API name: %s, Version: %s", api.info.title, api.info.version);
+
+        // resolve references in openapi spec
+        const resolvedSpec = await JsonRefs.resolveRefs(api);
+        const parsedNodes = parseOpenAPISpec(resolvedSpec.resolved);
+
+        const id = uuidv4();
+        const collectionName = api.info.title;
+
+        const newCollection = {
+          id: id,
+          name: collectionName,
+          pathname: collectionFolderPath,
+          openapi_spec: resolvedSpec.resolved,
+          nodes: parsedNodes,
+        };
+
+        mainWindow.webContents.send('main:collection-created', id, collectionName, collectionFolderPath, parsedNodes);
+
+        watcher.addWatcher(mainWindow, collectionFolderPath, id);
+        collectionStore.add(newCollection);
+      } else {
+        return Promise.reject(new Error(`Directory: ${collectionFolderPath} does not exist`));
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
   ipcMain.handle('renderer:delete-collection', async (event, collection) => {
     try {
-      deleteDirectory(collection.pathname);
-      console.log(`Deleted directory: ${collection.pathname}`);
+      // deleteDirectory(collection.pathname);
+      // console.log(`Deleted directory: ${collection.pathname}`);
 
       mainWindow.webContents.send('main:collection-deleted', collection.id);
 

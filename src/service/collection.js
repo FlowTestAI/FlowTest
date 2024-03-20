@@ -15,6 +15,27 @@ export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   });
 };
 
+export const openCollection = (openAPISpecFilePath, collectionFolderPath) => {
+  try {
+    const collection = useCollectionStore.getState().collections.find((c) => c.pathname === collectionFolderPath);
+    if (collection) {
+      return Promise.reject(new Error(`A collection with path: ${collectionFolderPath} already exists`));
+    } else {
+      const { ipcRenderer } = window;
+
+      return new Promise((resolve, reject) => {
+        ipcRenderer
+          .invoke('renderer:open-collection', openAPISpecFilePath, collectionFolderPath)
+          .then(resolve)
+          .catch(reject);
+      });
+    }
+  } catch (error) {
+    console.log(`Error opening collection: ${error}`);
+    // TODO: show error in UI
+  }
+};
+
 export const deleteCollection = (collectionId) => {
   try {
     const { ipcRenderer } = window;
@@ -29,7 +50,7 @@ export const deleteCollection = (collectionId) => {
       return Promise.reject(new Error('Collection not found'));
     }
   } catch (error) {
-    console.log(`Error deleting collection: ${collectionId}`);
+    console.log(`Error deleting collection: ${error}`);
     // TODO: show error in UI
   }
 };

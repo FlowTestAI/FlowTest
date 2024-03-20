@@ -20,7 +20,7 @@ class Collections {
   remove(collection) {
     const collections = this.store.get('collections') || [];
 
-    if (!isDirectory(collection.pathname)) {
+    if (collections.find((c) => c.id === collection.id)) {
       this.store.set(
         'collections',
         collections.filter((c) => c.pathname !== collection.pathname),

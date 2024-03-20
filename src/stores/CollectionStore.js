@@ -26,12 +26,12 @@ const useCollectionStore = create((set, get) => ({
     };
     if (!get().collections.find((c) => c.pathname === pathname)) {
       set((state) => ({ collections: [...state.collections, collectionObj] }));
-      console.log(`Collection added: ${JSON.stringify(get().collections)}`);
+      console.log(`Collection added => id: ${id}, name: ${name}, pathname: ${pathname}`);
     }
   },
   deleteCollection(collectionId) {
     set((state) => ({ collections: state.collections.filter((c) => c.id != collectionId) }));
-    //console.log(`Collection removed: ${JSON.stringify(get().collections)}`);
+    console.log(`Collection removed: ${collectionId}`);
 
     // check if there any open tabs, if yes close them
     useTabStore.getState().closeCollectionTabs(collectionId);

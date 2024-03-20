@@ -28,7 +28,7 @@ const Tabs = () => {
     setClosingCollectionId(collectionId);
 
     if (isDirty) {
-      console.log(`\n \n BHUT HI SAHIIII tabId: ${tabId} : collectionId: ${collectionId}\n \n`);
+      console.debug(`Confirm close for tabId: ${tabId} : collectionId: ${collectionId}`);
       setConfirmActionModalOpen(true);
       return;
     }

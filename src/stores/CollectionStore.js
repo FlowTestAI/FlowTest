@@ -73,7 +73,11 @@ const useCollectionStore = create((set, get) => ({
         if (collection) {
           // if it's the collection itself
           if (collection.pathname === directory.pathname && collection.name === directory.name) {
-            state.deleteCollection(collection.id);
+            state.collections = state.collections.filter((c) => c.id != collectionId);
+            console.log(`Collection removed: ${collectionId}`);
+
+            // check if there any open tabs, if yes close them
+            useTabStore.getState().closeCollectionTabs(collectionId);
           } else {
             const item = findItemInCollectionTree(directory, collection);
 

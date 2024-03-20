@@ -9,6 +9,11 @@ export const DirectoryOptionsActions = {
     value: 'delete',
     dataSetValue: 'delete',
   },
+  remove: {
+    displayValue: 'Remove',
+    value: 'remove',
+    dataSetValue: 'remove',
+  },
   addNewFlow: {
     displayValue: 'New Flow',
     value: 'new-flow',

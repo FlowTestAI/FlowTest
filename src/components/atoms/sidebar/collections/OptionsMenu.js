@@ -4,8 +4,9 @@ import { Menu, Transition } from '@headlessui/react';
 import { FolderPlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
+import { OBJ_TYPES } from 'constants/Common';
 
-const OptionsMenu = ({ directory, itemType }) => {
+const OptionsMenu = ({ collectionId, directory, itemType }) => {
   const menuItemsStyles =
     'group flex w-full items-center rounded px-2 py-2 text-sm text-gray-900 transition duration-200 ease-out hover:bg-slate-100';
   return (
@@ -43,6 +44,7 @@ const OptionsMenu = ({ directory, itemType }) => {
                 data-options-menu-item={DirectoryOptionsActions.addNewFolder.value}
                 data-path-name={directory.pathname}
                 data-item-type={itemType}
+                data-collection-id={collectionId}
               >
                 <FolderPlusIcon
                   className='w-4 h-4 mr-2'
@@ -60,6 +62,7 @@ const OptionsMenu = ({ directory, itemType }) => {
                 data-options-menu-item={DirectoryOptionsActions.addNewFlow.value}
                 data-path-name={directory.pathname}
                 data-item-type={itemType}
+                data-collection-id={collectionId}
               >
                 <PencilSquareIcon
                   className='w-4 h-4 mr-2'
@@ -79,6 +82,7 @@ const OptionsMenu = ({ directory, itemType }) => {
                 data-options-menu-item={DirectoryOptionsActions.delete.value}
                 data-path-name={directory.pathname}
                 data-item-type={itemType}
+                data-collection-id={collectionId}
               >
                 <TrashIcon
                   className='w-4 h-4 mr-2'
@@ -86,7 +90,9 @@ const OptionsMenu = ({ directory, itemType }) => {
                   data-click-from='options-menu'
                   data-item-type={itemType}
                 />
-                {DirectoryOptionsActions.delete.displayValue}
+                {itemType === OBJ_TYPES.collection
+                  ? DirectoryOptionsActions.remove.displayValue
+                  : DirectoryOptionsActions.delete.displayValue}
               </button>
             </Menu.Item>
           </div>

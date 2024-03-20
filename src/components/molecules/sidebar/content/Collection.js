@@ -30,6 +30,7 @@ const Collection = ({ collectionId, item, depth }) => {
             directory={item}
             data-item-type={OBJ_TYPES.collection}
             itemType={OBJ_TYPES.collection}
+            collectionId={collectionId}
           />
         </div>
       );
@@ -61,6 +62,7 @@ const Collection = ({ collectionId, item, depth }) => {
             directory={item}
             data-item-type={OBJ_TYPES.flowtest}
             itemType={OBJ_TYPES.flowtest}
+            collectionId={collectionId}
           />
         </div>
       );
@@ -86,6 +88,7 @@ const Collection = ({ collectionId, item, depth }) => {
             directory={item}
             data-item-type={OBJ_TYPES.folder}
             itemType={OBJ_TYPES.folder}
+            collectionId={collectionId}
           />
         </div>
       );

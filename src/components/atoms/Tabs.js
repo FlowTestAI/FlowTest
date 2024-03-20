@@ -28,7 +28,7 @@ const Tabs = () => {
     setClosingCollectionId(collectionId);
 
     if (isDirty) {
-      console.log(`\n \n BHUT HI SAHIIII tabId: ${tabId} : collectionId: ${collectionId}\n \n`);
+      console.debug(`Confirm close for tabId: ${tabId} : collectionId: ${collectionId}`);
       setConfirmActionModalOpen(true);
       return;
     }
@@ -47,7 +47,7 @@ const Tabs = () => {
               role='tab'
               onClick={() => {
                 setFocusTab(tab.id);
-                console.log(`CLICKED THE ${tab.id}`);
+                console.debug(`Selected tab: ${tab.id}`);
               }}
               data-id={tab.id}
               data-collection-id={tab.collectionId}

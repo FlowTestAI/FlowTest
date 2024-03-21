@@ -1,17 +1,20 @@
 {
   "name": "flowtest-electron",
   "version": "1.0.0",
-  "homepage": ".",
-  "description": "",
+  "homepage": "https://github.com/FlowTestAI/FlowTest/tree/main",
+  "description": "OpenSource IDE for designing API powered flows",
   "main": "electron-main.js",
   "scripts": {
     "start": "electron .",
-    "test": "jest"
+    "test": "jest",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
-  "author": "",
+  "author": "Sajal Jain <jsajal1993@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "electron": "^29.0.0",
+    "electron-builder": "^24.13.3",
     "jest": "^29.7.0"
   },
   "dependencies": {
@@ -27,5 +30,28 @@
     "openai": "^4.29.1",
     "path": "^0.12.7",
     "uuid": "^9.0.1"
+  },
+  "build": {
+    "appId": "com.flowtestai.app",
+    "productName": "FlowTestAI",
+    "directories": {
+      "buildResources": "resources",
+      "output": "dist"
+    },
+    "files": [
+      "**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
   }
 }

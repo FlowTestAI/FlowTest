@@ -11,7 +11,8 @@ const Environment = ({ collectionId, collection }) => {
   const [confirmActionModalOpen, setConfirmActionModalOpen] = useState(false);
   const [envToDelete, setEnvToDelete] = useState('');
 
-  const messageForConfirmActionModal = 'Do you wish to delete this environment';
+  const messageForConfirmActionModal =
+    'Do you wish to delete this environment? This action deletes it from disk and cannot be undone';
 
   return (
     <>

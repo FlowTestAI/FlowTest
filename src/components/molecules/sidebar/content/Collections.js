@@ -16,7 +16,10 @@ const Collections = ({ collections }) => {
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
   const [selectedItemType, setSelectedItemType] = useState('');
 
-  const messageForConfirmActionModal = `Do you wish to delete ${selectedItemType}`;
+  const messageForConfirmActionModal =
+    selectedItemType === OBJ_TYPES.collection
+      ? `Do you wish to remove this collection? This action does not delete from disk so you can open this collection again`
+      : `Do you wish to delete this ${selectedItemType}? This action deletes it from disk and cannot be undone`;
 
   const handleDeleteMenuItem = (menuItemType, path, collectionId) => {
     if (menuItemType === OBJ_TYPES.collection) {
@@ -64,6 +67,8 @@ const Collections = ({ collections }) => {
           const optionsMenuItem = clickFromElementDataSet?.optionsMenuItem;
           const pathName = clickFromElementDataSet?.pathName;
           const collectionId = clickFromElementDataSet?.collectionId;
+
+          console.log(clickFromElementDataSet);
 
           setSelectedPathName(pathName);
           setSelectedCollectionId(collectionId);

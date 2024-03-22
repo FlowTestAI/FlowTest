@@ -10,9 +10,11 @@ const Content = ({ collections }) => {
   const navigationSelectedValue = useNavigationStore((state) => state.selectedNavVal);
   return (
     <>
-      <SideBarSubHeader />
       {navigationSelectedValue === AppNavBarItems.collections.value ? (
-        <Collections collections={collections} />
+        <>
+          <SideBarSubHeader />
+          <Collections collections={collections} />
+        </>
       ) : (
         <Environments collections={collections} />
       )}

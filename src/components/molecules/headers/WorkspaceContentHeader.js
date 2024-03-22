@@ -33,7 +33,7 @@ const WorkspaceContentHeader = () => {
           </div>
         </>
       ) : (
-        <div className='text-base tracking-[0.15em]'>Please select a Flow test or create a new one</div>
+        <div className='text-base tracking-[0.15em]'>Please select a Flow or create a new one</div>
       )}
     </div>
   );

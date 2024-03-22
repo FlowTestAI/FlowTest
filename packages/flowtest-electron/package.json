@@ -4,6 +4,9 @@
   "homepage": "https://github.com/FlowTestAI/FlowTest/tree/main",
   "description": "OpenSource IDE for designing API powered flows",
   "main": "electron-main.js",
+  "bugs": {
+    "url": "https://github.com/FlowTestAI/FlowTest/issues"
+  },
   "scripts": {
     "start": "electron .",
     "test": "jest",
@@ -13,6 +16,7 @@
   "author": "Sajal Jain <jsajal1993@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@electron/notarize": "^2.3.0",
     "electron": "^29.0.0",
     "electron-builder": "^24.13.3",
     "jest": "^29.7.0"
@@ -41,11 +45,13 @@
     "files": [
       "**/*"
     ],
+    "afterSign": "notarize.js",
     "win": {
       "target": "nsis"
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "identity": "Sajal Jain (7R825R8PU5)"
     },
     "linux": {
       "target": [

@@ -45,13 +45,15 @@
     "files": [
       "**/*"
     ],
-    "afterSign": "notarize.js",
     "win": {
       "target": "nsis"
     },
     "mac": {
       "target": "dmg",
-      "identity": "Sajal Jain (7R825R8PU5)"
+      "category": "public.app-category.developer-tools",
+      "identity": "Sajal Jain (Z25C545DT5)",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
     },
     "linux": {
       "target": [

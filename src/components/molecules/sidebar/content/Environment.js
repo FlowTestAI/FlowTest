@@ -5,6 +5,7 @@ import { OBJ_TYPES } from 'constants/Common';
 import { deleteEnvironmentFile } from 'service/collection';
 import EnvOptionsMenu from 'components/atoms/sidebar/environments/EnvOptionsMenu';
 import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
+import { toast } from 'react-toastify';
 
 const Environment = ({ collectionId, collection }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -78,10 +79,10 @@ const Environment = ({ collectionId, collection }) => {
               );
             })
             .catch((error) => {
-              // TODO: show error in UI
               console.log(
                 `Error deleting environment:  name = ${envToDelete}, collectionId = ${collectionId} and error: ${error}`,
               );
+              toast.error(`Error deleting environment`);
             });
           setConfirmActionModalOpen(false);
         }}

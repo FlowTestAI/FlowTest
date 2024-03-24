@@ -5,8 +5,9 @@ import { InboxArrowDownIcon } from '@heroicons/react/20/solid';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import { updateFlowTest } from 'service/collection';
+import { toast } from 'react-toastify';
 
-const SaveFlowModal = ({ tab }) => {
+const SaveFlowModal = ({ tab, focusTab }) => {
   let [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
@@ -14,13 +15,17 @@ const SaveFlowModal = ({ tab }) => {
   }
 
   function saveHandle() {
+    console.log(`\n \n \n focusTab: ${focusTab} `);
     updateFlowTest(tab.pathname, tab.flowData, tab.collectionId)
-      .then((result) => {
-        console.log(`Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}, result: ${result}`);
+      .then(() => {
+        console.log(
+          `Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}, flowData: ${JSON.stringify(tab.flowData)}`,
+        );
+        toast.success(`Updated the flowtest: ${tab.pathname}`);
       })
       .catch((error) => {
-        // TODO: show error in UI
         console.log(`Error updating flowtest = ${tab.pathname}: ${error}`);
+        toast.error(`Error while updating flowtest: ${tab.pathname}`);
       });
   }
 

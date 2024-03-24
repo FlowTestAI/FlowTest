@@ -23,7 +23,7 @@ const WorkspaceHeader = () => {
           </Tippy>
         </button>
       </div>
-      <SelectEnvironment environments={environmentData} />
+      {/* <SelectEnvironment environments={environmentData} /> */}
     </div>
   );
 };

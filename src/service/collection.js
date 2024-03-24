@@ -33,6 +33,8 @@ export const openCollection = (openAPISpecFilePath, collectionFolderPath) => {
   } catch (error) {
     console.log(`Error opening collection: ${error}`);
     // TODO: show error in UI
+    // These error should be handled here in the service and this method should throw some generic error for the user to see
+    // Applies to other methods as well
   }
 };
 

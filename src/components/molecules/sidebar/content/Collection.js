@@ -4,6 +4,9 @@ import { ArchiveBoxIcon, FolderIcon, DocumentIcon } from '@heroicons/react/24/ou
 import { FLOW_FILE_SUFFIX_REGEX, OBJ_TYPES } from 'constants/Common';
 import { readFlowTest } from 'service/collection';
 import OptionsMenu from 'components/atoms/sidebar/collections/OptionsMenu';
+import { toast } from 'react-toastify';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 const Collection = ({ collectionId, item, depth }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -21,10 +24,13 @@ const Collection = ({ collectionId, item, depth }) => {
             }
           }}
         >
-          <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <ArchiveBoxIcon className='w-4 h-4' />
-            <span>{item.name}</span>
-          </div>
+          <Tippy content={item.pathname} placement='top'>
+            <div className='flex items-center justify-start gap-2 px-2 py-1'>
+              <ArchiveBoxIcon className='w-4 h-4' />
+              <span>{item.name}</span>
+            </div>
+          </Tippy>
+
           <OptionsMenu
             data-click-from='options-menu'
             directory={item}
@@ -48,8 +54,8 @@ const Collection = ({ collectionId, item, depth }) => {
                 );
               })
               .catch((error) => {
-                // TODO: show error in UI
                 console.log(`Error reading flowtest: ${error}`);
+                toast.error(`Error reading flowtest`);
               });
           }}
         >

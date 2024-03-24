@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { createFolder, createFlowTest, createEnvironmentFile } from 'service/collection';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
+import { toast } from 'react-toastify';
 
 const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectionId, menuOption }) => {
   const [labelValue, setLabelValue] = useState('');
@@ -74,10 +75,11 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                               console.log(
                                 `Created a new folder: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId}, result: ${result} \n`,
                               );
+                              toast.success(`Created a new folder: ${labelValue}`);
                             })
                             .catch((error) => {
-                              // TODO: show error in UI
                               console.log(`Error creating new folder: ${error}`);
+                              toast.error(`Error while creating new folder`);
                               closeFn();
                             });
                         } else if (menuOption === 'new-flow') {
@@ -86,26 +88,29 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                               console.log(
                                 `Created a new flowtest: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId}, result: ${result} \n`,
                               );
+                              toast.success(`Created a new flowtest: ${labelValue}`);
                             })
                             .catch((error) => {
-                              // TODO: show error in UI
                               console.log(`Error creating new flowtest: ${error}`);
+                              toast.error(`Error while creating new flowtest`);
                               closeFn();
                             });
                         } else if (menuOption === 'collection') {
                           // createCollection();
                           // wont be needing it here but just putting it for testing
                           console.log(`\n Creating a new collection by the name : ${labelValue} \n`);
+                          toast.success(`Created a new collection: ${labelValue}`);
                         } else if (menuOption === DirectoryOptionsActions.addNewEnvironment.value) {
                           createEnvironmentFile(labelValue, collectionId)
                             .then((result) => {
                               console.log(
                                 `Created a new environment: name = ${labelValue}, collectionId = ${collectionId}, result: ${result} \n`,
                               );
+                              toast.success(`Created a new environment: ${labelValue}`);
                             })
                             .catch((error) => {
-                              // TODO: show error in UI
                               console.log(`Error creating new environment: ${error}`);
+                              toast.error(`Error while creating new environment`);
                               closeFn();
                             });
                         }

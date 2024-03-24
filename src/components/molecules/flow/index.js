@@ -27,6 +27,7 @@ import FlowNode from 'components/atoms/flow/FlowNode';
 import { Popover } from '@headlessui/react';
 import { generateFlowData } from './flowtestai';
 import { GENAI_MODELS } from 'constants/Common';
+import { toast } from 'react-toastify';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -96,6 +97,7 @@ const init = (flowData) => {
 };
 
 const Flow = ({ tabId, collectionId, flowData }) => {
+  console.log(` \n \n \n RENDERING FLOW FOR tabId: ${tabId} \n \n \n`);
   useEffect(() => {
     // Action to perform on tab change
     console.log(`Tab changed to: ${tabId}`);
@@ -267,7 +269,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
   };
 
   return (
-    <div className='flex-auto'>
+    <div className='w-full h-full'>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -313,8 +315,8 @@ const Flow = ({ tabId, collectionId, flowData }) => {
                   setEdges(result.edges);
                 })
                 .catch((error) => {
-                  // TODO: show error in UI
                   console.log(error);
+                  toast.error(`Error while generating flow data`);
                 });
             }}
           >

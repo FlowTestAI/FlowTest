@@ -6,7 +6,7 @@ const Workspace = () => {
   return (
     <div className='flex flex-col h-full'>
       <WorkspaceHeader />
-      <WorkspaceContent />
+      {/* <WorkspaceContent /> */}
     </div>
   );
 };

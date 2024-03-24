@@ -4,6 +4,8 @@ import 'allotment/dist/style.css';
 import Workspace from '../organisms/workspace/Workspace';
 import AppNavBar from 'components/organisms/appNavBar';
 import SideBar from 'components/organisms/SideBar';
+// import Tabs from 'components/atoms/Tabs';
+import Tabs from 'components/molecules/Tabs';
 
 const SplitPane = () => {
   return (
@@ -16,7 +18,8 @@ const SplitPane = () => {
           </div>
         </Allotment.Pane>
         <Allotment.Pane>
-          <Workspace />
+          {/* <Workspace /> */}
+          <Tabs />
         </Allotment.Pane>
       </Allotment>
     </main>

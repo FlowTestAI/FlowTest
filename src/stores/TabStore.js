@@ -1,4 +1,5 @@
 import { OBJ_TYPES } from 'constants/Common';
+import { cloneDeep } from 'lodash';
 import { create } from 'zustand';
 
 export const useTabStore = create((set, get) => ({
@@ -30,6 +31,31 @@ export const useTabStore = create((set, get) => ({
 
     set((state) => ({ tabs: [...state.tabs, newTab] }));
     set(() => ({ focusTabId: newTab.id }));
+  },
+  // these state changes are meant to be triggered by canvas in focus
+  updateFlowTestNodes: (nodes) => {
+    if (get().focusTabId) {
+      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
+      if (existingTab) {
+        if (!existingTab.flowDataDraft) {
+          existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+        }
+        existingTab.flowDataDraft.nodes = nodes;
+      }
+      console.log(existingTab);
+    }
+  },
+  updateFlowTestEdges: (edges) => {
+    if (get().focusTabId) {
+      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
+      if (existingTab) {
+        if (!existingTab.flowDataDraft) {
+          existingTab.flowDataDraft = cloneDeep(existingTab.flowData);
+        }
+        existingTab.flowDataDraft.edges = edges;
+      }
+      console.log(existingTab);
+    }
   },
   addEnvTab: (env, collectionId) => {
     const newTab = {

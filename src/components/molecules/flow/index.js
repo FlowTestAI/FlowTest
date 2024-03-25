@@ -27,12 +27,15 @@ import FlowNode from 'components/atoms/flow/FlowNode';
 import { Popover } from '@headlessui/react';
 import { generateFlowData } from './flowtestai';
 import { GENAI_MODELS } from 'constants/Common';
+import useCanvasStore from 'stores/CanvasStore';
+
+import { shallow } from 'zustand/shallow';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
 );
 
-const init = (flowData) => {
+export const init = (flowData) => {
   // Initialization
   if (flowData && flowData.nodes && flowData.edges) {
     return {
@@ -95,36 +98,49 @@ const init = (flowData) => {
   }
 };
 
-const Flow = ({ tabId, collectionId, flowData }) => {
-  useEffect(() => {
-    // Action to perform on tab change
-    console.log(`Tab changed to: ${tabId}`);
-    console.log(flowData);
-    // perform actions based on the new tabId
-    const result = init(cloneDeep(flowData));
-    setNodes(result.nodes);
-    setEdges(result.edges);
-  }, [tabId]);
+const selector = (state) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+  setNodes: state.setNodes,
+  setEdges: state.setEdges,
+});
 
-  const setCanvasDirty = () => {
-    console.debug('set canvas dirty');
-    const tab = useTabStore.getState().tabs.find((t) => t.id === tabId);
-    if (tab) {
-      tab.isDirty = true;
-      tab.flowData = {
-        nodes: nodes.map((node) => {
-          const _node = JSON.parse(JSON.stringify(node));
-          return { ..._node };
-        }),
-        edges: edges.map((edge) => {
-          return {
-            ...edge,
-            animated: false,
-          };
-        }),
-      };
-    }
-  };
+const Flow = ({ collectionId }) => {
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges } = useCanvasStore(selector);
+  //console.log(nodes);
+
+  // useEffect(() => {
+  //   // Action to perform on tab change
+  // console.log(`Tab changed to: ${tabId}`);
+  // console.log(flowData);
+  // // perform actions based on the new tabId
+  // const result = init(cloneDeep(flowData));
+  // setNodes(result.nodes);
+  // setEdges(result.edges);
+  // }, [tabId]);
+
+  // const setCanvasDirty = () => {
+  //   console.debug('set canvas dirty');
+  //   const tab = useTabStore.getState().tabs.find((t) => t.id === tabId);
+  //   if (tab) {
+  //     tab.isDirty = true;
+  //     tab.flowData = {
+  //       nodes: nodes.map((node) => {
+  //         const _node = JSON.parse(JSON.stringify(node));
+  //         return { ..._node };
+  //       }),
+  //       edges: edges.map((edge) => {
+  //         return {
+  //           ...edge,
+  //           animated: false,
+  //         };
+  //       }),
+  //     };
+  //   }
+  // };
 
   // notification
   // eslint-disable-next-line no-unused-vars
@@ -151,28 +167,20 @@ const Flow = ({ tabId, collectionId, flowData }) => {
     [],
   );
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  // const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  // const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  useEffect(() => {
-    // skip inital render
-    if (flowData === undefined || (isEqual(nodes, []) && isEqual(edges, []))) {
-      return;
-    }
-    if (flowData && isEqual(JSON.parse(JSON.stringify(nodes)), flowData.nodes) && isEqual(edges, flowData.edges)) {
-      console.debug('canvas is unchanged');
-      return;
-    }
-    setCanvasDirty();
-  }, [nodes, edges]);
-
-  const onConnect = (params) => {
-    const newEdge = {
-      ...params,
-      type: 'buttonedge',
-    };
-    setEdges((eds) => addEdge(newEdge, eds));
-  };
+  // useEffect(() => {
+  //   // skip inital render
+  //   if (flowData === undefined || (isEqual(nodes, []) && isEqual(edges, []))) {
+  //     return;
+  //   }
+  //   if (flowData && isEqual(JSON.parse(JSON.stringify(nodes)), flowData.nodes) && isEqual(edges, flowData.edges)) {
+  //     console.debug('canvas is unchanged');
+  //     return;
+  //   }
+  //   setCanvasDirty();
+  // }, [nodes, edges]);
 
   const runnableEdges = (runnable) => {
     const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
@@ -220,7 +228,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
       };
       console.debug('Dropped node: ', newNode);
 
-      setNodes((nds) => nds.concat(newNode));
+      setNodes([...useCanvasStore.getState().nodes, newNode]);
     },
     [reactFlowInstance],
   );
@@ -279,7 +287,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
         onInit={setReactFlowInstance}
         onDrop={onDrop}
         onDragOver={onDragOver}
-        onNodeDragStop={() => setCanvasDirty()}
+        //onNodeDragStop={() => setCanvasDirty()}
         isValidConnection={isValidConnection}
         //fitView
       >

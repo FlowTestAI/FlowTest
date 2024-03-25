@@ -6,31 +6,12 @@ import useCanvasStore from 'stores/CanvasStore';
 const AuthNode = ({ id, data }) => {
   const setAuthNodeType = useCanvasStore((state) => state.setAuthNodeType);
   const setBasicAuthValues = useCanvasStore((state) => state.setBasicAuthValues);
-  /* its better to have no space strings as values since they are less error/bug prone */
-  // const initState = () => {
-  //   if (data.auth && data.auth.type) {
-  //     return data.auth.type; // should return basic-auth
-  //   } else {
-  //     data.auth = {};
-  //     data.auth.type = 'no-auth';
-  //     return 'no-auth';
-  //   }
-  // };
 
-  // // const [anchorEl, setAnchorEl] = React.useState(null);
-  // const [auth, setAuth] = React.useState(initState());
-
-  /**
-   * Not sure whether you need to set the value for data props/param or not.
-   * Technically you should not set the value for a prop/param in a component
-   * Check this and other places in this file once
-   */
   const handleChange = (value, option) => {
     setBasicAuthValues(id, option, value);
   };
 
   const handleSelection = (event) => {
-    //const selectedValue = event.target?.value;
     setAuthNodeType(id, event.target?.value);
   };
 

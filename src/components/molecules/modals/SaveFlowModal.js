@@ -15,7 +15,7 @@ const SaveFlowModal = ({ tab }) => {
   }
 
   function saveHandle() {
-    updateFlowTest(tab.pathname, tab.flowData, tab.collectionId)
+    updateFlowTest(tab.pathname, tab.flowDataDraft, tab.collectionId)
       .then((result) => {
         console.log(`Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}, result: ${result}`);
         toast.success(`Updated the flowtest: ${tab.pathname}`);

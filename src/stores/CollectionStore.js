@@ -10,6 +10,7 @@ import {
 import { useEventStore } from './EventListenerStore.js';
 import { useTabStore } from './TabStore.js';
 import { OBJ_TYPES } from 'constants/Common.js';
+import { cloneDeep } from 'lodash';
 
 const useCollectionStore = create((set, get) => ({
   collections: [],
@@ -269,8 +270,9 @@ const useCollectionStore = create((set, get) => ({
 
             // check if there are any open tabs, if yes mark them saved
             const tab = useTabStore.getState().tabs.find((t) => t.id === item.id);
-            if (tab) {
-              tab.isDirty = false;
+            if (tab && tab.flowDataDraft) {
+              tab.flowData = cloneDeep(tab.flowDataDraft);
+              tab.flowDataDraft = null;
             }
           }
         }

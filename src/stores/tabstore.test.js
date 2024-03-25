@@ -42,7 +42,6 @@ describe('Tab store', () => {
     expect(tabs[0].type).toEqual('flowtest');
     expect(tabs[0].name).toEqual(flowtest.name);
     expect(tabs[0].pathname).toEqual(flowtest.pathname);
-    expect(tabs[0].isDirty).toEqual(false);
     expect(tabs[0].flowData).toEqual(undefined);
     expect(result.current.focusTabId).toEqual(flowtest.id);
 

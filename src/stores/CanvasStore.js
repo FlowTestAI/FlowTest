@@ -185,6 +185,42 @@ const useCanvasStore = create((set, get) => ({
       }),
     });
   },
+  setEvaluateNodeVariable: (nodeId, name, type, value) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            ...node.data,
+            variables: {
+              ...node.data.variables,
+              [name]: {
+                type,
+                value,
+              },
+            },
+          };
+        }
+
+        return node;
+      }),
+    });
+  },
+  setEvaluateNodeOperator: (nodeId, operator) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            ...node.data,
+            operator,
+          };
+        }
+
+        return node;
+      }),
+    });
+  },
 }));
 
 export default useCanvasStore;

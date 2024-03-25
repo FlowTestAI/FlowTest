@@ -4,8 +4,6 @@ import WorkspaceContentHeader from 'components/molecules/headers/WorkspaceConten
 import { useTabStore } from 'stores/TabStore';
 import useCanvasStore from 'stores/CanvasStore';
 
-import { cloneDeep, isEqual } from 'lodash';
-
 const WorkspaceContent = () => {
   const setNodes = useCanvasStore((state) => state.setNodes);
   const setEdges = useCanvasStore((state) => state.setEdges);
@@ -27,7 +25,7 @@ const WorkspaceContent = () => {
     <div className='flex h-full flex-col'>
       <WorkspaceContentHeader />
       {/* {console.log(focusTab)} */}
-      {focusTab && <Flow tabId={focusTab.id} collectionId={focusTab.collectionId} flowData={focusTab.flowData} />}
+      {focusTab && <Flow collectionId={focusTab.collectionId} />}
       {/* <div className='rachit-test'>{focusTabId}</div> */}
     </div>
   );

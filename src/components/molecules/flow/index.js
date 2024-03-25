@@ -112,36 +112,6 @@ const Flow = ({ collectionId }) => {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges } = useCanvasStore(selector);
   //console.log(nodes);
 
-  // useEffect(() => {
-  //   // Action to perform on tab change
-  // console.log(`Tab changed to: ${tabId}`);
-  // console.log(flowData);
-  // // perform actions based on the new tabId
-  // const result = init(cloneDeep(flowData));
-  // setNodes(result.nodes);
-  // setEdges(result.edges);
-  // }, [tabId]);
-
-  // const setCanvasDirty = () => {
-  //   console.debug('set canvas dirty');
-  //   const tab = useTabStore.getState().tabs.find((t) => t.id === tabId);
-  //   if (tab) {
-  //     tab.isDirty = true;
-  //     tab.flowData = {
-  //       nodes: nodes.map((node) => {
-  //         const _node = JSON.parse(JSON.stringify(node));
-  //         return { ..._node };
-  //       }),
-  //       edges: edges.map((edge) => {
-  //         return {
-  //           ...edge,
-  //           animated: false,
-  //         };
-  //       }),
-  //     };
-  //   }
-  // };
-
   // notification
   // eslint-disable-next-line no-unused-vars
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -166,21 +136,6 @@ const Flow = ({ collectionId }) => {
     }),
     [],
   );
-
-  // const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  // const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
-  // useEffect(() => {
-  //   // skip inital render
-  //   if (flowData === undefined || (isEqual(nodes, []) && isEqual(edges, []))) {
-  //     return;
-  //   }
-  //   if (flowData && isEqual(JSON.parse(JSON.stringify(nodes)), flowData.nodes) && isEqual(edges, flowData.edges)) {
-  //     console.debug('canvas is unchanged');
-  //     return;
-  //   }
-  //   setCanvasDirty();
-  // }, [nodes, edges]);
 
   const runnableEdges = (runnable) => {
     const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
@@ -336,9 +291,7 @@ const Flow = ({ collectionId }) => {
 };
 
 Flow.propTypes = {
-  tabId: PropTypes.string.isRequired,
   collectionId: PropTypes.string.isRequired,
-  flowData: PropTypes.object.isRequired,
 };
 
 export default Flow;

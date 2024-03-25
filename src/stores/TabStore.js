@@ -25,7 +25,6 @@ export const useTabStore = create((set, get) => ({
       type: OBJ_TYPES.flowtest,
       name: flowtest.name,
       pathname: flowtest.pathname,
-      isDirty: false,
       flowData: flowtest.flowData ? flowtest.flowData : undefined,
     };
 

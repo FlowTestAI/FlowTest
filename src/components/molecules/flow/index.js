@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { cloneDeep, isEqual } from 'lodash';
+import { toast } from 'react-toastify';
 
 // css
 import './index.css';
@@ -278,6 +279,7 @@ const Flow = ({ collectionId }) => {
                 .catch((error) => {
                   // TODO: show error in UI
                   console.log(error);
+                  toast.error(`Error while generating flow data`);
                 });
             }}
           >

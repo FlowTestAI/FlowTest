@@ -1,8 +1,8 @@
 import React from 'react';
 import Flow, { init } from 'components/molecules/flow';
-import WorkspaceContentHeader from 'components/molecules/headers/WorkspaceContentHeader';
 import { useTabStore } from 'stores/TabStore';
 import useCanvasStore from 'stores/CanvasStore';
+import TabPanelHeader from '../headers/TabPanelHeader';
 
 const WorkspaceContent = () => {
   const setNodes = useCanvasStore((state) => state.setNodes);
@@ -23,7 +23,7 @@ const WorkspaceContent = () => {
 
   return (
     <div className='flex h-full flex-col'>
-      <WorkspaceContentHeader />
+      <TabPanelHeader />
       {/* {console.log(focusTab)} */}
       {focusTab && <Flow collectionId={focusTab.collectionId} />}
       {/* <div className='rachit-test'>{focusTabId}</div> */}

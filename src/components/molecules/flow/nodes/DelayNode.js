@@ -1,21 +1,17 @@
 import * as React from 'react';
 import { PropTypes } from 'prop-types';
 import FlowNode from 'components/atoms/flow/FlowNode';
+import useCanvasStore from 'stores/CanvasStore';
 
-/**
- * I have commented the code which is not required but do check it once
- */
-const DelayNode = ({ data }) => {
-  const [value, setValue] = React.useState(data.delay ? data.delay : 0);
-  data.delay = value;
+const DelayNode = ({ id, data }) => {
+  const setDelayNodeValue = useCanvasStore((state) => state.setDelayNodeValue);
 
   /**
    * ToDo: Implement Debouncing for this function
    */
   const handleDelayInMsInputChange = (event) => {
     event.preventDefault();
-    const delayInMs = event.target.value;
-    setValue(delayInMs);
+    setDelayNodeValue(id, event.target.value);
   };
 
   return (

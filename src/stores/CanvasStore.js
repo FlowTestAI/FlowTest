@@ -221,6 +221,46 @@ const useCanvasStore = create((set, get) => ({
       }),
     });
   },
+  setDelayNodeValue: (nodeId, value) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            delay: value,
+          };
+        }
+
+        return node;
+      }),
+    });
+  },
+  setOutputNode: (nodeId, output) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            output,
+          };
+        }
+
+        return node;
+      }),
+    });
+  },
+  unSetOutputNode: (nodeId) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {};
+        }
+
+        return node;
+      }),
+    });
+  },
 }));
 
 export default useCanvasStore;

@@ -1,5 +1,6 @@
 // assumption is that apis are giving json as output
 
+import useCanvasStore from 'stores/CanvasStore';
 import useCollectionStore from 'stores/CollectionStore';
 import { useTabStore } from 'stores/TabStore';
 import { computeAuthNode } from './compute/authnode';
@@ -69,7 +70,7 @@ class Graph {
 
       if (node.type === 'outputNode') {
         this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
-        node.data.setOutput(prevNodeOutputData);
+        useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
         result = ['Success', node, prevNodeOutput];
       }
 
@@ -94,7 +95,7 @@ class Graph {
       }
 
       if (node.type === 'authNode') {
-        this.auth = computeAuthNode(node.data.auth, this.env);
+        this.auth = node.data.type ? computeAuthNode(node.data, this.env) : undefined;
         result = ['Success', node, prevNodeOutput];
       }
 
@@ -134,7 +135,7 @@ class Graph {
     // reset every output node for a fresh run
     this.nodes.forEach((node) => {
       if (node.type === 'outputNode') {
-        node.data.setOutput(undefined);
+        useCanvasStore.getState().unSetOutputNode(node.id);
       }
     });
     this.graphRunNodeOutput = {};

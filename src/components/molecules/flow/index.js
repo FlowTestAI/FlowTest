@@ -277,7 +277,6 @@ const Flow = ({ collectionId }) => {
                   setEdges(result.edges);
                 })
                 .catch((error) => {
-                  // TODO: show error in UI
                   console.log(error);
                   toast.error(`Error while generating flow data`);
                 });

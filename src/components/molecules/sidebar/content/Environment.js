@@ -79,7 +79,6 @@ const Environment = ({ collectionId, collection }) => {
               );
             })
             .catch((error) => {
-              // TODO: show error in UI
               console.log(
                 `Error deleting environment:  name = ${envToDelete}, collectionId = ${collectionId} and error: ${error}`,
               );

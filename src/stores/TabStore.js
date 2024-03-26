@@ -62,6 +62,7 @@ export const useTabStore = create((set, get) => ({
       collectionId: collectionId,
       type: OBJ_TYPES.environment,
       name: env.name,
+      variables: env.variables,
     };
 
     set((state) => ({ tabs: [...state.tabs, newTab] }));

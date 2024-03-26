@@ -3,6 +3,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useTabStore } from 'stores/TabStore';
 import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 import { isEqual } from 'lodash';
+import { OBJ_TYPES } from 'constants/Common';
 
 const Tabs = () => {
   const tabs = useTabStore((state) => state.tabs);
@@ -23,17 +24,16 @@ const Tabs = () => {
   const handleCloseTab = (event, tab) => {
     event.stopPropagation();
     event.preventDefault();
-    // const tabId = event.currentTarget.dataset.tabId;
-    // const { isDirty, collectionId } = tabs.find((tab) => {
-    //   if (tab.id === tabId) return tab;
-    // });
+
     setClosingTabId(tab.id);
     setClosingCollectionId(tab.collectionId);
 
-    if (tab.flowDataDraft && !isEqual(tab.flowData, tab.flowDataDraft)) {
-      console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
-      setConfirmActionModalOpen(true);
-      return;
+    if (tab.type === OBJ_TYPES.flowtest) {
+      if (tab.flowDataDraft && !isEqual(tab.flowData, tab.flowDataDraft)) {
+        console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
+        setConfirmActionModalOpen(true);
+        return;
+      }
     }
     closeTab(tab.id, tab.collectionId);
   };
@@ -59,11 +59,11 @@ const Tabs = () => {
               <a>{tab.name}</a>
               {/* close needs to be a separate clickable component other wise it gets confused with above */}
               <div
-                className='flex h-full items-center px-2 hover:rounded hover:rounded-l-none hover:bg-slate-200'
+                className='flex items-center h-full px-2 hover:rounded hover:rounded-l-none hover:bg-slate-200'
                 data-tab-id={tab.id}
                 onClick={(e) => handleCloseTab(e, tab)}
               >
-                <XMarkIcon className='h-4 w-4' />
+                <XMarkIcon className='w-4 h-4' />
               </div>
             </div>
           );

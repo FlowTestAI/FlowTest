@@ -7,6 +7,7 @@ import TabPanelHeader from '../headers/TabPanelHeader';
 const WorkspaceContent = () => {
   const setNodes = useCanvasStore((state) => state.setNodes);
   const setEdges = useCanvasStore((state) => state.setEdges);
+  const setLogs = useCanvasStore((state) => state.setLogs);
 
   const focusTabId = useTabStore((state) => state.focusTabId);
   const tabs = useTabStore((state) => state.tabs);
@@ -19,10 +20,11 @@ const WorkspaceContent = () => {
     const result = init(focusTab.flowDataDraft ? focusTab.flowDataDraft : focusTab.flowData);
     setNodes(result.nodes);
     setEdges(result.edges);
+    setLogs([]);
   }
 
   return (
-    <div className='flex flex-col h-full'>
+    <div className='flex h-full flex-col'>
       <TabPanelHeader />
       {focusTab ? (
         <Flow collectionId={focusTab.collectionId} />

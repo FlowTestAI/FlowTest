@@ -19,6 +19,7 @@ import { getDefaultValue } from 'utils/common';
 const useCanvasStore = create((set, get) => ({
   nodes: [],
   edges: [],
+  logs: [],
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -48,6 +49,9 @@ const useCanvasStore = create((set, get) => ({
   setEdges: (edges) => {
     set({ edges });
     useTabStore.getState().updateFlowTestEdges(get().edges);
+  },
+  setLogs: (logs) => {
+    set({ logs });
   },
   setAuthNodeType: (nodeId, authType) => {
     set({

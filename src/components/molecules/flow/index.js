@@ -107,10 +107,12 @@ const selector = (state) => ({
   onConnect: state.onConnect,
   setNodes: state.setNodes,
   setEdges: state.setEdges,
+  setLogs: state.setLogs,
 });
 
 const Flow = ({ collectionId }) => {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges } = useCanvasStore(selector);
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, setLogs } =
+    useCanvasStore(selector);
   //console.log(nodes);
 
   // notification
@@ -214,18 +216,19 @@ const Flow = ({ collectionId }) => {
 
   // graph
   // eslint-disable-next-line no-unused-vars
-  const [graphRun, setGraphRun] = useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [graphRunLogs, setGraphRunLogs] = useState(undefined);
+  // const [graphRun, setGraphRun] = useState(false);
+  // // eslint-disable-next-line no-unused-vars
+  // const [graphRunLogs, setGraphRunLogs] = useState(undefined);
 
   const onGraphComplete = (result, logs) => {
     console.debug('Graph complete callback: ', result);
-    setGraphRun(true);
-    setGraphRunLogs(logs);
+    // setGraphRun(true);
+    // setGraphRunLogs(logs);
+    setLogs(logs);
     if (result[0] == 'Success') {
-      enqueueSnackbar('FlowTest Run Success!', { variant: 'success' });
+      toast.success('FlowTest Run Success! View Logs');
     } else if (result[0] == 'Failed') {
-      enqueueSnackbar('FlowTest Run Failed!', { variant: 'error' });
+      toast.error('FlowTest Run Failed! View Logs');
     }
     runnableEdges(false);
   };

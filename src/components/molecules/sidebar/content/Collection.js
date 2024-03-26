@@ -4,6 +4,9 @@ import { ArchiveBoxIcon, FolderIcon, DocumentIcon } from '@heroicons/react/24/ou
 import { FLOW_FILE_SUFFIX_REGEX, OBJ_TYPES } from 'constants/Common';
 import { readFlowTest } from 'service/collection';
 import OptionsMenu from 'components/atoms/sidebar/collections/OptionsMenu';
+import { toast } from 'react-toastify';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 const Collection = ({ collectionId, item, depth }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -12,7 +15,7 @@ const Collection = ({ collectionId, item, depth }) => {
       // this is for collections tab thus we have archive box icon
       return (
         <div
-          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
+          className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
           onClick={(event) => {
             const clickFromElementDataSet = event.target.dataset;
             const clickFrom = clickFromElementDataSet?.clickFrom;
@@ -21,10 +24,13 @@ const Collection = ({ collectionId, item, depth }) => {
             }
           }}
         >
-          <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <ArchiveBoxIcon className='w-4 h-4' />
-            <span>{item.name}</span>
-          </div>
+          <Tippy content={item.pathname} placement='top'>
+            <div className='flex items-center justify-start gap-2 px-2 py-1'>
+              <ArchiveBoxIcon className='h-4 w-4' />
+              <span>{item.name}</span>
+            </div>
+          </Tippy>
+
           <OptionsMenu
             data-click-from='options-menu'
             directory={item}
@@ -39,7 +45,7 @@ const Collection = ({ collectionId, item, depth }) => {
     if (item.type === OBJ_TYPES.flowtest && item.name.match(FLOW_FILE_SUFFIX_REGEX)) {
       return (
         <div
-          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
+          className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
           onClick={() => {
             readFlowTest(item.pathname, collectionId)
               .then((result) => {
@@ -48,13 +54,13 @@ const Collection = ({ collectionId, item, depth }) => {
                 );
               })
               .catch((error) => {
-                // TODO: show error in UI
                 console.log(`Error reading flowtest: ${error}`);
+                toast.error(`Error reading flowtest`);
               });
           }}
         >
           <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <DocumentIcon className='w-4 h-4' />
+            <DocumentIcon className='h-4 w-4' />
             <span>{item.name}</span>
           </div>
           <OptionsMenu
@@ -71,7 +77,7 @@ const Collection = ({ collectionId, item, depth }) => {
     if (item.type === OBJ_TYPES.folder) {
       return (
         <div
-          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
+          className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
           onClick={(event) => {
             const clickFrom = event.target.dataset?.clickFrom;
             if (!clickFrom || clickFrom !== 'options-menu') {
@@ -80,7 +86,7 @@ const Collection = ({ collectionId, item, depth }) => {
           }}
         >
           <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <FolderIcon className='w-4 h-4' />
+            <FolderIcon className='h-4 w-4' />
             <span data-type-name={item.type}>{item.name}</span>
           </div>
           <OptionsMenu

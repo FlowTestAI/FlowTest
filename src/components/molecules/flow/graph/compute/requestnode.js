@@ -38,7 +38,7 @@ const formulateRequest = (node, finalUrl, variablesDict, auth, logs) => {
     data: requestData,
   };
 
-  if (auth.type === 'basic-auth') {
+  if (auth && auth.type === 'basic-auth') {
     options.auth = {};
     options.auth.username = auth.username;
     options.auth.password = auth.password;

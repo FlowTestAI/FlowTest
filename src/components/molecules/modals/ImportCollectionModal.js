@@ -4,6 +4,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'constants/ImportCollectionTypes';
 import { createCollection } from 'service/collection';
+import { toast } from 'react-toastify';
 
 const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
   const importYamlFile = useRef(null);
@@ -44,10 +45,12 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
         // if user presses cancel in choosing directory dialog, this is returned undefined
         if (dirPath) {
           createCollection(yamlPath, dirPath);
+          toast.success('Successfully created the collection');
         }
       })
       .catch((error) => {
         console.log(`Failed to create collection: ${error}`);
+        toast.error('Failed to create the collection');
       });
   };
 

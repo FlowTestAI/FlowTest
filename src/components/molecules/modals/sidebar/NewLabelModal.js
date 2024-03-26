@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { createFolder, createFlowTest, createEnvironmentFile } from 'service/collection';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
+import { toast } from 'react-toastify';
 
 const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectionId, menuOption }) => {
   const [labelValue, setLabelValue] = useState('');
@@ -24,7 +25,7 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
           </Transition.Child>
 
           <div className='fixed inset-0 overflow-y-auto'>
-            <div className='flex items-center justify-center min-h-full p-4 text-center'>
+            <div className='flex min-h-full items-center justify-center p-4 text-center'>
               <Transition.Child
                 as={Fragment}
                 enter='ease-out duration-300'
@@ -34,10 +35,10 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                 leaveFrom='opacity-100 scale-100'
                 leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
+                <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
                   <Dialog.Title
                     as='h3'
-                    className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
+                    className='border-b border-neutral-300 pb-4 text-center text-lg font-semibold text-gray-900'
                   >
                     {`Create a ${menuOption}`}
                   </Dialog.Title>
@@ -53,17 +54,17 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                       }}
                     />
                   </div>
-                  <div className='flex items-center gap-2 mt-6'>
+                  <div className='mt-6 flex items-center gap-2'>
                     <button
                       type='button'
-                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-blue-900 border border-transparent rounded-md grow basis-0 bg-sky-100 hover:bg-sky-300'
+                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-sky-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-sky-300'
                       onClick={closeFn}
                     >
                       Cancel
                     </button>
                     <button
                       type='button'
-                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-green-400'
+                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-400'
                       onClick={() => {
                         console.log(
                           `modalType :: ${menuOption} :: labelValue :: ${labelValue} :: pathName :: ${pathName} :: collectionId :: ${collectionId}`,
@@ -74,10 +75,11 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                               console.log(
                                 `Created a new folder: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId}, result: ${result} \n`,
                               );
+                              toast.success(`Created a new folder: ${labelValue}`);
                             })
                             .catch((error) => {
-                              // TODO: show error in UI
                               console.log(`Error creating new folder: ${error}`);
+                              toast.error(`Error creating new folder`);
                               closeFn();
                             });
                         } else if (menuOption === 'new-flow') {
@@ -86,10 +88,11 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                               console.log(
                                 `Created a new flowtest: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId}, result: ${result} \n`,
                               );
+                              toast.success(`Created a new flowtest: ${labelValue}`);
                             })
                             .catch((error) => {
-                              // TODO: show error in UI
                               console.log(`Error creating new flowtest: ${error}`);
+                              toast.error(`Error creating new flowtest`);
                               closeFn();
                             });
                         } else if (menuOption === 'collection') {
@@ -102,10 +105,11 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                               console.log(
                                 `Created a new environment: name = ${labelValue}, collectionId = ${collectionId}, result: ${result} \n`,
                               );
+                              toast.success(`Created a new environment: ${labelValue}`);
                             })
                             .catch((error) => {
-                              // TODO: show error in UI
                               console.log(`Error creating new environment: ${error}`);
+                              toast.error(`Error while creating new environment`);
                               closeFn();
                             });
                         }

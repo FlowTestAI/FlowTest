@@ -17,7 +17,7 @@ const Tabs = () => {
   const activeTabStyles =
     'before:absolute before:h-[0.25rem] before:w-full before:bg-slate-300 before:content-[""] before:bottom-0 before:left-0';
   const tabCommonStyles =
-    'tab flex items-center gap-x-2 border-r border-neutral-300 bg-transparent pr-0 tracking-[0.15em] transition duration-500 ease-in text-sm';
+    'tab flex items-center gap-x-2 border-r border-neutral-300 bg-transparent pr-0 tracking-[0.15em] transition duration-500 ease-in text-sm flex-nowrap';
   const messageForConfirmActionModal = 'You have unsaved changes in the flowtest, are you sure you want to close it?';
 
   const handleCloseTab = (event, tab) => {
@@ -39,9 +39,10 @@ const Tabs = () => {
   };
 
   return (
-    <div role='tablist' className='tabs tabs-lg'>
+    <div role='tablist' className='overflow-scroll tabs tabs-lg'>
       {tabs
         // tabs belonging to one collection will be shown at a time
+        .reverse()
         .filter((t) => t.collectionId === focusTab.collectionId)
         .map((tab, index) => {
           return (
@@ -56,14 +57,14 @@ const Tabs = () => {
               data-id={tab.id}
               data-collection-id={tab.collectionId}
             >
-              <a>{tab.name}</a>
+              <a className='text-nowrap'>{tab.name}</a>
               {/* close needs to be a separate clickable component other wise it gets confused with above */}
               <div
-                className='flex h-full items-center px-2 hover:rounded hover:rounded-l-none hover:bg-slate-200'
+                className='flex items-center h-full px-2 hover:rounded hover:rounded-l-none hover:bg-slate-200'
                 data-tab-id={tab.id}
                 onClick={(e) => handleCloseTab(e, tab)}
               >
-                <XMarkIcon className='h-4 w-4' />
+                <XMarkIcon className='w-4 h-4' />
               </div>
             </div>
           );

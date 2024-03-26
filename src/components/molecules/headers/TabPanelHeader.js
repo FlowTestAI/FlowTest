@@ -20,7 +20,6 @@ const TabPanelHeader = () => {
   const tabs = useTabStore((state) => state.tabs);
   const focusTab = tabs.find((t) => t.id === focusTabId);
   const graphRunLogs = useCanvasStore((state) => state.logs);
-  console.log('graph logs: ', graphRunLogs);
 
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
 
@@ -53,7 +52,6 @@ const TabPanelHeader = () => {
                     <ul className='min-h-full p-4 menu w-80 bg-base-200 text-base-content'>
                       {graphRunLogs.map((item, index) => (
                         <li key={index}>
-                          <div>{console.log(item)}</div>
                           <a>{item}</a>
                         </li>
                       ))}
@@ -88,6 +86,7 @@ const TabPanelHeader = () => {
               <GenerateFlowTestModal
                 closeFn={() => setGenerateFlowTestModalOpen(false)}
                 open={generateFlowTestModalOpen}
+                collectionId={focusTab.collectionId}
               />
             </div>
           </div>

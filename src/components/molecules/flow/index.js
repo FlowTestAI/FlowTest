@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -7,9 +7,6 @@ import { toast } from 'react-toastify';
 
 // css
 import './index.css';
-
-// notification
-import { useSnackbar } from 'notistack';
 
 // ReactFlow Canvas
 import CustomEdge from './edges/ButtonEdge';
@@ -20,17 +17,9 @@ import RequestNode from './nodes/RequestNode';
 import OutputNode from './nodes/OutputNode';
 import EvaluateNode from './nodes/EvaluateNode';
 import DelayNode from './nodes/DelayNode';
-
-// file system
 import AuthNode from './nodes/AuthNode';
-import { useTabStore } from 'stores/TabStore';
 import FlowNode from 'components/atoms/flow/FlowNode';
-import { Popover } from '@headlessui/react';
-import { generateFlowData } from './flowtestai';
-import { GENAI_MODELS } from 'constants/Common';
 import useCanvasStore from 'stores/CanvasStore';
-
-import { shallow } from 'zustand/shallow';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -114,10 +103,6 @@ const Flow = ({ collectionId }) => {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, setLogs } =
     useCanvasStore(selector);
   //console.log(nodes);
-
-  // notification
-  // eslint-disable-next-line no-unused-vars
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
@@ -214,16 +199,8 @@ const Flow = ({ collectionId }) => {
     return canConnect;
   };
 
-  // graph
-  // eslint-disable-next-line no-unused-vars
-  // const [graphRun, setGraphRun] = useState(false);
-  // // eslint-disable-next-line no-unused-vars
-  // const [graphRunLogs, setGraphRunLogs] = useState(undefined);
-
   const onGraphComplete = (result, logs) => {
     console.debug('Graph complete callback: ', result);
-    // setGraphRun(true);
-    // setGraphRunLogs(logs);
     setLogs(logs);
     if (result[0] == 'Success') {
       toast.success('FlowTest Run Success! View Logs');
@@ -268,26 +245,6 @@ const Flow = ({ collectionId }) => {
           </ControlButton>
         </Controls>
         <Background variant='dots' gap={12} size={1} />
-        <div className='absolute right-4 z-[2000] max-w-sm px-4 '>
-          <button
-            type='button'
-            onClick={() => {
-              generateFlowData('Add a pet then get all pets with status available', GENAI_MODELS.openai, collectionId)
-                .then((flowData) => {
-                  const result = init(flowData);
-                  console.log(result);
-                  setNodes(result.nodes);
-                  setEdges(result.edges);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  toast.error(`Error while generating flow data`);
-                });
-            }}
-          >
-            FlowTestAI
-          </button>
-        </div>
         <AddNodes collectionId={collectionId} />
       </ReactFlow>
     </div>

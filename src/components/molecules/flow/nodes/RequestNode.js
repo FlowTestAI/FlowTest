@@ -38,7 +38,7 @@ const RequestNode = ({ id, data }) => {
         {data.variables &&
           Object.keys(data.variables).map((id) => (
             <div className='flex items-center justify-between pb-2' key={id}>
-              <div className='flex items-center justify-between rounded-md border border-neutral-500 text-sm text-neutral-500 outline-0 focus:ring-0'>
+              <div className='flex items-center justify-between text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
                 {data.variables[id].type === 'Boolean' ? (
                   <select
                     onChange={(e) => handleVariableChange(e, id)}
@@ -60,12 +60,12 @@ const RequestNode = ({ id, data }) => {
                   />
                 )}
                 <label>{id}</label>
-                <div className='rounded-br-md rounded-tr-md border-l border-l-neutral-500 px-4 py-2'>
+                <div className='px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>
                   {data.variables[id].type}
                 </div>
               </div>
               <div onClick={(e) => handleDeleteVariable(e, id)} className='p-2 text-neutral-500'>
-                <TrashIcon className='h-4 w-4' />
+                <TrashIcon className='w-4 h-4' />
               </div>
             </div>
           ))}
@@ -89,7 +89,7 @@ const RequestNode = ({ id, data }) => {
             className='nodrag nowheel  mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
             name='username'
             onChange={handleUrlInputChange}
-            defaultValue={data.url ? data.url : ''}
+            value={data.url ? data.url : ''}
           />
         </div>
         <RequestBody nodeId={id} nodeData={data} />
@@ -97,10 +97,10 @@ const RequestNode = ({ id, data }) => {
           <div className='flex items-center justify-between px-2 py-4 font-medium'>
             <h3>Variables</h3>
             <button className='p-2' onClick={() => setVariableDialogOpen(true)}>
-              <PlusIcon className='h-4 w-4' />
+              <PlusIcon className='w-4 h-4' />
             </button>
           </div>
-          <div className='border-t border-neutral-300 bg-slate-50 p-2 pt-4'>{renderVariables()}</div>
+          <div className='p-2 pt-4 border-t border-neutral-300 bg-slate-50'>{renderVariables()}</div>
         </div>
       </div>
       <AddVariableModal

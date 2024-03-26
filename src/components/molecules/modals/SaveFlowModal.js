@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
-import { InboxArrowDownIcon } from '@heroicons/react/20/solid';
+import { InboxArrowDownIcon } from '@heroicons/react/24/outline';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import { updateFlowTest } from 'service/collection';
@@ -36,7 +36,7 @@ const SaveFlowModal = ({ tab }) => {
       <div className='flex items-center justify-center'>
         <button type='button' onClick={saveHandle}>
           <Tippy content='Save' placement='top'>
-            <InboxArrowDownIcon className='h-5 w-5' />
+            <InboxArrowDownIcon className='w-5 h-5' />
           </Tippy>
         </button>
       </div>
@@ -56,7 +56,7 @@ const SaveFlowModal = ({ tab }) => {
           </Transition.Child>
 
           <div className='fixed inset-0 overflow-y-auto'>
-            <div className='flex min-h-full items-center justify-center p-4 text-center'>
+            <div className='flex items-center justify-center min-h-full p-4 text-center'>
               <Transition.Child
                 as={Fragment}
                 enter='ease-out duration-300'
@@ -66,8 +66,8 @@ const SaveFlowModal = ({ tab }) => {
                 leaveFrom='opacity-100 scale-100'
                 leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
-                  <Dialog.Title as='h3' className='text-centre text-lg font-medium leading-6 text-gray-900'>
+                <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
+                  <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 text-centre'>
                     Save New Flow Test
                   </Dialog.Title>
                   <div className='mt-2'>
@@ -79,17 +79,17 @@ const SaveFlowModal = ({ tab }) => {
                       required
                     />
                   </div>
-                  <div className='mt-4 flex items-center gap-2'>
+                  <div className='flex items-center gap-2 mt-4'>
                     <button
                       type='button'
-                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md grow basis-0 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
                       onClick={closeModal}
                     >
                       Cancel
                     </button>
                     <button
                       type='button'
-                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
                       onClick={handleSave}
                     >
                       Save

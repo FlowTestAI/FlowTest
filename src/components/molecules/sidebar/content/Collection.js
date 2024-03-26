@@ -1,21 +1,28 @@
 import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
-import { ArchiveBoxIcon, FolderIcon, DocumentIcon } from '@heroicons/react/24/outline';
+import { ArchiveBoxIcon, FolderIcon, DocumentIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { FLOW_FILE_SUFFIX_REGEX, OBJ_TYPES } from 'constants/Common';
 import { readFlowTest } from 'service/collection';
 import OptionsMenu from 'components/atoms/sidebar/collections/OptionsMenu';
 import { toast } from 'react-toastify';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
+import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
+import { deleteFlowTest } from 'service/collection';
 
 const Collection = ({ collectionId, item, depth }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [confirmActionModalOpen, setConfirmActionModalOpen] = useState(false);
+  const [flowTestPathToDelete, setFlowTestPathToDelete] = useState('');
+  const messageForConfirmActionModal =
+    'Do you wish to delete this flowtest? This action deletes it from disk and cannot be undone';
   const getListDisplayTitle = () => {
     if (item.type === OBJ_TYPES.collection) {
       // this is for collections tab thus we have archive box icon
       return (
         <div
-          className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
+          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
           onClick={(event) => {
             const clickFromElementDataSet = event.target.dataset;
             const clickFrom = clickFromElementDataSet?.clickFrom;
@@ -26,7 +33,7 @@ const Collection = ({ collectionId, item, depth }) => {
         >
           <Tippy content={item.pathname} placement='top'>
             <div className='flex items-center justify-start gap-2 px-2 py-1'>
-              <ArchiveBoxIcon className='h-4 w-4' />
+              <ArchiveBoxIcon className='w-4 h-4' />
               <span>{item.name}</span>
             </div>
           </Tippy>
@@ -45,7 +52,7 @@ const Collection = ({ collectionId, item, depth }) => {
     if (item.type === OBJ_TYPES.flowtest && item.name.match(FLOW_FILE_SUFFIX_REGEX)) {
       return (
         <div
-          className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
+          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
           onClick={() => {
             readFlowTest(item.pathname, collectionId)
               .then((result) => {
@@ -60,16 +67,18 @@ const Collection = ({ collectionId, item, depth }) => {
           }}
         >
           <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <DocumentIcon className='h-4 w-4' />
+            <DocumentIcon className='w-4 h-4' />
             <span>{item.name}</span>
           </div>
-          <OptionsMenu
-            data-click-from='options-menu'
-            directory={item}
-            data-item-type={OBJ_TYPES.flowtest}
-            itemType={OBJ_TYPES.flowtest}
-            collectionId={collectionId}
-          />
+          <div
+            className='relative inline-block p-2 text-left transition duration-200 ease-out rounded rounded-l-none hover:bg-slate-200'
+            onClick={() => {
+              setFlowTestPathToDelete(item.pathname);
+              setConfirmActionModalOpen(true);
+            }}
+          >
+            <TrashIcon className='w-4 h-4' aria-hidden='true' />
+          </div>
         </div>
       );
     }
@@ -77,7 +86,7 @@ const Collection = ({ collectionId, item, depth }) => {
     if (item.type === OBJ_TYPES.folder) {
       return (
         <div
-          className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
+          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
           onClick={(event) => {
             const clickFrom = event.target.dataset?.clickFrom;
             if (!clickFrom || clickFrom !== 'options-menu') {
@@ -86,7 +95,7 @@ const Collection = ({ collectionId, item, depth }) => {
           }}
         >
           <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <FolderIcon className='h-4 w-4' />
+            <FolderIcon className='w-4 h-4' />
             <span data-type-name={item.type}>{item.name}</span>
           </div>
           <OptionsMenu
@@ -117,6 +126,24 @@ const Collection = ({ collectionId, item, depth }) => {
           </>
         )}
       </li>
+      <ConfirmActionModal
+        closeFn={() => setConfirmActionModalOpen(false)}
+        open={confirmActionModalOpen}
+        message={messageForConfirmActionModal}
+        actionFn={() => {
+          deleteFlowTest(flowTestPathToDelete, collectionId)
+            .then((result) => {
+              console.log(
+                `Deleted flowtest: path = ${flowTestPathToDelete}, collectionId = ${collectionId}, result: ${result}`,
+              );
+            })
+            .catch((error) => {
+              console.log(`Error deleting flowtest = ${flowTestPathToDelete}: ${error}`);
+              toast.error(`Error deleting flowtest`);
+            });
+          setConfirmActionModalOpen(false);
+        }}
+      />
     </>
   );
 };

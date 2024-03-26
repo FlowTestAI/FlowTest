@@ -6,6 +6,8 @@ import { deleteEnvironmentFile } from 'service/collection';
 import EnvOptionsMenu from 'components/atoms/sidebar/environments/EnvOptionsMenu';
 import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 import { toast } from 'react-toastify';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 const Environment = ({ collectionId, collection }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -19,7 +21,7 @@ const Environment = ({ collectionId, collection }) => {
     <>
       <li>
         <div
-          className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'
+          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'
           onClick={(event) => {
             const clickFromElementDataSet = event.target.dataset;
             const clickFrom = clickFromElementDataSet?.clickFrom;
@@ -28,10 +30,12 @@ const Environment = ({ collectionId, collection }) => {
             }
           }}
         >
-          <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <ArchiveBoxIcon className='h-4 w-4' />
-            <span>{collection.name}</span>
-          </div>
+          <Tippy content={collection.pathname} placement='top'>
+            <div className='flex items-center justify-start gap-2 px-2 py-1'>
+              <ArchiveBoxIcon className='w-4 h-4' />
+              <span>{collection.name}</span>
+            </div>
+          </Tippy>
           <EnvOptionsMenu
             data-click-from='env-options-menu'
             itemType={OBJ_TYPES.environment}
@@ -46,19 +50,19 @@ const Environment = ({ collectionId, collection }) => {
                 className='before:absolute before:bottom-0 before:top-0 before:w-[1px] before:bg-slate-300 before:opacity-100'
               >
                 <li>
-                  <div className='flex flex-row items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out hover:bg-slate-100'>
-                    <div className='flex cursor-pointer items-center justify-start gap-2 px-2 py-1 hover:bg-transparent'>
-                      <DocumentIcon className='h-4 w-4' />
+                  <div className='flex flex-row items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-slate-100'>
+                    <div className='flex items-center justify-start gap-2 px-2 py-1 cursor-pointer hover:bg-transparent'>
+                      <DocumentIcon className='w-4 h-4' />
                       <span>{environment.name}</span>
                     </div>
                     <div
-                      className='relative inline-block rounded rounded-l-none p-2 text-left transition duration-200 ease-out hover:bg-slate-200'
+                      className='relative inline-block p-2 text-left transition duration-200 ease-out rounded rounded-l-none hover:bg-slate-200'
                       onClick={() => {
                         setEnvToDelete(environment.name);
                         setConfirmActionModalOpen(true);
                       }}
                     >
-                      <TrashIcon className='h-4 w-4' aria-hidden='true' />
+                      <TrashIcon className='w-4 h-4' aria-hidden='true' />
                     </div>
                   </div>
                 </li>

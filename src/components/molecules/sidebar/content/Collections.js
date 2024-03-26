@@ -69,8 +69,6 @@ const Collections = ({ collections }) => {
           const pathName = clickFromElementDataSet?.pathName;
           const collectionId = clickFromElementDataSet?.collectionId;
 
-          console.log(clickFromElementDataSet);
-
           setSelectedPathName(pathName);
           setSelectedCollectionId(collectionId);
           setSelectedMenuItem(optionsMenuItem);
@@ -93,7 +91,7 @@ const Collections = ({ collections }) => {
         }
       }}
     >
-      <ul className='menu w-full'>
+      <ul className='w-full menu'>
         {collections.map((collection) => (
           <Collection key={collection.id} collectionId={collection.id} item={collection} depth={1} />
         ))}

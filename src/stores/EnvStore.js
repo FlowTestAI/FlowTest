@@ -6,39 +6,13 @@ const useEnvStore = create((set, get) => ({
   setVariables: (variables) => {
     set({ variables });
   },
-  handleAddRow: () => {
-    set({
-      variables: {
-        ...get().variables,
-        '': '',
-      },
-    });
+  handleAddVariable: (key, value) => {
+    set((state) => ({ variables: { ...state.variables, [key]: value } }));
     useTabStore.getState().updateEnvTab(get().variables);
   },
-  handleKeyChange: ({ newKey, previousKey }) => {
-    set({
-      variables: Object.keys(get().variables).reduce((newObj, key) => {
-        if (key === previousKey) {
-          newObj[newKey] = get().variables[key];
-        } else {
-          newObj[key] = get().variables[key];
-        }
-        return newObj;
-      }, {}),
-    });
-    useTabStore.getState().updateEnvTab(get().variables);
-  },
-  handleValueChange: ({ key, newValue }) => {
-    set({
-      variables: Object.keys(get().variables).reduce((newObj, k) => {
-        if (k === key) {
-          newObj[k] = newValue;
-        } else {
-          newObj[k] = get().variables[k];
-        }
-        return newObj;
-      }, {}),
-    });
+  handleDeleteVariable: (key) => {
+    const { [key]: _, ...newVariables } = get().variables;
+    set({ variables: newVariables });
     useTabStore.getState().updateEnvTab(get().variables);
   },
 }));

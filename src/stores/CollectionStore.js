@@ -111,6 +111,13 @@ const useCollectionStore = create((set, get) => ({
             existingEnv.modifiedAt = Date.now();
             existingEnv.variables = file.variables;
             console.log(`Collection env updated: ${JSON.stringify(existingEnv)}`);
+
+            // check if there are any open tabs, if yes mark them saved
+            const tab = useTabStore.getState().tabs.find((t) => t.id === existingEnv.id);
+            if (tab && tab.variablesDraft) {
+              tab.variables = cloneDeep(tab.variablesDraft);
+              tab.variablesDraft = null;
+            }
           } else {
             const timestamp = Date.now();
             const env = {

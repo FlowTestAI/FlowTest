@@ -185,8 +185,11 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
 
   ipcMain.handle('renderer:update-environment', async (event, collectionPath, name, variables) => {
     try {
+      const env = Object.entries(variables)
+        .map(([key, value]) => `${key}: "${value}"`)
+        .join('\n');
       const envDir = path.join(collectionPath, 'environments');
-      updateFile(path.join(envDir, name), variables);
+      updateFile(path.join(envDir, name), env);
     } catch (error) {
       return Promise.reject(error);
     }

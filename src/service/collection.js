@@ -34,7 +34,8 @@ export const openCollection = (openAPISpecFilePath, collectionFolderPath) => {
     }
   } catch (error) {
     console.log(`Error opening collection: ${error}`);
-    toast.error('Error opening collection');
+    //toast.error('Error opening collection');
+    return Promise.reject(new Error('Error opening collection'));
   }
 };
 
@@ -53,7 +54,8 @@ export const deleteCollection = (collectionId) => {
     }
   } catch (error) {
     console.log(`Error deleting collection: ${error}`);
-    toast.error('Error deleting collection');
+    //toast.error('Error deleting collection');
+    return Promise.reject(new Error('Error deleting collection'));
   }
 };
 
@@ -77,7 +79,8 @@ export const createFolder = (folderName, folderPath, collectionId) => {
     }
   } catch (error) {
     console.log(`Error creating new folder: ${error}`);
-    toast.error('Error creating new folder');
+    //toast.error('Error creating new folder');
+    return Promise.reject(new Error('Error creating new folder'));
   }
 };
 
@@ -100,7 +103,8 @@ export const deleteFolder = (folderPath, collectionId) => {
     }
   } catch (error) {
     console.log(`Error deleting folder: ${error}`);
-    toast.error('Error deleting folder');
+    //toast.error('Error deleting folder');
+    return Promise.reject(new Error('Error deleting folder'));
   }
 };
 
@@ -129,7 +133,8 @@ export const createEnvironmentFile = (name, collectionId) => {
       return Promise.reject(new Error('Collection not found'));
     }
   } catch (error) {
-    toast.error('Error creating new environment');
+    //toast.error('Error creating new environment');
+    return Promise.reject(new Error('Error creating new environment'));
   }
 };
 
@@ -149,7 +154,8 @@ export const readEnvironmentFile = (name, collectionId) => {
       throw new Error('Collection not found');
     }
   } catch (error) {
-    toast.error(`Error reading environment: ${name}`);
+    //toast.error(`Error reading environment: ${name}`);
+    return Promise.reject(new Error('Error reading environment'));
   }
 };
 
@@ -160,7 +166,7 @@ export const updateEnvironmentFile = (name, collectionId, variables) => {
     const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
     if (collection) {
-      const existingEnv = collection.enviroments.find((e) => e.name === name);
+      const existingEnv = collection.environments.find((e) => e.name === name);
       if (existingEnv) {
         return new Promise((resolve, reject) => {
           ipcRenderer
@@ -175,7 +181,9 @@ export const updateEnvironmentFile = (name, collectionId, variables) => {
       return Promise.reject(new Error('Collection not found'));
     }
   } catch (error) {
-    toast.error('Error updating environment');
+    console.log(`Error updating environment: ${error}`);
+    //toast.error('Error updating environment');
+    return Promise.reject(new Error('Error updating environment'));
   }
 };
 
@@ -198,7 +206,8 @@ export const deleteEnvironmentFile = (name, collectionId) => {
       return Promise.reject(new Error('Collection not found'));
     }
   } catch (error) {
-    toast.error('Error deleting environment');
+    //toast.error('Error deleting environment');
+    return Promise.reject(new Error('Error deleting environment'));
   }
 };
 
@@ -248,7 +257,8 @@ export const createFlowTest = (name, folderPath, collectionId) => {
     }
   } catch (error) {
     console.log(`Error creating new flowtest: ${error}`);
-    toast.error('Error creating new flowtest');
+    //toast.error('Error creating new flowtest');
+    return Promise.reject(new Error('Error creating new flowtest'));
   }
 };
 
@@ -278,7 +288,8 @@ export const readFlowTest = (pathname, collectionId) => {
     }
   } catch (error) {
     console.log(`Error reading flowtest: ${error}`);
-    toast.error('Error reading flowtest');
+    //toast.error('Error reading flowtest');
+    return Promise.reject(new Error('Error reading flowtest'));
   }
 };
 
@@ -303,7 +314,8 @@ export const updateFlowTest = (pathname, flowData, collectionId) => {
     }
   } catch (error) {
     console.log(`Error updating flowtest: ${error}`);
-    toast.error('Error updating flowtest');
+    //toast.error('Error updating flowtest');
+    return Promise.reject(new Error('Error updating flowtest'));
   }
 };
 
@@ -326,6 +338,7 @@ export const deleteFlowTest = (pathname, collectionId) => {
     }
   } catch (error) {
     console.log(`Error deleting flowtest: ${error}`);
-    toast.error('Error deleting flowtest');
+    //toast.error('Error deleting flowtest');
+    return Promise.reject(new Error('Error deleting flowtest'));
   }
 };

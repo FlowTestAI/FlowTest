@@ -4,6 +4,7 @@ import { findItemInCollectionByPathname } from 'stores/utils';
 import { useEventStore } from 'stores/EventListenerStore';
 import { OBJ_TYPES } from 'constants/Common';
 import { toast } from 'react-toastify';
+import { useTabStore } from 'stores/TabStore';
 
 export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;
@@ -120,7 +121,7 @@ export const createEnvironmentFile = (name, collectionId) => {
             id: uuidv4(),
             type: 'OPEN_NEW_ENVIRONMENT',
             collectionId,
-            name,
+            name: `${name}.env`,
           });
         });
       }
@@ -129,6 +130,26 @@ export const createEnvironmentFile = (name, collectionId) => {
     }
   } catch (error) {
     toast.error('Error creating new environment');
+  }
+};
+
+export const readEnvironmentFile = (name, collectionId) => {
+  try {
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+
+    if (collection) {
+      const existingEnv = collection.environments.find((e) => e.name === name);
+      if (existingEnv) {
+        useTabStore.getState().addEnvTab(existingEnv, collectionId);
+        return;
+      } else {
+        throw new Error('An environment with the name does not exists');
+      }
+    } else {
+      throw new Error('Collection not found');
+    }
+  } catch (error) {
+    toast.error(`Error reading environment: ${name}`);
   }
 };
 

@@ -3,6 +3,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useTabStore } from 'stores/TabStore';
 import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 import { isEqual } from 'lodash';
+import { OBJ_TYPES } from 'constants/Common';
 
 const Tabs = () => {
   const tabs = useTabStore((state) => state.tabs);
@@ -18,22 +19,27 @@ const Tabs = () => {
     'before:absolute before:h-[0.25rem] before:w-full before:bg-slate-300 before:content-[""] before:bottom-0 before:left-0';
   const tabCommonStyles =
     'tab flex items-center gap-x-2 border-r border-neutral-300 bg-transparent pr-0 tracking-[0.15em] transition duration-500 ease-in text-sm flex-nowrap';
-  const messageForConfirmActionModal = 'You have unsaved changes in the flowtest, are you sure you want to close it?';
+  const messageForConfirmActionModal = `You have unsaved changes in the ${focusTab?.type}, are you sure you want to close it?`;
 
   const handleCloseTab = (event, tab) => {
     event.stopPropagation();
     event.preventDefault();
-    // const tabId = event.currentTarget.dataset.tabId;
-    // const { isDirty, collectionId } = tabs.find((tab) => {
-    //   if (tab.id === tabId) return tab;
-    // });
+
     setClosingTabId(tab.id);
     setClosingCollectionId(tab.collectionId);
 
-    if (tab.flowDataDraft && !isEqual(tab.flowData, tab.flowDataDraft)) {
-      console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
-      setConfirmActionModalOpen(true);
-      return;
+    if (tab.type === OBJ_TYPES.flowtest) {
+      if (tab.flowDataDraft && !isEqual(tab.flowData, tab.flowDataDraft)) {
+        console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
+        setConfirmActionModalOpen(true);
+        return;
+      }
+    } else if (tab.type === OBJ_TYPES.environment) {
+      if (tab.variablesDraft && !isEqual(tab.variables, tab.variablesDraft)) {
+        console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
+        setConfirmActionModalOpen(true);
+        return;
+      }
     }
     closeTab(tab.id, tab.collectionId);
   };

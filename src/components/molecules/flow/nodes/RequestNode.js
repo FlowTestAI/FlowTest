@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import RequestBody from './RequestBody';
 import FlowNode from 'components/atoms/flow/FlowNode';
 import { getInputType } from 'utils/common';
-import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { getDefaultValue } from 'utils/common';
 import AddVariableModal from 'components/molecules/modals/flow/AddVariableModal';
 import useCanvasStore from 'stores/CanvasStore';

@@ -44,6 +44,7 @@ export const useTabStore = create((set, get) => ({
       console.log(existingTab);
     }
   },
+  // these state changes are meant to be triggered by canvas in focus
   updateFlowTestEdges: (edges) => {
     if (get().focusTabId) {
       const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
@@ -67,6 +68,19 @@ export const useTabStore = create((set, get) => ({
 
     set((state) => ({ tabs: [...state.tabs, newTab] }));
     set(() => ({ focusTabId: newTab.id }));
+  },
+  // these state changes are meant to be triggered by env tab in focus
+  updateEnvTab: (variables) => {
+    if (get().focusTabId) {
+      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
+      if (existingTab) {
+        if (!existingTab.variablesDraft) {
+          existingTab.variablesDraft = cloneDeep(existingTab.variables);
+        }
+        existingTab.variablesDraft = variables;
+      }
+      console.log(existingTab);
+    }
   },
   closeTab: (id, collectionId) => {
     set((state) => ({ tabs: state.tabs.filter((t) => t.id !== id) }));

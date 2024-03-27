@@ -19,7 +19,7 @@ const Tabs = () => {
     'before:absolute before:h-[0.25rem] before:w-full before:bg-slate-300 before:content-[""] before:bottom-0 before:left-0';
   const tabCommonStyles =
     'tab flex items-center gap-x-2 border-r border-neutral-300 bg-transparent pr-0 tracking-[0.15em] transition duration-500 ease-in text-sm';
-  const messageForConfirmActionModal = 'You have unsaved changes in the flowtest, are you sure you want to close it?';
+  const messageForConfirmActionModal = `You have unsaved changes in the ${focusTab?.type}, are you sure you want to close it?`;
 
   const handleCloseTab = (event, tab) => {
     event.stopPropagation();
@@ -30,6 +30,12 @@ const Tabs = () => {
 
     if (tab.type === OBJ_TYPES.flowtest) {
       if (tab.flowDataDraft && !isEqual(tab.flowData, tab.flowDataDraft)) {
+        console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
+        setConfirmActionModalOpen(true);
+        return;
+      }
+    } else if (tab.type === OBJ_TYPES.environment) {
+      if (tab.variablesDraft && !isEqual(tab.variables, tab.variablesDraft)) {
         console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
         setConfirmActionModalOpen(true);
         return;

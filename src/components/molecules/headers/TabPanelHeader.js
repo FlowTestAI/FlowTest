@@ -11,7 +11,7 @@ import SaveFlowModal from '../modals/SaveFlowModal';
 
 import { useTabStore } from 'stores/TabStore';
 import Button from 'components/atoms/common/Button';
-import { BUTTON_TYPES } from 'constants/Common';
+import { BUTTON_TYPES, OBJ_TYPES } from 'constants/Common';
 import GenerateFlowTestModal from '../modals/GenerateFlowTestModal';
 import useCanvasStore from 'stores/CanvasStore';
 
@@ -32,7 +32,7 @@ const TabPanelHeader = () => {
             <div className='flex items-center justify-between pl-4 gap-x-4'>
               <SaveFlowModal tab={focusTab} />
               {/* ToDo: Create our own side sheet component */}
-              {graphRunLogs.length != 0 ? (
+              {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
                 <div className='drawer drawer-end'>
                   <input id='graph-logs-side-sheet' type='checkbox' className='drawer-toggle' />
                   <div className='cursor-pointer drawer-content'>
@@ -72,23 +72,25 @@ const TabPanelHeader = () => {
                 </Tippy>
               </button>
             </div>
-            <div className='pl-4 border-l gen_ai_button border-neutral-300'>
-              <Button
-                btnType={BUTTON_TYPES.tertiary}
-                isDisabled={false}
-                onClickHandle={() => setGenerateFlowTestModalOpen(true)}
-                fullWidth={true}
-                className='flex items-center justify-between gap-x-4'
-              >
-                <SparklesIcon className='w-5 h-5' />
-                Generate
-              </Button>
-              <GenerateFlowTestModal
-                closeFn={() => setGenerateFlowTestModalOpen(false)}
-                open={generateFlowTestModalOpen}
-                collectionId={focusTab.collectionId}
-              />
-            </div>
+            {focusTab.type === OBJ_TYPES.flowtest && (
+              <div className='pl-4 border-l gen_ai_button border-neutral-300'>
+                <Button
+                  btnType={BUTTON_TYPES.tertiary}
+                  isDisabled={false}
+                  onClickHandle={() => setGenerateFlowTestModalOpen(true)}
+                  fullWidth={true}
+                  className='flex items-center justify-between gap-x-4'
+                >
+                  <SparklesIcon className='w-5 h-5' />
+                  Generate
+                </Button>
+                <GenerateFlowTestModal
+                  closeFn={() => setGenerateFlowTestModalOpen(false)}
+                  open={generateFlowTestModalOpen}
+                  collectionId={focusTab.collectionId}
+                />
+              </div>
+            )}
           </div>
         </>
       ) : (

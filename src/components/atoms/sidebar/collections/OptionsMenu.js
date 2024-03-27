@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { PropTypes } from 'prop-types';
 import { Menu, Transition } from '@headlessui/react';
-import { FolderPlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { FolderPlusIcon, PencilSquareIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 import { OBJ_TYPES } from 'constants/Common';
@@ -84,15 +84,27 @@ const OptionsMenu = ({ collectionId, directory, itemType }) => {
                 data-item-type={itemType}
                 data-collection-id={collectionId}
               >
-                <TrashIcon
-                  className='w-4 h-4 mr-2'
-                  aria-hidden='true'
-                  data-click-from='options-menu'
-                  data-item-type={itemType}
-                />
-                {itemType === OBJ_TYPES.collection
-                  ? DirectoryOptionsActions.remove.displayValue
-                  : DirectoryOptionsActions.delete.displayValue}
+                {itemType === OBJ_TYPES.collection ? (
+                  <>
+                    <XMarkIcon
+                      className='w-4 h-4 mr-2'
+                      aria-hidden='true'
+                      data-click-from='options-menu'
+                      data-item-type={itemType}
+                    />
+                    {DirectoryOptionsActions.remove.displayValue}
+                  </>
+                ) : (
+                  <>
+                    <TrashIcon
+                      className='w-4 h-4 mr-2'
+                      aria-hidden='true'
+                      data-click-from='options-menu'
+                      data-item-type={itemType}
+                    />
+                    {DirectoryOptionsActions.delete.displayValue}
+                  </>
+                )}
               </button>
             </Menu.Item>
           </div>

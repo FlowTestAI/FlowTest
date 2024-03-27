@@ -4,8 +4,9 @@ import { Dialog, Transition } from '@headlessui/react';
 import { InboxArrowDownIcon } from '@heroicons/react/24/outline';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { updateFlowTest } from 'service/collection';
+import { updateEnvironmentFile, updateFlowTest } from 'service/collection';
 import { toast } from 'react-toastify';
+import { OBJ_TYPES } from 'constants/Common';
 
 const SaveFlowModal = ({ tab }) => {
   let [isOpen, setIsOpen] = useState(false);
@@ -15,15 +16,29 @@ const SaveFlowModal = ({ tab }) => {
   }
 
   function saveHandle() {
-    updateFlowTest(tab.pathname, tab.flowDataDraft, tab.collectionId)
-      .then((result) => {
-        console.log(`Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}, result: ${result}`);
-        toast.success(`Updated the flowtest: ${tab.pathname}`);
-      })
-      .catch((error) => {
-        console.log(`Error updating flowtest = ${tab.pathname}: ${error}`);
-        toast.error(`Error while updating flowtest: ${tab.pathname}`);
-      });
+    if (tab.type == OBJ_TYPES.flowtest && tab.flowDataDraft) {
+      updateFlowTest(tab.pathname, tab.flowDataDraft, tab.collectionId)
+        .then((result) => {
+          console.log(
+            `Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}, result: ${result}`,
+          );
+          toast.success(`Updated the flowtest: ${tab.pathname}`);
+        })
+        .catch((error) => {
+          console.log(`Error updating flowtest = ${tab.pathname}: ${error}`);
+          toast.error(`Error while updating flowtest: ${tab.pathname}`);
+        });
+    } else if (tab.type == OBJ_TYPES.environment && tab.variablesDraft) {
+      updateEnvironmentFile(tab.name, tab.collectionId, tab.variablesDraft)
+        .then((result) => {
+          console.log(`Updated environment: name = ${tab.name}, collectionId = ${tab.collectionId}, result: ${result}`);
+          toast.success(`Updated environment: ${tab.name}`);
+        })
+        .catch((error) => {
+          console.log(`Error updating environment = ${tab.name}: ${error}`);
+          toast.error(`Error while updating environment: ${tab.name}`);
+        });
+    }
   }
 
   // ToDo: Save the file with the given file name

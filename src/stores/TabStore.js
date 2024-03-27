@@ -58,6 +58,15 @@ export const useTabStore = create((set, get) => ({
     }
   },
   addEnvTab: (env, collectionId) => {
+    const existingTab = get().tabs.find(
+      (t) =>
+        t.id === env.id && t.name === env.name && t.collectionId === collectionId && t.type === OBJ_TYPES.environment,
+    );
+    if (existingTab) {
+      set(() => ({ focusTabId: existingTab.id }));
+      return;
+    }
+
     const newTab = {
       id: env.id,
       collectionId: collectionId,

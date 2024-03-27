@@ -48,7 +48,7 @@ const Tabs = () => {
     <div role='tablist' className='overflow-scroll tabs tabs-lg'>
       {tabs
         // tabs belonging to one collection will be shown at a time
-        .reverse()
+        //.reverse()
         .filter((t) => t.collectionId === focusTab.collectionId)
         .map((tab, index) => {
           return (

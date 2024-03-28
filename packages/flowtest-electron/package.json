@@ -1,5 +1,6 @@
 {
-  "name": "flowtest-electron",
+  "name": "flowtestai",
+  "productName": "FlowTestAI",
   "version": "1.0.0",
   "homepage": "https://github.com/FlowTestAI/FlowTest/tree/main",
   "description": "OpenSource IDE for designing API powered flows",

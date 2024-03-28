@@ -1,7 +1,8 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 const url = require('url');
+const template = require('./electron-menu');
 const Watcher = require('./src/app/watcher');
 const registerRendererEventHandlers = require('./src/ipc/collection');
 
@@ -9,6 +10,9 @@ let mainWindow;
 let watcher;
 
 app.on('ready', async () => {
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1280,

@@ -1,4 +1,5 @@
 import { OBJ_TYPES } from 'constants/Common';
+import { cloneDeep } from 'lodash';
 import { create } from 'zustand';
 
 export const useTabStore = create((set, get) => ({
@@ -24,23 +25,71 @@ export const useTabStore = create((set, get) => ({
       type: OBJ_TYPES.flowtest,
       name: flowtest.name,
       pathname: flowtest.pathname,
-      isDirty: false,
       flowData: flowtest.flowData ? flowtest.flowData : undefined,
     };
 
     set((state) => ({ tabs: [...state.tabs, newTab] }));
     set(() => ({ focusTabId: newTab.id }));
   },
+  // these state changes are meant to be triggered by canvas in focus
+  updateFlowTestNodes: (nodes) => {
+    if (get().focusTabId) {
+      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
+      if (existingTab) {
+        if (!existingTab.flowDataDraft) {
+          existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+        }
+        existingTab.flowDataDraft.nodes = nodes;
+      }
+      console.log(existingTab);
+    }
+  },
+  // these state changes are meant to be triggered by canvas in focus
+  updateFlowTestEdges: (edges) => {
+    if (get().focusTabId) {
+      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
+      if (existingTab) {
+        if (!existingTab.flowDataDraft) {
+          existingTab.flowDataDraft = cloneDeep(existingTab.flowData);
+        }
+        existingTab.flowDataDraft.edges = edges;
+      }
+      console.log(existingTab);
+    }
+  },
   addEnvTab: (env, collectionId) => {
+    const existingTab = get().tabs.find(
+      (t) =>
+        t.id === env.id && t.name === env.name && t.collectionId === collectionId && t.type === OBJ_TYPES.environment,
+    );
+    if (existingTab) {
+      set(() => ({ focusTabId: existingTab.id }));
+      return;
+    }
+
     const newTab = {
       id: env.id,
       collectionId: collectionId,
       type: OBJ_TYPES.environment,
       name: env.name,
+      variables: env.variables,
     };
 
     set((state) => ({ tabs: [...state.tabs, newTab] }));
     set(() => ({ focusTabId: newTab.id }));
+  },
+  // these state changes are meant to be triggered by env tab in focus
+  updateEnvTab: (variables) => {
+    if (get().focusTabId) {
+      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
+      if (existingTab) {
+        if (!existingTab.variablesDraft) {
+          existingTab.variablesDraft = cloneDeep(existingTab.variables);
+        }
+        existingTab.variablesDraft = variables;
+      }
+      console.log(existingTab);
+    }
   },
   closeTab: (id, collectionId) => {
     set((state) => ({ tabs: state.tabs.filter((t) => t.id !== id) }));

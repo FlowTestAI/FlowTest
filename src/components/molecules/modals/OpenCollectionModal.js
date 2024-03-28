@@ -3,7 +3,8 @@ import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'constants/ImportCollectionTypes';
-import { createCollection, openCollection } from 'service/collection';
+import { openCollection } from 'service/collection';
+import { toast } from 'react-toastify';
 
 const OpenCollectionModal = ({ closeFn = () => null, open = false }) => {
   const importYamlFile = useRef(null);
@@ -45,11 +46,13 @@ const OpenCollectionModal = ({ closeFn = () => null, open = false }) => {
         if (dirPath) {
           openCollection(yamlPath, dirPath).catch((error) => {
             console.log(`Failed to open collection: ${error}`);
+            toast.error('Failed to create the collection');
           });
         }
       })
       .catch((error) => {
         console.log(`Failed to open collection: ${error}`);
+        toast.error('Failed to open the collection');
       });
   };
 

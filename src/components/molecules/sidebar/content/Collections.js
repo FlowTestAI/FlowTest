@@ -6,6 +6,7 @@ import { deleteCollection, deleteFolder, deleteFlowTest } from 'service/collecti
 import NewLabelModal from 'components/molecules/modals/sidebar/NewLabelModal';
 import Collection from './Collection';
 import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
+import { toast } from 'react-toastify';
 
 const Collections = ({ collections }) => {
   const [newLabelModalOpen, setNewLabelModal] = useState(false);
@@ -16,7 +17,10 @@ const Collections = ({ collections }) => {
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
   const [selectedItemType, setSelectedItemType] = useState('');
 
-  const messageForConfirmActionModal = `Do you wish to delete ${selectedItemType}`;
+  const messageForConfirmActionModal =
+    selectedItemType === OBJ_TYPES.collection
+      ? `Do you wish to remove this collection? This action does not delete from disk so you can open this collection again`
+      : `Do you wish to delete this ${selectedItemType}? This action deletes it from disk and cannot be undone`;
 
   const handleDeleteMenuItem = (menuItemType, path, collectionId) => {
     if (menuItemType === OBJ_TYPES.collection) {
@@ -25,8 +29,8 @@ const Collections = ({ collections }) => {
           console.log(`Deleted collection: collectionId = ${collectionId}, result: ${result}`);
         })
         .catch((error) => {
-          // TODO: show error in UI
           console.log(`Error deleting collection = ${collectionId}: ${error}`);
+          toast.error(`Error deleting collection`);
         });
     }
 
@@ -36,8 +40,8 @@ const Collections = ({ collections }) => {
           console.log(`Deleted folder: path = ${path}, collectionId = ${collectionId}, result: ${result}`);
         })
         .catch((error) => {
-          // TODO: show error in UI
           console.log(`Error deleting folder = ${path}: ${error}`);
+          toast.error(`Error deleting folder`);
         });
     }
 
@@ -47,8 +51,8 @@ const Collections = ({ collections }) => {
           console.log(`Deleted flowtest: path = ${path}, collectionId = ${collectionId}, result: ${result}`);
         })
         .catch((error) => {
-          // TODO: show error in UI
           console.log(`Error deleting flowtest = ${path}: ${error}`);
+          toast.error(`Error deleting flowtest`);
         });
     }
   };

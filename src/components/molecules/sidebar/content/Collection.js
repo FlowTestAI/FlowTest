@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
-import { ArchiveBoxIcon, FolderIcon, DocumentIcon } from '@heroicons/react/24/outline';
+import { ArchiveBoxIcon, FolderIcon, DocumentIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { FLOW_FILE_SUFFIX_REGEX, OBJ_TYPES } from 'constants/Common';
 import { readFlowTest } from 'service/collection';
 import OptionsMenu from 'components/atoms/sidebar/collections/OptionsMenu';
+import { toast } from 'react-toastify';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
+import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
+import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
+import { deleteFlowTest } from 'service/collection';
 
 const Collection = ({ collectionId, item, depth }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [confirmActionModalOpen, setConfirmActionModalOpen] = useState(false);
+  const [flowTestPathToDelete, setFlowTestPathToDelete] = useState('');
+  const messageForConfirmActionModal =
+    'Do you wish to delete this flowtest? This action deletes it from disk and cannot be undone';
   const getListDisplayTitle = () => {
     if (item.type === OBJ_TYPES.collection) {
       // this is for collections tab thus we have archive box icon
@@ -21,10 +31,13 @@ const Collection = ({ collectionId, item, depth }) => {
             }
           }}
         >
-          <div className='flex items-center justify-start gap-2 px-2 py-1'>
-            <ArchiveBoxIcon className='w-4 h-4' />
-            <span>{item.name}</span>
-          </div>
+          <Tippy content={item.pathname} placement='top'>
+            <div className='flex items-center justify-start gap-2 px-2 py-1'>
+              <ArchiveBoxIcon className='w-4 h-4' />
+              <span>{item.name}</span>
+            </div>
+          </Tippy>
+
           <OptionsMenu
             data-click-from='options-menu'
             directory={item}
@@ -48,8 +61,8 @@ const Collection = ({ collectionId, item, depth }) => {
                 );
               })
               .catch((error) => {
-                // TODO: show error in UI
                 console.log(`Error reading flowtest: ${error}`);
+                toast.error(`Error reading flowtest`);
               });
           }}
         >
@@ -57,13 +70,15 @@ const Collection = ({ collectionId, item, depth }) => {
             <DocumentIcon className='w-4 h-4' />
             <span>{item.name}</span>
           </div>
-          <OptionsMenu
-            data-click-from='options-menu'
-            directory={item}
-            data-item-type={OBJ_TYPES.flowtest}
-            itemType={OBJ_TYPES.flowtest}
-            collectionId={collectionId}
-          />
+          <div
+            className='relative inline-block p-2 text-left transition duration-200 ease-out rounded rounded-l-none hover:bg-slate-200'
+            onClick={() => {
+              setFlowTestPathToDelete(item.pathname);
+              setConfirmActionModalOpen(true);
+            }}
+          >
+            <TrashIcon className='w-4 h-4' aria-hidden='true' />
+          </div>
         </div>
       );
     }
@@ -111,6 +126,24 @@ const Collection = ({ collectionId, item, depth }) => {
           </>
         )}
       </li>
+      <ConfirmActionModal
+        closeFn={() => setConfirmActionModalOpen(false)}
+        open={confirmActionModalOpen}
+        message={messageForConfirmActionModal}
+        actionFn={() => {
+          deleteFlowTest(flowTestPathToDelete, collectionId)
+            .then((result) => {
+              console.log(
+                `Deleted flowtest: path = ${flowTestPathToDelete}, collectionId = ${collectionId}, result: ${result}`,
+              );
+            })
+            .catch((error) => {
+              console.log(`Error deleting flowtest = ${flowTestPathToDelete}: ${error}`);
+              toast.error(`Error deleting flowtest`);
+            });
+          setConfirmActionModalOpen(false);
+        }}
+      />
     </>
   );
 };

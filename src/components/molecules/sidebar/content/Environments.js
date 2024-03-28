@@ -17,7 +17,7 @@ const Environments = ({ collections }) => {
         const clickFrom = clickFromElementDataSet?.clickFrom;
 
         if (clickFrom && clickFrom === 'env-options-menu') {
-          const itemType = clickFromElementDataSet?.itemType;
+          // const itemType = clickFromElementDataSet?.itemType;
           const optionsMenuItem = clickFromElementDataSet?.optionsMenuItem;
           const pathName = clickFromElementDataSet?.pathName;
 

@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { findItemInCollectionByPathname } from 'stores/utils';
 import { useEventStore } from 'stores/EventListenerStore';
 import { OBJ_TYPES } from 'constants/Common';
+import { toast } from 'react-toastify';
+import { useTabStore } from 'stores/TabStore';
 
 export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;
@@ -32,7 +34,8 @@ export const openCollection = (openAPISpecFilePath, collectionFolderPath) => {
     }
   } catch (error) {
     console.log(`Error opening collection: ${error}`);
-    // TODO: show error in UI
+    //toast.error('Error opening collection');
+    return Promise.reject(new Error('Error opening collection'));
   }
 };
 
@@ -51,7 +54,8 @@ export const deleteCollection = (collectionId) => {
     }
   } catch (error) {
     console.log(`Error deleting collection: ${error}`);
-    // TODO: show error in UI
+    //toast.error('Error deleting collection');
+    return Promise.reject(new Error('Error deleting collection'));
   }
 };
 
@@ -75,7 +79,8 @@ export const createFolder = (folderName, folderPath, collectionId) => {
     }
   } catch (error) {
     console.log(`Error creating new folder: ${error}`);
-    // TODO: show error in UI
+    //toast.error('Error creating new folder');
+    return Promise.reject(new Error('Error creating new folder'));
   }
 };
 
@@ -97,74 +102,112 @@ export const deleteFolder = (folderPath, collectionId) => {
       return Promise.reject(new Error('Collection not found'));
     }
   } catch (error) {
-    console.log(`Error deleting new folder: ${error}`);
-    // TODO: show error in UI
+    console.log(`Error deleting folder: ${error}`);
+    //toast.error('Error deleting folder');
+    return Promise.reject(new Error('Error deleting folder'));
   }
 };
 
 export const createEnvironmentFile = (name, collectionId) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
-  if (collection) {
-    const existingEnv = collection.environments.find((e) => e.name === `${name}.env`);
-    if (existingEnv) {
-      return Promise.reject(new Error('An environment with the same name already exists'));
-    } else {
-      return new Promise((resolve, reject) => {
-        ipcRenderer.invoke('renderer:create-environment', collection.pathname, name).then(resolve).catch(reject);
-        useEventStore.getState().addEvent({
-          id: uuidv4(),
-          type: 'OPEN_NEW_ENVIRONMENT',
-          collectionId,
-          name,
+    if (collection) {
+      const existingEnv = collection.environments.find((e) => e.name === `${name}.env`);
+      if (existingEnv) {
+        return Promise.reject(new Error('An environment with the same name already exists'));
+      } else {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.invoke('renderer:create-environment', collection.pathname, name).then(resolve).catch(reject);
+          useEventStore.getState().addEvent({
+            id: uuidv4(),
+            type: 'OPEN_NEW_ENVIRONMENT',
+            collectionId,
+            name: `${name}.env`,
+          });
         });
-      });
+      }
+    } else {
+      return Promise.reject(new Error('Collection not found'));
     }
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+  } catch (error) {
+    //toast.error('Error creating new environment');
+    return Promise.reject(new Error('Error creating new environment'));
+  }
+};
+
+export const readEnvironmentFile = (name, collectionId) => {
+  try {
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+
+    if (collection) {
+      const existingEnv = collection.environments.find((e) => e.name === name);
+      if (existingEnv) {
+        useTabStore.getState().addEnvTab(existingEnv, collectionId);
+        return;
+      } else {
+        throw new Error('An environment with the name does not exists');
+      }
+    } else {
+      throw new Error('Collection not found');
+    }
+  } catch (error) {
+    //toast.error(`Error reading environment: ${name}`);
+    return Promise.reject(new Error('Error reading environment'));
   }
 };
 
 export const updateEnvironmentFile = (name, collectionId, variables) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
-  if (collection) {
-    const existingEnv = collection.enviroments.find((e) => e.name === name);
-    if (existingEnv) {
-      return new Promise((resolve, reject) => {
-        ipcRenderer
-          .invoke('renderer:update-environment', collection.pathname, name, variables)
-          .then(resolve)
-          .catch(reject);
-      });
+    if (collection) {
+      const existingEnv = collection.environments.find((e) => e.name === name);
+      if (existingEnv) {
+        return new Promise((resolve, reject) => {
+          ipcRenderer
+            .invoke('renderer:update-environment', collection.pathname, name, variables)
+            .then(resolve)
+            .catch(reject);
+        });
+      } else {
+        return Promise.reject(new Error('An environment with the name does not exists'));
+      }
     } else {
-      return Promise.reject(new Error('An environment with the name does not exists'));
+      return Promise.reject(new Error('Collection not found'));
     }
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+  } catch (error) {
+    console.log(`Error updating environment: ${error}`);
+    //toast.error('Error updating environment');
+    return Promise.reject(new Error('Error updating environment'));
   }
 };
 
 export const deleteEnvironmentFile = (name, collectionId) => {
-  const { ipcRenderer } = window;
+  try {
+    const { ipcRenderer } = window;
 
-  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
-  if (collection) {
-    const existingEnv = collection.environments.find((e) => e.name === name);
-    if (existingEnv) {
-      return new Promise((resolve, reject) => {
-        ipcRenderer.invoke('renderer:delete-environment', collection.pathname, name).then(resolve).catch(reject);
-      });
+    if (collection) {
+      const existingEnv = collection.environments.find((e) => e.name === name);
+      if (existingEnv) {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.invoke('renderer:delete-environment', collection.pathname, name).then(resolve).catch(reject);
+        });
+      } else {
+        return Promise.reject(new Error('An environment with the name does not exists'));
+      }
     } else {
-      return Promise.reject(new Error('An environment with the name does not exists'));
+      return Promise.reject(new Error('Collection not found'));
     }
-  } else {
-    return Promise.reject(new Error('Collection not found'));
+  } catch (error) {
+    //toast.error('Error deleting environment');
+    return Promise.reject(new Error('Error deleting environment'));
   }
 };
 
@@ -214,7 +257,8 @@ export const createFlowTest = (name, folderPath, collectionId) => {
     }
   } catch (error) {
     console.log(`Error creating new flowtest: ${error}`);
-    // TODO: show error in UI
+    //toast.error('Error creating new flowtest');
+    return Promise.reject(new Error('Error creating new flowtest'));
   }
 };
 
@@ -244,7 +288,8 @@ export const readFlowTest = (pathname, collectionId) => {
     }
   } catch (error) {
     console.log(`Error reading flowtest: ${error}`);
-    // TODO: show error in UI
+    //toast.error('Error reading flowtest');
+    return Promise.reject(new Error('Error reading flowtest'));
   }
 };
 
@@ -269,7 +314,8 @@ export const updateFlowTest = (pathname, flowData, collectionId) => {
     }
   } catch (error) {
     console.log(`Error updating flowtest: ${error}`);
-    // TODO: show error in UI
+    //toast.error('Error updating flowtest');
+    return Promise.reject(new Error('Error updating flowtest'));
   }
 };
 
@@ -292,6 +338,7 @@ export const deleteFlowTest = (pathname, collectionId) => {
     }
   } catch (error) {
     console.log(`Error deleting flowtest: ${error}`);
-    // TODO: show error in UI
+    //toast.error('Error deleting flowtest');
+    return Promise.reject(new Error('Error deleting flowtest'));
   }
 };

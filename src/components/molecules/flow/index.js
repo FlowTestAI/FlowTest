@@ -1,14 +1,12 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { cloneDeep, isEqual } from 'lodash';
+import { toast } from 'react-toastify';
 
 // css
 import './index.css';
-
-// notification
-import { useSnackbar } from 'notistack';
 
 // ReactFlow Canvas
 import CustomEdge from './edges/ButtonEdge';
@@ -19,20 +17,15 @@ import RequestNode from './nodes/RequestNode';
 import OutputNode from './nodes/OutputNode';
 import EvaluateNode from './nodes/EvaluateNode';
 import DelayNode from './nodes/DelayNode';
-
-// file system
 import AuthNode from './nodes/AuthNode';
-import { useTabStore } from 'stores/TabStore';
 import FlowNode from 'components/atoms/flow/FlowNode';
-import { Popover } from '@headlessui/react';
-import { generateFlowData } from './flowtestai';
-import { GENAI_MODELS } from 'constants/Common';
+import useCanvasStore from 'stores/CanvasStore';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
 );
 
-const init = (flowData) => {
+export const init = (flowData) => {
   // Initialization
   if (flowData && flowData.nodes && flowData.edges) {
     return {
@@ -95,40 +88,21 @@ const init = (flowData) => {
   }
 };
 
-const Flow = ({ tabId, collectionId, flowData }) => {
-  useEffect(() => {
-    // Action to perform on tab change
-    console.log(`Tab changed to: ${tabId}`);
-    console.log(flowData);
-    // perform actions based on the new tabId
-    const result = init(cloneDeep(flowData));
-    setNodes(result.nodes);
-    setEdges(result.edges);
-  }, [tabId]);
+const selector = (state) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+  setNodes: state.setNodes,
+  setEdges: state.setEdges,
+  setLogs: state.setLogs,
+});
 
-  const setCanvasDirty = () => {
-    console.debug('set canvas dirty');
-    const tab = useTabStore.getState().tabs.find((t) => t.id === tabId);
-    if (tab) {
-      tab.isDirty = true;
-      tab.flowData = {
-        nodes: nodes.map((node) => {
-          const _node = JSON.parse(JSON.stringify(node));
-          return { ..._node };
-        }),
-        edges: edges.map((edge) => {
-          return {
-            ...edge,
-            animated: false,
-          };
-        }),
-      };
-    }
-  };
-
-  // notification
-  // eslint-disable-next-line no-unused-vars
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+const Flow = ({ collectionId }) => {
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, setLogs } =
+    useCanvasStore(selector);
+  //console.log(nodes);
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
@@ -150,29 +124,6 @@ const Flow = ({ tabId, collectionId, flowData }) => {
     }),
     [],
   );
-
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
-  useEffect(() => {
-    // skip inital render
-    if (flowData === undefined || (isEqual(nodes, []) && isEqual(edges, []))) {
-      return;
-    }
-    if (flowData && isEqual(JSON.parse(JSON.stringify(nodes)), flowData.nodes) && isEqual(edges, flowData.edges)) {
-      console.debug('canvas is unchanged');
-      return;
-    }
-    setCanvasDirty();
-  }, [nodes, edges]);
-
-  const onConnect = (params) => {
-    const newEdge = {
-      ...params,
-      type: 'buttonedge',
-    };
-    setEdges((eds) => addEdge(newEdge, eds));
-  };
 
   const runnableEdges = (runnable) => {
     const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
@@ -220,7 +171,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
       };
       console.debug('Dropped node: ', newNode);
 
-      setNodes((nds) => nds.concat(newNode));
+      setNodes([...useCanvasStore.getState().nodes, newNode]);
     },
     [reactFlowInstance],
   );
@@ -248,20 +199,13 @@ const Flow = ({ tabId, collectionId, flowData }) => {
     return canConnect;
   };
 
-  // graph
-  // eslint-disable-next-line no-unused-vars
-  const [graphRun, setGraphRun] = useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [graphRunLogs, setGraphRunLogs] = useState(undefined);
-
   const onGraphComplete = (result, logs) => {
     console.debug('Graph complete callback: ', result);
-    setGraphRun(true);
-    setGraphRunLogs(logs);
+    setLogs(logs);
     if (result[0] == 'Success') {
-      enqueueSnackbar('FlowTest Run Success!', { variant: 'success' });
+      toast.success('FlowTest Run Success! View Logs');
     } else if (result[0] == 'Failed') {
-      enqueueSnackbar('FlowTest Run Failed!', { variant: 'error' });
+      toast.error('FlowTest Run Failed! View Logs');
     }
     runnableEdges(false);
   };
@@ -279,9 +223,9 @@ const Flow = ({ tabId, collectionId, flowData }) => {
         onInit={setReactFlowInstance}
         onDrop={onDrop}
         onDragOver={onDragOver}
-        onNodeDragStop={() => setCanvasDirty()}
+        //onNodeDragStop={() => setCanvasDirty()}
         isValidConnection={isValidConnection}
-        //fitView
+        fitView
       >
         <Controls>
           <ControlButton
@@ -301,26 +245,6 @@ const Flow = ({ tabId, collectionId, flowData }) => {
           </ControlButton>
         </Controls>
         <Background variant='dots' gap={12} size={1} />
-        <div className='absolute right-4 z-[2000] max-w-sm px-4 '>
-          <button
-            type='button'
-            onClick={() => {
-              generateFlowData('Add a pet then get all pets with status available', GENAI_MODELS.openai, collectionId)
-                .then((flowData) => {
-                  const result = init(flowData);
-                  console.log(result);
-                  setNodes(result.nodes);
-                  setEdges(result.edges);
-                })
-                .catch((error) => {
-                  // TODO: show error in UI
-                  console.log(error);
-                });
-            }}
-          >
-            FlowTestAI
-          </button>
-        </div>
         <AddNodes collectionId={collectionId} />
       </ReactFlow>
     </div>
@@ -328,9 +252,7 @@ const Flow = ({ tabId, collectionId, flowData }) => {
 };
 
 Flow.propTypes = {
-  tabId: PropTypes.string.isRequired,
   collectionId: PropTypes.string.isRequired,
-  flowData: PropTypes.object.isRequired,
 };
 
 export default Flow;

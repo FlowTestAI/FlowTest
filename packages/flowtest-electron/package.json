@@ -45,6 +45,7 @@
     "files": [
       "**/*"
     ],
+    "afterSign": "notarize.js",
     "win": {
       "target": "nsis"
     },

@@ -9,9 +9,6 @@ exports.default = async function notarizing(context) {
 
   const appName = context.packager.appInfo.productFilename;
 
-  console.log(appOutDir);
-  console.log(appName);
-
   return await notarize({
     appBundleId: 'com.flowtestai.app',
     appPath: `${appOutDir}/${appName}.app`,

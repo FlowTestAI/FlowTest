@@ -1,12 +1,8 @@
 import React from 'react';
 import { BaseEdge, EdgeLabelRenderer, getSmoothStepPath } from 'reactflow';
+import useCanvasStore from 'stores/CanvasStore';
 
 import './buttonedge.css';
-
-const onEdgeClick = (evt, id) => {
-  evt.stopPropagation();
-  alert(`remove ${id}`);
-};
 
 // eslint-disable-next-line react/prop-types
 export default function CustomEdge({
@@ -20,6 +16,8 @@ export default function CustomEdge({
   style = {},
   markerEnd,
 }) {
+  const setEdges = useCanvasStore((state) => state.setEdges);
+
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -44,7 +42,14 @@ export default function CustomEdge({
           }}
           className='nodrag nopan'
         >
-          <button className='edgebutton' onClick={(event) => onEdgeClick(event, id)}>
+          <button
+            className='edgebutton'
+            onClick={(evt) => {
+              evt.stopPropagation();
+              // alert(`remove ${id}`);
+              setEdges(useCanvasStore.getState().edges.filter((e) => e.id !== id));
+            }}
+          >
             ×
           </button>
         </div>

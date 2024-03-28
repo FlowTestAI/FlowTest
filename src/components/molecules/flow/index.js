@@ -177,26 +177,34 @@ const Flow = ({ collectionId }) => {
   );
 
   const isValidConnection = (connection) => {
-    let canConnect = true;
     // Only 1 outgoing edge from each (source, sourceHandle) is allowed
     // as we only support sequential graphs for now
     reactFlowInstance.getEdges().map((edge) => {
       if (connection.source === edge.source && connection.sourceHandle === edge.sourceHandle) {
-        canConnect = false;
+        return false;
       }
     });
 
-    // multiple incoming edges are only allowed for request nodes
     const nodes = reactFlowInstance.getNodes();
+
+    // self connecting edge not allowed
+    const sourceNode = nodes.find((node) => node.id === connection.source).id;
+    const targetNode = nodes.find((node) => node.id === connection.target).id;
+    if (sourceNode === targetNode) {
+      return false;
+    }
+
+    // multiple incoming edges are only allowed for request nodes
     const nodeType = nodes.find((node) => node.id === connection.target).type;
     if (nodeType != 'requestNode') {
       reactFlowInstance.getEdges().map((edge) => {
         if (connection.target === edge.target) {
-          canConnect = false;
+          return false;
         }
       });
     }
-    return canConnect;
+
+    return true;
   };
 
   const onGraphComplete = (result, logs) => {

@@ -5,6 +5,16 @@ import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 import { isEqual } from 'lodash';
 import { OBJ_TYPES } from 'constants/Common';
 
+const tabUnsavedChanges = (tab) => {
+  if (tab.type === OBJ_TYPES.flowtest && tab.flowDataDraft && !isEqual(tab.flowData, tab.flowDataDraft)) {
+    return true;
+  } else if (tab.type === OBJ_TYPES.environment && tab.variablesDraft && !isEqual(tab.variables, tab.variablesDraft)) {
+    return true;
+  } else {
+    false;
+  }
+};
+
 const Tabs = () => {
   const tabs = useTabStore((state) => state.tabs);
   const setFocusTab = useTabStore((state) => state.setFocusTab);
@@ -28,18 +38,10 @@ const Tabs = () => {
     setClosingTabId(tab.id);
     setClosingCollectionId(tab.collectionId);
 
-    if (tab.type === OBJ_TYPES.flowtest) {
-      if (tab.flowDataDraft && !isEqual(tab.flowData, tab.flowDataDraft)) {
-        console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
-        setConfirmActionModalOpen(true);
-        return;
-      }
-    } else if (tab.type === OBJ_TYPES.environment) {
-      if (tab.variablesDraft && !isEqual(tab.variables, tab.variablesDraft)) {
-        console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
-        setConfirmActionModalOpen(true);
-        return;
-      }
+    if (tabUnsavedChanges(tab)) {
+      console.debug(`Confirm close for tabId: ${tab.id} : collectionId: ${tab.collectionId}`);
+      setConfirmActionModalOpen(true);
+      return;
     }
     closeTab(tab.id, tab.collectionId);
   };
@@ -63,7 +65,10 @@ const Tabs = () => {
               data-id={tab.id}
               data-collection-id={tab.collectionId}
             >
-              <a className='text-nowrap'>{tab.name}</a>
+              <a className='text-nowrap'>
+                {tabUnsavedChanges(tab) ? '*' : ''}
+                {tab.name}
+              </a>
               {/* close needs to be a separate clickable component other wise it gets confused with above */}
               <div
                 className='flex items-center h-full px-2 hover:rounded hover:rounded-l-none hover:bg-slate-200'

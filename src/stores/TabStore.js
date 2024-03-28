@@ -50,7 +50,7 @@ export const useTabStore = create((set, get) => ({
       const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
       if (existingTab) {
         if (!existingTab.flowDataDraft) {
-          existingTab.flowDataDraft = cloneDeep(existingTab.flowData);
+          existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
         }
         existingTab.flowDataDraft.edges = edges;
       }

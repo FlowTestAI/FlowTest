@@ -16,6 +16,7 @@ const deleteFile = require('../utils/filemanager/deletefile');
 const { flowDataToReadableData, readableDataToFlowData } = require('../utils/parser');
 const readFile = require('../utils/filemanager/readfile');
 const FlowtestAI = require('../utils/flowtestai');
+const { stringify, parse } = require('flatted');
 
 const collectionStore = new Collections();
 const flowTestAI = new FlowtestAI();
@@ -87,7 +88,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         id: id,
         name: collectionName,
         pathname: pathname,
-        openapi_spec: resolvedSpec.resolved,
+        openapi_spec: stringify(resolvedSpec.resolved),
         nodes: parsedNodes,
       };
 
@@ -122,7 +123,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
           id: id,
           name: collectionName,
           pathname: collectionFolderPath,
-          openapi_spec: resolvedSpec.resolved,
+          openapi_spec: stringify(resolvedSpec.resolved),
           nodes: parsedNodes,
         };
 
@@ -309,7 +310,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     try {
       const collection = collectionStore.getAll().find((c) => c.id === collectionId);
       if (collection) {
-        return await flowTestAI.generate(collection.openapi_spec, instruction, model);
+        return await flowTestAI.generate(parse(collection.openapi_spec), instruction, model);
       } else {
         return Promise.reject(new Error('Collection not found'));
       }

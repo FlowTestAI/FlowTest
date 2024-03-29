@@ -27,7 +27,7 @@ const translateGeneratedNodesToOpenApiNodes = (generatedNodes, openApiNodes) => 
         type: 'requestNode',
       });
     } else {
-      throw Error(`Cannot find node: ${node.name} in openApi spec`);
+      console.log(`Cannot find node: ${gnode.name} in openApi spec`);
     }
   });
 

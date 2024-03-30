@@ -6,6 +6,7 @@ import { Fragment } from 'react';
 import { Disclosure } from '@headlessui/react';
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
 import useCollectionStore from 'stores/CollectionStore';
+import { orderNodesByTags } from './utils';
 
 // ToDo: Move these constants to constants file/folder
 const requestNodes = [
@@ -63,6 +64,7 @@ const AddNodes = ({ collectionId }) => {
 
   // Get all requests of this collections
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+  const nodesByTags = orderNodesByTags(collection.nodes);
 
   return (
     <>
@@ -129,23 +131,41 @@ const AddNodes = ({ collectionId }) => {
                               </Disclosure.Button>
                               <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                                 <div>
-                                  {collection.nodes.map((node) => (
-                                    <div
-                                      key={`${node.requestType} - ${node.operationId}`}
-                                      onDragStart={(event) => {
-                                        const newNode = {
-                                          ...node,
-                                          type: 'requestNode',
-                                        };
-                                        onDragStart(event, newNode);
-                                      }}
-                                      draggable
-                                      cursor='move'
-                                      className='py-2 border-b'
-                                    >
-                                      <div className='text-base font-semibold primary-text'>{`${node.requestType} - ${node.operationId}`}</div>
-                                      <div className='text-xs secondary-text'>{node.description}</div>
-                                    </div>
+                                  {Object.entries(nodesByTags).map(([tag, nodes], index) => (
+                                    <Disclosure as='div' key={index}>
+                                      {({ open }) => (
+                                        <>
+                                          <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
+                                            <span>{tag}</span>
+                                            <ChevronUpIcon
+                                              className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `}
+                                            />
+                                          </Disclosure.Button>
+                                          <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
+                                            <div>
+                                              {nodes.map((node) => (
+                                                <div
+                                                  key={`${node.requestType} - ${node.operationId}`}
+                                                  onDragStart={(event) => {
+                                                    const newNode = {
+                                                      ...node,
+                                                      type: 'requestNode',
+                                                    };
+                                                    onDragStart(event, newNode);
+                                                  }}
+                                                  draggable
+                                                  cursor='move'
+                                                  className='py-2 border-b'
+                                                >
+                                                  <div className='text-base font-semibold primary-text'>{`${node.requestType} - ${node.operationId}`}</div>
+                                                  <div className='text-xs secondary-text'>{node.description}</div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </Disclosure.Panel>
+                                        </>
+                                      )}
+                                    </Disclosure>
                                   ))}
                                 </div>
                               </Disclosure.Panel>

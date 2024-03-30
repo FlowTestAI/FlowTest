@@ -25,6 +25,7 @@ const parseOpenAPISpec = (collection) => {
       Object.entries(operation).map(([requestType, request], _) => {
         const summary = request['summary'];
         const operationId = request['operationId'];
+        const tags = request['tags'];
         var url = replaceSingleToDoubleCurlyBraces(computeUrl(baseUrl, path));
         var variables = {};
 
@@ -59,6 +60,7 @@ const parseOpenAPISpec = (collection) => {
           description: summary,
           operationId: operationId,
           requestType: requestType.toUpperCase(),
+          tags: tags,
         };
         // console.log(finalNode);
         parsedNodes.push(finalNode);

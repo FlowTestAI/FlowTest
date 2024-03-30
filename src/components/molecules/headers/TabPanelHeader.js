@@ -94,7 +94,7 @@ const TabPanelHeader = () => {
           </div>
         </>
       ) : (
-        <div className='text-base tracking-[0.15em]'> Please select a flow test from the sidebar </div>
+        <div className='text-base tracking-[0.15em]'> Please select a flow from the sidebar </div>
       )}
     </div>
   );

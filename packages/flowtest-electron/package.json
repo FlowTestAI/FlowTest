@@ -28,6 +28,7 @@
     "chokidar": "^3.6.0",
     "dotenv": "^16.4.5",
     "electron-store": "^8.1.0",
+    "flatted": "^3.3.1",
     "fs": "^0.0.1-security",
     "json-refs": "^3.0.15",
     "langchain": "^0.1.28",

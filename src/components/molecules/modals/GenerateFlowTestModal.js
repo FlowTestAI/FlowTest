@@ -9,6 +9,7 @@ import { generateFlowData } from '../flow/flowtestai';
 import { init } from '../flow';
 import useCanvasStore from 'stores/CanvasStore';
 import { toast } from 'react-toastify';
+import { isEqual } from 'lodash';
 
 const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionId }) => {
   const setNodes = useCanvasStore((state) => state.setNodes);
@@ -110,19 +111,28 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                     isDisabled={false}
                     fullWidth={true}
                     onClickHandle={() => {
-                      generateFlowData(textareaValue, selectedModel, collectionId)
-                        .then((flowData) => {
-                          const result = init(flowData);
-                          console.log(result);
-                          setNodes(result.nodes);
-                          setEdges(result.edges);
-                          closeFn();
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                          toast.error(`Error while generating flow data`);
-                          closeFn();
-                        });
+                      if (textareaValue.trim() === '') {
+                        toast.info('Please describe your flow');
+                      } else if (selectedModel === null) {
+                        toast.info('Please select a model');
+                      } else {
+                        generateFlowData(textareaValue, selectedModel, collectionId)
+                          .then((flowData) => {
+                            if (isEqual(flowData.nodes, [])) {
+                              toast.info(`${selectedModel} was not able to evaluate the instructions properly`);
+                            } else {
+                              const result = init(flowData);
+                              setNodes(result.nodes);
+                              setEdges(result.edges);
+                            }
+                            closeFn();
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                            toast.error(`Error while generating flow data`);
+                            closeFn();
+                          });
+                      }
                     }}
                   >
                     Generate

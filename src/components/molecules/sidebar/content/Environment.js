@@ -8,9 +8,11 @@ import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 import { toast } from 'react-toastify';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import useCollectionStore from 'stores/CollectionStore';
 
 const Environment = ({ collectionId, collection }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  //const [isExpanded, setIsExpanded] = useState(false);
+  const clickEnvironments = useCollectionStore((state) => state.clickEnvironments);
   const [confirmActionModalOpen, setConfirmActionModalOpen] = useState(false);
   const [envToDelete, setEnvToDelete] = useState('');
 
@@ -26,7 +28,8 @@ const Environment = ({ collectionId, collection }) => {
             const clickFromElementDataSet = event.target.dataset;
             const clickFrom = clickFromElementDataSet?.clickFrom;
             if (!clickFrom || clickFrom !== 'env-options-menu') {
-              return setIsExpanded((prev) => !prev);
+              //return setIsExpanded((prev) => !prev);
+              clickEnvironments(collectionId);
             }
           }}
         >
@@ -42,7 +45,7 @@ const Environment = ({ collectionId, collection }) => {
             pathName={collection.pathname}
           />
         </div>
-        {isExpanded && (
+        {collection.envCollapsed === false && (
           <>
             {collection.environments?.map((environment, index) => (
               <ul

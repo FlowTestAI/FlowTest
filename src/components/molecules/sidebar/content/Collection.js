@@ -10,13 +10,17 @@ import 'tippy.js/dist/tippy.css';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 import { deleteFlowTest } from 'service/collection';
+import useCollectionStore from 'stores/CollectionStore';
 
 const Collection = ({ collectionId, item, depth }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  //const [isExpanded, setIsExpanded] = useState(false);
+  const clickItem = useCollectionStore((state) => state.clickItem);
   const [confirmActionModalOpen, setConfirmActionModalOpen] = useState(false);
   const [flowTestPathToDelete, setFlowTestPathToDelete] = useState('');
+
   const messageForConfirmActionModal =
     'Do you wish to delete this flowtest? This action deletes it from disk and cannot be undone';
+
   const getListDisplayTitle = () => {
     if (item.type === OBJ_TYPES.collection) {
       // this is for collections tab thus we have archive box icon
@@ -27,7 +31,8 @@ const Collection = ({ collectionId, item, depth }) => {
             const clickFromElementDataSet = event.target.dataset;
             const clickFrom = clickFromElementDataSet?.clickFrom;
             if (!clickFrom || clickFrom !== 'options-menu') {
-              return setIsExpanded((prev) => !prev);
+              clickItem(item, collectionId);
+              //return setIsExpanded((prev) => !prev);
             }
           }}
         >
@@ -90,7 +95,8 @@ const Collection = ({ collectionId, item, depth }) => {
           onClick={(event) => {
             const clickFrom = event.target.dataset?.clickFrom;
             if (!clickFrom || clickFrom !== 'options-menu') {
-              return setIsExpanded((prev) => !prev);
+              clickItem(item, collectionId);
+              //return setIsExpanded((prev) => !prev);
             }
           }}
         >
@@ -113,7 +119,7 @@ const Collection = ({ collectionId, item, depth }) => {
     <>
       <li>
         {getListDisplayTitle()}
-        {isExpanded && (
+        {item.collapsed === false && (
           <>
             {item.items?.map((childItem, index) => (
               <ul

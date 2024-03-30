@@ -21,9 +21,11 @@ const useCollectionStore = create((set, get) => ({
       type: OBJ_TYPES.collection,
       name: name,
       pathname: pathname,
+      collapsed: true,
       nodes: nodes,
       items: [],
       environments: [],
+      envCollapsed: true,
     };
     if (!get().collections.find((c) => c.pathname === pathname)) {
       set((state) => ({ collections: [...state.collections, collectionObj] }));
@@ -53,6 +55,7 @@ const useCollectionStore = create((set, get) => ({
                 pathname: `${currentPath}${PATH_SEPARATOR}${directoryName}`,
                 name: directoryName,
                 type: OBJ_TYPES.folder,
+                collapsed: true,
                 items: [],
               };
               currentSubItems.push(childItem);
@@ -192,6 +195,7 @@ const useCollectionStore = create((set, get) => ({
                 pathname: `${currentPath}${PATH_SEPARATOR}${directoryName}`,
                 name: directoryName,
                 type: OBJ_TYPES.folder,
+                collapsed: true,
                 items: [],
               };
               currentSubItems.push(childItem);
@@ -301,6 +305,36 @@ const useCollectionStore = create((set, get) => ({
             // remove any open tab of this flowtest
             useTabStore.getState().closeTab(item.id, collectionId);
           }
+        }
+      }),
+    );
+  },
+  clickItem: (item, collectionId) => {
+    set(
+      produce((state) => {
+        if (item) {
+          if (item.type === OBJ_TYPES.collection) {
+            const collection = state.collections.find((c) => c.id === collectionId);
+            if (collection) {
+              collection.collapsed = !collection.collapsed;
+            }
+          } else if (item.type === OBJ_TYPES.folder) {
+            const collection = state.collections.find((c) => c.id === collectionId);
+            if (collection) {
+              const findItem = findItemInCollectionTree(item, collection);
+              findItem.collapsed = !findItem.collapsed;
+            }
+          }
+        }
+      }),
+    );
+  },
+  clickEnvironments: (collectionId) => {
+    set(
+      produce((state) => {
+        const collection = state.collections.find((c) => c.id === collectionId);
+        if (collection) {
+          collection.envCollapsed = !collection.envCollapsed;
         }
       }),
     );

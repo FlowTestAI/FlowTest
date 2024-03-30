@@ -25,6 +25,7 @@ const useCollectionStore = create((set, get) => ({
       nodes: nodes,
       items: [],
       environments: [],
+      envCollapsed: true,
     };
     if (!get().collections.find((c) => c.pathname === pathname)) {
       set((state) => ({ collections: [...state.collections, collectionObj] }));
@@ -324,6 +325,16 @@ const useCollectionStore = create((set, get) => ({
               findItem.collapsed = !findItem.collapsed;
             }
           }
+        }
+      }),
+    );
+  },
+  clickEnvironments: (collectionId) => {
+    set(
+      produce((state) => {
+        const collection = state.collections.find((c) => c.id === collectionId);
+        if (collection) {
+          collection.envCollapsed = !collection.envCollapsed;
         }
       }),
     );

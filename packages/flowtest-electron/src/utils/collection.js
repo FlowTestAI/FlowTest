@@ -20,13 +20,16 @@ const parseOpenAPISpec = (collection) => {
   let parsedNodes = [];
   try {
     // servers is array,, figure case where there can be multiple servers
-    const baseUrl = collection['servers'][0]['url'];
+    const baseUrls = collection['servers'];
     Object.entries(collection['paths']).map(([path, operation], _) => {
       Object.entries(operation).map(([requestType, request], _) => {
         const summary = request['summary'];
         const operationId = request['operationId'];
         const tags = request['tags'];
-        var url = replaceSingleToDoubleCurlyBraces(computeUrl(baseUrl, path));
+        let urls = baseUrls.map((item) => ({
+          ...item,
+          url: replaceSingleToDoubleCurlyBraces(computeUrl(item.url, path)),
+        }));
         var variables = {};
 
         // console.log(operationId)
@@ -39,10 +42,16 @@ const parseOpenAPISpec = (collection) => {
             // allow different type of variables in request node like string, int, array etc...
             if (value['in'] === 'query') {
               if (firstQueryParam) {
-                url = url.concat(`?${value['name']}={{${value['name']}}}`);
+                urls = urls.map((item) => ({
+                  ...item,
+                  url: item.url.concat(`?${value['name']}={{${value['name']}}}`),
+                }));
                 firstQueryParam = false;
               } else {
-                url = url.concat(`&${value['name']}={{${value['name']}}}`);
+                urls = urls.map((item) => ({
+                  ...item,
+                  url: item.url.concat(`&${value['name']}={{${value['name']}}}`),
+                }));
               }
             }
           });
@@ -56,7 +65,7 @@ const parseOpenAPISpec = (collection) => {
         }
 
         const finalNode = {
-          url: url,
+          urls: urls,
           description: summary,
           operationId: operationId,
           requestType: requestType.toUpperCase(),

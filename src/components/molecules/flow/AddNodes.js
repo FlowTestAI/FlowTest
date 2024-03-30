@@ -147,8 +147,10 @@ const AddNodes = ({ collectionId }) => {
                                                 <div
                                                   key={`${node.requestType} - ${node.operationId}`}
                                                   onDragStart={(event) => {
+                                                    const { ['urls']: _, ...nodeData } = node;
                                                     const newNode = {
-                                                      ...node,
+                                                      ...nodeData,
+                                                      url: node.urls[0].url,
                                                       type: 'requestNode',
                                                     };
                                                     onDragStart(event, newNode);

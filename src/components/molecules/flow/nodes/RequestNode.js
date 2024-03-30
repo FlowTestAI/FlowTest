@@ -7,12 +7,18 @@ import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { getDefaultValue } from 'utils/common';
 import AddVariableModal from 'components/molecules/modals/flow/AddVariableModal';
 import useCanvasStore from 'stores/CanvasStore';
+import useCollectionStore from 'stores/CollectionStore';
+import { findNodeInCollection } from '../utils';
 
 const RequestNode = ({ id, data }) => {
   const setRequestNodeUrl = useCanvasStore((state) => state.setRequestNodeUrl);
   const requestNodeAddVariable = useCanvasStore((state) => state.requestNodeAddVariable);
   const requestNodeDeleteVariable = useCanvasStore((state) => state.requestNodeDeleteVariable);
   const requestNodeChangeVariable = useCanvasStore((state) => state.requestNodeChangeVariable);
+  const collectionId = useCanvasStore.getState().collectionId;
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+  const availableUrls = collection ? findNodeInCollection(collection.nodes, data)?.urls : undefined;
+  console.log(availableUrls);
 
   const [variableDialogOpen, setVariableDialogOpen] = useState(false);
 
@@ -82,7 +88,7 @@ const RequestNode = ({ id, data }) => {
       handleRightData={{ type: 'source' }}
     >
       <div>
-        <div>
+        <div className='flex items-center justify-center mb-4 text-sm rounded-md text-neutral-500 outline-0 focus:ring-0'>
           <input
             type='text'
             placeholder={`Enter URL for a ${data.requestType} request`}
@@ -91,6 +97,21 @@ const RequestNode = ({ id, data }) => {
             onChange={handleUrlInputChange}
             value={data.url ? data.url : ''}
           />
+
+          {availableUrls && (
+            <select
+              onChange={handleUrlInputChange}
+              name='var-input-type'
+              className='w-full h-8 p-0 px-1 border-l nodrag rounded-br-md rounded-tr-md border-l-neutral-500'
+              value=''
+            >
+              {availableUrls.map((item, index) => (
+                <option value={item.url} key={index}>
+                  {item.url}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
         <RequestBody nodeId={id} nodeData={data} />
         <div className='border-t border-neutral-300 bg-slate-100'>

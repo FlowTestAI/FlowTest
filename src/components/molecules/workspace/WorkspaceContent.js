@@ -11,6 +11,7 @@ const WorkspaceContent = () => {
   const setNodes = useCanvasStore((state) => state.setNodes);
   const setEdges = useCanvasStore((state) => state.setEdges);
   const setLogs = useCanvasStore((state) => state.setLogs);
+  const setCollectionId = useCanvasStore((state) => state.setCollectionId);
 
   const setVariables = useEnvStore((state) => state.setVariables);
 
@@ -27,6 +28,7 @@ const WorkspaceContent = () => {
       setNodes(result.nodes);
       setEdges(result.edges);
       setLogs([]);
+      setCollectionId(focusTab.collectionId);
     } else if (focusTab.type === OBJ_TYPES.environment) {
       setVariables(focusTab.variablesDraft ? focusTab.variablesDraft : focusTab.variables);
     }

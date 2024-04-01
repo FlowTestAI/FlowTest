@@ -25,10 +25,11 @@ const Tabs = () => {
   const [closingTabId, setClosingTabId] = useState('');
   const [closingCollectionId, setClosingCollectionId] = useState('');
 
-  const activeTabStyles =
-    'before:absolute before:h-[0.25rem] before:w-full before:bg-slate-300 before:content-[""] before:bottom-0 before:left-0';
+  // const activeTabStyles =
+  //   'before:absolute before:h-[0.25rem] before:w-full before:bg-slate-300 before:content-[""] before:bottom-0 before:left-0 bg-cyan-950 text-white';
+  const activeTabStyles = 'bg-cyan-900 text-white';
   const tabCommonStyles =
-    'tab flex items-center gap-x-2 border-r border-neutral-300 bg-transparent pr-0 tracking-[0.15em] transition duration-500 ease-in text-sm flex-nowrap';
+    'tab flex items-center gap-x-2 border-r border-neutral-300 pr-0 tracking-[0.15em] transition duration-300 ease-in text-sm flex-nowrap';
   const messageForConfirmActionModal = `You have unsaved changes in the ${focusTab?.type}, are you sure you want to close it?`;
 
   const handleCloseTab = (event, tab) => {
@@ -71,7 +72,7 @@ const Tabs = () => {
               </a>
               {/* close needs to be a separate clickable component other wise it gets confused with above */}
               <div
-                className='flex items-center h-full px-2 hover:rounded hover:rounded-l-none hover:bg-slate-200'
+                className={`flex h-full items-center px-2 ${focusTabId === tab.id ? 'text-white hover:bg-cyan-950 ' : 'text-cyan-900 hover:bg-slate-200'} `}
                 data-tab-id={tab.id}
                 onClick={(e) => handleCloseTab(e, tab)}
               >

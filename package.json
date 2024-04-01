@@ -29,6 +29,7 @@
     "react-router": "^6.15.0",
     "react-router-dom": "^6.22.2",
     "react-scripts": "5.0.1",
+    "react-sliding-pane": "^7.3.0",
     "react-toastify": "^10.0.5",
     "react-tooltip": "^5.26.2",
     "reactflow": "^11.8.3",

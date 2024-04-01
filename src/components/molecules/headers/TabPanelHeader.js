@@ -14,12 +14,20 @@ import Button from 'components/atoms/common/Button';
 import { BUTTON_TYPES, OBJ_TYPES } from 'constants/Common';
 import GenerateFlowTestModal from '../modals/GenerateFlowTestModal';
 import useCanvasStore from 'stores/CanvasStore';
+import SlidingPane from 'react-sliding-pane';
+import 'react-sliding-pane/dist/react-sliding-pane.css';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
   const tabs = useTabStore((state) => state.tabs);
   const focusTab = tabs.find((t) => t.id === focusTabId);
   const graphRunLogs = useCanvasStore((state) => state.logs);
+  const [slidingPaneState, setSlidingPaneState] = useState({
+    isPaneOpen: false,
+    isPaneOpenLeft: false,
+    title: 'Not available',
+    subtitle: 'Not Available',
+  });
 
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
 
@@ -31,33 +39,56 @@ const TabPanelHeader = () => {
           <div className='flex items-center justify-between border-l gap-x-4 border-neutral-300'>
             <div className='flex items-center justify-between pl-4 gap-x-4'>
               <SaveFlowModal tab={focusTab} />
-              {/* ToDo: Create our own side sheet component */}
               {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
-                <div className='drawer drawer-end'>
-                  <input id='graph-logs-side-sheet' type='checkbox' className='drawer-toggle' />
-                  <div className='cursor-pointer drawer-content'>
+                <>
+                  <div
+                    id='graph-logs-side-sheet'
+                    onClick={() =>
+                      setSlidingPaneState({
+                        isPaneOpen: true,
+                        isPaneOpenLeft: false,
+                      })
+                    }
+                  >
                     <Tippy content='Logs' placement='top'>
                       <label htmlFor='graph-logs-side-sheet'>
                         <DocumentTextIcon className='w-5 h-5' />
                       </label>
                     </Tippy>
                   </div>
-
-                  <div className='z-50 drawer-side'>
+                  <SlidingPane
+                    className='side-sheet'
+                    overlayClassName='side-sheet-overlay'
+                    isOpen={slidingPaneState.isPaneOpen}
+                    title={focusTab.name}
+                    width='45%'
+                    onRequestClose={() => {
+                      // triggered on "<" on left top click or on outside click
+                      setSlidingPaneState({
+                        isPaneOpen: false,
+                        isPaneOpenLeft: false,
+                        title: 'closed',
+                        subtitle: 'closed',
+                      });
+                    }}
+                  >
                     <label
                       htmlFor='graph-logs-side-sheet'
                       aria-label='close sidebar'
                       className='drawer-overlay'
                     ></label>
                     <ul className='min-h-full p-4 menu w-80 bg-base-200 text-base-content'>
+                      {console.log(`\n \n \n ======================>`)}
+                      {console.log(graphRunLogs)}
+                      {console.log(`\n \n \n ======================>`)}
                       {graphRunLogs.map((item, index) => (
                         <li key={index}>
                           <a>{item}</a>
                         </li>
                       ))}
                     </ul>
-                  </div>
-                </div>
+                  </SlidingPane>
+                </>
               ) : (
                 <></>
               )}

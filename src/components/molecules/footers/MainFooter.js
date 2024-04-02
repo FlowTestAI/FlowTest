@@ -20,33 +20,38 @@ const MainFooter = () => {
         <ArrowLeftEndOnRectangleIcon className='w-6 h-6 swap-off' />
       </label>
       <div className='flex items-center justify-between gap-4'>
-        <Tippy content='External link: github.com' placement='top'>
-          <a href='#' target='_blank' className='link' rel='noreferrer'>
-            Github
+        <Tippy content='Github' placement='top'>
+          <a href='https://github.com/FlowTestAI/FlowTest' target='_blank' rel='noreferrer' className='link'>
+            <b>Github</b>
           </a>
         </Tippy>
 
-        <Tippy content='External link: github discussions' placement='top'>
-          <a href='#' className='link'>
-            Contact us
+        <Tippy content='Contact Us' placement='top'>
+          <a
+            href='https://github.com/FlowTestAI/FlowTest/discussions'
+            target='_blank'
+            rel='noreferrer'
+            className='link'
+          >
+            <b>Contact us</b>
           </a>
         </Tippy>
 
-        <Tippy content='External link' placement='top'>
-          <a href='#' className='link'>
-            Discord
+        <Tippy content='Discord' placement='top'>
+          <a href='https://discord.gg/Pf9tdSjPeF' target='_blank' rel='noreferrer' className='link'>
+            <b>Discord</b>
           </a>
         </Tippy>
 
         <Tippy content='Coming Soon' placement='top'>
           <a href='#' className='link'>
-            Docs
+            <b>Docs</b>
           </a>
         </Tippy>
 
-        <Tippy content='External link: github repo' placement='top'>
-          <a href='https://github.com/FlowTestAI/FlowTest' className='link'>
-            About
+        <Tippy content='About' placement='top'>
+          <a href='https://github.com/FlowTestAI/FlowTest' target='_blank' rel='noreferrer' className='link'>
+            <b>About</b>
           </a>
         </Tippy>
       </div>

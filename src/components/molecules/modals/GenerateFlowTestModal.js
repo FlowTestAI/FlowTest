@@ -10,8 +10,10 @@ import { init } from '../flow';
 import useCanvasStore from 'stores/CanvasStore';
 import { toast } from 'react-toastify';
 import { isEqual } from 'lodash';
+import useCommonStore from 'stores/CommonStore';
 
 const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionId }) => {
+  const setShowLoader = useCommonStore((state) => state.setShowLoader);
   const setNodes = useCanvasStore((state) => state.setNodes);
   const setEdges = useCanvasStore((state) => state.setEdges);
 
@@ -116,8 +118,10 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                       } else if (selectedModel === null) {
                         toast.info('Please select a model');
                       } else {
+                        setShowLoader(true);
                         generateFlowData(textareaValue, selectedModel, collectionId)
                           .then((flowData) => {
+                            setShowLoader(false);
                             if (isEqual(flowData.nodes, [])) {
                               toast.info(`${selectedModel} was not able to evaluate the instructions properly`);
                             } else {
@@ -128,6 +132,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                             closeFn();
                           })
                           .catch((error) => {
+                            setShowLoader(false);
                             console.log(error);
                             toast.error(`Error while generating flow data`);
                             closeFn();

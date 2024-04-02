@@ -20,7 +20,6 @@ import DelayNode from './nodes/DelayNode';
 import AuthNode from './nodes/AuthNode';
 import FlowNode from 'components/atoms/flow/FlowNode';
 import useCanvasStore from 'stores/CanvasStore';
-import useCommonStore from 'stores/CommonStore';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -101,7 +100,6 @@ const selector = (state) => ({
 });
 
 const Flow = ({ collectionId }) => {
-  const setShowLoader = useCommonStore((state) => state.setShowLoader);
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, setLogs } =
     useCanvasStore(selector);
   //console.log(nodes);
@@ -240,8 +238,6 @@ const Flow = ({ collectionId }) => {
         <Controls>
           <ControlButton
             onClick={() => {
-              console.log(`\n \n \n ControlButton has been clicked \n \n \n`);
-              setShowLoader(true);
               runnableEdges(true);
               const g = new Graph(
                 cloneDeep(reactFlowInstance.getNodes()),
@@ -250,8 +246,6 @@ const Flow = ({ collectionId }) => {
                 onGraphComplete,
               );
               g.run();
-              console.log(`\n \n \n ControlButton has been clicked END \n \n \n`);
-              setShowLoader(false);
             }}
             title='run'
           >

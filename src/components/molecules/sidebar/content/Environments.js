@@ -21,9 +21,10 @@ const Environments = ({ collections }) => {
           // const itemType = clickFromElementDataSet?.itemType;
           const optionsMenuItem = clickFromElementDataSet?.optionsMenuItem;
           const pathName = clickFromElementDataSet?.pathName;
+          const collectionId = clickFromElementDataSet?.collectionId;
 
           setSelectedPathName(pathName);
-          setSelectedCollectionId(collections[0].id);
+          setSelectedCollectionId(collectionId);
           setSelectedMenuItem(optionsMenuItem);
 
           switch (optionsMenuItem) {

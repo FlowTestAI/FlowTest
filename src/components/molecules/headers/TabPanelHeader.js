@@ -78,9 +78,6 @@ const TabPanelHeader = () => {
                       className='drawer-overlay'
                     ></label>
                     <ul className='min-h-full p-4 menu w-80 bg-base-200 text-base-content'>
-                      {console.log(`\n \n \n ======================>`)}
-                      {console.log(graphRunLogs)}
-                      {console.log(`\n \n \n ======================>`)}
                       {graphRunLogs.map((item, index) => (
                         <li key={index}>
                           <a>{item}</a>
@@ -92,16 +89,6 @@ const TabPanelHeader = () => {
               ) : (
                 <></>
               )}
-              <button>
-                <Tippy content='Import - Coming Soon!' placement='top'>
-                  <DocumentArrowDownIcon className='w-5 h-5 fill-neutral-200 text-neutral-400' />
-                </Tippy>
-              </button>
-              <button>
-                <Tippy content='Export - Coming Soon!' placement='top'>
-                  <DocumentArrowUpIcon className='w-5 h-5 fill-neutral-200 text-neutral-400' />
-                </Tippy>
-              </button>
             </div>
             {focusTab.type === OBJ_TYPES.flowtest && (
               <div className='pl-4 border-l gen_ai_button border-neutral-300'>

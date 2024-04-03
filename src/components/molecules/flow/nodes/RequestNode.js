@@ -39,6 +39,7 @@ const RequestNode = ({ id, data }) => {
           Object.keys(data.variables).map((id) => (
             <div className='flex items-center justify-between pb-2' key={id}>
               <div className='flex items-center justify-between text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
+                <label className='px-4 py-2 border-r rounded-bl-md rounded-tl-md border-r-neutral-500'>{id}</label>
                 {data.variables[id].type === 'Boolean' ? (
                   <select
                     onChange={(e) => handleVariableChange(e, id)}
@@ -59,7 +60,6 @@ const RequestNode = ({ id, data }) => {
                     value={data.variables[id].value}
                   />
                 )}
-                <label>{id}</label>
                 <div className='px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>
                   {data.variables[id].type}
                 </div>

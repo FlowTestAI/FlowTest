@@ -6,7 +6,7 @@ import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 
 // ToDo: Combine this component with OptionsMenu in sidebar atoms to make it generic
-const EnvOptionsMenu = ({ pathName, itemType }) => {
+const EnvOptionsMenu = ({ pathName, itemType, collectionId }) => {
   const menuItemsStyles =
     'group flex w-full items-center rounded px-2 py-2 text-sm text-gray-900 transition duration-200 ease-out hover:bg-slate-100';
   return (
@@ -43,6 +43,7 @@ const EnvOptionsMenu = ({ pathName, itemType }) => {
                 data-click-from='env-options-menu'
                 data-options-menu-item={DirectoryOptionsActions.addNewEnvironment.value}
                 data-path-name={pathName}
+                data-collection-id={collectionId}
               >
                 <PencilSquareIcon
                   className='w-4 h-4 mr-2'

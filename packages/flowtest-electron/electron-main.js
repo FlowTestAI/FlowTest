@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, shell } = require('electron');
 const path = require('path');
 const url = require('url');
 const template = require('./electron-menu');
@@ -38,6 +38,13 @@ app.on('ready', async () => {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
+
+  // This is required to open a link in the external browser
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
   watcher = new Watcher();
 
   registerRendererEventHandlers(mainWindow, watcher);

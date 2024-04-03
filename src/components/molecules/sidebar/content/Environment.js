@@ -43,6 +43,7 @@ const Environment = ({ collectionId, collection }) => {
             data-click-from='env-options-menu'
             itemType={OBJ_TYPES.environment}
             pathName={collection.pathname}
+            collectionId={collectionId}
           />
         </div>
         {collection.envCollapsed === false && (

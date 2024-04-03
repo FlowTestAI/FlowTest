@@ -24,3 +24,56 @@ details summary::-webkit-details-marker {
 .menu :where(li > details > summary):after {
   content: none;
 }
+
+/* Side Sheet component related CSS overrides */
+.side-sheet-overlay.slide-pane__overlay.overlay-after-open {
+  background-color: rgba(67, 90, 111, 0.6);
+}
+.side-sheet-overlay .side-sheet.slide-pane {
+  box-shadow: none;
+}
+.side-sheet-overlay .slide-pane__content {
+  background: #fafbff;
+}
+.side-sheet-overlay .slide-pane__header {
+  background: #fff;
+  border-bottom: 1px solid #edeff5;
+  padding: 3rem 2rem;
+  flex: 0 auto;
+}
+.side-sheet-overlay .slide-pane__header .slide-pane__close {
+  margin-left: 0;
+  padding: 0;
+}
+.side-sheet-overlay .slide-pane__header .slide-pane__title-wrapper {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 1.5rem;
+  gap: 0.75rem;
+}
+.side-sheet-overlay .slide-pane__header .slide-pane__title-wrapper .slide-pane__title {
+  color: #101840;
+  font-size: 1.5rem;
+  line-height: 24px;
+  font-weight: 500;
+}
+.side-sheet-overlay .slide-pane__header .slide-pane__title-wrapper .slide-pane__title .pane_title_text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.side-sheet-overlay .slide-pane__header .slide-pane__title-wrapper .slide-pane__subtitle {
+  color: #696f8c;
+  line-height: 24px;
+  font-size: 1.25rem;
+  margin-top: 0;
+}
+.side-sheet-overlay .slide-pane__header .slide-pane__title-wrapper .slide-pane__subtitle .pane_subtitle_text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.side-sheet-overlay .slide-pane__content {
+  padding: 2.5rem 2rem;
+}

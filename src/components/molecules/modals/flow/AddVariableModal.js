@@ -22,7 +22,7 @@ const variableTypes = [
   },
 ];
 
-const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd }) => {
+const AddVariableModal = ({ closeFn = () => null, open = false, modalType, onVariableAdd }) => {
   const [variableName, setVariableName] = useState('');
   const [variableType, setVariableType] = useState('String');
 
@@ -97,7 +97,7 @@ const AddVariableModal = ({ closeFn = () => null, open = false, onVariableAdd })
                     className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-green-400'
                     onClick={() => {
                       if (variableName.trim() != '') {
-                        onVariableAdd(variableName, variableType);
+                        onVariableAdd(modalType, variableName, variableType);
                       }
                       closeFn();
                     }}

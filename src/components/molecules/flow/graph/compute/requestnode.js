@@ -50,7 +50,7 @@ const formulateRequest = (node, finalUrl, variablesDict, auth, logs) => {
 
 export const computeRequestNode = async (node, prevNodeOutputData, env, auth, logs) => {
   // step1 evaluate variables of this node
-  const evalVariables = computeNodeVariables(node.data.variables, prevNodeOutputData);
+  const evalVariables = computeNodeVariables(node.data.preReqVars, prevNodeOutputData);
 
   const variablesDict = {
     ...env?.variables,

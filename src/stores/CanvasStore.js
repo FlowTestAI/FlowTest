@@ -158,6 +158,69 @@ const useCanvasStore = create((set, get) => ({
       }),
     });
   },
+  requestNodeAddPostResponseVar: (nodeId, name, type) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          const newId = name;
+          const newVar = {
+            type: type,
+            value: getDefaultValue(type),
+          };
+          node.data = {
+            ...node.data,
+            postRespVars: {
+              ...node.data.postRespVars,
+              [newId]: newVar,
+            },
+          };
+        }
+
+        return node;
+      }),
+    });
+  },
+  requestNodeDeletePostResponseVar: (nodeId, id) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          const { [id]: _, ...newVariables } = node.data.postRespVars;
+
+          node.data = {
+            ...node.data,
+            postRespVars: newVariables,
+          };
+        }
+
+        return node;
+      }),
+    });
+  },
+  requestNodeChangePostResponseVar: (nodeId, id, value) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          const updateVar = {
+            type: node.data.postRespVars[id].type,
+            value,
+          };
+
+          node.data = {
+            ...node.data,
+            postRespVars: {
+              ...node.data.postRespVars,
+              [id]: updateVar,
+            },
+          };
+        }
+
+        return node;
+      }),
+    });
+  },
   setRequestNodeBody: (nodeId, type, data) => {
     set({
       nodes: get().nodes.map((node) => {

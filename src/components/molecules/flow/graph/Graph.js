@@ -1,5 +1,6 @@
 // assumption is that apis are giving json as output
 
+import { cloneDeep } from 'lodash';
 import useCanvasStore from 'stores/CanvasStore';
 import useCollectionStore from 'stores/CollectionStore';
 import { useTabStore } from 'stores/TabStore';
@@ -9,6 +10,10 @@ import { computeRequestNode } from './compute/requestnode';
 
 class Graph {
   constructor(nodes, edges, collectionId, onGraphComplete) {
+    const activeEnv = useCollectionStore
+      .getState()
+      .collections.find((c) => c.id === collectionId)
+      ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
     this.nodes = nodes;
     this.edges = edges;
     this.onGraphComplete = onGraphComplete;
@@ -17,10 +22,7 @@ class Graph {
     this.startTime = Date.now();
     this.graphRunNodeOutput = {};
     this.auth = undefined;
-    this.env = useCollectionStore
-      .getState()
-      .collections.find((c) => c.id === collectionId)
-      ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+    this.envVariables = activeEnv ? cloneDeep(activeEnv.variables) : undefined;
   }
 
   #checkTimeout() {
@@ -95,12 +97,19 @@ class Graph {
       }
 
       if (node.type === 'authNode') {
-        this.auth = node.data.type ? computeAuthNode(node.data, this.env) : undefined;
+        this.auth = node.data.type ? computeAuthNode(node.data, this.envVariables) : undefined;
         result = ['Success', node, prevNodeOutput];
       }
 
       if (node.type === 'requestNode') {
-        result = await computeRequestNode(node, prevNodeOutputData, this.env, this.auth, this.logs);
+        result = await computeRequestNode(node, prevNodeOutputData, this.envVariables, this.auth, this.logs);
+        // add post response variables if any
+        if (result[3]) {
+          this.envVariables = {
+            ...this.envVariables,
+            ...result[3],
+          };
+        }
       }
 
       if (this.#checkTimeout()) {

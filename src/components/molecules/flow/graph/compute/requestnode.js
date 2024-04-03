@@ -48,12 +48,12 @@ const formulateRequest = (node, finalUrl, variablesDict, auth, logs) => {
   return options;
 };
 
-export const computeRequestNode = async (node, prevNodeOutputData, env, auth, logs) => {
+export const computeRequestNode = async (node, prevNodeOutputData, envVariables, auth, logs) => {
   // step1 evaluate variables of this node
   const evalVariables = computeNodeVariables(node.data.preReqVars, prevNodeOutputData);
 
   const variablesDict = {
-    ...env?.variables,
+    ...envVariables,
     ...evalVariables,
   };
 
@@ -76,6 +76,10 @@ export const computeRequestNode = async (node, prevNodeOutputData, env, auth, lo
   } else {
     logs.push(`Request successful: ${JSON.stringify(res)}`);
     console.debug('Response: ', JSON.stringify(res));
+    if (node.data.postRespVars) {
+      const evalPostRespVars = computeNodeVariables(node.data.postRespVars, res.data);
+      return ['Success', node, res, evalPostRespVars];
+    }
     return ['Success', node, res];
   }
 };

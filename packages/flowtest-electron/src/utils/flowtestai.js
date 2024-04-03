@@ -62,7 +62,11 @@ class FlowtestAI {
           };
         }
 
-        functions.push({ name: function_name, description: desc, parameters: schema });
+        const f = { name: function_name, description: desc, parameters: schema };
+        // ignore functions with circular dependency
+        if (!this.isCyclic(f)) {
+          functions.push(f);
+        }
       });
     });
     // console.log(JSON.stringify(functions));
@@ -78,7 +82,14 @@ class FlowtestAI {
       chunks.push(chunk);
     }
 
-    const documents = chunks.map((chunk) => JSON.stringify(chunk));
+    const documents = chunks.map((chunk) => {
+      return JSON.stringify(
+        chunk.map((f) => {
+          const { parameters, ...fDescription } = f;
+          return fDescription;
+        }),
+      );
+    });
 
     const vectorStore = await MemoryVectorStore.fromTexts(
       documents,
@@ -92,7 +103,13 @@ class FlowtestAI {
     const retrievedDocuments = await vectorStore.similaritySearch(instruction, 4);
     var selectedFunctions = [];
     retrievedDocuments.forEach((document) => {
-      selectedFunctions = selectedFunctions.concat(JSON.parse(document.pageContent));
+      const pDocument = JSON.parse(document.pageContent);
+      pDocument.forEach((outputF) => {
+        const findF = functions.find((f) => f.name === outputF.name && f.description === outputF.description);
+        if (findF) {
+          selectedFunctions = selectedFunctions.concat(findF);
+        }
+      });
     });
 
     return selectedFunctions;
@@ -151,6 +168,48 @@ class FlowtestAI {
     }
 
     return result;
+  }
+
+  isCyclic(obj) {
+    var keys = [];
+    var stack = [];
+    var stackSet = new Set();
+    var detected = false;
+
+    function detect(obj, key) {
+      if (obj && typeof obj != 'object') {
+        return false;
+      }
+
+      if (stackSet.has(obj)) {
+        // it's cyclic! Print the object and its locations.
+        var oldindex = stack.indexOf(obj);
+        var l1 = keys.join('.') + '.' + key;
+        var l2 = keys.slice(0, oldindex + 1).join('.');
+        //console.log('CIRCULAR: ' + l1 + ' = ' + l2 + ' = ' + obj);
+        //console.log(obj);
+        detected = true;
+        return;
+      }
+
+      keys.push(key);
+      stack.push(obj);
+      stackSet.add(obj);
+      for (var k in obj) {
+        //dive on the object's children
+        if (Object.prototype.hasOwnProperty.call(obj, k)) {
+          detect(obj[k], k);
+        }
+      }
+
+      keys.pop();
+      stack.pop();
+      stackSet.delete(obj);
+      return;
+    }
+
+    detect(obj, 'obj', keys, stack, stackSet, detected);
+    return detected;
   }
 }
 

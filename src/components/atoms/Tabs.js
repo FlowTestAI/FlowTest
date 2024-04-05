@@ -48,7 +48,7 @@ const Tabs = () => {
   };
 
   return (
-    <div role='tablist' className='overflow-scroll tabs tabs-lg'>
+    <div role='tablist' className='tabs tabs-lg'>
       {tabs
         // tabs belonging to one collection will be shown at a time
         //.reverse()

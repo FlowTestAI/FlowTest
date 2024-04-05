@@ -46,7 +46,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
+              <Dialog.Panel className='w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
                 <Dialog.Title
                   as='h3'
                   className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
@@ -56,7 +56,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                 <div className='mt-6'>
                   <Listbox value={selectedModel} onChange={setSelectedModel}>
                     <div className='relative flex w-full h-full'>
-                      <Listbox.Button className='flex items-center justify-between w-full gap-4 py-4 border rounded cursor-default border-neutral-300'>
+                      <Listbox.Button className='flex items-center justify-between w-full gap-4 px-2 py-4 border rounded cursor-default border-neutral-300'>
                         <div className='pl-2 text-left min-w-32'>{selectedModel ? selectedModel : 'Select model'}</div>
                         <ChevronUpDownIcon className='w-5 h-5' aria-hidden='true' />
                       </Listbox.Button>
@@ -66,7 +66,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                         leaveFrom='opacity-100'
                         leaveTo='opacity-0'
                       >
-                        <Listbox.Options className='absolute right-0 z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded shadow-lg top-6 max-h-60 ring-1 ring-black/5'>
+                        <Listbox.Options className='absolute right-0 z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded shadow-lg top-12 max-h-60 ring-1 ring-black/5'>
                           {Object.values(GENAI_MODELS).map((modelType) => (
                             <Listbox.Option
                               key={modelType}
@@ -95,10 +95,30 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                       </Transition>
                     </div>
                   </Listbox>
-                  <div className='mt-4'>
+                  {selectedModel === GENAI_MODELS.openai ? (
+                    <div className='flex items-center justify-center w-full h-12 mt-8 text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
+                      <label
+                        className='flex items-center w-32 h-full px-4 border-r border-r-neutral-500'
+                        htmlFor='openAIkey'
+                      >
+                        OpenAI Key
+                      </label>
+                      <input
+                        id='openAIkey'
+                        type='text'
+                        className='nodrag nowheel block w-full p-2.5'
+                        name='keyName'
+                        placeholder='Enter your Open AI key'
+                        onChange={(e) => console.log(e.target.value)}
+                      />
+                    </div>
+                  ) : (
+                    ''
+                  )}
+                  <div className='mt-8'>
                     <textarea
                       id='gen-ai-text'
-                      className='block w-full rounded border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
+                      className='block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded min-h-80 bg-gray-50 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
                       placeholder='Describe your flow step by step'
                       onChange={(event) => setTextareaValue(event.target.value)}
                     />

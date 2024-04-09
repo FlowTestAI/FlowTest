@@ -1,3 +1,5 @@
+import { OBJ_TYPES } from 'constants/Common';
+
 export const findItemInCollectionTree = (item, collection) => {
   let flattenedItems = flattenItems(collection.items);
 
@@ -22,6 +24,18 @@ export const deleteItemInCollectionByPathname = (pathname, collection) => {
       i.items = i.items.filter((i) => i.pathname !== pathname);
     }
   });
+};
+
+export const getAllFlowTests = (collection) => {
+  if (collection) {
+    let flattenedItems = flattenItems(collection.items);
+
+    return flattenedItems.map((i) => {
+      if (i.type === OBJ_TYPES.flowtest) {
+        return i.pathname;
+      }
+    });
+  }
 };
 
 export const flattenItems = (items = []) => {

@@ -49,7 +49,7 @@ const formulateRequest = (node, finalUrl, variablesDict, auth, logs) => {
 };
 
 export const computeRequestNode = async (node, prevNodeOutputData, envVariables, auth, logs) => {
-  // step1 evaluate variables of this node
+  // step1 evaluate pre request variables of this node
   const evalVariables = computeNodeVariables(node.data.preReqVars, prevNodeOutputData);
 
   const variablesDict = {
@@ -72,14 +72,26 @@ export const computeRequestNode = async (node, prevNodeOutputData, envVariables,
     console.debug('Failure at node: ', node);
     console.debug('Error encountered: ', JSON.stringify(res.error));
     logs.push(`Request failed: ${JSON.stringify(res.error)}`);
-    return ['Failed', node, res.error];
+    return {
+      status: 'Failed',
+      node,
+    };
   } else {
     logs.push(`Request successful: ${JSON.stringify(res)}`);
     console.debug('Response: ', JSON.stringify(res));
     if (node.data.postRespVars) {
       const evalPostRespVars = computeNodeVariables(node.data.postRespVars, res.data);
-      return ['Success', node, res, evalPostRespVars];
+      return {
+        status: 'Success',
+        node,
+        data: res.data,
+        postRespVars: evalPostRespVars,
+      };
     }
-    return ['Success', node, res];
+    return {
+      status: 'Success',
+      node,
+      data: res.data,
+    };
   }
 };

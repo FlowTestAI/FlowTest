@@ -1,28 +1,20 @@
 // assumption is that apis are giving json as output
 
-import { cloneDeep } from 'lodash';
 import useCanvasStore from 'stores/CanvasStore';
-import useCollectionStore from 'stores/CollectionStore';
-import { useTabStore } from 'stores/TabStore';
 import { computeAuthNode } from './compute/authnode';
 import { computeEvaluateNode } from './compute/evaluatenode';
 import { computeRequestNode } from './compute/requestnode';
 
 class Graph {
-  constructor(nodes, edges, collectionId, onGraphComplete) {
-    const activeEnv = useCollectionStore
-      .getState()
-      .collections.find((c) => c.id === collectionId)
-      ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+  constructor(nodes, edges, startTime, initialEnvVars, initialLogs) {
     this.nodes = nodes;
     this.edges = edges;
-    this.onGraphComplete = onGraphComplete;
-    this.logs = [];
-    this.timeout = 60000; // 1m timeout
-    this.startTime = Date.now();
+    this.logs = initialLogs;
+    this.timeout = 60000; //ms
+    this.startTime = startTime;
     this.graphRunNodeOutput = {};
     this.auth = undefined;
-    this.envVariables = activeEnv ? cloneDeep(activeEnv.variables) : undefined;
+    this.envVariables = initialEnvVars;
   }
 
   #checkTimeout() {
@@ -33,13 +25,13 @@ class Graph {
     let connectingEdge = undefined;
 
     if (node.type === 'evaluateNode') {
-      if (result[3] === true) {
+      if (result.output === true) {
         connectingEdge = this.edges.find((edge) => edge.sourceHandle == 'true' && edge.source === node.id);
       } else {
         connectingEdge = this.edges.find((edge) => edge.sourceHandle == 'false' && edge.source === node.id);
       }
     } else {
-      if (result[0] === 'Success') {
+      if (result.status === 'Success') {
         connectingEdge = this.edges.find((edge) => edge.source === node.id);
       }
     }
@@ -63,7 +55,7 @@ class Graph {
     return prevNodesData;
   }
 
-  async #computeNode(node, prevNodeOutput) {
+  async #computeNode(node) {
     let result = undefined;
     const prevNodeOutputData = this.#computeDataFromPreviousNodes(node);
 
@@ -73,16 +65,29 @@ class Graph {
       if (node.type === 'outputNode') {
         this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
         useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
-        result = ['Success', node, prevNodeOutput];
+        result = {
+          status: 'Success',
+          node,
+        };
       }
 
       if (node.type === 'evaluateNode') {
         if (computeEvaluateNode(node, prevNodeOutputData, this.logs)) {
           this.logs.push('Result: true');
-          result = ['Success', node, prevNodeOutput, true];
+          result = {
+            status: 'Success',
+            node,
+            output: true,
+          };
+          //result = ['Success', node, prevNodeOutput, true];
         } else {
           this.logs.push('Result: false');
-          result = ['Success', node, prevNodeOutput, false];
+          result = {
+            status: 'Success',
+            node,
+            output: true,
+          };
+          //result = ['Success', node, prevNodeOutput, false];
         }
       }
 
@@ -93,21 +98,27 @@ class Graph {
         };
         await wait(delay);
         this.logs.push(`Wait for: ${delay} ms`);
-        result = ['Success', node, prevNodeOutput];
+        result = {
+          status: 'Success',
+          node,
+        };
       }
 
       if (node.type === 'authNode') {
         this.auth = node.data.type ? computeAuthNode(node.data, this.envVariables) : undefined;
-        result = ['Success', node, prevNodeOutput];
+        result = {
+          status: 'Success',
+          node,
+        };
       }
 
       if (node.type === 'requestNode') {
         result = await computeRequestNode(node, prevNodeOutputData, this.envVariables, this.auth, this.logs);
         // add post response variables if any
-        if (result[3]) {
+        if (result.postRespVars) {
           this.envVariables = {
             ...this.envVariables,
-            ...result[3],
+            ...result.postRespVars,
           };
         }
       }
@@ -117,12 +128,18 @@ class Graph {
       }
     } catch (err) {
       this.logs.push(`Flow failed at: ${JSON.stringify(node)} due to ${err}`);
-      return ['Failed', node];
+      return {
+        status: 'Failed',
+        node,
+      };
     }
 
     if (result === undefined) {
       this.logs.push(`Flow failed at: ${JSON.stringify(node)}`);
-      return ['Failed', node];
+      return {
+        status: 'Failed',
+        node,
+      };
     } else {
       const connectingEdge = this.#computeConnectingEdge(node, result);
 
@@ -132,15 +149,15 @@ class Graph {
             ['requestNode', 'outputNode', 'evaluateNode', 'delayNode', 'authNode'].includes(node.type) &&
             node.id === connectingEdge.target,
         );
-        this.graphRunNodeOutput[node.id] = result[2] && result[2].data ? result[2].data : {};
-        return this.#computeNode(nextNode, result[2]);
+        this.graphRunNodeOutput[node.id] = result.data ? result.data : {};
+        return this.#computeNode(nextNode);
       } else {
         return result;
       }
     }
   }
 
-  run() {
+  async run() {
     // reset every output node for a fresh run
     this.nodes.forEach((node) => {
       if (node.type === 'outputNode') {
@@ -154,26 +171,35 @@ class Graph {
     if (startNode == undefined) {
       this.logs.push('No start node found');
       this.logs.push('End Flowtest');
-      return;
+      return {
+        status: 'Success',
+        logs: this.logs,
+        envVars: this.envVariables,
+      };
     }
     const connectingEdge = this.edges.find((edge) => edge.source === startNode.id);
 
     // only start computing graph if initial node has the connecting edge
     if (connectingEdge != undefined) {
       const firstNode = this.nodes.find((node) => node.id === connectingEdge.target);
-      this.#computeNode(firstNode, undefined).then((result) => {
-        if (result[0] == 'Failed') {
-          console.debug('Flow failed at: ', result[1]);
-        }
-        this.logs.push('End Flowtest');
-        this.logs.push(`Total time: ${Date.now() - this.startTime} ms`);
-        console.log(this.logs);
-        this.onGraphComplete(result, this.logs);
-      });
-    } else {
-      this.logs.push('No connected request node to start node');
+      const result = await this.#computeNode(firstNode);
+      if (result.status == 'Failed') {
+        console.debug('Flow failed at: ', result.node);
+      }
       this.logs.push('End Flowtest');
-      this.onGraphComplete(['Success'], this.logs);
+      this.logs.push(`Total time: ${Date.now() - this.startTime} ms`);
+      return {
+        status: result.status,
+        logs: this.logs,
+        envVars: this.envVariables,
+      };
+    } else {
+      this.logs.push('End Flowtest');
+      return {
+        status: 'Success',
+        logs: this.logs,
+        envVars: this.envVariables,
+      };
     }
   }
 }

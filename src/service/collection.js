@@ -293,6 +293,18 @@ export const readFlowTest = (pathname, collectionId) => {
   }
 };
 
+export const readFlowTestSync = (pathname) => {
+  try {
+    if (pathname.trim() != '') {
+      const { ipcRenderer } = window;
+
+      return ipcRenderer.invoke('renderer:read-flowtest-sync', pathname);
+    }
+  } catch (error) {
+    console.log(`Error reading flowtest: ${error}`);
+  }
+};
+
 // rename flowtest
 // tab id is flowtest id, so when rename event happens
 export const updateFlowTest = (pathname, flowData, collectionId) => {

@@ -246,6 +246,12 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
+  ipcMain.handle('renderer:read-flowtest-sync', (event, pathname) => {
+    const content = readFile(pathname);
+    const flowData = content === '{}' ? undefined : readableDataToFlowData(JSON.parse(content));
+    return flowData;
+  });
+
   ipcMain.handle('renderer:update-flowtest', async (event, pathname, flowData) => {
     try {
       const readableData = flowDataToReadableData(flowData);

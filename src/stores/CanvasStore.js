@@ -1,17 +1,5 @@
 import { create } from 'zustand';
-import {
-  Connection,
-  Edge,
-  EdgeChange,
-  Node,
-  NodeChange,
-  addEdge,
-  OnNodesChange,
-  OnEdgesChange,
-  OnConnect,
-  applyNodeChanges,
-  applyEdgeChanges,
-} from 'reactflow';
+import { addEdge, applyNodeChanges, applyEdgeChanges } from 'reactflow';
 import { useTabStore } from './TabStore';
 import { getDefaultValue } from 'utils/common';
 
@@ -20,6 +8,8 @@ const useCanvasStore = create((set, get) => ({
   nodes: [],
   edges: [],
   logs: [],
+  preFlow: '',
+  postFlow: '',
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -52,6 +42,12 @@ const useCanvasStore = create((set, get) => ({
   },
   setLogs: (logs) => {
     set({ logs });
+  },
+  setPreFlow: (preFlow) => {
+    set({ preFlow });
+  },
+  setPostFlow: (postFlow) => {
+    set({ postFlow });
   },
   setAuthNodeType: (nodeId, authType) => {
     set({

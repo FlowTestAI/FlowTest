@@ -14,9 +14,9 @@ const translateGeneratedNodesToOpenApiNodes = (generatedNodes, openApiNodes) => 
         outputNode['requestBody']['body'] = JSON.stringify(node_arguments.requestBody);
       }
       if (node_arguments.parameters) {
-        outputNode.variables = {};
+        outputNode.preReqVars = {};
         Object.entries(node_arguments.parameters).forEach(([paramName, paramValue], _) => {
-          outputNode.variables[paramName] = {
+          outputNode.preReqVars[paramName] = {
             type: typeof paramValue,
             value: paramValue,
           };

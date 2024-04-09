@@ -16,12 +16,22 @@ import GenerateFlowTestModal from '../modals/GenerateFlowTestModal';
 import useCanvasStore from 'stores/CanvasStore';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
+import { getAllFlowTests } from 'stores/utils';
+import useCollectionStore from 'stores/CollectionStore';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
   const tabs = useTabStore((state) => state.tabs);
   const focusTab = tabs.find((t) => t.id === focusTabId);
+  const collection = focusTab
+    ? useCollectionStore.getState().collections.find((c) => c.id === focusTab.collectionId)
+    : undefined;
+
   const graphRunLogs = useCanvasStore((state) => state.logs);
+  const preFlow = useCanvasStore((state) => state.preFlow);
+  const postFlow = useCanvasStore((state) => state.postFlow);
+  const setPreFlow = useCanvasStore((state) => state.setPreFlow);
+  const setPostFlow = useCanvasStore((state) => state.setPostFlow);
   const [slidingPaneState, setSlidingPaneState] = useState({
     isPaneOpen: false,
     isPaneOpenLeft: false,
@@ -30,6 +40,7 @@ const TabPanelHeader = () => {
   });
 
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
+  const flowTests = getAllFlowTests(collection);
 
   return (
     <div className='flex items-center justify-between gap-4 px-6 py-2 border-b border-neutral-300'>
@@ -38,6 +49,38 @@ const TabPanelHeader = () => {
           <div className='text-base tracking-[0.15em]'>{focusTab.name}</div>
           <div className='flex items-center justify-between border-l gap-x-4 border-neutral-300'>
             <div className='flex items-center justify-between pl-4 gap-x-4'>
+              <div className='pl-4 border-l border-neutral-300'>
+                <select
+                  onChange={(e) => setPreFlow(e.target.value)}
+                  name='pre-flow'
+                  value={preFlow}
+                  className='nodrag h-12 w-full max-w-[30%] rounded-br-md rounded-tr-md border-l border-l-neutral-500 p-0 px-1'
+                >
+                  <option key='None' value=''>
+                    None
+                  </option>
+                  {flowTests.map((ft) => (
+                    <option key={ft} value={ft}>
+                      {ft}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  onChange={(e) => setPostFlow(e.target.value)}
+                  name='post-flow'
+                  value={postFlow}
+                  className='nodrag h-12 w-full max-w-[30%] rounded-br-md rounded-tr-md border-l border-l-neutral-500 p-0 px-1'
+                >
+                  <option key='None' value=''>
+                    None
+                  </option>
+                  {flowTests.map((ft) => (
+                    <option key={ft} value={ft}>
+                      {ft}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <SaveFlowModal tab={focusTab} />
               {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
                 <>

@@ -20,6 +20,9 @@ import DelayNode from './nodes/DelayNode';
 import AuthNode from './nodes/AuthNode';
 import FlowNode from 'components/atoms/flow/FlowNode';
 import useCanvasStore from 'stores/CanvasStore';
+import { readFlowTestSync } from 'service/collection';
+import useCollectionStore from 'stores/CollectionStore';
+import { useTabStore } from 'stores/TabStore';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -207,12 +210,11 @@ const Flow = ({ collectionId }) => {
     return true;
   };
 
-  const onGraphComplete = (result, logs) => {
-    console.debug('Graph complete callback: ', result);
+  const onGraphComplete = (status, logs) => {
     setLogs(logs);
-    if (result[0] == 'Success') {
+    if (status == 'Success') {
       toast.success('FlowTest Run Success! View Logs');
-    } else if (result[0] == 'Failed') {
+    } else if (status == 'Failed') {
       toast.error('FlowTest Run Failed! View Logs');
     }
     runnableEdges(false);
@@ -237,15 +239,84 @@ const Flow = ({ collectionId }) => {
       >
         <Controls>
           <ControlButton
-            onClick={() => {
+            onClick={async () => {
               runnableEdges(true);
-              const g = new Graph(
-                cloneDeep(reactFlowInstance.getNodes()),
-                cloneDeep(reactFlowInstance.getEdges()),
-                collectionId,
-                onGraphComplete,
-              );
-              g.run();
+              const startTime = Date.now();
+              try {
+                let result = undefined;
+                let g = undefined;
+                let envVariables = {};
+
+                const preFlow = useCanvasStore.getState().preFlow;
+                const postFlow = useCanvasStore.getState().postFlow;
+
+                const activeEnv = useCollectionStore
+                  .getState()
+                  .collections.find((c) => c.id === collectionId)
+                  ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+                if (activeEnv) {
+                  envVariables = cloneDeep(activeEnv.variables);
+                }
+
+                // ============= pre flow ================
+                const preFlowData = await readFlowTestSync(preFlow);
+                if (preFlowData) {
+                  g = new Graph(
+                    cloneDeep(preFlowData.nodes),
+                    cloneDeep(preFlowData.edges),
+                    startTime,
+                    envVariables,
+                    [],
+                  );
+                  result = await g.run();
+                }
+
+                //console.log('pre flow: ', result);
+
+                if (result?.status === 'Failed') {
+                  onGraphComplete(result.status, result.logs);
+                  return;
+                }
+
+                // ============= flow =====================
+                g = new Graph(
+                  cloneDeep(reactFlowInstance.getNodes()),
+                  cloneDeep(reactFlowInstance.getEdges()),
+                  startTime,
+                  result ? result.envVars : envVariables,
+                  result ? result.logs : [],
+                );
+                result = await g.run();
+
+                //console.log('flow: ', result);
+                //console.log('after flow vars: ', result.envVars);
+
+                if (result.status === 'Failed') {
+                  onGraphComplete(result.status, result.logs);
+                  return;
+                }
+
+                // ============= post flow ================
+                const postFlowData = await readFlowTestSync(postFlow);
+                if (postFlowData) {
+                  g = new Graph(
+                    cloneDeep(postFlowData.nodes),
+                    cloneDeep(postFlowData.edges),
+                    startTime,
+                    result.envVars,
+                    result.logs,
+                  );
+                  result = await g.run();
+                }
+
+                //console.log('post flow: ', result);
+
+                result.logs.push(`Total time: ${Date.now() - startTime} ms`);
+                onGraphComplete(result.status, result.logs);
+              } catch (error) {
+                toast.error(`Error running graph: ${error}`);
+                runnableEdges(false);
+              }
             }}
             title='run'
           >

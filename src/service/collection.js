@@ -298,10 +298,13 @@ export const readFlowTestSync = (pathname) => {
     if (pathname.trim() != '') {
       const { ipcRenderer } = window;
 
-      return ipcRenderer.invoke('renderer:read-flowtest-sync', pathname);
+      return new Promise((resolve, reject) => {
+        return ipcRenderer.invoke('renderer:read-flowtest-sync', pathname).then(resolve).catch(reject);
+      });
     }
   } catch (error) {
     console.log(`Error reading flowtest: ${error}`);
+    return Promise.reject(new Error('Error reading flowtest'));
   }
 };
 

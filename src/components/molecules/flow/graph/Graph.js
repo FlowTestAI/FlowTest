@@ -187,7 +187,6 @@ class Graph {
         console.debug('Flow failed at: ', result.node);
       }
       this.logs.push('End Flowtest');
-      this.logs.push(`Total time: ${Date.now() - this.startTime} ms`);
       return {
         status: result.status,
         logs: this.logs,

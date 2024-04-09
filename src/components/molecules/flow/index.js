@@ -259,7 +259,7 @@ const Flow = ({ collectionId }) => {
                 }
 
                 // ============= pre flow ================
-                const preFlowData = readFlowTestSync(preFlow);
+                const preFlowData = await readFlowTestSync(preFlow);
                 if (preFlowData) {
                   g = new Graph(
                     cloneDeep(preFlowData.nodes),
@@ -271,7 +271,7 @@ const Flow = ({ collectionId }) => {
                   result = await g.run();
                 }
 
-                console.log('pre flow: ', result);
+                //console.log('pre flow: ', result);
 
                 if (result?.status === 'Failed') {
                   onGraphComplete(result.status, result.logs);
@@ -288,8 +288,8 @@ const Flow = ({ collectionId }) => {
                 );
                 result = await g.run();
 
-                console.log('flow: ', result);
-                console.log('after flow vars: ', result.envVars);
+                //console.log('flow: ', result);
+                //console.log('after flow vars: ', result.envVars);
 
                 if (result.status === 'Failed') {
                   onGraphComplete(result.status, result.logs);
@@ -297,7 +297,7 @@ const Flow = ({ collectionId }) => {
                 }
 
                 // ============= post flow ================
-                const postFlowData = readFlowTestSync(postFlow);
+                const postFlowData = await readFlowTestSync(postFlow);
                 if (postFlowData) {
                   g = new Graph(
                     cloneDeep(postFlowData.nodes),
@@ -309,8 +309,9 @@ const Flow = ({ collectionId }) => {
                   result = await g.run();
                 }
 
-                console.log('post flow: ', result);
+                //console.log('post flow: ', result);
 
+                result.logs.push(`Total time: ${Date.now() - startTime} ms`);
                 onGraphComplete(result.status, result.logs);
               } catch (error) {
                 toast.error(`Error running graph: ${error}`);

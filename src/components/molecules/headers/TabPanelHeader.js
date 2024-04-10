@@ -47,92 +47,87 @@ const TabPanelHeader = () => {
       {focusTab ? (
         <>
           <div className='text-base tracking-[0.15em]'>{focusTab.name}</div>
-          <div className='flex items-center justify-between border-l gap-x-4 border-neutral-300'>
-            <div className='flex items-center justify-between pl-4 gap-x-4'>
-              <div className='pl-4 border-l border-neutral-300'>
-                <select
-                  onChange={(e) => setPreFlow(e.target.value)}
-                  name='pre-flow'
-                  value={preFlow}
-                  className='nodrag h-12 w-full max-w-[30%] rounded-br-md rounded-tr-md border-l border-l-neutral-500 p-0 px-1'
-                >
-                  <option key='None' value=''>
-                    None
+          <div className='flex items-center justify-between gap-4 border-l border-neutral-300'>
+            <div className='flex items-center justify-between gap-4 px-4 border-r border-neutral-300'>
+              <select
+                onChange={(e) => setPreFlow(e.target.value)}
+                name='pre-flow'
+                value={preFlow}
+                className='h-12 outline-none max-w-32'
+              >
+                <option key='None' value=''>
+                  None
+                </option>
+                {flowTests.map((ft) => (
+                  <option key={ft} value={ft}>
+                    {ft}
                   </option>
-                  {flowTests.map((ft) => (
-                    <option key={ft} value={ft}>
-                      {ft}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  onChange={(e) => setPostFlow(e.target.value)}
-                  name='post-flow'
-                  value={postFlow}
-                  className='nodrag h-12 w-full max-w-[30%] rounded-br-md rounded-tr-md border-l border-l-neutral-500 p-0 px-1'
-                >
-                  <option key='None' value=''>
-                    None
+                ))}
+              </select>
+              <select
+                onChange={(e) => setPostFlow(e.target.value)}
+                name='post-flow'
+                value={postFlow}
+                className='h-12 pl-4 border-l outline-none max-w-32 border-neutral-300'
+              >
+                <option key='None' value=''>
+                  None
+                </option>
+                {flowTests.map((ft) => (
+                  <option key={ft} value={ft}>
+                    {ft}
                   </option>
-                  {flowTests.map((ft) => (
-                    <option key={ft} value={ft}>
-                      {ft}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <SaveFlowModal tab={focusTab} />
-              {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
-                <>
-                  <div
-                    id='graph-logs-side-sheet'
-                    onClick={() =>
-                      setSlidingPaneState({
-                        isPaneOpen: true,
-                        isPaneOpenLeft: false,
-                      })
-                    }
-                  >
-                    <Tippy content='Logs' placement='top'>
-                      <label htmlFor='graph-logs-side-sheet'>
-                        <DocumentTextIcon className='w-5 h-5' />
-                      </label>
-                    </Tippy>
-                  </div>
-                  <SlidingPane
-                    className='side-sheet'
-                    overlayClassName='side-sheet-overlay'
-                    isOpen={slidingPaneState.isPaneOpen}
-                    title={focusTab.name}
-                    width='45%'
-                    onRequestClose={() => {
-                      // triggered on "<" on left top click or on outside click
-                      setSlidingPaneState({
-                        isPaneOpen: false,
-                        isPaneOpenLeft: false,
-                        title: 'closed',
-                        subtitle: 'closed',
-                      });
-                    }}
-                  >
-                    <label
-                      htmlFor='graph-logs-side-sheet'
-                      aria-label='close sidebar'
-                      className='drawer-overlay'
-                    ></label>
-                    <ul className='min-h-full p-4 menu w-80 bg-base-200 text-base-content'>
-                      {graphRunLogs.map((item, index) => (
-                        <li key={index}>
-                          <a>{item}</a>
-                        </li>
-                      ))}
-                    </ul>
-                  </SlidingPane>
-                </>
-              ) : (
-                <></>
-              )}
+                ))}
+              </select>
             </div>
+            <SaveFlowModal tab={focusTab} />
+            {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
+              <>
+                <div
+                  id='graph-logs-side-sheet'
+                  className='flex items-center justify-between h-12 pl-4 border-l outline-none max-w-32 border-neutral-300'
+                  onClick={() =>
+                    setSlidingPaneState({
+                      isPaneOpen: true,
+                      isPaneOpenLeft: false,
+                    })
+                  }
+                >
+                  <Tippy content='Logs' placement='top'>
+                    <label htmlFor='graph-logs-side-sheet'>
+                      <DocumentTextIcon className='w-5 h-5' />
+                    </label>
+                  </Tippy>
+                </div>
+                <SlidingPane
+                  className='side-sheet'
+                  overlayClassName='side-sheet-overlay'
+                  isOpen={slidingPaneState.isPaneOpen}
+                  title={focusTab.name}
+                  width='45%'
+                  onRequestClose={() => {
+                    // triggered on "<" on left top click or on outside click
+                    setSlidingPaneState({
+                      isPaneOpen: false,
+                      isPaneOpenLeft: false,
+                      title: 'closed',
+                      subtitle: 'closed',
+                    });
+                  }}
+                >
+                  <label htmlFor='graph-logs-side-sheet' aria-label='close sidebar' className='drawer-overlay'></label>
+                  <ul className='min-h-full p-4 menu w-80 bg-base-200 text-base-content'>
+                    {graphRunLogs.map((item, index) => (
+                      <li key={index}>
+                        <a>{item}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </SlidingPane>
+              </>
+            ) : (
+              <></>
+            )}
             {focusTab.type === OBJ_TYPES.flowtest && (
               <div className='pl-4 border-l gen_ai_button border-neutral-300'>
                 <Button

@@ -47,7 +47,7 @@ const SaveFlowModal = ({ tab }) => {
   }
 
   return (
-    <div>
+    <>
       <div className='flex items-center justify-center'>
         <button type='button' onClick={saveHandle}>
           <Tippy content='Save' placement='top'>
@@ -116,7 +116,7 @@ const SaveFlowModal = ({ tab }) => {
           </div>
         </Dialog>
       </Transition>
-    </div>
+    </>
   );
 };
 

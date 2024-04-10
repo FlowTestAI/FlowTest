@@ -52,6 +52,11 @@ const authNode = {
   type: 'authNode',
 };
 
+const complexNode = {
+  description: 'Helps to create nested flows',
+  type: 'complexNode',
+};
+
 const AddNodes = ({ collectionId }) => {
   // const [open, setOpen] = useState(false);
   // const anchorRef = useRef(null);
@@ -260,6 +265,29 @@ const AddNodes = ({ collectionId }) => {
                               >
                                 <div className='text-base font-semibold primary-text'>Auth</div>
                                 <div className='text-xs secondary-text'>{authNode.description}</div>
+                              </div>
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                      {/* Complex */}
+                      <Disclosure as='div'>
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
+                              <span>Complex</span>
+                              <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
+                            </Disclosure.Button>
+                            <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
+                              <div
+                                key='complex'
+                                onDragStart={(event) => onDragStart(event, complexNode)}
+                                draggable
+                                cursor='move'
+                                className='py-2 border-b'
+                              >
+                                <div className='text-base font-semibold primary-text'>Complex</div>
+                                <div className='text-xs secondary-text'>{complexNode.description}</div>
                               </div>
                             </Disclosure.Panel>
                           </>

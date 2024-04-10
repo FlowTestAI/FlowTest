@@ -79,15 +79,13 @@ class Graph {
             node,
             output: true,
           };
-          //result = ['Success', node, prevNodeOutput, true];
         } else {
           this.logs.push('Result: false');
           result = {
             status: 'Success',
             node,
-            output: true,
+            output: false,
           };
-          //result = ['Success', node, prevNodeOutput, false];
         }
       }
 

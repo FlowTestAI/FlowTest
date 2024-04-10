@@ -49,6 +49,9 @@ const TabPanelHeader = () => {
           <div className='text-base tracking-[0.15em]'>{focusTab.name}</div>
           <div className='flex items-center justify-between gap-4 border-l border-neutral-300'>
             <div className='flex items-center justify-between gap-4 px-4 border-r border-neutral-300'>
+              <div>
+                <b>{'Pre Flow'}</b>
+              </div>
               <select
                 onChange={(e) => setPreFlow(e.target.value)}
                 name='pre-flow'
@@ -64,6 +67,9 @@ const TabPanelHeader = () => {
                   </option>
                 ))}
               </select>
+              <div>
+                <b>{'Post Flow'}</b>
+              </div>
               <select
                 onChange={(e) => setPostFlow(e.target.value)}
                 name='post-flow'

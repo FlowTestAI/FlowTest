@@ -1,9 +1,12 @@
 // assumption is that apis are giving json as output
 
+import { cloneDeep } from 'lodash';
+import { readFlowTestSync } from 'service/collection';
 import useCanvasStore from 'stores/CanvasStore';
-import { computeAuthNode } from './compute/authnode';
-import { computeEvaluateNode } from './compute/evaluatenode';
-import { computeRequestNode } from './compute/requestnode';
+import authNode from './compute/authnode';
+import complexNode from './compute/complexNode';
+import evaluateNode from './compute/evaluateNode';
+import requestNode from './compute/requestNode';
 
 class Graph {
   constructor(nodes, edges, startTime, initialEnvVars, initialLogs) {
@@ -67,23 +70,21 @@ class Graph {
         useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
         result = {
           status: 'Success',
-          node,
         };
       }
 
       if (node.type === 'evaluateNode') {
-        if (computeEvaluateNode(node, prevNodeOutputData, this.logs)) {
+        const eNode = new evaluateNode(node.data.operator, node.data.variables, prevNodeOutputData, this.logs);
+        if (eNode.evaluate()) {
           this.logs.push('Result: true');
           result = {
             status: 'Success',
-            node,
             output: true,
           };
         } else {
           this.logs.push('Result: false');
           result = {
             status: 'Success',
-            node,
             output: false,
           };
         }
@@ -98,25 +99,44 @@ class Graph {
         this.logs.push(`Wait for: ${delay} ms`);
         result = {
           status: 'Success',
-          node,
         };
       }
 
       if (node.type === 'authNode') {
-        this.auth = node.data.type ? computeAuthNode(node.data, this.envVariables) : undefined;
+        const aNode = new authNode(node.data, this.envVariables);
+        this.auth = node.data.type ? aNode.evaluate() : undefined;
         result = {
           status: 'Success',
-          node,
         };
       }
 
       if (node.type === 'requestNode') {
-        result = await computeRequestNode(node, prevNodeOutputData, this.envVariables, this.auth, this.logs);
+        const rNode = new requestNode(node.data, prevNodeOutputData, this.envVariables, this.auth, this.logs);
+        result = await rNode.evaluate();
         // add post response variables if any
         if (result.postRespVars) {
           this.envVariables = {
             ...this.envVariables,
             ...result.postRespVars,
+          };
+        }
+      }
+
+      if (node.type === 'complexNode') {
+        const flowData = await readFlowTestSync(node.data.pathname);
+        if (flowData) {
+          const cNode = new complexNode(
+            cloneDeep(flowData.nodes),
+            cloneDeep(flowData.edges),
+            this.startTime,
+            this.envVariables,
+            this.logs,
+          );
+          result = await cNode.evaluate();
+          this.envVariables = result.envVars;
+        } else {
+          result = {
+            status: 'Success',
           };
         }
       }
@@ -128,7 +148,6 @@ class Graph {
       this.logs.push(`Flow failed at: ${JSON.stringify(node)} due to ${err}`);
       return {
         status: 'Failed',
-        node,
       };
     }
 
@@ -136,7 +155,6 @@ class Graph {
       this.logs.push(`Flow failed at: ${JSON.stringify(node)}`);
       return {
         status: 'Failed',
-        node,
       };
     } else {
       const connectingEdge = this.#computeConnectingEdge(node, result);
@@ -144,7 +162,7 @@ class Graph {
       if (connectingEdge != undefined) {
         const nextNode = this.nodes.find(
           (node) =>
-            ['requestNode', 'outputNode', 'evaluateNode', 'delayNode', 'authNode'].includes(node.type) &&
+            ['requestNode', 'outputNode', 'evaluateNode', 'delayNode', 'authNode', 'complexNode'].includes(node.type) &&
             node.id === connectingEdge.target,
         );
         this.graphRunNodeOutput[node.id] = result.data ? result.data : {};
@@ -181,9 +199,9 @@ class Graph {
     if (connectingEdge != undefined) {
       const firstNode = this.nodes.find((node) => node.id === connectingEdge.target);
       const result = await this.#computeNode(firstNode);
-      if (result.status == 'Failed') {
-        console.debug('Flow failed at: ', result.node);
-      }
+      // if (result.status == 'Failed') {
+      //   console.debug('Flow failed at: ', result.node);
+      // }
       this.logs.push('End Flowtest');
       return {
         status: result.status,

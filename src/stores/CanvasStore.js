@@ -8,8 +8,7 @@ const useCanvasStore = create((set, get) => ({
   nodes: [],
   edges: [],
   logs: [],
-  preFlow: '',
-  postFlow: '',
+  collectionId: '',
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -43,11 +42,8 @@ const useCanvasStore = create((set, get) => ({
   setLogs: (logs) => {
     set({ logs });
   },
-  setPreFlow: (preFlow) => {
-    set({ preFlow });
-  },
-  setPostFlow: (postFlow) => {
-    set({ postFlow });
+  setCollectionId: (collectionId) => {
+    set({ collectionId });
   },
   setAuthNodeType: (nodeId, authType) => {
     set({
@@ -325,6 +321,20 @@ const useCanvasStore = create((set, get) => ({
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {};
+        }
+
+        return node;
+      }),
+    });
+  },
+  setFlowForComplexNode: (nodeId, pathname) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            pathname,
+          };
         }
 
         return node;

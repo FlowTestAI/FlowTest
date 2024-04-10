@@ -16,22 +16,14 @@ import GenerateFlowTestModal from '../modals/GenerateFlowTestModal';
 import useCanvasStore from 'stores/CanvasStore';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
-import { getAllFlowTests } from 'stores/utils';
-import useCollectionStore from 'stores/CollectionStore';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
   const tabs = useTabStore((state) => state.tabs);
   const focusTab = tabs.find((t) => t.id === focusTabId);
-  const collection = focusTab
-    ? useCollectionStore.getState().collections.find((c) => c.id === focusTab.collectionId)
-    : undefined;
 
   const graphRunLogs = useCanvasStore((state) => state.logs);
-  const preFlow = useCanvasStore((state) => state.preFlow);
-  const postFlow = useCanvasStore((state) => state.postFlow);
-  const setPreFlow = useCanvasStore((state) => state.setPreFlow);
-  const setPostFlow = useCanvasStore((state) => state.setPostFlow);
+
   const [slidingPaneState, setSlidingPaneState] = useState({
     isPaneOpen: false,
     isPaneOpenLeft: false,
@@ -40,7 +32,6 @@ const TabPanelHeader = () => {
   });
 
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
-  const flowTests = getAllFlowTests(collection);
 
   return (
     <div className='flex items-center justify-between gap-4 px-6 py-2 border-b border-neutral-300'>
@@ -48,44 +39,6 @@ const TabPanelHeader = () => {
         <>
           <div className='text-base tracking-[0.15em]'>{focusTab.name}</div>
           <div className='flex items-center justify-between gap-4 border-l border-neutral-300'>
-            <div className='flex items-center justify-between gap-4 px-4 border-r border-neutral-300'>
-              <div>
-                <b>{'Pre Flow'}</b>
-              </div>
-              <select
-                onChange={(e) => setPreFlow(e.target.value)}
-                name='pre-flow'
-                value={preFlow}
-                className='h-12 outline-none max-w-32'
-              >
-                <option key='None' value=''>
-                  None
-                </option>
-                {flowTests.map((ft) => (
-                  <option key={ft} value={ft}>
-                    {ft}
-                  </option>
-                ))}
-              </select>
-              <div>
-                <b>{'Post Flow'}</b>
-              </div>
-              <select
-                onChange={(e) => setPostFlow(e.target.value)}
-                name='post-flow'
-                value={postFlow}
-                className='h-12 pl-4 border-l outline-none max-w-32 border-neutral-300'
-              >
-                <option key='None' value=''>
-                  None
-                </option>
-                {flowTests.map((ft) => (
-                  <option key={ft} value={ft}>
-                    {ft}
-                  </option>
-                ))}
-              </select>
-            </div>
             <SaveFlowModal tab={focusTab} />
             {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
               <>

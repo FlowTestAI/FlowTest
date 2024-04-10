@@ -1,97 +1,112 @@
-import { computeNodeVariables, computeVariables } from './utils';
+import { computeNodeVariables, computeVariables } from '../compute/utils';
+import Node from './node';
 
-const runHttpRequest = (request) => {
-  const { ipcRenderer } = window;
-
-  return new Promise((resolve, reject) => {
-    ipcRenderer.invoke('renderer:run-http-request', request).then(resolve).catch(reject);
-  });
-};
-
-const formulateRequest = (node, finalUrl, variablesDict, auth, logs) => {
-  let restMethod = node.data.requestType.toLowerCase();
-  let contentType = 'application/json';
-  let requestData = undefined;
-
-  if (node.data.requestBody) {
-    if (node.data.requestBody.type === 'raw-json') {
-      contentType = 'application/json';
-      requestData = node.data.requestBody.body
-        ? JSON.parse(computeVariables(node.data.requestBody.body, variablesDict))
-        : JSON.parse('{}');
-    } else if (node.data.requestBody.type === 'form-data') {
-      contentType = 'multipart/form-data';
-      requestData = {
-        key: computeVariables(node.data.requestBody.body.key, variablesDict),
-        value: node.data.requestBody.body.value,
-        name: node.data.requestBody.body.name,
-      };
-    }
+class requestNode extends Node {
+  constructor(nodeData, prevNodeOutputData, envVariables, auth, logs) {
+    super('requestNode');
+    this.nodeData = nodeData;
+    this.prevNodeOutputData = prevNodeOutputData;
+    this.envVariables = envVariables;
+    this.auth = auth;
+    this.logs = logs;
   }
 
-  const options = {
-    method: restMethod,
-    url: finalUrl,
-    headers: {
-      'Content-type': contentType,
-    },
-    data: requestData,
-  };
+  async evaluate() {
+    console.log('Evaluating request node');
+    // step1 evaluate pre request variables of this node
+    const evalVariables = computeNodeVariables(this.nodeData.preReqVars, this.prevNodeOutputData);
 
-  if (auth && auth.type === 'basic-auth') {
-    options.auth = {};
-    options.auth.username = auth.username;
-    options.auth.password = auth.password;
-  }
-
-  logs.push(`${restMethod} ${finalUrl}`);
-  return options;
-};
-
-export const computeRequestNode = async (node, prevNodeOutputData, envVariables, auth, logs) => {
-  // step1 evaluate pre request variables of this node
-  const evalVariables = computeNodeVariables(node.data.preReqVars, prevNodeOutputData);
-
-  const variablesDict = {
-    ...envVariables,
-    ...evalVariables,
-  };
-
-  // step2 replace variables in url with value
-  const finalUrl = computeVariables(node.data.url, variablesDict);
-
-  // step 3
-  const options = formulateRequest(node, finalUrl, variablesDict, auth, logs);
-
-  console.debug('Avialable variables: ', variablesDict);
-  console.debug('Evaluated Url: ', finalUrl);
-
-  const res = await runHttpRequest(options);
-
-  if (res.error) {
-    console.debug('Failure at node: ', node);
-    console.debug('Error encountered: ', JSON.stringify(res.error));
-    logs.push(`Request failed: ${JSON.stringify(res.error)}`);
-    return {
-      status: 'Failed',
-      node,
+    const variablesDict = {
+      ...this.envVariables,
+      ...evalVariables,
     };
-  } else {
-    logs.push(`Request successful: ${JSON.stringify(res)}`);
-    console.debug('Response: ', JSON.stringify(res));
-    if (node.data.postRespVars) {
-      const evalPostRespVars = computeNodeVariables(node.data.postRespVars, res.data);
+
+    // step2 replace variables in url with value
+    const finalUrl = computeVariables(this.nodeData.url, variablesDict);
+
+    // step 3
+    const options = this.formulateRequest(finalUrl, variablesDict);
+
+    console.debug('Avialable variables: ', variablesDict);
+    console.debug('Evaluated Url: ', finalUrl);
+
+    const res = await this.runHttpRequest(options);
+
+    if (res.error) {
+      //console.debug('Failure at node: ', node);
+      //console.debug('Error encountered: ', JSON.stringify(res.error));
+      this.logs.push(`Request failed: ${JSON.stringify(res.error)}`);
+      return {
+        status: 'Failed',
+        //node,
+      };
+    } else {
+      this.logs.push(`Request successful: ${JSON.stringify(res)}`);
+      console.debug('Response: ', JSON.stringify(res));
+      if (this.nodeData.postRespVars) {
+        const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, res.data);
+        return {
+          status: 'Success',
+          //node,
+          data: res.data,
+          postRespVars: evalPostRespVars,
+        };
+      }
       return {
         status: 'Success',
-        node,
+        //node,
         data: res.data,
-        postRespVars: evalPostRespVars,
       };
     }
-    return {
-      status: 'Success',
-      node,
-      data: res.data,
-    };
   }
-};
+
+  formulateRequest(finalUrl, variablesDict) {
+    let restMethod = this.nodeData.requestType.toLowerCase();
+    let contentType = 'application/json';
+    let requestData = undefined;
+
+    if (this.nodeData.requestBody) {
+      if (this.nodeData.requestBody.type === 'raw-json') {
+        contentType = 'application/json';
+        requestData = this.nodeData.requestBody.body
+          ? JSON.parse(computeVariables(this.nodeData.requestBody.body, variablesDict))
+          : JSON.parse('{}');
+      } else if (this.nodeData.requestBody.type === 'form-data') {
+        contentType = 'multipart/form-data';
+        requestData = {
+          key: computeVariables(this.nodeData.requestBody.body.key, variablesDict),
+          value: this.nodeData.requestBody.body.value,
+          name: this.nodeData.requestBody.body.name,
+        };
+      }
+    }
+
+    const options = {
+      method: restMethod,
+      url: finalUrl,
+      headers: {
+        'Content-type': contentType,
+      },
+      data: requestData,
+    };
+
+    if (this.auth && this.auth.type === 'basic-auth') {
+      options.auth = {};
+      options.auth.username = this.auth.username;
+      options.auth.password = this.auth.password;
+    }
+
+    this.logs.push(`${restMethod} ${finalUrl}`);
+    return options;
+  }
+
+  runHttpRequest(request) {
+    const { ipcRenderer } = window;
+
+    return new Promise((resolve, reject) => {
+      ipcRenderer.invoke('renderer:run-http-request', request).then(resolve).catch(reject);
+    });
+  }
+}
+
+export default requestNode;

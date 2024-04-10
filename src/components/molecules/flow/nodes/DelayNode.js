@@ -25,9 +25,9 @@ const DelayNode = ({ id, data }) => {
       <div>
         <input
           type='number'
-          placeholder='0'
           className='nodrag nowheel  mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
           name='delay-in-ms'
+          value={data.delay ? data.delay : 0}
           onChange={handleDelayInMsInputChange}
         />
       </div>

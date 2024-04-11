@@ -6,16 +6,21 @@ import { getAllFlowTests } from 'stores/utils';
 import useCollectionStore from 'stores/CollectionStore';
 
 const ComplexNode = ({ id, data }) => {
-  const setFlowForComplexNode = useCanvasStore((state) => state.setFlowForComplexNode);
-  const collectionId = useCanvasStore((state) => state.collectionId);
-  const flowTests = getAllFlowTests(useCollectionStore.getState().collections.find((c) => c.id === collectionId));
+  const { ipcRenderer } = window;
 
-  const setFlow = (pathname) => {
-    setFlowForComplexNode(id, pathname);
+  const setFlowForComplexNode = useCanvasStore((state) => state.setFlowForComplexNode);
+  const collectionId = useCanvasStore.getState().collectionId;
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+  const flowTests = getAllFlowTests(collection).map((fullPath) => {
+    return ipcRenderer.relative(collection.pathname, fullPath);
+  });
+
+  const setFlow = (relativePath) => {
+    setFlowForComplexNode(id, relativePath);
   };
 
-  if (data.pathname) {
-    if (!flowTests.find((f) => f === data.pathname)) {
+  if (data.relativePath) {
+    if (!flowTests.find((f) => f === data.relativePath)) {
       setFlow('');
     }
   }
@@ -32,7 +37,7 @@ const ComplexNode = ({ id, data }) => {
         <select
           onChange={(e) => setFlow(e.target.value)}
           name='flow'
-          value={data.pathname ? data.pathname : ''}
+          value={data.relativePath ? data.relativePath : ''}
           className='h-12 outline-none max-w-32'
         >
           <option key='None' value=''>

@@ -5,6 +5,7 @@ import { useEventStore } from 'stores/EventListenerStore';
 import { OBJ_TYPES } from 'constants/Common';
 import { toast } from 'react-toastify';
 import { useTabStore } from 'stores/TabStore';
+import useCanvasStore from 'stores/CanvasStore';
 
 export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;
@@ -293,14 +294,22 @@ export const readFlowTest = (pathname, collectionId) => {
   }
 };
 
-export const readFlowTestSync = (pathname) => {
+export const readFlowTestSync = (relativePath) => {
   try {
-    if (pathname.trim() != '') {
+    if (relativePath.trim() != '') {
       const { ipcRenderer } = window;
 
-      return new Promise((resolve, reject) => {
-        return ipcRenderer.invoke('renderer:read-flowtest-sync', pathname).then(resolve).catch(reject);
-      });
+      // assumes that this function is triggered from graph run
+      const collectionId = useCanvasStore.getState().collectionId;
+      const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+      if (collection) {
+        return new Promise((resolve, reject) => {
+          return ipcRenderer
+            .invoke('renderer:read-flowtest-sync', ipcRenderer.join(collection.pathname, relativePath))
+            .then(resolve)
+            .catch(reject);
+        });
+      }
     }
   } catch (error) {
     console.log(`Error reading flowtest: ${error}`);

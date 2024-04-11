@@ -78,3 +78,41 @@ export const compareTwoObjects = function (a, b) {
 
   return result;
 };
+
+export const initFlowData = {
+  nodes: [
+    {
+      id: '0',
+      type: 'startNode',
+      position: {
+        x: 150,
+        y: 150,
+      },
+      deletable: false,
+      width: 90,
+      height: 60,
+    },
+    {
+      id: '1',
+      type: 'authNode',
+      data: {},
+      position: {
+        x: 400,
+        y: 150,
+      },
+      deletable: false,
+      width: 147,
+      height: 107,
+    },
+  ],
+  edges: [
+    {
+      id: 'reactflow__edge-0-1',
+      source: '0',
+      sourceHandle: null,
+      target: '1',
+      targetHandle: null,
+      type: 'buttonedge',
+    },
+  ],
+};

@@ -229,7 +229,13 @@ const useCollectionStore = create((set, get) => ({
                   e.path === currentPath,
               );
             if (event) {
-              useTabStore.getState().addFlowTestTab(flowtest, collectionId);
+              useTabStore.getState().addFlowTestTab(
+                {
+                  ...flowtest,
+                  flowData: file.flowData,
+                },
+                collectionId,
+              );
               useEventStore.getState().removeEvent(event.id);
             }
           }

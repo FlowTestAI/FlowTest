@@ -17,125 +17,127 @@ const deserialize = (flowData) => {
   textData.version = VERSION;
   textData.graph = {};
 
-  if (flowData.nodes) {
-    const nodes = flowDataCopy.nodes;
-    textData.graph.data = {};
-    textData.graph.data.nodes = {};
-    textData.graph.metadata = {};
-    textData.graph.metadata.nodes = {};
+  if (flowData) {
+    if (flowData.nodes) {
+      const nodes = flowDataCopy.nodes;
+      textData.graph.data = {};
+      textData.graph.data.nodes = {};
+      textData.graph.metadata = {};
+      textData.graph.metadata.nodes = {};
 
-    nodes.forEach((node) => {
-      if (node.type === 'startNode') {
-        const sNode = new StartNode();
-        const result = sNode.deserialize(node);
+      nodes.forEach((node) => {
+        if (node.type === 'startNode') {
+          const sNode = new StartNode();
+          const result = sNode.deserialize(node);
 
-        textData.graph.data.nodes[result.id] = {
-          type: 'startNode',
-        };
+          textData.graph.data.nodes[result.id] = {
+            type: 'startNode',
+          };
 
-        textData.graph.metadata.nodes[result.id] = {
-          type: 'startNode',
-          ...result.metadata,
-        };
-      }
+          textData.graph.metadata.nodes[result.id] = {
+            type: 'startNode',
+            ...result.metadata,
+          };
+        }
 
-      if (node.type === 'authNode') {
-        const aNode = new AuthNode();
-        const result = aNode.deserialize(node);
-        textData.graph.data.nodes[result.id] = {
-          type: 'authNode',
-          auth: result.data,
-        };
+        if (node.type === 'authNode') {
+          const aNode = new AuthNode();
+          const result = aNode.deserialize(node);
+          textData.graph.data.nodes[result.id] = {
+            type: 'authNode',
+            auth: result.data,
+          };
 
-        textData.graph.metadata.nodes[result.id] = {
-          type: 'authNode',
-          ...result.metadata,
-        };
-      }
+          textData.graph.metadata.nodes[result.id] = {
+            type: 'authNode',
+            ...result.metadata,
+          };
+        }
 
-      if (node.type === 'requestNode') {
-        const rNode = new RequestNode();
-        const result = rNode.deserialize(node);
-        textData.graph.data.nodes[result.id] = {
-          type: 'requestNode',
-          ...result.data,
-        };
+        if (node.type === 'requestNode') {
+          const rNode = new RequestNode();
+          const result = rNode.deserialize(node);
+          textData.graph.data.nodes[result.id] = {
+            type: 'requestNode',
+            ...result.data,
+          };
 
-        textData.graph.metadata.nodes[result.id] = {
-          type: 'requestNode',
-          ...result.metadata,
-        };
-      }
+          textData.graph.metadata.nodes[result.id] = {
+            type: 'requestNode',
+            ...result.metadata,
+          };
+        }
 
-      if (node.type === 'outputNode') {
-        const oNode = new OutputNode();
-        const result = oNode.deserialize(node);
-        textData.graph.data.nodes[result.id] = {
-          type: 'outputNode',
-          ...result.data,
-        };
+        if (node.type === 'outputNode') {
+          const oNode = new OutputNode();
+          const result = oNode.deserialize(node);
+          textData.graph.data.nodes[result.id] = {
+            type: 'outputNode',
+            ...result.data,
+          };
 
-        textData.graph.metadata.nodes[result.id] = {
-          type: 'outputNode',
-          ...result.metadata,
-        };
-      }
+          textData.graph.metadata.nodes[result.id] = {
+            type: 'outputNode',
+            ...result.metadata,
+          };
+        }
 
-      if (node.type === 'delayNode') {
-        const dNode = new DelayNode();
-        const result = dNode.deserialize(node);
-        textData.graph.data.nodes[result.id] = {
-          type: 'delayNode',
-          ...result.data,
-        };
+        if (node.type === 'delayNode') {
+          const dNode = new DelayNode();
+          const result = dNode.deserialize(node);
+          textData.graph.data.nodes[result.id] = {
+            type: 'delayNode',
+            ...result.data,
+          };
 
-        textData.graph.metadata.nodes[result.id] = {
-          type: 'delayNode',
-          ...result.metadata,
-        };
-      }
+          textData.graph.metadata.nodes[result.id] = {
+            type: 'delayNode',
+            ...result.metadata,
+          };
+        }
 
-      if (node.type === 'evaluateNode') {
-        const eNode = new EvaluateNode();
-        const result = eNode.deserialize(node);
-        textData.graph.data.nodes[result.id] = {
-          type: 'evaluateNode',
-          ...result.data,
-        };
+        if (node.type === 'evaluateNode') {
+          const eNode = new EvaluateNode();
+          const result = eNode.deserialize(node);
+          textData.graph.data.nodes[result.id] = {
+            type: 'evaluateNode',
+            ...result.data,
+          };
 
-        textData.graph.metadata.nodes[result.id] = {
-          type: 'evaluateNode',
-          ...result.metadata,
-        };
-      }
+          textData.graph.metadata.nodes[result.id] = {
+            type: 'evaluateNode',
+            ...result.metadata,
+          };
+        }
 
-      if (node.type === 'complexNode') {
-        const cNode = new ComplexNode();
-        const result = cNode.deserialize(node);
-        textData.graph.data.nodes[result.id] = {
-          type: 'complexNode',
-          ...result.data,
-        };
+        if (node.type === 'complexNode') {
+          const cNode = new ComplexNode();
+          const result = cNode.deserialize(node);
+          textData.graph.data.nodes[result.id] = {
+            type: 'complexNode',
+            ...result.data,
+          };
 
-        textData.graph.metadata.nodes[result.id] = {
-          type: 'complexNode',
-          ...result.metadata,
-        };
-      }
-    });
-  }
+          textData.graph.metadata.nodes[result.id] = {
+            type: 'complexNode',
+            ...result.metadata,
+          };
+        }
+      });
+    }
 
-  if (flowData.edges) {
-    const edges = flowDataCopy.edges;
-    textData.graph.data.edges = [];
-    textData.graph.metadata.edges = {};
+    if (flowData.edges) {
+      const edges = flowDataCopy.edges;
+      textData.graph.data.edges = [];
+      textData.graph.metadata.edges = {};
 
-    edges.forEach((edge) => {
-      textData.graph.data.edges.push(`${edge.source} -> ${edge.target}`);
+      edges.forEach((edge) => {
+        textData.graph.data.edges.push(`${edge.source} -> ${edge.target}`);
 
-      const { ['id']: _, ..._edge } = edge;
-      textData.graph.metadata.edges[edge.id] = _edge;
-    });
+        const { ['id']: _, ..._edge } = edge;
+        textData.graph.metadata.edges[edge.id] = _edge;
+      });
+    }
   }
 
   return textData;
@@ -221,20 +223,6 @@ const serialize = (textData) => {
   } else {
     throw new Error('Version not recognized');
   }
-
-  //   const nodeData = readableDataCopy.nodes;
-  //   const nodeMetadata = readableDataCopy.metadata.nodes;
-  //   const edges = readableDataCopy.metadata.edges;
-
-  //   flowData['nodes'] = [];
-  //   flowData['edges'] = edges;
-
-  //   nodeData.forEach((nData, index) => {
-  //     flowData['nodes'].push({
-  //       ...nData,
-  //       ...nodeMetadata[index],
-  //     });
-  //   });
 
   return flowData;
 };

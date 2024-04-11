@@ -1,5 +1,4 @@
 const { deserialize, serialize } = require('../../src/utils/flowparser/parser');
-const { flowDataToReadableData, readableDataToFlowData } = require('../../src/utils/parser');
 
 describe('FlowTest parser', () => {
   it('should parse correctly', async () => {

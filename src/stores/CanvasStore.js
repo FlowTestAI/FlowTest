@@ -327,13 +327,13 @@ const useCanvasStore = create((set, get) => ({
       }),
     });
   },
-  setFlowForComplexNode: (nodeId, pathname) => {
+  setFlowForComplexNode: (nodeId, relativePath) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {
-            pathname,
+            relativePath,
           };
         }
 

@@ -30,11 +30,7 @@ export const getAllFlowTests = (collection) => {
   if (collection) {
     let flattenedItems = flattenItems(collection.items);
 
-    return flattenedItems.map((i) => {
-      if (i.type === OBJ_TYPES.flowtest) {
-        return i.pathname;
-      }
-    });
+    return flattenedItems.filter((i) => i.type === OBJ_TYPES.flowtest).map((i) => i.pathname);
   }
 };
 

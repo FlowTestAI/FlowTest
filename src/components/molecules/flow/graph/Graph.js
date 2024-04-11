@@ -123,7 +123,7 @@ class Graph {
       }
 
       if (node.type === 'complexNode') {
-        const flowData = await readFlowTestSync(node.data.pathname);
+        const flowData = await readFlowTestSync(node.data.relativePath);
         if (flowData) {
           const cNode = new complexNode(
             cloneDeep(flowData.nodes),

@@ -50,7 +50,10 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = { type: authType };
+          node.data = {
+            ...node.data,
+            type: authType,
+          };
         }
 
         return node;
@@ -293,6 +296,7 @@ const useCanvasStore = create((set, get) => ({
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {
+            ...node.data,
             delay: value,
           };
         }
@@ -307,6 +311,7 @@ const useCanvasStore = create((set, get) => ({
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {
+            ...node.data,
             output,
           };
         }
@@ -320,7 +325,9 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {};
+          if (node.data.output) {
+            delete node.data.output;
+          }
         }
 
         return node;
@@ -333,6 +340,7 @@ const useCanvasStore = create((set, get) => ({
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {
+            ...node.data,
             relativePath,
           };
         }

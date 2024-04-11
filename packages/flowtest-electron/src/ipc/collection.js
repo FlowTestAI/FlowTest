@@ -13,10 +13,10 @@ const { isDirectory, pathExists } = require('../utils/filemanager/filesystem');
 const createFile = require('../utils/filemanager/createfile');
 const updateFile = require('../utils/filemanager/updatefile');
 const deleteFile = require('../utils/filemanager/deletefile');
-const { flowDataToReadableData, readableDataToFlowData } = require('../utils/parser');
 const readFile = require('../utils/filemanager/readfile');
 const FlowtestAI = require('../utils/flowtestai');
 const { stringify, parse } = require('flatted');
+const { deserialize, serialize } = require('../utils/flowparser/parser');
 
 const collectionStore = new Collections();
 const flowTestAI = new FlowtestAI();
@@ -227,8 +227,8 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
   ipcMain.handle('renderer:create-flowtest', async (event, name, path, flowData) => {
     try {
       if (isDirectory(path)) {
-        const readableData = flowData ? flowDataToReadableData(flowData) : {};
-        createFile(`${name}.flow`, path, JSON.stringify(readableData, null, 4));
+        const textData = deserialize(flowData);
+        createFile(`${name}.flow`, path, JSON.stringify(textData, null, 4));
         console.log(`Created file: ${name}.flow`);
       }
     } catch (error) {
@@ -239,7 +239,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
   ipcMain.handle('renderer:read-flowtest', async (event, pathname, collectionId) => {
     try {
       const content = readFile(pathname);
-      const flowData = content === '{}' ? undefined : readableDataToFlowData(JSON.parse(content));
+      const flowData = serialize(JSON.parse(content));
       mainWindow.webContents.send('main:read-flowtest', pathname, collectionId, flowData);
     } catch (error) {
       return Promise.reject(error);
@@ -248,14 +248,14 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
 
   ipcMain.handle('renderer:read-flowtest-sync', (event, pathname) => {
     const content = readFile(pathname);
-    const flowData = content === '{}' ? undefined : readableDataToFlowData(JSON.parse(content));
+    const flowData = serialize(JSON.parse(content));
     return flowData;
   });
 
   ipcMain.handle('renderer:update-flowtest', async (event, pathname, flowData) => {
     try {
-      const readableData = flowDataToReadableData(flowData);
-      updateFile(pathname, JSON.stringify(readableData, null, 4));
+      const textData = deserialize(flowData);
+      updateFile(pathname, JSON.stringify(textData, null, 4));
       console.log(`Updated file: ${pathname}`);
     } catch (error) {
       return Promise.reject(error);

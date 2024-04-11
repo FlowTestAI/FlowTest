@@ -3,6 +3,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 const { PATH_SEPARATOR, getSubdirectoriesFromRoot } = require('../utils/filemanager/filesystem');
 const readFile = require('../utils/filemanager/readfile');
+const { serialize } = require('../utils/flowparser/parser');
 
 class Watcher {
   constructor() {
@@ -32,6 +33,8 @@ class Watcher {
   add(mainWindow, pathname, collectionId, watchPath) {
     console.log(`[Watcher] File ${pathname} added`);
     if (this.isFlowTestFile(pathname)) {
+      const content = readFile(pathname);
+      const flowData = serialize(JSON.parse(content));
       const dirname = path.dirname(pathname);
       const subDirectories = getSubdirectoriesFromRoot(watchPath, dirname);
       const file = {
@@ -39,6 +42,7 @@ class Watcher {
         pathname: pathname,
         subDirectories,
         sep: PATH_SEPARATOR,
+        flowData,
       };
       mainWindow.webContents.send('main:create-flowtest', file, collectionId);
     } else if (this.isEnvFile(pathname, watchPath)) {

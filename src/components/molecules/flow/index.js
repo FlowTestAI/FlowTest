@@ -23,6 +23,7 @@ import useCollectionStore from 'stores/CollectionStore';
 import { useTabStore } from 'stores/TabStore';
 import Graph from './graph/Graph';
 import ComplexNode from './nodes/ComplexNode';
+import { initFlowData } from './utils';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -37,20 +38,8 @@ export const init = (flowData) => {
     };
   } else if (flowData && flowData.nodes && !flowData.edges) {
     // AI prompt generated
-    const nodes = [
-      { id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
-      { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false },
-    ];
-    const edges = [
-      {
-        id: `reactflow__edge-0-1`,
-        source: `0`,
-        sourceHandle: null,
-        target: `1`,
-        targetHandle: null,
-        type: 'buttonedge',
-      },
-    ];
+    const nodes = initFlowData.nodes;
+    const edges = initFlowData.edges;
     for (let i = 0; i < flowData.nodes.length; i++) {
       nodes.push({
         id: `${i + 2}`,
@@ -72,22 +61,7 @@ export const init = (flowData) => {
       edges,
     };
   } else {
-    return {
-      nodes: [
-        { id: '0', type: 'startNode', position: { x: 150, y: 150 }, deletable: false },
-        { id: '1', type: 'authNode', position: { x: 400, y: 150 }, data: {}, deletable: false },
-      ],
-      edges: [
-        {
-          id: `reactflow__edge-0-1`,
-          source: `0`,
-          sourceHandle: null,
-          target: `1`,
-          targetHandle: null,
-          type: 'buttonedge',
-        },
-      ],
-    };
+    return initFlowData;
   }
 };
 

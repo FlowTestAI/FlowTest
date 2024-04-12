@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useTabStore } from 'stores/TabStore';
 import useCanvasStore from 'stores/CanvasStore';
 import { initFlowData } from 'components/molecules/flow/utils';
+import { cloneDeep } from 'lodash';
 
 export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;
@@ -244,7 +245,10 @@ export const createFlowTest = (name, folderPath, collectionId) => {
         return Promise.reject(new Error('A flowtest with the same name already exists'));
       } else {
         return new Promise((resolve, reject) => {
-          ipcRenderer.invoke('renderer:create-flowtest', name, folderPath, initFlowData).then(resolve).catch(reject);
+          ipcRenderer
+            .invoke('renderer:create-flowtest', name, folderPath, cloneDeep(initFlowData))
+            .then(resolve)
+            .catch(reject);
           useEventStore.getState().addEvent({
             id: uuidv4(),
             type: 'OPEN_NEW_FLOWTEST',

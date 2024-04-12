@@ -33,13 +33,13 @@ export const init = (flowData) => {
   // Initialization
   if (flowData && flowData.nodes && flowData.edges) {
     return {
-      nodes: flowData.nodes,
-      edges: flowData.edges,
+      nodes: cloneDeep(flowData.nodes),
+      edges: cloneDeep(flowData.edges),
     };
   } else if (flowData && flowData.nodes && !flowData.edges) {
     // AI prompt generated
-    const nodes = initFlowData.nodes;
-    const edges = initFlowData.edges;
+    const nodes = cloneDeep(initFlowData.nodes);
+    const edges = cloneDeep(initFlowData.edges);
     for (let i = 0; i < flowData.nodes.length; i++) {
       nodes.push({
         id: `${i + 2}`,
@@ -61,7 +61,7 @@ export const init = (flowData) => {
       edges,
     };
   } else {
-    return initFlowData;
+    return cloneDeep(initFlowData);
   }
 };
 

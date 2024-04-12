@@ -62,6 +62,6 @@ export const generateFlowData = async (instruction, modelName, collectionId) => 
       return Promise.reject(new Error('Collection not found'));
     }
   } catch (error) {
-    return Promise.reject(`Error generating flowData: ${error}`);
+    return Promise.reject(error);
   }
 };

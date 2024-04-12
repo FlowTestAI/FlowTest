@@ -11,6 +11,8 @@ import useCanvasStore from 'stores/CanvasStore';
 import { toast } from 'react-toastify';
 import { isEqual } from 'lodash';
 import useCommonStore from 'stores/CommonStore';
+import useCollectionStore from 'stores/CollectionStore';
+import { promiseWithTimeout } from 'utils/common';
 
 const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionId }) => {
   const setShowLoader = useCommonStore((state) => state.setShowLoader);
@@ -19,6 +21,8 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
 
   const [selectedModel, setSelectedModel] = useState(null);
   const [textareaValue, setTextareaValue] = useState('');
+
+  const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   return (
     <Transition appear show={open} as={Fragment}>
@@ -109,7 +113,9 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                         className='nodrag nowheel block w-full p-2.5'
                         name='keyName'
                         placeholder='Enter your Open AI key'
-                        onChange={(e) => console.log(e.target.value)}
+                        value={collection ? collection.dotEnvVariables['OPENAI_APIKEY'] : ''}
+                        readOnly='readonly'
+                        //onChange={(e) => setOpenAIKey(e.target.value)}
                       />
                     </div>
                   ) : (
@@ -139,7 +145,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                         toast.info('Please select a model');
                       } else {
                         setShowLoader(true);
-                        generateFlowData(textareaValue, selectedModel, collectionId)
+                        promiseWithTimeout(generateFlowData(textareaValue, selectedModel, collectionId), 30000)
                           .then((flowData) => {
                             setShowLoader(false);
                             if (isEqual(flowData.nodes, [])) {
@@ -153,8 +159,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                           })
                           .catch((error) => {
                             setShowLoader(false);
-                            console.log(error);
-                            toast.error(`Error while generating flow data`);
+                            toast.error(`Error while generating flow data ${error}`);
                             closeFn();
                           });
                       }

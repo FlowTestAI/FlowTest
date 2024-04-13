@@ -20,15 +20,14 @@ class requestNode extends Node {
       ...this.envVariables,
       ...evalVariables,
     };
+    console.debug('Avialable variables: ', variablesDict);
 
     // step2 replace variables in url with value
     const finalUrl = computeVariables(this.nodeData.url, variablesDict);
+    console.debug('Evaluated Url: ', finalUrl);
 
     // step 3
     const options = this.formulateRequest(finalUrl, variablesDict);
-
-    console.debug('Avialable variables: ', variablesDict);
-    console.debug('Evaluated Url: ', finalUrl);
 
     const res = await this.runHttpRequest(options);
 

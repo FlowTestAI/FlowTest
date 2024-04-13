@@ -70,6 +70,7 @@ class Graph {
         useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
         result = {
           status: 'Success',
+          data: prevNodeOutputData,
         };
       }
 
@@ -79,12 +80,14 @@ class Graph {
           this.logs.push('Result: true');
           result = {
             status: 'Success',
+            data: prevNodeOutputData,
             output: true,
           };
         } else {
           this.logs.push('Result: false');
           result = {
             status: 'Success',
+            data: prevNodeOutputData,
             output: false,
           };
         }

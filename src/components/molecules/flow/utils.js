@@ -100,7 +100,6 @@ export const initFlowData = {
         x: 400,
         y: 150,
       },
-      deletable: false,
       width: 147,
       height: 107,
     },

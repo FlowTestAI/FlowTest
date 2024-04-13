@@ -68,6 +68,8 @@ const RequestNode = ({ id, data }) => {
                     <option value='true'>True</option>
                     <option value='false'>False</option>
                   </select>
+                ) : variables[id].type === 'Now' ? (
+                  <div></div>
                 ) : (
                   <input
                     type={getInputType(variables[id].type)}

@@ -14,9 +14,8 @@ class assertNode extends Node {
 
   getVariableValue(variable) {
     if (variable.type.toLowerCase() === 'variable') {
-      const varValue = this.envVariables[variable.value];
-      if (varValue) {
-        return varValue;
+      if (Object.prototype.hasOwnProperty.call(this.envVariables, variable.value)) {
+        return this.envVariables[variable.value];
       } else {
         throw Error(`Cannot find value of variable ${variable.value}`);
       }

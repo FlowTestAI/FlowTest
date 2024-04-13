@@ -20,6 +20,10 @@ const variableTypes = [
     value: 'Boolean',
     label: 'Boolean',
   },
+  {
+    value: 'Now',
+    label: 'Now',
+  },
 ];
 
 const AddVariableModal = ({ closeFn = () => null, open = false, modalType, onVariableAdd }) => {
@@ -57,7 +61,7 @@ const AddVariableModal = ({ closeFn = () => null, open = false, modalType, onVar
                   as='h3'
                   className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
                 >
-                  Create a new variable for request node
+                  Create a new variable
                 </Dialog.Title>
                 <div className='mt-6 flex w-24 min-w-[40vw] items-center justify-center rounded-md border border-neutral-500 text-sm text-neutral-500 outline-0 focus:ring-0'>
                   <input

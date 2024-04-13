@@ -1,14 +1,18 @@
 export const computeNodeVariable = (variable, prevNodeOutputData) => {
   if (variable.type.toLowerCase() === 'string') {
-    return variable.value;
+    return variable.value.toString();
   }
 
   if (variable.type.toLowerCase() === 'number') {
-    return variable.value;
+    return Number(variable.value);
   }
 
-  if (variable.type.toLowerCase() === 'bool') {
+  if (variable.type.toLowerCase() === 'boolean') {
     return Boolean(variable.value);
+  }
+
+  if (variable.type.toLowerCase() === 'now') {
+    return Date.now();
   }
 
   if (variable.type.toLowerCase() === 'select') {
@@ -61,8 +65,8 @@ export const computeVariables = (str, variablesDict) => {
   if (foundRegex) {
     const match = str.match(/{{([^}]+)}}/);
     if (variablesDict) {
-      const varValue = variablesDict[`${match[1]}`];
-      if (varValue) {
+      if (Object.prototype.hasOwnProperty.call(variablesDict, match[1])) {
+        const varValue = variablesDict[`${match[1]}`];
         return computeVariables(str.replaceAll(match[0], varValue), variablesDict);
       } else {
         throw Error(`Cannot find value of variable ${match[1]}`);

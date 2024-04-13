@@ -37,9 +37,9 @@ const outputNode = {
   type: 'outputNode',
 };
 
-const evaluateNode = {
-  description: 'Evaluate conditional expressions.',
-  type: 'evaluateNode',
+const assertNode = {
+  description: 'Assert on conditional expressions.',
+  type: 'assertNode',
 };
 
 const delayNode = {
@@ -201,24 +201,24 @@ const AddNodes = ({ collectionId }) => {
                           </>
                         )}
                       </Disclosure>
-                      {/* Evaluate */}
+                      {/* Assert */}
                       <Disclosure as='div'>
                         {({ open }) => (
                           <>
                             <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
-                              <span>Evaluate</span>
+                              <span>Assert</span>
                               <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
                             </Disclosure.Button>
                             <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                               <div
-                                key='evaluate'
-                                onDragStart={(event) => onDragStart(event, evaluateNode)}
+                                key='assert'
+                                onDragStart={(event) => onDragStart(event, assertNode)}
                                 draggable
                                 cursor='move'
                                 className='py-2 border-b'
                               >
-                                <div className='text-base font-semibold primary-text'>Evaluate</div>
-                                <div className='text-xs secondary-text'>{evaluateNode.description}</div>
+                                <div className='text-base font-semibold primary-text'>Assert</div>
+                                <div className='text-xs secondary-text'>{assertNode.description}</div>
                               </div>
                             </Disclosure.Panel>
                           </>

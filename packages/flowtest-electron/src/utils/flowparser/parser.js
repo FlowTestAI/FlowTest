@@ -2,7 +2,7 @@ const { cloneDeep } = require('lodash');
 const { AuthNode } = require('./AuthNode');
 const { ComplexNode } = require('./ComplexNode');
 const { DelayNode } = require('./DelayNode');
-const { EvaluateNode } = require('./EvaluateNode');
+const { AssertNode } = require('./AssertNode');
 const { OutputNode } = require('./OutputNode');
 const { RequestNode } = require('./RequestNode');
 const { StartNode } = require('./StartNode');
@@ -96,16 +96,16 @@ const deserialize = (flowData) => {
           };
         }
 
-        if (node.type === 'evaluateNode') {
-          const eNode = new EvaluateNode();
+        if (node.type === 'assertNode') {
+          const eNode = new AssertNode();
           const result = eNode.deserialize(node);
           textData.graph.data.nodes[result.id] = {
-            type: 'evaluateNode',
+            type: 'assertNode',
             ...result.data,
           };
 
           textData.graph.metadata.nodes[result.id] = {
-            type: 'evaluateNode',
+            type: 'assertNode',
             ...result.metadata,
           };
         }
@@ -196,10 +196,10 @@ const serialize = (textData) => {
           flowData.nodes.push(result);
         }
 
-        if (value.type === 'evaluateNode') {
+        if (value.type === 'assertNode') {
           const data = value;
           const metadata = textDataCopy.graph.metadata.nodes[id];
-          const dNode = new EvaluateNode();
+          const dNode = new AssertNode();
           const result = dNode.serialize(id, data, metadata);
           flowData.nodes.push(result);
         }

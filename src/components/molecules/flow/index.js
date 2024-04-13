@@ -14,7 +14,7 @@ import CustomEdge from './edges/ButtonEdge';
 import AddNodes from './AddNodes';
 import RequestNode from './nodes/RequestNode';
 import OutputNode from './nodes/OutputNode';
-import EvaluateNode from './nodes/EvaluateNode';
+import AssertNode from './nodes/AssertNode';
 import DelayNode from './nodes/DelayNode';
 import AuthNode from './nodes/AuthNode';
 import FlowNode from 'components/atoms/flow/FlowNode';
@@ -88,7 +88,7 @@ const Flow = ({ collectionId }) => {
       startNode: StartNode,
       requestNode: RequestNode,
       outputNode: OutputNode,
-      evaluateNode: EvaluateNode,
+      assertNode: AssertNode,
       delayNode: DelayNode,
       authNode: AuthNode,
       complexNode: ComplexNode,

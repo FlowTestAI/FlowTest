@@ -4,8 +4,8 @@ import { cloneDeep } from 'lodash';
 import { readFlowTestSync } from 'service/collection';
 import useCanvasStore from 'stores/CanvasStore';
 import authNode from './compute/authnode';
-import complexNode from './compute/complexNode';
-import evaluateNode from './compute/evaluateNode';
+import complexNode from './compute/complexnode';
+import assertNode from './compute/assertnode';
 import requestNode from './compute/requestNode';
 
 class Graph {
@@ -27,7 +27,7 @@ class Graph {
   #computeConnectingEdge(node, result) {
     let connectingEdge = undefined;
 
-    if (node.type === 'evaluateNode') {
+    if (node.type === 'assertNode') {
       if (result.output === true) {
         connectingEdge = this.edges.find((edge) => edge.sourceHandle == 'true' && edge.source === node.id);
       } else {
@@ -73,8 +73,8 @@ class Graph {
         };
       }
 
-      if (node.type === 'evaluateNode') {
-        const eNode = new evaluateNode(node.data.operator, node.data.variables, prevNodeOutputData, this.logs);
+      if (node.type === 'assertNode') {
+        const eNode = new assertNode(node.data.operator, node.data.variables, prevNodeOutputData, this.logs);
         if (eNode.evaluate()) {
           this.logs.push('Result: true');
           result = {
@@ -162,7 +162,7 @@ class Graph {
       if (connectingEdge != undefined) {
         const nextNode = this.nodes.find(
           (node) =>
-            ['requestNode', 'outputNode', 'evaluateNode', 'delayNode', 'authNode', 'complexNode'].includes(node.type) &&
+            ['requestNode', 'outputNode', 'assertNode', 'delayNode', 'authNode', 'complexNode'].includes(node.type) &&
             node.id === connectingEdge.target,
         );
         this.graphRunNodeOutput[node.id] = result.data ? result.data : {};

@@ -74,6 +74,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setRequestNodeUrl: (nodeId, url) => {
     set({
@@ -89,6 +90,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   requestNodeAddPreRequestVar: (nodeId, name, type) => {
     set({
@@ -152,6 +154,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   requestNodeAddPostResponseVar: (nodeId, name, type) => {
     set({
@@ -215,6 +218,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setRequestNodeBody: (nodeId, type, data) => {
     set({
@@ -253,6 +257,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setAssertNodeVariable: (nodeId, name, type, value) => {
     set({
@@ -274,6 +279,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setAssertNodeOperator: (nodeId, operator) => {
     set({
@@ -304,6 +310,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setOutputNode: (nodeId, output) => {
     set({

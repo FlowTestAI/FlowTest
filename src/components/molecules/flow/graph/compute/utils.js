@@ -1,4 +1,4 @@
-const computeNodeVariable = (variable, prevNodeOutputData) => {
+export const computeNodeVariable = (variable, prevNodeOutputData) => {
   if (variable.type.toLowerCase() === 'string') {
     return variable.value;
   }

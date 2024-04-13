@@ -70,21 +70,30 @@ class Graph {
         useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
         result = {
           status: 'Success',
+          data: prevNodeOutputData,
         };
       }
 
       if (node.type === 'assertNode') {
-        const eNode = new assertNode(node.data.operator, node.data.variables, prevNodeOutputData, this.logs);
+        const eNode = new assertNode(
+          node.data.operator,
+          node.data.variables,
+          prevNodeOutputData,
+          this.envVariables,
+          this.logs,
+        );
         if (eNode.evaluate()) {
           this.logs.push('Result: true');
           result = {
             status: 'Success',
+            data: prevNodeOutputData,
             output: true,
           };
         } else {
           this.logs.push('Result: false');
           result = {
             status: 'Success',
+            data: prevNodeOutputData,
             output: false,
           };
         }

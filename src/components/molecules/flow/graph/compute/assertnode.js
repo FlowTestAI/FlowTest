@@ -1,21 +1,34 @@
 import Operators from '../../constants/operators';
-import { computeNodeVariables } from './utils';
+import { computeNodeVariable } from './utils';
 import Node from './node';
 
 class assertNode extends Node {
-  constructor(operator, variables, prevNodeOutputData, logs) {
+  constructor(operator, variables, prevNodeOutputData, envVariables, logs) {
     super('assertNode');
     this.operator = operator;
     this.variables = variables;
     this.prevNodeOutputData = prevNodeOutputData;
     this.logs = logs;
+    this.envVariables = envVariables;
+  }
+
+  getVariableValue(variable) {
+    if (variable.type.toLowerCase() === 'variable') {
+      const varValue = this.envVariables[variable.value];
+      if (varValue) {
+        return varValue;
+      } else {
+        throw Error(`Cannot find value of variable ${variable.value}`);
+      }
+    } else {
+      return computeNodeVariable(variable, this.prevNodeOutputData);
+    }
   }
 
   evaluate() {
     console.log('Evaluating an assert node');
-    const evalVariables = computeNodeVariables(this.variables, this.prevNodeOutputData);
-    const var1 = evalVariables.var1;
-    const var2 = evalVariables.var2;
+    const var1 = this.getVariableValue(this.variables.var1);
+    const var2 = this.getVariableValue(this.variables.var2);
 
     const operator = this.operator;
     if (operator == undefined) {

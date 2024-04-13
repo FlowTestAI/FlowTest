@@ -51,6 +51,9 @@ const variableElem = (id, data, varName) => {
       case 'Select':
         setAssertNodeVariable(id, varName, selectedValue, '');
         break;
+      case 'Variable':
+        setAssertNodeVariable(id, varName, selectedValue, '');
+        break;
       case 'Number':
         setAssertNodeVariable(id, varName, selectedValue, 0);
         break;
@@ -98,6 +101,11 @@ const variableElem = (id, data, varName) => {
                   // setVariableValue(updatedValue.toString());
                   setAssertNodeVariable(id, varName, 'Select', updatedValue.toString());
                   break;
+                case 'Variable':
+                  // data.variables[varName].value = updatedValue.toString();
+                  // setVariableValue(updatedValue.toString());
+                  setAssertNodeVariable(id, varName, 'Variable', updatedValue.toString());
+                  break;
                 case 'Number':
                   // data.variables[varName].value = parseInt(updatedValue);
                   // setVariableValue(parseInt(updatedValue));
@@ -131,6 +139,7 @@ const variableElem = (id, data, varName) => {
       >
         <option value='Select'>Select</option>
         <option value='String'>String</option>
+        <option value='Variable'>Variable</option>
         <option value='Number'>Number</option>
         <option value='Boolean'>Boolean</option>
       </select>

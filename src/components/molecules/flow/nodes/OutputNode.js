@@ -3,9 +3,6 @@ import { PropTypes } from 'prop-types';
 import FlowNode from 'components/atoms/flow/FlowNode';
 
 const OutputNode = ({ id, data }) => {
-  console.log('output node id: ', id);
-  console.log('output node data: ', data);
-
   return (
     <FlowNode
       title='Output'

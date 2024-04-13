@@ -1,14 +1,14 @@
 const { Node } = require('./Node');
 
-class EvaluateNode extends Node {
+class AssertNode extends Node {
   constructor() {
-    super('evaluateNode');
+    super('assertNode');
   }
 
   serialize(id, data, metadata) {
     return {
       id,
-      type: 'evaluateNode',
+      type: 'assertNode',
       data,
       ...metadata,
     };
@@ -30,5 +30,5 @@ class EvaluateNode extends Node {
 }
 
 module.exports = {
-  EvaluateNode,
+  AssertNode,
 };

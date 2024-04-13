@@ -1,10 +1,10 @@
 import Operators from '../../constants/operators';
-import { computeNodeVariables } from '../compute/utils';
+import { computeNodeVariables } from './utils';
 import Node from './node';
 
-class evaluateNode extends Node {
+class assertNode extends Node {
   constructor(operator, variables, prevNodeOutputData, logs) {
-    super('evaluateNode');
+    super('assertNode');
     this.operator = operator;
     this.variables = variables;
     this.prevNodeOutputData = prevNodeOutputData;
@@ -12,7 +12,7 @@ class evaluateNode extends Node {
   }
 
   evaluate() {
-    console.log('Evaluating an evaluate node');
+    console.log('Evaluating an assert node');
     const evalVariables = computeNodeVariables(this.variables, this.prevNodeOutputData);
     const var1 = evalVariables.var1;
     const var2 = evalVariables.var2;
@@ -22,7 +22,7 @@ class evaluateNode extends Node {
       throw 'Operator undefined';
     }
     this.logs.push(
-      `Evaluate var1: ${JSON.stringify(var1)} of type: ${typeof var1}, var2: ${JSON.stringify(var2)} of type: ${typeof var2} with operator: ${operator}`,
+      `Assert var1: ${JSON.stringify(var1)} of type: ${typeof var1}, var2: ${JSON.stringify(var2)} of type: ${typeof var2} with operator: ${operator}`,
     );
     if (operator == Operators.isEqualTo) {
       return var1 === var2;
@@ -36,4 +36,4 @@ class evaluateNode extends Node {
   }
 }
 
-export default evaluateNode;
+export default assertNode;

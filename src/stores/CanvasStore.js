@@ -254,7 +254,7 @@ const useCanvasStore = create((set, get) => ({
       }),
     });
   },
-  setEvaluateNodeVariable: (nodeId, name, type, value) => {
+  setAssertNodeVariable: (nodeId, name, type, value) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
@@ -275,7 +275,7 @@ const useCanvasStore = create((set, get) => ({
       }),
     });
   },
-  setEvaluateNodeOperator: (nodeId, operator) => {
+  setAssertNodeOperator: (nodeId, operator) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
@@ -326,7 +326,8 @@ const useCanvasStore = create((set, get) => ({
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
           if (node.data.output) {
-            delete node.data.output;
+            const { ['output']: _, ...data } = node.data;
+            node.data = data;
           }
         }
 

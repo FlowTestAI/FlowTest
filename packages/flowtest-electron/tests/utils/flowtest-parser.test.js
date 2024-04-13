@@ -124,14 +124,14 @@ describe('FlowTest parser', () => {
         },
         {
           id: '9',
-          type: 'evaluateNode',
+          type: 'assertNode',
           position: {
             x: 1958.6425053074213,
             y: 59.84168648963893,
           },
           data: {
-            description: 'Evaluate conditional expressions.',
-            type: 'evaluateNode',
+            description: 'Assert on conditional expressions.',
+            type: 'assertNode',
             variables: {
               var1: {
                 type: 'String',

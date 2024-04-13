@@ -8,13 +8,13 @@ import { CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ } from 'constants/Common';
 import useCanvasStore from 'stores/CanvasStore';
 
 const operatorMenu = (id, data) => {
-  const setEvaluateNodeOperator = useCanvasStore((state) => state.setEvaluateNodeOperator);
+  const setAssertNodeOperator = useCanvasStore((state) => state.setAssertNodeOperator);
 
   const handleOperatorSelection = (event) => {
     const selectedValue = event.target?.value;
     // ToDO: verify the behavior when use selects the default item
     if (selectedValue !== CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value) {
-      setEvaluateNodeOperator(id, selectedValue);
+      setAssertNodeOperator(id, selectedValue);
     }
   };
 
@@ -24,7 +24,7 @@ const operatorMenu = (id, data) => {
         onChange={handleOperatorSelection}
         name='operator-type'
         value={data.operator ? data.operator : CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value}
-        className='h-12 w-full rounded-md border border-neutral-500 px-1 py-2 text-neutral-500 outline-0 focus:ring-0'
+        className='w-full h-12 px-1 py-2 border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'
       >
         <option value={CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value}>
           {CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.displayValue}
@@ -40,32 +40,32 @@ const operatorMenu = (id, data) => {
 
 // ToDo: refactor component parameters, make it more readable. vname and data are not suited
 const variableElem = (id, data, varName) => {
-  const setEvaluateNodeVariable = useCanvasStore((state) => state.setEvaluateNodeVariable);
+  const setAssertNodeVariable = useCanvasStore((state) => state.setAssertNodeVariable);
 
   const handleInputTypeSelection = (event) => {
     const selectedValue = event.target?.value;
     switch (selectedValue) {
       case 'String':
-        setEvaluateNodeVariable(id, varName, selectedValue, '');
+        setAssertNodeVariable(id, varName, selectedValue, '');
         break;
       case 'Select':
-        setEvaluateNodeVariable(id, varName, selectedValue, '');
+        setAssertNodeVariable(id, varName, selectedValue, '');
         break;
       case 'Number':
-        setEvaluateNodeVariable(id, varName, selectedValue, 0);
+        setAssertNodeVariable(id, varName, selectedValue, 0);
         break;
       case 'Boolean':
-        setEvaluateNodeVariable(id, varName, selectedValue, false);
+        setAssertNodeVariable(id, varName, selectedValue, false);
         break;
     }
   };
 
   const handleBooleanValueSelection = (event) => {
-    setEvaluateNodeVariable(id, varName, 'Boolean', event.target?.value);
+    setAssertNodeVariable(id, varName, 'Boolean', event.target?.value);
   };
 
   return (
-    <div className='mb-4 flex items-center justify-center rounded-md border border-neutral-500 text-sm text-neutral-500 outline-0 focus:ring-0'>
+    <div className='flex items-center justify-center mb-4 text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
       {data.variables && data.variables[varName] ? (
         data.variables[varName].type === 'Boolean' ? (
           <select
@@ -91,17 +91,17 @@ const variableElem = (id, data, varName) => {
                 case 'String':
                   // data.variables[varName].value = updatedValue.toString();
                   // setVariableValue(updatedValue.toString());
-                  setEvaluateNodeVariable(id, varName, 'String', updatedValue.toString());
+                  setAssertNodeVariable(id, varName, 'String', updatedValue.toString());
                   break;
                 case 'Select':
                   // data.variables[varName].value = updatedValue.toString();
                   // setVariableValue(updatedValue.toString());
-                  setEvaluateNodeVariable(id, varName, 'Select', updatedValue.toString());
+                  setAssertNodeVariable(id, varName, 'Select', updatedValue.toString());
                   break;
                 case 'Number':
                   // data.variables[varName].value = parseInt(updatedValue);
                   // setVariableValue(parseInt(updatedValue));
-                  setEvaluateNodeVariable(id, varName, 'Number', parseInt(updatedValue));
+                  setAssertNodeVariable(id, varName, 'Number', parseInt(updatedValue));
                   break;
               }
             }}
@@ -118,7 +118,7 @@ const variableElem = (id, data, varName) => {
           onChange={(event) => {
             // default type is string, as soon as we select another type, it goes to above flow
             const updatedValue = event.target.value;
-            setEvaluateNodeVariable(id, varName, 'String', updatedValue.toString());
+            setAssertNodeVariable(id, varName, 'String', updatedValue.toString());
           }}
         />
       )}
@@ -126,7 +126,7 @@ const variableElem = (id, data, varName) => {
       <select
         onChange={handleInputTypeSelection}
         name='var-input-type'
-        className='nodrag h-8 w-full rounded-br-md rounded-tr-md border-l border-l-neutral-500 p-0 px-1'
+        className='w-full h-8 p-0 px-1 border-l nodrag rounded-br-md rounded-tr-md border-l-neutral-500'
         value={data.variables && data.variables[varName] ? data.variables[varName].type : 'String'}
       >
         <option value='Select'>Select</option>
@@ -138,10 +138,10 @@ const variableElem = (id, data, varName) => {
   );
 };
 
-const EvaluateNode = ({ id, data }) => {
+const AssertNode = ({ id, data }) => {
   return (
     <FlowNode
-      title='Evaluate'
+      title='Assert'
       handleLeft={true}
       handleLeftData={{ type: 'target' }}
       handleRight={true}
@@ -163,8 +163,8 @@ const EvaluateNode = ({ id, data }) => {
   );
 };
 
-EvaluateNode.propTypes = {
+AssertNode.propTypes = {
   data: PropTypes.object.isRequired,
 };
 
-export default EvaluateNode;
+export default AssertNode;

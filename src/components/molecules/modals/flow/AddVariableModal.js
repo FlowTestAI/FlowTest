@@ -3,7 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import 'tippy.js/dist/tippy.css';
 
-const variableTypes = [
+export const variableTypes = [
   {
     value: 'String',
     label: 'String',

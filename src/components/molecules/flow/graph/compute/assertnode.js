@@ -1,4 +1,4 @@
-import Operators from '../../constants/operators';
+import AssertOperators from '../../constants/assertOperators';
 import { computeNodeVariable } from './utils';
 import Node from './node';
 
@@ -36,13 +36,13 @@ class assertNode extends Node {
     this.logs.push(
       `Assert var1: ${JSON.stringify(var1)} of type: ${typeof var1}, var2: ${JSON.stringify(var2)} of type: ${typeof var2} with operator: ${operator}`,
     );
-    if (operator == Operators.isEqualTo) {
+    if (operator == AssertOperators.isEqualTo) {
       return var1 === var2;
-    } else if (operator == Operators.isNotEqualTo) {
+    } else if (operator == AssertOperators.isNotEqualTo) {
       return var1 != var2;
-    } else if (operator == Operators.isGreaterThan) {
+    } else if (operator == AssertOperators.isGreaterThan) {
       return var1 > var2;
-    } else if (operator == Operators.isLessThan) {
+    } else if (operator == AssertOperators.isLessThan) {
       return var1 < var2;
     }
   }

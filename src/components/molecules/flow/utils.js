@@ -95,6 +95,7 @@ export const initFlowData = {
     {
       id: '1',
       type: 'authNode',
+      description: 'Define authentication for the requests',
       data: {},
       position: {
         x: 400,

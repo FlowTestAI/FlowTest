@@ -357,6 +357,97 @@ const useCanvasStore = create((set, get) => ({
       }),
     });
   },
+  setVariableNodeName: (nodeId, name) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            ...node.data,
+            name,
+          };
+        }
+
+        return node;
+      }),
+    });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
+  },
+  setVariableNodeType: (nodeId, type) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            ...node.data,
+            type,
+            value: type === 'Expression' ? {} : getDefaultValue(type),
+          };
+        }
+
+        return node;
+      }),
+    });
+  },
+  setVariableNodeExpressionsVariable: (nodeId, name, type, value) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            ...node.data,
+            value: {
+              ...node.data.value,
+              variables: {
+                ...node.data.value.variables,
+                [name]: {
+                  type,
+                  value,
+                },
+              },
+            },
+          };
+        }
+
+        return node;
+      }),
+    });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
+  },
+  setVariableNodeExpressionOperator: (nodeId, operator) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            ...node.data,
+            value: {
+              ...node.data.value,
+              operator,
+            },
+          };
+        }
+
+        return node;
+      }),
+    });
+  },
+  variableNodeChangeVar: (nodeId, value) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            ...node.data,
+            value,
+          };
+        }
+
+        return node;
+      }),
+    });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
+  },
 }));
 
 export default useCanvasStore;

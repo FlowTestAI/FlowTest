@@ -75,7 +75,13 @@ class Graph {
       }
 
       if (node.type === 'assertNode') {
-        const eNode = new assertNode(node.data.operator, node.data.variables, prevNodeOutputData, this.logs);
+        const eNode = new assertNode(
+          node.data.operator,
+          node.data.variables,
+          prevNodeOutputData,
+          this.envVariables,
+          this.logs,
+        );
         if (eNode.evaluate()) {
           this.logs.push('Result: true');
           result = {

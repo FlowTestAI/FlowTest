@@ -6,6 +6,7 @@ const { AssertNode } = require('./AssertNode');
 const { OutputNode } = require('./OutputNode');
 const { RequestNode } = require('./RequestNode');
 const { StartNode } = require('./StartNode');
+const { SetVarNode } = require('./SetVarNode');
 
 const VERSION = 1;
 
@@ -123,6 +124,20 @@ const deserialize = (flowData) => {
             ...result.metadata,
           };
         }
+
+        if (node.type === 'setVarNode') {
+          const sNode = new SetVarNode();
+          const result = sNode.deserialize(node);
+          textData.graph.data.nodes[result.id] = {
+            type: 'setVarNode',
+            ...result.data,
+          };
+
+          textData.graph.metadata.nodes[result.id] = {
+            type: 'setVarNode',
+            ...result.metadata,
+          };
+        }
       });
     }
 
@@ -208,6 +223,14 @@ const serialize = (textData) => {
           const data = value;
           const metadata = textDataCopy.graph.metadata.nodes[id];
           const cNode = new ComplexNode();
+          const result = cNode.serialize(id, data, metadata);
+          flowData.nodes.push(result);
+        }
+
+        if (value.type === 'setVarNode') {
+          const data = value;
+          const metadata = textDataCopy.graph.metadata.nodes[id];
+          const cNode = new SetVarNode();
           const result = cNode.serialize(id, data, metadata);
           flowData.nodes.push(result);
         }

@@ -364,7 +364,10 @@ const useCanvasStore = create((set, get) => ({
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {
             ...node.data,
-            name,
+            variable: {
+              ...node.data?.variable,
+              name,
+            },
           };
         }
 
@@ -380,8 +383,11 @@ const useCanvasStore = create((set, get) => ({
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {
             ...node.data,
-            type,
-            value: type === 'Expression' ? {} : getDefaultValue(type),
+            variable: {
+              ...node.data?.variable,
+              type,
+              value: type === 'Expression' ? {} : getDefaultValue(type),
+            },
           };
         }
 
@@ -396,13 +402,16 @@ const useCanvasStore = create((set, get) => ({
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {
             ...node.data,
-            value: {
-              ...node.data.value,
-              variables: {
-                ...node.data.value.variables,
-                [name]: {
-                  type,
-                  value,
+            variable: {
+              ...node.data.variable,
+              value: {
+                ...node.data.variable.value,
+                variables: {
+                  ...node.data.variable.value?.variables,
+                  [name]: {
+                    type,
+                    value,
+                  },
                 },
               },
             },
@@ -421,9 +430,12 @@ const useCanvasStore = create((set, get) => ({
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {
             ...node.data,
-            value: {
-              ...node.data.value,
-              operator,
+            variable: {
+              ...node.data.variable,
+              value: {
+                ...node.data.variable.value,
+                operator,
+              },
             },
           };
         }
@@ -439,7 +451,10 @@ const useCanvasStore = create((set, get) => ({
           // it's important to create a new object here, to inform React Flow about the cahnges
           node.data = {
             ...node.data,
-            value,
+            variable: {
+              ...node.data.variable,
+              value,
+            },
           };
         }
 

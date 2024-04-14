@@ -7,6 +7,7 @@ import authNode from './compute/authnode';
 import complexNode from './compute/complexnode';
 import assertNode from './compute/assertnode';
 import requestNode from './compute/requestNode';
+import setVarNode from './compute/setvarnode';
 
 class Graph {
   constructor(nodes, edges, startTime, initialEnvVars, initialLogs) {
@@ -150,6 +151,21 @@ class Graph {
         }
       }
 
+      if (node.type === 'setVarNode') {
+        const sNode = new setVarNode(node.data, prevNodeOutputData, this.envVariables);
+        const newVariable = sNode.evaluate();
+        if (newVariable != undefined) {
+          this.logs.push(`Evaluate variable: ${newVariable}`);
+          this.envVariables = {
+            ...this.envVariables,
+            ...newVariable,
+          };
+        }
+        result = {
+          status: 'Success',
+        };
+      }
+
       if (this.#checkTimeout()) {
         throw `Timeout of ${this.timeout} ms exceeded, stopping graph run`;
       }
@@ -171,8 +187,9 @@ class Graph {
       if (connectingEdge != undefined) {
         const nextNode = this.nodes.find(
           (node) =>
-            ['requestNode', 'outputNode', 'assertNode', 'delayNode', 'authNode', 'complexNode'].includes(node.type) &&
-            node.id === connectingEdge.target,
+            ['requestNode', 'outputNode', 'assertNode', 'delayNode', 'authNode', 'complexNode', 'setVarNode'].includes(
+              node.type,
+            ) && node.id === connectingEdge.target,
         );
         this.graphRunNodeOutput[node.id] = result.data ? result.data : {};
         return this.#computeNode(nextNode);

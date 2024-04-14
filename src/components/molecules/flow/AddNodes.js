@@ -57,6 +57,11 @@ const complexNode = {
   type: 'complexNode',
 };
 
+const setVarNode = {
+  description: 'Assign a value to a variable',
+  type: 'setVarNode',
+};
+
 const AddNodes = ({ collectionId }) => {
   // const [open, setOpen] = useState(false);
   // const anchorRef = useRef(null);
@@ -288,6 +293,29 @@ const AddNodes = ({ collectionId }) => {
                               >
                                 <div className='text-base font-semibold primary-text'>Complex</div>
                                 <div className='text-xs secondary-text'>{complexNode.description}</div>
+                              </div>
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                      {/* Set Variable */}
+                      <Disclosure as='div'>
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
+                              <span>Set Variable</span>
+                              <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
+                            </Disclosure.Button>
+                            <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
+                              <div
+                                key='complex'
+                                onDragStart={(event) => onDragStart(event, setVarNode)}
+                                draggable
+                                cursor='move'
+                                className='py-2 border-b'
+                              >
+                                <div className='text-base font-semibold primary-text'>Set Variable</div>
+                                <div className='text-xs secondary-text'>{setVarNode.description}</div>
                               </div>
                             </Disclosure.Panel>
                           </>

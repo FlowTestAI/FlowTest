@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Handle, Position } from 'reactflow';
-import Operators from '../constants/operators';
+import AssertOperators from '../constants/assertOperators';
 import FlowNode from 'components/atoms/flow/FlowNode';
 import { getInputType } from 'utils/common';
 import { CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ } from 'constants/Common';
@@ -29,10 +29,10 @@ const operatorMenu = (id, data) => {
         <option value={CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value}>
           {CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.displayValue}
         </option>
-        <option value={Operators.isLessThan}>{Operators.isLessThan}</option>
-        <option value={Operators.isGreaterThan}>{Operators.isGreaterThan}</option>
-        <option value={Operators.isEqualTo}>{Operators.isEqualTo}</option>
-        <option value={Operators.isNotEqualTo}>{Operators.isNotEqualTo}</option>
+        <option value={AssertOperators.isLessThan}>{AssertOperators.isLessThan}</option>
+        <option value={AssertOperators.isGreaterThan}>{AssertOperators.isGreaterThan}</option>
+        <option value={AssertOperators.isEqualTo}>{AssertOperators.isEqualTo}</option>
+        <option value={AssertOperators.isNotEqualTo}>{AssertOperators.isNotEqualTo}</option>
       </select>
     </div>
   );

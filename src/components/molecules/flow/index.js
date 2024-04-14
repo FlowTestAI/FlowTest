@@ -24,6 +24,7 @@ import { useTabStore } from 'stores/TabStore';
 import Graph from './graph/Graph';
 import ComplexNode from './nodes/ComplexNode';
 import { initFlowData } from './utils';
+import SetVarNode from './nodes/SetVarNode';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -92,6 +93,7 @@ const Flow = ({ collectionId }) => {
       delayNode: DelayNode,
       authNode: AuthNode,
       complexNode: ComplexNode,
+      setVarNode: SetVarNode,
     }),
     [],
   );

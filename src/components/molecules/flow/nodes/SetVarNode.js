@@ -70,8 +70,11 @@ const SetVarNode = ({ id, data }) => {
           <option value={CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value}>
             {CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.displayValue}
           </option>
-          <option value={EvaluateOperators.Add}>{EvaluateOperators.Add}</option>
-          <option value={EvaluateOperators.Subtract}>{EvaluateOperators.Subtract}</option>
+          {Object.entries(EvaluateOperators).map(([key, value], index) => (
+            <option key={key} value={value}>
+              {value}
+            </option>
+          ))}
         </select>
       </div>
     );

@@ -1,6 +1,6 @@
 const EvaluateOperators = {
-  Add: '+',
-  Subtract: '-',
+  Add: 'Add two numbers',
+  Subtract: 'Subtract two numbers',
 };
 
 export default EvaluateOperators;

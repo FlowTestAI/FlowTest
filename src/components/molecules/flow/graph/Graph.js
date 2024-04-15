@@ -155,7 +155,7 @@ class Graph {
         const sNode = new setVarNode(node.data, prevNodeOutputData, this.envVariables);
         const newVariable = sNode.evaluate();
         if (newVariable != undefined) {
-          this.logs.push(`Evaluate variable: ${newVariable}`);
+          this.logs.push(`Evaluate variable: ${JSON.stringify(newVariable)}`);
           this.envVariables = {
             ...this.envVariables,
             ...newVariable,

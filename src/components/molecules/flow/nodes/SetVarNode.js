@@ -99,6 +99,9 @@ const SetVarNode = ({ id, data }) => {
         case 'Boolean':
           setVariableNodeExpressionsVariable(id, varName, selectedValue, false);
           break;
+        case 'Now':
+          setVariableNodeExpressionsVariable(id, varName, selectedValue, '');
+          break;
       }
     };
 
@@ -115,6 +118,8 @@ const SetVarNode = ({ id, data }) => {
               <option value='true'>True</option>
               <option value='false'>False</option>
             </select>
+          ) : data.variable.value.variables[varName].type === 'Now' ? (
+            <div></div>
           ) : (
             <input
               id='outlined-adornment-weight'
@@ -127,23 +132,15 @@ const SetVarNode = ({ id, data }) => {
                 const updatedValue = event.target.value;
                 switch (data.variable.value.variables[varName].type) {
                   case 'String':
-                    // data.variables[varName].value = updatedValue.toString();
-                    // setVariableValue(updatedValue.toString());
                     setVariableNodeExpressionsVariable(id, varName, 'String', updatedValue.toString());
                     break;
                   case 'Select':
-                    // data.variables[varName].value = updatedValue.toString();
-                    // setVariableValue(updatedValue.toString());
                     setVariableNodeExpressionsVariable(id, varName, 'Select', updatedValue.toString());
                     break;
                   case 'Variable':
-                    // data.variables[varName].value = updatedValue.toString();
-                    // setVariableValue(updatedValue.toString());
                     setVariableNodeExpressionsVariable(id, varName, 'Variable', updatedValue.toString());
                     break;
                   case 'Number':
-                    // data.variables[varName].value = parseInt(updatedValue);
-                    // setVariableValue(parseInt(updatedValue));
                     setVariableNodeExpressionsVariable(id, varName, 'Number', parseInt(updatedValue));
                     break;
                 }
@@ -181,6 +178,7 @@ const SetVarNode = ({ id, data }) => {
           <option value='Variable'>Variable</option>
           <option value='Number'>Number</option>
           <option value='Boolean'>Boolean</option>
+          <option value='Now'>Now</option>
         </select>
       </div>
     );

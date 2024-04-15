@@ -60,11 +60,10 @@ const variableElem = (id, data, varName) => {
       case 'Boolean':
         setAssertNodeVariable(id, varName, selectedValue, false);
         break;
+      case 'Now':
+        setAssertNodeVariable(id, varName, selectedValue, '');
+        break;
     }
-  };
-
-  const handleBooleanValueSelection = (event) => {
-    setAssertNodeVariable(id, varName, 'Boolean', event.target?.value);
   };
 
   return (
@@ -72,7 +71,7 @@ const variableElem = (id, data, varName) => {
       {data.variables && data.variables[varName] ? (
         data.variables[varName].type === 'Boolean' ? (
           <select
-            onChange={handleBooleanValueSelection}
+            onChange={(event) => setAssertNodeVariable(id, varName, 'Boolean', event.target?.value)}
             name='boolean-val'
             className='nodrag h-12 w-full rounded-br-md rounded-tr-md  p-2.5 px-1 '
             value={data.variables[varName].value}
@@ -80,6 +79,8 @@ const variableElem = (id, data, varName) => {
             <option value='true'>True</option>
             <option value='false'>False</option>
           </select>
+        ) : data.variables[varName].type === 'Now' ? (
+          <div></div>
         ) : (
           <input
             id='outlined-adornment-weight'
@@ -92,23 +93,15 @@ const variableElem = (id, data, varName) => {
               const updatedValue = event.target.value;
               switch (data.variables[varName].type) {
                 case 'String':
-                  // data.variables[varName].value = updatedValue.toString();
-                  // setVariableValue(updatedValue.toString());
                   setAssertNodeVariable(id, varName, 'String', updatedValue.toString());
                   break;
                 case 'Select':
-                  // data.variables[varName].value = updatedValue.toString();
-                  // setVariableValue(updatedValue.toString());
                   setAssertNodeVariable(id, varName, 'Select', updatedValue.toString());
                   break;
                 case 'Variable':
-                  // data.variables[varName].value = updatedValue.toString();
-                  // setVariableValue(updatedValue.toString());
                   setAssertNodeVariable(id, varName, 'Variable', updatedValue.toString());
                   break;
                 case 'Number':
-                  // data.variables[varName].value = parseInt(updatedValue);
-                  // setVariableValue(parseInt(updatedValue));
                   setAssertNodeVariable(id, varName, 'Number', parseInt(updatedValue));
                   break;
               }
@@ -142,6 +135,7 @@ const variableElem = (id, data, varName) => {
         <option value='Variable'>Variable</option>
         <option value='Number'>Number</option>
         <option value='Boolean'>Boolean</option>
+        <option value='Now'>Now</option>
       </select>
     </div>
   );

@@ -8,7 +8,6 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
 const ComplexNode = ({ id, data }) => {
-  const [selectedValue, setSelectedValue] = useState('');
   const { ipcRenderer } = window;
 
   const setFlowForComplexNode = useCanvasStore((state) => state.setFlowForComplexNode);
@@ -18,13 +17,9 @@ const ComplexNode = ({ id, data }) => {
     return ipcRenderer.relative(collection.pathname, fullPath);
   });
 
-  const setFlow = (relativePath) => {
-    setFlowForComplexNode(id, relativePath);
-  };
-
   if (data.relativePath) {
     if (!flowTests.find((f) => f === data.relativePath)) {
-      setFlow('');
+      setFlowForComplexNode(id, '');
     }
   }
 
@@ -37,12 +32,15 @@ const ComplexNode = ({ id, data }) => {
       handleRightData={{ type: 'source' }}
     >
       <div>
-        <Tippy content={selectedValue !== '' ? selectedValue : 'Select a flow'} placement='top' maxWidth='none'>
+        <Tippy
+          content={data.relativePath && data.relativePath !== '' ? data.relativePath : 'Select a flow'}
+          placement='top'
+          maxWidth='none'
+        >
           <select
             onChange={(event) => {
               const value = event.target?.value;
-              setFlow(value);
-              setSelectedValue(value);
+              setFlowForComplexNode(id, value);
             }}
             name='flow'
             value={data.relativePath ? data.relativePath : ''}

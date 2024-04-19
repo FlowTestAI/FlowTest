@@ -14,7 +14,7 @@ class Graph {
     this.nodes = nodes;
     this.edges = edges;
     this.logs = initialLogs;
-    this.timeout = 60000; //ms
+    this.timeout = useCanvasStore.getState().timeout;
     this.startTime = startTime;
     this.graphRunNodeOutput = {};
     this.auth = undefined;

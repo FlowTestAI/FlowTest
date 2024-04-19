@@ -16,6 +16,8 @@ import GenerateFlowTestModal from '../modals/GenerateFlowTestModal';
 import useCanvasStore from 'stores/CanvasStore';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
+import TimeSelector from 'components/atoms/common/TimeSelector';
+import { timeoutForGraphRun } from '../flow/utils';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
@@ -23,6 +25,7 @@ const TabPanelHeader = () => {
   const focusTab = tabs.find((t) => t.id === focusTabId);
 
   const graphRunLogs = useCanvasStore((state) => state.logs);
+  const setTimeout = useCanvasStore((state) => state.setTimeout);
 
   const [slidingPaneState, setSlidingPaneState] = useState({
     isPaneOpen: false,
@@ -39,6 +42,16 @@ const TabPanelHeader = () => {
         <>
           <div className='text-base tracking-[0.15em]'>{focusTab.name}</div>
           <div className='flex items-center justify-between gap-4 border-l border-neutral-300'>
+            {focusTab.type === OBJ_TYPES.flowtest && (
+              <TimeSelector
+                defaultOptionData={{ value: 'select_timer', label: 'Select Timer' }}
+                optionsData={timeoutForGraphRun}
+                onSelectHandler={(event) => {
+                  setTimeout(event.target?.value);
+                }}
+              />
+            )}
+
             <SaveFlowModal tab={focusTab} />
             {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
               <>

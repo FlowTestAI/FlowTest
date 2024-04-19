@@ -14,7 +14,7 @@ const WorkspaceHeader = () => {
   const environmentData = focusTab ? collections.find((c) => c.id === focusTab.collectionId)?.environments : [];
 
   return (
-    <div className='flex items-center justify-between gap-8 pr-4 border-b border-neutral-300 bg-slate-100'>
+    <div className='flex items-center justify-between pr-4 border-b border-neutral-300 bg-slate-100'>
       <div className='flex items-center overflow-x-auto'>
         <Tabs />
         <button className='flex cursor-not-allowed flex-col items-center bg-slate-100 p-3.5 text-center text-slate-400'>

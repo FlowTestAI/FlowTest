@@ -48,7 +48,7 @@ const SaveFlowModal = ({ tab }) => {
 
   return (
     <>
-      <div className='flex items-center justify-center'>
+      <div className='flex items-center justify-center h-12 pl-4 border-l border-neutral-300'>
         <button type='button' onClick={saveHandle}>
           <Tippy content='Save' placement='top'>
             <InboxArrowDownIcon className='w-5 h-5' />

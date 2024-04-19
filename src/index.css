@@ -77,3 +77,8 @@ details summary::-webkit-details-marker {
 .side-sheet-overlay .slide-pane__content {
   padding: 2.5rem 2rem;
 }
+
+.react-flow__controls .react-flow__controls-button {
+  min-width: 1.5rem;
+  padding: 0.5rem;
+}

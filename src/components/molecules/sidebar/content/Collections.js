@@ -59,7 +59,7 @@ const Collections = ({ collections }) => {
 
   return (
     <div
-      className='h-[87vh] overflow-y-auto'
+      className='h-[87vh] flex-auto overflow-scroll'
       onClick={(event) => {
         const clickFromElementDataSet = event.target.dataset;
         const clickFrom = clickFromElementDataSet?.clickFrom;

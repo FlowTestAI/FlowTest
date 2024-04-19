@@ -17,6 +17,7 @@ import useCanvasStore from 'stores/CanvasStore';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import TimeSelector from 'components/atoms/common/TimeSelector';
+import { timeoutForGraphRun } from '../flow/utils';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
@@ -24,6 +25,7 @@ const TabPanelHeader = () => {
   const focusTab = tabs.find((t) => t.id === focusTabId);
 
   const graphRunLogs = useCanvasStore((state) => state.logs);
+  const setTimeout = useCanvasStore((state) => state.setTimeout);
 
   const [slidingPaneState, setSlidingPaneState] = useState({
     isPaneOpen: false,
@@ -34,28 +36,21 @@ const TabPanelHeader = () => {
 
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
 
-  const sampleArrayForOptionsData = [
-    { value: '1', label: '5 seconds' },
-    { value: '2', label: '10 seconds' },
-    { value: '3', label: '15 seconds' },
-    { value: '4', label: '20 seconds' },
-    { value: '5', label: '25 seconds' },
-  ];
   return (
     <div className='flex items-center justify-between gap-4 px-6 py-2 border-b border-neutral-300'>
       {focusTab ? (
         <>
           <div className='text-base tracking-[0.15em]'>{focusTab.name}</div>
           <div className='flex items-center justify-between gap-4 border-l border-neutral-300'>
-            <TimeSelector
-              defaultOptionData={{ value: 'select_timer', label: 'Select Timer' }}
-              optionsData={sampleArrayForOptionsData}
-              onSelectHandler={(event) => {
-                console.log(`\n \n onselectHandler`);
-                console.log(event.target?.value);
-                console.log(`\n \n`);
-              }}
-            />
+            {focusTab.type === OBJ_TYPES.flowtest && (
+              <TimeSelector
+                defaultOptionData={{ value: 'select_timer', label: 'Select Timer' }}
+                optionsData={timeoutForGraphRun}
+                onSelectHandler={(event) => {
+                  setTimeout(event.target?.value);
+                }}
+              />
+            )}
 
             <SaveFlowModal tab={focusTab} />
             {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (

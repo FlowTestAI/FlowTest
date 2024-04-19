@@ -9,6 +9,7 @@ const useCanvasStore = create((set, get) => ({
   edges: [],
   logs: [],
   collectionId: '',
+  timeout: '60000',
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -44,6 +45,9 @@ const useCanvasStore = create((set, get) => ({
   },
   setCollectionId: (collectionId) => {
     set({ collectionId });
+  },
+  setTimeout: (timeout) => {
+    set({ timeout });
   },
   setAuthNodeType: (nodeId, authType) => {
     set({

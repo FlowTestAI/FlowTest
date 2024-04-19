@@ -1,11 +1,14 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
 import FlowNode from 'components/atoms/flow/FlowNode';
 import useCanvasStore from 'stores/CanvasStore';
 import { getAllFlowTests } from 'stores/utils';
 import useCollectionStore from 'stores/CollectionStore';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 const ComplexNode = ({ id, data }) => {
+  const [selectedValue, setSelectedValue] = useState('');
   const { ipcRenderer } = window;
 
   const setFlowForComplexNode = useCanvasStore((state) => state.setFlowForComplexNode);
@@ -34,21 +37,31 @@ const ComplexNode = ({ id, data }) => {
       handleRightData={{ type: 'source' }}
     >
       <div>
-        <select
-          onChange={(e) => setFlow(e.target.value)}
-          name='flow'
-          value={data.relativePath ? data.relativePath : ''}
-          className='h-12 outline-none max-w-32'
-        >
-          <option key='None' value=''>
-            None
-          </option>
-          {flowTests.map((ft) => (
-            <option key={ft} value={ft}>
-              {ft}
+        <Tippy content={selectedValue !== '' ? selectedValue : 'Select a flow'} placement='top' maxWidth='none'>
+          <select
+            onChange={(event) => {
+              const value = event.target?.value;
+              setFlow(value);
+              setSelectedValue(value);
+            }}
+            name='flow'
+            value={data.relativePath ? data.relativePath : ''}
+            className='h-12 px-1 py-2 border rounded-lg outline-none max-w-48 border-neutral-500 text-neutral-500 outline-0 focus:w-auto focus:ring-0'
+          >
+            <option key='None' value=''>
+              Select a flow
             </option>
-          ))}
-        </select>
+            {flowTests.map((flowTestPath) => {
+              return (
+                <option key={flowTestPath} value={flowTestPath} className='overflow-scroll'>
+                  {flowTestPath}
+                </option>
+              );
+            })}
+          </select>
+        </Tippy>
+
+        <p className='hidden'></p>
       </div>
     </FlowNode>
   );

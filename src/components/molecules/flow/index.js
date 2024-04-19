@@ -216,6 +216,7 @@ const Flow = ({ collectionId }) => {
       >
         <Controls>
           <ControlButton
+            className='p-1'
             onClick={async () => {
               runnableEdges(true);
               const startTime = Date.now();

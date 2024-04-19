@@ -53,42 +53,47 @@ const RequestNode = ({ id, data }) => {
     const variables = vType === 'pre-request' ? data.preReqVars : data.postRespVars;
     return (
       <>
-        {variables &&
-          Object.keys(variables).map((id) => (
-            <div className='flex items-center justify-between pb-2' key={id}>
-              <div className='flex items-center justify-between text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
-                <label className='px-4 py-2 border-r rounded-bl-md rounded-tl-md border-r-neutral-500'>{id}</label>
-                {variables[id].type === 'Boolean' ? (
-                  <select
-                    onChange={(e) => handleVariableChange(e, vType, id)}
-                    name='boolean-val'
-                    className='nodrag h-9 w-full rounded-br-md rounded-tr-md  p-2.5 px-1 '
-                    value={variables[id].value}
-                  >
-                    <option value='true'>True</option>
-                    <option value='false'>False</option>
-                  </select>
-                ) : variables[id].type === 'Now' ? (
-                  <div></div>
-                ) : (
-                  <input
-                    type={getInputType(variables[id].type)}
-                    className='nodrag nowheel block h-9 w-full rounded-bl-md rounded-tl-md  p-2.5'
-                    name='variable-value'
-                    data-type={getInputType(variables[id].type)}
-                    onChange={(e) => handleVariableChange(e, vType, id)}
-                    value={variables[id].value}
-                  />
-                )}
-                <div className='px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>
-                  {variables[id].type}
+        {variables ? (
+          <div className='p-2 pt-4 border-t border-neutral-300 bg-slate-50'>
+            {Object.keys(variables).map((id) => (
+              <div className='flex items-center justify-between pb-2' key={id}>
+                <div className='flex items-center justify-between text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
+                  <label className='px-4 py-2 border-r rounded-bl-md rounded-tl-md border-r-neutral-500'>{id}</label>
+                  {variables[id].type === 'Boolean' ? (
+                    <select
+                      onChange={(e) => handleVariableChange(e, vType, id)}
+                      name='boolean-val'
+                      className='nodrag h-9 w-full min-w-40 rounded-br-md  rounded-tr-md p-2.5 px-1'
+                      value={variables[id].value}
+                    >
+                      <option value='true'>True</option>
+                      <option value='false'>False</option>
+                    </select>
+                  ) : variables[id].type === 'Now' ? (
+                    <div></div>
+                  ) : (
+                    <input
+                      type={getInputType(variables[id].type)}
+                      className='nodrag nowheel block h-9 w-full min-w-40 rounded-bl-md rounded-tl-md p-2.5'
+                      name='variable-value'
+                      data-type={getInputType(variables[id].type)}
+                      onChange={(e) => handleVariableChange(e, vType, id)}
+                      value={variables[id].value}
+                    />
+                  )}
+                  <div className='px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>
+                    {variables[id].type}
+                  </div>
+                </div>
+                <div onClick={(e) => handleDeleteVariable(e, vType, id)} className='pl-2 text-neutral-500'>
+                  <TrashIcon className='w-4 h-4' />
                 </div>
               </div>
-              <div onClick={(e) => handleDeleteVariable(e, vType, id)} className='p-2 text-neutral-500'>
-                <TrashIcon className='w-4 h-4' />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        ) : (
+          ''
+        )}
       </>
     );
   };
@@ -101,47 +106,49 @@ const RequestNode = ({ id, data }) => {
       handleRight={true}
       handleRightData={{ type: 'source' }}
     >
-      <div>
-        <div>
+      <div className='min-w-60'>
+        <div className='pb-4'>
           <input
             type='text'
             placeholder={`Enter URL for a ${data.requestType} request`}
-            className='nodrag nowheel  mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
+            className='nodrag nowheel block w-full rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
             name='username'
             onChange={handleUrlInputChange}
             value={data.url ? data.url : ''}
           />
         </div>
         <RequestBody nodeId={id} nodeData={data} />
-        <div className='border-t border-neutral-300 bg-slate-100'>
-          <div className='flex items-center justify-between px-2 py-4 font-medium'>
-            <h3>Variables</h3>
-          </div>
-          <div>
-            Pre Request
-            <button
-              className='p-2'
-              onClick={() => {
-                setModalType('pre-request');
-                setVariableDialogOpen(true);
-              }}
-            >
-              <PlusIcon className='w-4 h-4' />
-            </button>
-            <div className='p-2 pt-4 border-t border-neutral-300 bg-slate-50'>{renderVariables('pre-request')}</div>
-          </div>
-          <div>
-            Post Response
-            <button
-              className='p-2'
-              onClick={() => {
-                setModalType('post-response');
-                setVariableDialogOpen(true);
-              }}
-            >
-              <PlusIcon className='w-4 h-4' />
-            </button>
-            <div className='p-2 pt-4 border-t border-neutral-300 bg-slate-50'>{renderVariables('post-response')}</div>
+        <div className='p-4 border-t border-b border-neutral-300 bg-slate-100'>
+          <h3>Variables</h3>
+          <div className='mt-4'>
+            <div className='p-2 border-t border-neutral-300'>
+              <div className='flex items-center justify-between'>
+                <div>Pre Request</div>
+                <button
+                  onClick={() => {
+                    setModalType('pre-request');
+                    setVariableDialogOpen(true);
+                  }}
+                >
+                  <PlusIcon className='w-4 h-4' />
+                </button>
+              </div>
+              {renderVariables('pre-request')}
+            </div>
+            <div className='p-2 border-t border-neutral-300'>
+              <div className='flex items-center justify-between'>
+                <div>Post Request</div>
+                <button
+                  onClick={() => {
+                    setModalType('post-response');
+                    setVariableDialogOpen(true);
+                  }}
+                >
+                  <PlusIcon className='w-4 h-4' />
+                </button>
+              </div>
+              {renderVariables('post-response')}
+            </div>
           </div>
         </div>
       </div>

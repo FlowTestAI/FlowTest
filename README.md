@@ -1,36 +1,27 @@
-# FlowTest
+# FlowTestAI
 
 [![Release Notes](https://img.shields.io/github/release/FlowTestAI/FlowTest)](https://github.com/FlowTestAI/FlowTest/releases)
 [![Linkedin](https://img.shields.io/badge/LinkedIn-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/company/flowtestai)
 [![Twitter Follow](https://img.shields.io/twitter/follow/FlowTestAI?style=social)](https://twitter.com/FlowTestAI)
 [![Chat on Discord](https://img.shields.io/badge/chat-Discord-7289DA?logo=discord)](https://discord.gg/Pf9tdSjPeF)
 
-Leverage GenAI to convert your customer's interactions with your product into runnable flows all via natural language and simple drag and drop. Generated flows not only test the functional correctness of your product but also the time it takes your customers to perform these actions together.
+FlowTestAI stands as the world’s first GenAI powered OpenSource Integrated Development Environment (IDE) specifically designed to craft, visualize, and manage API-driven workflows. Characterized by its speed, lightweight architecture, and local operation, FlowTestAI safeguards privacy while facilitating the seamless integration of API driven workflows.
 
-- Step 1: Import your openAPI spec and describe your prodcut flow in natural language to our AI.
-- Step 2: Add an evaluate node at the end via simple drag and drop to check the final output.
-- Step 3: Run the created flow for a success/falure and observe the generated logs and timing info.
-- Step 4: Save and Export these runnable chains in json format and share with others.
-- Step 5: Have a beer! 🍺
+🚧 We are actively working on launching a CLI. The CLI allows you to run API driven workflows created using FlowTestAI from command line interface making it easier to automate and run them in a CI/CD (continuous integration/development) fashion.
 
-![alt text](public/flowtest_1.gif)
+## Documentation 📝
 
-## 👨‍💻 Developers
+https://flowtestai.gitbook.io/flowtestai
 
-FlowTest has 2 major components -
+💡 We are proud to announce that we were recently featured in a LangChain blog post. You can read the article here.
 
-- `server`: Node backend to serve API requests
-- `src`: React frontend
+## Setup
 
-### Prerequisite
+## Production 🚀
 
-- Install npm
-  ```bash
-  npm install -g npm
-  ```
-- NodeJS >= 18.0.0
+FlowTestAI is an electron app that runs entirely in your local environment interacting with your local file system just like other IDE(s) out there like VSCode, Intellij etc. The platform-specific binaries are available for download from our GitHub releases. We currently offer binaries for macOS, with versions for Windows and Linux under development 🚧. If you require a binary for a specific platform, please let us know in the Discussions section. We will prioritize your request accordingly.
 
-### Setup
+## Development 🔧
 
 1. Clone the repository
    ```bash
@@ -40,26 +31,26 @@ FlowTest has 2 major components -
    ```bash
    cd FlowTest
    ```
-3. Install all dependencies of all modules:
+3. Clean any previously installed dependencies:
+   ```bash
+   npm run clean
+   ```
+4. Install all dependencies of all modules:
    ```bash
    npm install
-   ```
-4. Rename `.env.example` to `.env` and enter your cerdentials, for instance
-   ```bash
-   OPENAI_API_KEY={API_KEY_VALUE}
-   PORT=3500
-   ...
    ```
 5. Start the app:
    ```bash
    npm start
    ```
-   You can now access the app on [http://localhost:3500](http://localhost:3500)
+   The app should start as a normal desktop app
 
-## 🙋 Support
+## Support 🙋
 
-Feel free to ask any questions, raise problems, and request new features in [discussion](https://github.com/FlowTestAI/FlowTest/discussions)
+- ❓ QNA: feel free to ask questions, request new features or start a constructive discussion here [discussion](https://github.com/FlowTestAI/FlowTest/discussions)
+- 🐛 Issues: Feel free to raise issues here [issues](https://github.com/FlowTestAI/FlowTest/issues) (contributing guidelines coming soon..)
+- 🔄 Integration: If you want to explore how you can use this tool in your day to day activities or integrate with your existing stack or in general want to chat, you can reach out to us at any of our social media handles or email me at jsajal1993@gmail.com.
 
-## 📄 License
+## License 📄
 
 Source code in this repository is made available under the [MIT License](LICENSE.md).

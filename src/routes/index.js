@@ -1,7 +1,6 @@
-import { useRoutes } from "react-router";
-import FlowRoutes from "./FlowRoutes";
-import MainRoutes from "./MainRoutes";
+import { useRoutes } from 'react-router';
+import Main from 'routes/Main';
 
 export default function Routes() {
-    return useRoutes([MainRoutes, FlowRoutes]);
+  return useRoutes([Main]);
 }

@@ -52,7 +52,7 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
 
 - ❓ QNA: feel free to ask questions, request new features or start a constructive discussion here [discussion](https://github.com/FlowTestAI/FlowTest/discussions)
 - 🐛 Issues: Feel free to raise issues here [issues](https://github.com/FlowTestAI/FlowTest/issues) (contributing guidelines coming soon..)
-- 🔄 Integration: If you want to explore how you can use this tool in your day to day activities or integrate with your existing stack or in general want to chat, you can reach out to us at any of our social media handles or email me at jsajal1993@gmail.com.
+- 🔄 Integration: If you want to explore how you can use this tool in your day to day activities or integrate with your existing stack or in general want to chat, you can reach out to us at any of our [social media handles](https://flowtestai.gitbook.io/flowtestai) or email me at jsajal1993@gmail.com.
 
 ## License 📄
 

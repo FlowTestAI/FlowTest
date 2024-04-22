@@ -9,6 +9,16 @@ const registerRendererEventHandlers = require('./src/ipc/collection');
 let mainWindow;
 let watcher;
 
+if (process.env.NODE_ENV === 'production') {
+  const noop = () => {};
+  console.log = noop;
+  console.info = noop;
+  console.error = noop;
+  console.warn = noop;
+  console.debug = noop;
+  console.trace = noop;
+}
+
 app.on('ready', async () => {
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
@@ -17,6 +27,7 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 768,
+    icon: path.join(__dirname, 'assets/MyIcon.png'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,

@@ -3,7 +3,7 @@
   "productName": "FlowTestAI",
   "version": "1.0.0",
   "homepage": "https://github.com/FlowTestAI/FlowTest/tree/main",
-  "description": "OpenSource IDE for designing API powered flows",
+  "description": "GenAI powered OpenSource IDE for API first workflows",
   "main": "electron-main.js",
   "bugs": {
     "url": "https://github.com/FlowTestAI/FlowTest/issues"
@@ -11,8 +11,8 @@
   "scripts": {
     "start": "electron .",
     "test": "jest",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "pack": "NODE_ENV=production electron-builder --dir",
+    "dist": "NODE_ENV=production electron-builder"
   },
   "author": "Sajal Jain <jsajal1993@gmail.com>",
   "license": "MIT",
@@ -56,7 +56,8 @@
       "category": "public.app-category.developer-tools",
       "identity": "Sajal Jain (Z25C545DT5)",
       "hardenedRuntime": true,
-      "gatekeeperAssess": false
+      "gatekeeperAssess": false,
+      "icon": "assets/MyIcon.icns"
     },
     "linux": {
       "target": [

@@ -7,7 +7,7 @@ import Content from 'components/molecules/sidebar/content';
 const SideBar = () => {
   const collections = useCollectionStore((state) => state.collections);
   return (
-    <div className='flex-auto overflow-scroll'>
+    <div className='flex-auto overflow-auto'>
       <SideBarHeader />
       <>{collections.length != 0 ? <Content collections={collections} /> : <Empty />}</>
     </div>

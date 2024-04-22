@@ -12,7 +12,7 @@ const Environments = ({ collections }) => {
 
   return (
     <div
-      className='h-[87vh] flex-auto overflow-scroll'
+      className='h-[87vh] flex-auto overflow-auto'
       onClick={(event) => {
         const clickFromElementDataSet = event.target.dataset;
         const clickFrom = clickFromElementDataSet?.clickFrom;

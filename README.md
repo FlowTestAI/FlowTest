@@ -5,6 +5,8 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/FlowTestAI?style=social)](https://twitter.com/FlowTestAI)
 [![Chat on Discord](https://img.shields.io/badge/chat-Discord-7289DA?logo=discord)](https://discord.gg/Pf9tdSjPeF)
 
+💡 We are proud to announce that we were recently featured in a [LangChain](https://blog.langchain.dev/empowering-development-with-flowtestai/) blog post.
+
 FlowTestAI stands as the world’s first GenAI powered OpenSource Integrated Development Environment (IDE) specifically designed to craft, visualize, and manage API-first workflows. Characterized by its speed, lightweight architecture, and localalized operation, FlowTestAI safeguards privacy while facilitating the seamless integration of API driven workflows.
 
 It works as a normal desktop app and interacts directly with your local file system as other IDE(s) like VSCode, Intellij etc. This not only safeguards privacy but helps one to collaborate with others via git or any version control system.
@@ -17,8 +19,6 @@ It works as a normal desktop app and interacts directly with your local file sys
 ## Documentation 📝
 
 https://flowtestai.gitbook.io/flowtestai
-
-💡 We are proud to announce that we were recently featured in a LangChain blog post. You can read the article here.
 
 ## Setup
 

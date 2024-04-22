@@ -52,7 +52,13 @@
       "target": "nsis"
     },
     "mac": {
-      "target": "dmg",
+      "target": {
+        "target": "default",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      },
       "category": "public.app-category.developer-tools",
       "identity": "Sajal Jain (Z25C545DT5)",
       "hardenedRuntime": true,

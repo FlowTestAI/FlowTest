@@ -6,6 +6,7 @@
 [![Chat on Discord](https://img.shields.io/badge/chat-Discord-7289DA?logo=discord)](https://discord.gg/Pf9tdSjPeF)
 
 💡 We are proud to announce that we were recently featured in a [LangChain](https://blog.langchain.dev/empowering-development-with-flowtestai/) blog post.
+🔓 Unlock use cases by understanding our motivation [dev.to] (https://dev.to/flowtestai/launching-flowtestai-ide-for-api-first-workflows-integrations-and-automations-30hd)
 
 FlowTestAI stands as the world’s first GenAI powered OpenSource Integrated Development Environment (IDE) specifically designed to craft, visualize, and manage API-first workflows. Characterized by its speed, lightweight architecture, and localalized operation, FlowTestAI safeguards privacy while facilitating the seamless integration of API driven workflows.
 

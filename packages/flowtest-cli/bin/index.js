@@ -8,6 +8,42 @@ const { serialize } = require('../../flowtest-electron/src/utils/flowparser/pars
 const Graph = require('../graph/Graph');
 const { cloneDeep } = require('lodash');
 
+const omelette = require('omelette');
+
+// Initialize tab completion
+const completion = omelette('flow');
+
+completion.on('complete', (fragment, data) => {
+  if (data.line.endsWith('flow run --file ')) {
+    completion.reply([]);
+  } else {
+    // Dynamically list directories and files as suggestions
+    const fs = require('fs');
+    const path = require('path');
+
+    const lineParts = data.line.split(' ');
+    const basePath = lineParts[lineParts.length - 1];
+
+    try {
+      const items = fs.readdirSync(basePath, { withFileTypes: true });
+      //   console.log(`Base path: ${basePath}`);
+      //   console.log(`Items: ${JSON.stringify(items)}`);
+      const results = items.map((item) => path.join(basePath, item.name) + (item.isDirectory() ? '/' : ''));
+      completion.reply(results);
+    } catch (error) {
+      completion.reply([]);
+    }
+  }
+});
+
+completion.init();
+
+if (~process.argv.indexOf('--completion')) {
+  completion.setupShellInitFile();
+  console.log('Run `source ~/.bashrc` or restart your terminal to activate completion.');
+  process.exit();
+}
+
 // Define the CLI application using yargs
 const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 <command> [options]')

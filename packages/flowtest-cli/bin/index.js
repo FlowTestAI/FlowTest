@@ -29,15 +29,30 @@ const argv = yargs(hideBin(process.argv))
         try {
           const flowData = serialize(JSON.parse(content));
           // find all complex nodes and verify if their paths are reachable before executing graph
-          console.log(chalk.green(JSON.stringify(flowData)));
-          const g = new Graph(cloneDeep(flowData.nodes), cloneDeep(flowData.edges), Date.now(), {}, []);
+          // check for accessId and accessKey then generate gradle link
+          // output json output to a file
+          // option to specify env file
+          //console.log(chalk.green(JSON.stringify(flowData)));
+          const startTime = Date.now();
+          const g = new Graph(cloneDeep(flowData.nodes), cloneDeep(flowData.edges), startTime, {}, []);
+          console.log(chalk.yellow('Running Graph \n'));
           const result = await g.run();
-          console.log(chalk.green(JSON.stringify(result)));
+          console.log('\n');
+          if (result.status === 'Success') {
+            console.log(chalk.bold('Graph Run: ') + chalk.green(`   ✓ `) + chalk.dim(result.status));
+          } else {
+            console.log(chalk.bold('Graph Run: ') + chalk.red(`   ✕ `) + chalk.dim(result.status));
+          }
+          console.log(chalk.bold('Total Time: ') + chalk.dim(`${Date.now() - startTime} ms`));
+          process.exit(1);
+          //console.log(chalk.green(JSON.stringify(result)));
         } catch (error) {
           console.error(chalk.red(`Failed to parse ${argv.file}`));
+          process.exit(1);
         }
       } else {
         console.error(chalk.red('Input file is not a flow file'));
+        process.exit(1);
       }
     },
   )

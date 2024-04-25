@@ -6,6 +6,7 @@ const complexNode = require('./compute/complexnode');
 const assertNode = require('./compute/assertnode');
 const requestNode = require('./compute/requestNode');
 const setVarNode = require('./compute/setvarnode');
+const chalk = require('chalk');
 
 class Graph {
   constructor(nodes, edges, startTime, initialEnvVars, initialLogs) {
@@ -62,11 +63,13 @@ class Graph {
     const prevNodeOutputData = this.#computeDataFromPreviousNodes(node);
 
     try {
-      console.debug('Executing node: ', node);
+      //console.debug('Executing node: ', node);
 
       if (node.type === 'outputNode') {
-        this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
+        //this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
         //useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
+        console.log('Output Node');
+        console.log(chalk.green(`   ✓ `) + chalk.dim(`${JSON.stringify(prevNodeOutputData)}`));
         result = {
           status: 'Success',
           data: prevNodeOutputData,
@@ -82,14 +85,16 @@ class Graph {
           this.logs,
         );
         if (eNode.evaluate()) {
-          this.logs.push('Result: true');
+          //this.logs.push('Result: true');
+          console.log(chalk.green(`   ✓ `) + chalk.dim('True'));
           result = {
             status: 'Success',
             data: prevNodeOutputData,
             output: true,
           };
         } else {
-          this.logs.push('Result: false');
+          //this.logs.push('Result: false');
+          console.log(chalk.red(`   ✕ `) + chalk.dim('False'));
           result = {
             status: 'Success',
             data: prevNodeOutputData,
@@ -104,7 +109,8 @@ class Graph {
           return new Promise((resolve) => setTimeout(resolve, Math.min(ms, this.timeout)));
         };
         await wait(delay);
-        this.logs.push(`Wait for: ${delay} ms`);
+        //this.logs.push(`Wait for: ${delay} ms`);
+        console.log('Delay Node: ' + chalk.green(`....waiting for: ${delay} ms`));
         result = {
           status: 'Success',
         };
@@ -113,12 +119,15 @@ class Graph {
       if (node.type === 'authNode') {
         const aNode = new authNode(node.data, this.envVariables);
         this.auth = node.data.type ? aNode.evaluate() : undefined;
+        console.log('Authentication Node');
+        console.log(chalk.green(`   ✓ `) + chalk.dim('.....setting authentication'));
         result = {
           status: 'Success',
         };
       }
 
       if (node.type === 'requestNode') {
+        console.log('Request Node');
         const rNode = new requestNode(node.data, prevNodeOutputData, this.envVariables, this.auth, this.logs);
         result = await rNode.evaluate();
         // add post response variables if any
@@ -206,11 +215,14 @@ class Graph {
     // });
     this.graphRunNodeOutput = {};
 
-    this.logs.push('Start Flowtest');
+    //this.logs.push('Start Flowtest');
+    console.log(chalk.green('Start Flowtest'));
     const startNode = this.nodes.find((node) => node.type === 'startNode');
     if (startNode == undefined) {
-      this.logs.push('No start node found');
-      this.logs.push('End Flowtest');
+      //this.logs.push('No start node found');
+      //this.logs.push('End Flowtest');
+      console.log(chalk.red(`✕ `) + chalk.red('No start node found'));
+      console.log(chalk.red('End Flowtest'));
       return {
         status: 'Success',
         logs: this.logs,
@@ -223,17 +235,20 @@ class Graph {
     if (connectingEdge != undefined) {
       const firstNode = this.nodes.find((node) => node.id === connectingEdge.target);
       const result = await this.#computeNode(firstNode);
-      // if (result.status == 'Failed') {
-      //   console.debug('Flow failed at: ', result.node);
-      // }
-      this.logs.push('End Flowtest');
+      if (result.status == 'Failed') {
+        console.log(chalk.red('End Flowtest'));
+      } else {
+        console.log(chalk.green('End Flowtest'));
+      }
+      //this.logs.push('End Flowtest');
       return {
         status: result.status,
         logs: this.logs,
         envVars: this.envVariables,
       };
     } else {
-      this.logs.push('End Flowtest');
+      //this.logs.push('End Flowtest');
+      console.log(chalk.green('End Flowtest'));
       return {
         status: 'Success',
         logs: this.logs,

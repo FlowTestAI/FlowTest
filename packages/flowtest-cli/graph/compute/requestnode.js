@@ -1,6 +1,7 @@
 const { computeNodeVariables, computeVariables } = require('./utils');
 const Node = require('./node');
 const axios = require('axios');
+const chalk = require('chalk');
 
 const newAbortSignal = () => {
   const abortController = new AbortController();
@@ -27,7 +28,7 @@ class requestNode extends Node {
   }
 
   async evaluate() {
-    console.log('Evaluating request node');
+    //console.log('Evaluating request node');
     // step1 evaluate pre request variables of this node
     const evalVariables = computeNodeVariables(this.nodeData.preReqVars, this.prevNodeOutputData);
 
@@ -42,22 +43,25 @@ class requestNode extends Node {
     // step 3
     const options = this.formulateRequest(finalUrl, variablesDict);
 
-    console.debug('Avialable variables: ', variablesDict);
-    console.debug('Evaluated Url: ', finalUrl);
+    //console.debug('Avialable variables: ', variablesDict);
+    //console.debug('Evaluated Url: ', finalUrl);
+    console.log(chalk.green(`   ✓ `) + chalk.dim(`url = ${finalUrl}`));
 
     const res = await this.runHttpRequest(options);
 
     if (res.error) {
       //console.debug('Failure at node: ', node);
       //console.debug('Error encountered: ', JSON.stringify(res.error));
-      this.logs.push(`Request failed: ${JSON.stringify(res.error)}`);
+      //this.logs.push(`Request failed: ${JSON.stringify(res.error)}`);
+      console.log(chalk.red(`   ✕ `) + chalk.dim(`Request failed: ${JSON.stringify(res.error)}`));
       return {
         status: 'Failed',
         //node,
       };
     } else {
-      this.logs.push(`Request successful: ${JSON.stringify(res)}`);
-      console.debug('Response: ', JSON.stringify(res));
+      //this.logs.push(`Request successful: ${JSON.stringify(res)}`);
+      //console.debug('Response: ', JSON.stringify(res));
+      console.log(chalk.green(`   ✓ `) + chalk.dim(`Request successful: ${JSON.stringify(res)}`));
       if (this.nodeData.postRespVars) {
         const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, res.data);
         return {
@@ -147,7 +151,6 @@ class requestNode extends Node {
           },
         };
       } else {
-        console.error(error);
         return {
           error: {
             message: 'An unknown error occurred while running the request',

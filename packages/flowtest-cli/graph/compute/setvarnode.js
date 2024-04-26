@@ -23,7 +23,7 @@ class setVarNode extends Node {
   }
 
   evaluate() {
-    console.log('Evaluating set variable node');
+    //console.log('Evaluating set variable node');
     if (this.nodeData.variable) {
       if (this.nodeData.variable.name && this.nodeData.variable.name.trim() != '') {
         const vName = this.nodeData.variable.name;

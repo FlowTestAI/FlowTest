@@ -2,13 +2,31 @@
 
 const { cloneDeep } = require('lodash');
 const authNode = require('./compute/authnode');
-const complexNode = require('./compute/complexnode');
+// const complexNode = require('./compute/complexnode');
 const assertNode = require('./compute/assertnode');
 const requestNode = require('./compute/requestNode');
 const setVarNode = require('./compute/setvarnode');
 const chalk = require('chalk');
 const path = require('path');
+const readFile = require('../../flowtest-electron/src/utils/filemanager/readfile');
 const { serialize } = require('../../flowtest-electron/src/utils/flowparser/parser');
+const Node = require('./compute/node');
+
+class complexNode extends Node {
+  constructor(nodes, edges, startTime, timeout, initialEnvVars, initialLogs) {
+    super('complexNode');
+    try {
+      this.internalGraph = new Graph(nodes, edges, startTime, timeout, initialEnvVars, initialLogs);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async evaluate() {
+    //console.log('Evaluating a complex node (nested graph):');
+    return this.internalGraph.run();
+  }
+}
 
 class Graph {
   constructor(nodes, edges, startTime, timeout, initialEnvVars, initialLogs) {
@@ -110,19 +128,18 @@ class Graph {
         const wait = (ms) => {
           return new Promise((resolve) => setTimeout(resolve, Math.min(ms, this.timeout)));
         };
+        console.log('Delay Node: ' + chalk.green(`....waiting for: ${delay} ms`));
         await wait(delay);
         //this.logs.push(`Wait for: ${delay} ms`);
-        console.log('Delay Node: ' + chalk.green(`....waiting for: ${delay} ms`));
         result = {
           status: 'Success',
         };
       }
 
       if (node.type === 'authNode') {
+        console.log('Authentication Node');
         const aNode = new authNode(node.data, this.envVariables);
         this.auth = node.data.type ? aNode.evaluate() : undefined;
-        console.log('Authentication Node');
-        console.log(chalk.green(`   ✓ `) + chalk.dim('.....setting authentication'));
         result = {
           status: 'Success',
         };
@@ -164,10 +181,12 @@ class Graph {
       }
 
       if (node.type === 'setVarNode') {
+        console.log('Set Variable Node');
         const sNode = new setVarNode(node.data, prevNodeOutputData, this.envVariables);
         const newVariable = sNode.evaluate();
         if (newVariable != undefined) {
-          this.logs.push(`Evaluate variable: ${JSON.stringify(newVariable)}`);
+          //this.logs.push(`Evaluate variable: ${JSON.stringify(newVariable)}`);
+          console.log(chalk.green(`   ✓ `) + chalk.dim(`Evaluate variable: ${JSON.stringify(newVariable)}`));
           this.envVariables = {
             ...this.envVariables,
             ...newVariable,
@@ -179,6 +198,7 @@ class Graph {
       }
 
       if (this.#checkTimeout()) {
+        console.log(chalk.red(`Timeout of ${this.timeout} ms exceeded, stopping graph run`));
         throw `Timeout of ${this.timeout} ms exceeded, stopping graph run`;
       }
     } catch (err) {
@@ -263,4 +283,4 @@ class Graph {
   }
 }
 
-module.exports = Graph;
+module.exports = { Graph };

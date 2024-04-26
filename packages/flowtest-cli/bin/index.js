@@ -5,7 +5,7 @@ const { hideBin } = require('yargs/helpers');
 const chalk = require('chalk');
 const readFile = require('../../flowtest-electron/src/utils/filemanager/readfile');
 const { serialize } = require('../../flowtest-electron/src/utils/flowparser/parser');
-const Graph = require('../graph/Graph');
+const { Graph } = require('../graph/Graph');
 const { cloneDeep } = require('lodash');
 const dotenv = require('dotenv');
 
@@ -97,8 +97,6 @@ const argv = yargs(hideBin(process.argv))
             [],
           );
           console.log(chalk.yellow('Running Graph \n'));
-          const result = await g.run();
-          console.log('\n');
           if (flowData.nodes.find((n) => n.type === 'complexNode')) {
             console.log(
               chalk.blue(
@@ -106,6 +104,8 @@ const argv = yargs(hideBin(process.argv))
               ),
             );
           }
+          const result = await g.run();
+          console.log('\n');
           if (result.status === 'Success') {
             console.log(chalk.bold('Graph Run: ') + chalk.green(`   ✓ `) + chalk.dim(result.status));
           } else {

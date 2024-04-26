@@ -7,6 +7,7 @@ const readFile = require('../../flowtest-electron/src/utils/filemanager/readfile
 const { serialize } = require('../../flowtest-electron/src/utils/flowparser/parser');
 const Graph = require('../graph/Graph');
 const { cloneDeep } = require('lodash');
+const dotenv = require('dotenv');
 
 const omelette = require('omelette');
 
@@ -14,7 +15,7 @@ const omelette = require('omelette');
 const completion = omelette('flow');
 
 completion.on('complete', (fragment, data) => {
-  if (data.line.endsWith('flow run --file ')) {
+  if (data.line.endsWith('--file ') || data.line.endsWith('--env ')) {
     completion.reply([]);
   } else {
     // Dynamically list directories and files as suggestions
@@ -44,19 +45,39 @@ if (~process.argv.indexOf('--completion')) {
   process.exit();
 }
 
+const getEnvVariables = (pathname) => {
+  const content = readFile(pathname);
+  const buf = Buffer.from(content);
+  const parsed = dotenv.parse(buf);
+  return parsed;
+};
+
 // Define the CLI application using yargs
 const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 <command> [options]')
   .command(
     'run',
     'Run a flow',
-    {
-      file: {
-        description: 'path of the flow to run',
-        alias: 'f',
-        type: 'string',
-        demandOption: true,
-      },
+    (yargs) => {
+      return yargs
+        .option('file', {
+          alias: 'f',
+          describe: 'path of the flow to run',
+          demandOption: true,
+          type: 'string',
+        })
+        .option('env', {
+          alias: 'e',
+          describe: 'path of the environment file',
+          demandOption: false,
+          type: 'string',
+        })
+        .option('timeout', {
+          alias: 't',
+          describe: 'timeout for graph run in ms',
+          demandOption: false,
+          type: 'number',
+        });
     },
     async (argv) => {
       console.log(`Reading file: ${argv.file}`);
@@ -64,16 +85,27 @@ const argv = yargs(hideBin(process.argv))
         const content = readFile(argv.file);
         try {
           const flowData = serialize(JSON.parse(content));
-          // find all complex nodes and verify if their paths are reachable before executing graph
-          // check for accessId and accessKey then generate gradle link
           // output json output to a file
-          // option to specify env file
           //console.log(chalk.green(JSON.stringify(flowData)));
           const startTime = Date.now();
-          const g = new Graph(cloneDeep(flowData.nodes), cloneDeep(flowData.edges), startTime, {}, []);
+          const g = new Graph(
+            cloneDeep(flowData.nodes),
+            cloneDeep(flowData.edges),
+            startTime,
+            argv.timeout ? argv.timeout : 60000,
+            argv.env ? getEnvVariables(argv.env) : {},
+            [],
+          );
           console.log(chalk.yellow('Running Graph \n'));
           const result = await g.run();
           console.log('\n');
+          if (flowData.nodes.find((n) => n.type === 'complexNode')) {
+            console.log(
+              chalk.blue(
+                '[Note] This flow contains nested flows so run it from parent directory of collection. Ignore if already doing that. \n',
+              ),
+            );
+          }
           if (result.status === 'Success') {
             console.log(chalk.bold('Graph Run: ') + chalk.green(`   ✓ `) + chalk.dim(result.status));
           } else {
@@ -83,7 +115,7 @@ const argv = yargs(hideBin(process.argv))
           process.exit(1);
           //console.log(chalk.green(JSON.stringify(result)));
         } catch (error) {
-          console.error(chalk.red(`Failed to parse ${argv.file}`));
+          console.error(chalk.red(`Error running flow due to: ${error}`));
           process.exit(1);
         }
       } else {

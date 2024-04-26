@@ -7,13 +7,15 @@ const assertNode = require('./compute/assertnode');
 const requestNode = require('./compute/requestNode');
 const setVarNode = require('./compute/setvarnode');
 const chalk = require('chalk');
+const path = require('path');
+const { serialize } = require('../../flowtest-electron/src/utils/flowparser/parser');
 
 class Graph {
-  constructor(nodes, edges, startTime, initialEnvVars, initialLogs) {
+  constructor(nodes, edges, startTime, timeout, initialEnvVars, initialLogs) {
     this.nodes = nodes;
     this.edges = edges;
     this.logs = initialLogs;
-    this.timeout = 60000;
+    this.timeout = timeout;
     this.startTime = startTime;
     this.graphRunNodeOutput = {};
     this.auth = undefined;
@@ -140,12 +142,15 @@ class Graph {
       }
 
       if (node.type === 'complexNode') {
-        const flowData = await readFlowTestSync(node.data.relativePath);
+        console.log('Complex Node (Nested graph)');
+        const content = readFile(path.join(process.cwd(), node.data.relativePath));
+        const flowData = serialize(JSON.parse(content));
         if (flowData) {
           const cNode = new complexNode(
             cloneDeep(flowData.nodes),
             cloneDeep(flowData.edges),
             this.startTime,
+            this.timeout,
             this.envVariables,
             this.logs,
           );

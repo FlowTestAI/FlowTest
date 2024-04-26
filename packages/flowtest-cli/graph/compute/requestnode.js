@@ -153,7 +153,7 @@ class requestNode extends Node {
       } else {
         return {
           error: {
-            message: 'An unknown error occurred while running the request',
+            message: `An unknown error occurred while running the request : ${error}`,
           },
         };
       }

@@ -1,0 +1,25 @@
+{
+  "name": "flowtest-cli",
+  "version": "1.0.0",
+  "description": "CLI to run flow from command line",
+  "main": "bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "flow": "./bin/index.js"
+  },
+  "author": "Sajal Jain <jsajal1993@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "boxen": "^7.1.1",
+    "chalk": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security",
+    "lodash": "^4.17.21",
+    "omelette": "^0.4.17",
+    "path": "^0.12.7",
+    "yargs": "^17.7.2"
+  }
+}

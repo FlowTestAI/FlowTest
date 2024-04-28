@@ -14,7 +14,6 @@ It works as a normal desktop app and interacts directly with your local file sys
 
 <img width="1728" alt="Screenshot 2024-04-18 at 5 41 43 PM" src="https://github.com/FlowTestAI/FlowTest/assets/5829490/c04f6e3e-fe69-4d25-a008-ba558c8fe149">
 
-
 🚧 We are actively working on launching a CLI. The CLI allows you to run API first workflows created using FlowTestAI from command line interface making it easier to automate and run them in a CI/CD (continuous integration/development) fashion.
 
 ## Documentation 📝
@@ -39,15 +38,15 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
    ```
 3. Clean any previously installed dependencies:
    ```bash
-   npm run clean
+   pnpm clean
    ```
 4. Install all dependencies of all modules:
    ```bash
-   npm install
+   pnpm install
    ```
 5. Start the app:
    ```bash
-   npm start
+   pnpm start
    ```
    The app should start as a normal desktop app
 

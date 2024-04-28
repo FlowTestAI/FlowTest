@@ -33,18 +33,22 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
    git clone https://github.com/FlowTestAI/FlowTest.git
    ```
 2. Go into repository folder
+
    ```bash
    cd FlowTest
    ```
-3. Clean any previously installed dependencies:
+
+3. This project uses pnpm as its package manager. Install it if you haven't already:
+
    ```bash
-   pnpm clean
+   npm install -g pnpm
    ```
+
 4. Install all dependencies of all modules:
    ```bash
    pnpm install
    ```
-5. Start the app:
+5. Build and start the app:
    ```bash
    pnpm start
    ```

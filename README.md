@@ -38,13 +38,13 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
    cd FlowTest
    ```
 
-3. This project uses pnpm as its package manager. Install it if you haven't already:
+3. This project uses pnpm and corepack. The below version of pnpm is required. Install it if you haven't already:
 
    ```bash
-   npm install -g pnpm
+   npm install -g pnpm9.0.6
    ```
 
-4. Install all dependencies of all modules:
+4. Install all project dependencies:
    ```bash
    pnpm install
    ```

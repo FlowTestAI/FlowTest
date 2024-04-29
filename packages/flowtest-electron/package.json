@@ -8,6 +8,9 @@
   "bugs": {
     "url": "https://github.com/FlowTestAI/FlowTest/issues"
   },
+  "engines": {
+    "node": ">=18.17.0"
+  },
   "scripts": {
     "start": "electron .",
     "test": "jest",

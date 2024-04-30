@@ -14,7 +14,6 @@ It works as a normal desktop app and interacts directly with your local file sys
 
 <img width="1728" alt="Screenshot 2024-04-18 at 5 41 43 PM" src="https://github.com/FlowTestAI/FlowTest/assets/5829490/c04f6e3e-fe69-4d25-a008-ba558c8fe149">
 
-
 🚧 We are actively working on launching a CLI. The CLI allows you to run API first workflows created using FlowTestAI from command line interface making it easier to automate and run them in a CI/CD (continuous integration/development) fashion.
 
 ## Documentation 📝
@@ -34,22 +33,36 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
    git clone https://github.com/FlowTestAI/FlowTest.git
    ```
 2. Go into repository folder
+
    ```bash
    cd FlowTest
    ```
-3. Clean any previously installed dependencies:
+
+3. This project uses pnpm. Use [corepack](https://github.com/nodejs/corepack) to enable the required pnpm version:
+
    ```bash
-   npm run clean
+   corepack enable pnpm
    ```
-4. Install all dependencies of all modules:
+
+   or install with npm
+
    ```bash
-   npm install
+   npm install -g pnpm@9.0.6
    ```
-5. Start the app:
+
+4. Install all project dependencies:
    ```bash
-   npm start
+   pnpm install
    ```
+5. Build and start the app:
+
+   ```bash
+   pnpm start
+   ```
+
    The app should start as a normal desktop app
+
+   NOTE: if you use npm and corepack to install pnpm you will have two instances of pnpm. Make sure the version you're using is the correct version for the repo. Check the [pnpm docs](https://pnpm.io/installation) and [corepack](https://github.com/nodejs/corepack) for troubleshooting. Pnpm installed with npm will overrun corepacks pnpm instance.
 
 ## Support 🙋
 

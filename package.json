@@ -3,6 +3,39 @@
   "version": "1.0.0",
   "private": true,
   "homepage": ".",
+  "packageManager": "pnpm@9.0.6",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "scripts": {
+    "start": "pnpm run build && cd packages/flowtest-electron && pnpm start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "postinstall": "cd packages/flowtest-electron && pnpm install",
+    "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
+    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "clean": "rm -rf node_modules/ && rm -rf packages/flowtest-electron/node_modules/"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -37,35 +70,6 @@
     "tailwindcss": "^3.4.1",
     "web-vitals": "^2.1.4",
     "zustand": "^4.5.2"
-  },
-  "scripts": {
-    "start": "npm run build && cd packages/flowtest-electron && npm start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "postinstall": "cd packages/flowtest-electron && npm install",
-    "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
-    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
-    "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-    "clean": "rm -rf node_modules/ && rm -rf packages/flowtest-electron/node_modules/"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",

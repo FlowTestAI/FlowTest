@@ -57,6 +57,19 @@ export const useTabStore = create((set, get) => ({
       console.log(existingTab);
     }
   },
+  // these state changes are meant to be triggered by canvas in focus
+  updateFlowTestViewport: (viewport) => {
+    if (get().focusTabId) {
+      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
+      if (existingTab) {
+        if (!existingTab.flowDataDraft) {
+          existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+        }
+        existingTab.flowDataDraft.viewport = viewport;
+      }
+      console.log(existingTab);
+    }
+  },
   addEnvTab: (env, collectionId) => {
     const existingTab = get().tabs.find(
       (t) =>

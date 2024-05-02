@@ -153,6 +153,10 @@ const deserialize = (flowData) => {
         textData.graph.metadata.edges[edge.id] = _edge;
       });
     }
+
+    if (flowData.viewport) {
+      textData.graph.metadata.viewport = flowDataCopy.viewport;
+    }
   }
 
   return textData;
@@ -162,6 +166,7 @@ const serialize = (textData) => {
   const flowData = {};
   flowData.nodes = [];
   flowData.edges = [];
+  flowData.viewport = { x: 0, y: 0, zoom: 1 };
 
   // we don't want to modify original object
   const textDataCopy = cloneDeep(textData);
@@ -242,6 +247,10 @@ const serialize = (textData) => {
           ...value,
         });
       });
+
+      if (textDataCopy.graph.metadata.viewport) {
+        flowData.viewport = textDataCopy.graph.metadata.viewport;
+      }
     }
   } else {
     throw new Error('Version not recognized');

@@ -36,6 +36,7 @@ export const init = (flowData) => {
     return {
       nodes: cloneDeep(flowData.nodes),
       edges: cloneDeep(flowData.edges),
+      viewport: cloneDeep(flowData.viewport),
     };
   } else if (flowData && flowData.nodes && !flowData.edges) {
     // AI prompt generated
@@ -60,6 +61,7 @@ export const init = (flowData) => {
     return {
       nodes,
       edges,
+      viewport: cloneDeep(initFlowData.viewport),
     };
   } else {
     return cloneDeep(initFlowData);
@@ -75,12 +77,13 @@ const selector = (state) => ({
   setNodes: state.setNodes,
   setEdges: state.setEdges,
   setLogs: state.setLogs,
+  viewport: state.viewport,
+  setViewport: state.setViewport,
 });
 
 const Flow = ({ collectionId }) => {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, setLogs } =
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, setLogs, viewport, setViewport } =
     useCanvasStore(selector);
-  //console.log(nodes);
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
@@ -197,6 +200,8 @@ const Flow = ({ collectionId }) => {
     runnableEdges(false);
   };
 
+  reactFlowInstance?.setViewport(viewport);
+
   return (
     <div className='flex-auto'>
       <ReactFlow
@@ -210,11 +215,17 @@ const Flow = ({ collectionId }) => {
         onInit={setReactFlowInstance}
         onDrop={onDrop}
         onDragOver={onDragOver}
-        //onNodeDragStop={() => setCanvasDirty()}
+        defaultViewport={{
+          x: viewport.x,
+          y: viewport.y,
+          zoom: viewport.zoom,
+        }}
+        onMoveEnd={(event, data) => {
+          setViewport(data);
+        }}
         isValidConnection={isValidConnection}
-        fitView
       >
-        <Controls>
+        <Controls onFitView={() => setViewport(reactFlowInstance.getViewport())}>
           <ControlButton
             className='p-1'
             onClick={async () => {

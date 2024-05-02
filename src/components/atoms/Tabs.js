@@ -6,8 +6,13 @@ import { isEqual } from 'lodash';
 import { OBJ_TYPES } from 'constants/Common';
 
 const tabUnsavedChanges = (tab) => {
-  if (tab.type === OBJ_TYPES.flowtest && tab.flowDataDraft && !isEqual(tab.flowData, tab.flowDataDraft)) {
-    return true;
+  if (tab.type === OBJ_TYPES.flowtest && tab.flowDataDraft) {
+    if (
+      !isEqual(tab.flowData.nodes, tab.flowDataDraft.nodes) ||
+      !isEqual(tab.flowData.edges, tab.flowDataDraft.edges)
+    ) {
+      return true;
+    }
   } else if (tab.type === OBJ_TYPES.environment && tab.variablesDraft && !isEqual(tab.variables, tab.variablesDraft)) {
     return true;
   } else {

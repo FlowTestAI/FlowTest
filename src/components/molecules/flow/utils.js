@@ -12,7 +12,12 @@ export const orderNodesByTags = (nodes) => {
       });
     });
   }
-  return result;
+  return Object.keys(result)
+    .sort()
+    .reduce((obj, key) => {
+      obj[key] = result[key];
+      return obj;
+    }, {});
 };
 
 export const compareTwoObjects = function (a, b) {
@@ -118,7 +123,6 @@ export const initFlowData = {
 };
 
 export const timeoutForGraphRun = [
-  { value: '60000', label: '1 minute' },
   { value: '300000', label: '5 minutes' },
   { value: '600000', label: '10 minutes' },
   { value: '900000', label: '15 minutes' },

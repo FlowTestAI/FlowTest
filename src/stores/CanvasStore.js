@@ -43,6 +43,7 @@ const useCanvasStore = create((set, get) => ({
   },
   setLogs: (logs) => {
     set({ logs });
+    useTabStore.getState().updateFlowTestLogs(get().logs);
   },
   setCollectionId: (collectionId) => {
     set({ collectionId });

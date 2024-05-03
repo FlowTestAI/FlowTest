@@ -26,6 +26,7 @@ export const useTabStore = create((set, get) => ({
       name: flowtest.name,
       pathname: flowtest.pathname,
       flowData: flowtest.flowData,
+      logs: [],
     };
 
     set((state) => ({ tabs: [...state.tabs, newTab] }));
@@ -66,6 +67,15 @@ export const useTabStore = create((set, get) => ({
           existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
         }
         existingTab.flowDataDraft.viewport = viewport;
+      }
+      console.log(existingTab);
+    }
+  },
+  updateFlowTestLogs: (logs) => {
+    if (get().focusTabId) {
+      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
+      if (existingTab) {
+        existingTab.logs = logs;
       }
       console.log(existingTab);
     }

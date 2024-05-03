@@ -28,7 +28,7 @@ const WorkspaceContent = () => {
       const result = init(focusTab.flowDataDraft ? focusTab.flowDataDraft : focusTab.flowData);
       setNodes(result.nodes);
       setEdges(result.edges);
-      setLogs([]);
+      setLogs(focusTab.logs);
       setCollectionId(focusTab.collectionId);
       setViewport(result.viewport);
     } else if (focusTab.type === OBJ_TYPES.environment) {

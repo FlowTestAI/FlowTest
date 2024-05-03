@@ -6,7 +6,7 @@ import useCanvasStore from 'stores/CanvasStore';
 import authNode from './compute/authnode';
 import complexNode from './compute/complexnode';
 import assertNode from './compute/assertnode';
-import requestNode from './compute/requestNode';
+import requestNode from './compute/requestnode';
 import setVarNode from './compute/setvarnode';
 
 class Graph {

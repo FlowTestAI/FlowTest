@@ -12,8 +12,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
-    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
+    "lint": "eslint . --ext .js,.json,.cjs",
+    "lint:fix": "eslint --fix . --ext .js,.json,.cjs",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "clean": "rm -rf node_modules/ && rm -rf packages/flowtest-electron/node_modules/ && rm -rf packages/flowtest-cli"
   },

@@ -46,14 +46,14 @@ This project is a monorepo. The code for the CLI is in the `package/flowtest-cli
 
 Here are some useful scripts for when you are developing:
 
-| Command          | Description                                             |
-| ---------------- | ------------------------------------------------------- |
-| `pnpm start`   | Builds and starts the FlowTest App on your desktop                 |
-| `pnpm build`   | Builds the application for development use   |
-| `pnpm format`    | Formats the code                                        |
-| `pnpm lint`      | Lints the code                                          |
-| `pnpm lint:fix`  | Lints the code and fixes any errors                     |
-| `pnpm clean`     | Deletes all node_modules in the project|
+| Command         | Description                                        |
+| --------------- | -------------------------------------------------- |
+| `pnpm start`    | Builds and starts the FlowTest App on your desktop |
+| `pnpm build`    | Builds the application for development use         |
+| `pnpm format`   | Formats the code                                   |
+| `pnpm lint`     | Lints the code                                     |
+| `pnpm lint:fix` | Lints the code and fixes any errors                |
+| `pnpm clean`    | Deletes all node_modules in the project            |
 
 When making commits, make sure to follow the [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/) guidelines, i.e. prepending the message with `feat:`, `fix:`, `chore:`, `docs:`, etc... You can use `git status` to double check which files have not yet been staged for commit:
 
@@ -65,7 +65,9 @@ git add <file> && git commit -m "feat/fix/chore/docs: commit message"
 
 Please make a manual, functional test of your changes.
 
-If your change should appear in the changelog, i.e. it changes some behavior of either the CLI or the outputted application, it must be captured by `changeset` which is done by running
+If your change should appear in the changelog, i.e. it changes some behavior of either the CLI or the outputted elctron application, it must be captured by `changeset`. If this does not apply to your contribution skip to the pr creation step.
+
+Run the changeset:
 
 ```bash
 pnpm changeset
@@ -84,7 +86,6 @@ gh pr create --web
 ```
 
 and fill out the title and body appropriately. Again, make sure to follow the [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/) guidelines for your title.
-
 
 ## Credits
 

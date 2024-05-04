@@ -15,7 +15,7 @@
     "lint": "eslint . --ext .js,.json,.cjs",
     "lint:fix": "eslint --fix . --ext .js,.json,.cjs",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-    "clean": "rm -rf node_modules/ && rm -rf packages/flowtest-electron/node_modules/ && rm -rf packages/flowtest-cli"
+    "clean": "rm -rf node_modules/ && rm -rf packages/flowtest-electron/node_modules/"
   },
   "eslintConfig": {
     "extends": [

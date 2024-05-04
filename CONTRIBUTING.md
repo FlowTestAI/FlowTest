@@ -55,15 +55,21 @@ Here are some useful scripts for when you are developing:
 | `pnpm lint:fix` | Lints the code and fixes any errors                |
 | `pnpm clean`    | Deletes all node_modules in the project            |
 
+### When you're done
+
+Please make a manual, functional test of your changes.
+
+Check for formatting and linting errors:
+
+```bash
+pnpm lint && pnpmt format
+```
+
 When making commits, make sure to follow the [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/) guidelines, i.e. prepending the message with `feat:`, `fix:`, `chore:`, `docs:`, etc... You can use `git status` to double check which files have not yet been staged for commit:
 
 ```bash
 git add <file> && git commit -m "feat/fix/chore/docs: commit message"
 ```
-
-### When you're done
-
-Please make a manual, functional test of your changes.
 
 If your change should appear in the changelog, i.e. it changes some behavior of either the CLI or the outputted elctron application, it must be captured by `changeset`. If this does not apply to your contribution skip to the pr creation step.
 

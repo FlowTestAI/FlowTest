@@ -4,6 +4,8 @@ import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import useCanvasStore from 'stores/CanvasStore';
+import JsonEditor from '../../../atoms/JsonEditor';
+import { toast } from 'react-toastify';
 
 const requestBodyTypeOptions = ['None', 'form-data', 'raw-json'];
 
@@ -29,6 +31,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
         const value = result;
 
         setRequestNodeBody(nodeId, 'form-data', {
+          key: nodeData.requestBody.body.key,
           value: value,
           name: name,
         });
@@ -40,11 +43,13 @@ const RequestBody = ({ nodeId, nodeData }) => {
   const handleFormDataKey = (e) => {
     setRequestNodeBody(nodeId, 'form-data', {
       key: e.target.value,
+      value: nodeData.requestBody.body.value,
+      name: nodeData.requestBody.body.name,
     });
   };
 
-  const handleRawJson = (e) => {
-    setRequestNodeBody(nodeId, 'raw-json', e.target.value);
+  const handleRawJson = (value) => {
+    setRequestNodeBody(nodeId, 'raw-json', value);
   };
 
   const handleClose = (option) => {
@@ -97,15 +102,28 @@ const RequestBody = ({ nodeId, nodeData }) => {
         </Menu>
       </div>
       {nodeData.requestBody && nodeData.requestBody.type === 'raw-json' && (
-        <div className='p-4 border-t border-neutral-300 bg-slate-50'>
-          <textarea
-            placeholder='Enter json'
-            className='w-full p-2 nodrag nowheel min-w-72'
-            name='username'
-            onChange={(e) => handleRawJson(e)}
-            rows={6}
-            value={nodeData.requestBody.body}
-          />
+        <div className='p-1 border-t border-neutral-300 bg-slate-50'>
+          <div className='w-full nodrag nowheel min-w-72'>
+            <button
+              onClick={() => {
+                try {
+                  const bodyJson = JSON.parse(nodeData.requestBody.body);
+                  const prettyBodyJson = JSON.stringify(bodyJson, null, 2);
+                  setRequestNodeBody(nodeId, 'raw-json', prettyBodyJson);
+                } catch (e) {
+                  toast.error('Unable to beautify. Invalid JSON format.');
+                }
+              }}
+            >
+              Beautify
+            </button>
+            <JsonEditor
+              placeholder='Enter json'
+              name='request-body-json'
+              onChange={(e) => handleRawJson(e)}
+              value={nodeData.requestBody.body}
+            />
+          </div>
         </div>
       )}
       {nodeData.requestBody && nodeData.requestBody.type === 'form-data' && (

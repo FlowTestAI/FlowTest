@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { PropTypes } from 'prop-types';
 import FlowNode from 'components/atoms/flow/FlowNode';
+import JsonEditor from 'components/atoms/JsonEditor';
 
 const OutputNode = ({ id, data }) => {
   return (
@@ -11,12 +12,13 @@ const OutputNode = ({ id, data }) => {
       handleRight={true}
       handleRightData={{ type: 'source' }}
     >
-      <div>
-        <textarea
+      <div className='w-full text-xs text-gray-900 border border-gray-300 rounded-lg nodrag nowheel min-h-96 min-w-80 bg-gray-50 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'>
+        <JsonEditor
           name='output-text'
-          value={data.output ? JSON.stringify(data.output, undefined, 4) : 'Run flow to see data'}
+          value={data.output ? JSON.stringify(data.output, null, 2) : 'Run flow to see data'}
           placeholder='Run flow to see data'
-          className='nodrag nowheel min-h-80 w-full min-w-60 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-xs text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
+          readOnly={true}
+          maxLines={20}
         />
       </div>
     </FlowNode>

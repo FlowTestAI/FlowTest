@@ -255,10 +255,7 @@ const useCanvasStore = create((set, get) => ({
               ...node.data,
               requestBody: {
                 type,
-                body: {
-                  ...node.data.requestBody?.body,
-                  ...data,
-                },
+                body: data,
               },
             };
           }

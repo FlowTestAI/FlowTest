@@ -11,8 +11,20 @@ const requestBodyTypeOptions = ['None', 'form-data', 'raw-json'];
 
 const RequestBody = ({ nodeId, nodeData }) => {
   const setRequestNodeBody = useCanvasStore((state) => state.setRequestNodeBody);
+  const [cachedValues, setCachedValues] = React.useState({});
 
   const uploadFileForRequestNode = useRef(null);
+
+  const updateCachedValues = () => {
+    if (nodeData.requestBody) {
+      if (nodeData.requestBody.type) {
+        setCachedValues({
+          ...cachedValues,
+          [nodeData.requestBody.type]: nodeData.requestBody.body,
+        });
+      }
+    }
+  };
 
   const handleFileUpload = async (e) => {
     if (!e.target.files) return;
@@ -53,16 +65,25 @@ const RequestBody = ({ nodeId, nodeData }) => {
   };
 
   const handleClose = (option) => {
+    updateCachedValues();
     if (option == 'None') {
       setRequestNodeBody(nodeId, option, undefined);
     } else if (option == 'raw-json') {
-      setRequestNodeBody(nodeId, option, '');
+      if (cachedValues['raw-json']) {
+        setRequestNodeBody(nodeId, option, cachedValues['raw-json']);
+      } else {
+        setRequestNodeBody(nodeId, option, '');
+      }
     } else if (option == 'form-data') {
-      setRequestNodeBody(nodeId, option, {
-        key: '',
-        value: '',
-        name: '',
-      });
+      if (cachedValues['form-data']) {
+        setRequestNodeBody(nodeId, option, cachedValues['form-data']);
+      } else {
+        setRequestNodeBody(nodeId, option, {
+          key: '',
+          value: '',
+          name: '',
+        });
+      }
     }
   };
 

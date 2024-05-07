@@ -113,7 +113,13 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                         className='nodrag nowheel block w-full p-2.5'
                         name='keyName'
                         placeholder='Enter your Open AI key'
-                        value={collection ? collection.dotEnvVariables['OPENAI_APIKEY'] : ''}
+                        value={
+                          collection &&
+                          collection.dotEnvVariables &&
+                          Object.prototype.hasOwnProperty.call(collection.dotEnvVariables, 'OPENAI_APIKEY')
+                            ? collection.dotEnvVariables['OPENAI_APIKEY']
+                            : 'Enter your OPENAI key: https://flowtestai.gitbook.io/flowtestai/generative-ai'
+                        }
                         readOnly='readonly'
                         //onChange={(e) => setOpenAIKey(e.target.value)}
                       />

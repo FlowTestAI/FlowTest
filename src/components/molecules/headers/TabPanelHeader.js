@@ -4,6 +4,7 @@ import {
   DocumentArrowUpIcon,
   SparklesIcon,
   DocumentTextIcon,
+  RocketLaunchIcon,
 } from '@heroicons/react/24/outline';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
@@ -44,7 +45,7 @@ const TabPanelHeader = () => {
           <div className='flex items-center justify-between gap-4 border-l border-neutral-300'>
             {focusTab.type === OBJ_TYPES.flowtest && (
               <TimeSelector
-                defaultOptionData={{ value: 'select_timer', label: 'Select Timer' }}
+                defaultOptionData={{ value: '60000', label: '1 minute' }}
                 optionsData={timeoutForGraphRun}
                 onSelectHandler={(event) => {
                   setTimeout(event.target?.value);

@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { ClockIcon } from '@heroicons/react/24/outline';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 const TimeSelector = ({ optionsData, defaultOptionData, onSelectHandler = () => null }) => {
   return (
     <div className='flex items-center justify-between gap-2 pl-4 outline-none'>
-      <ClockIcon className='w-5 h-5' />
+      <Tippy content='Timeout' placement='top'>
+        <ClockIcon className='w-5 h-5' />
+      </Tippy>
       <select
         onChange={onSelectHandler}
         name='timer-selector'

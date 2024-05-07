@@ -253,6 +253,7 @@ describe('FlowTest parser', () => {
           id: 'reactflow__edge-9true-10',
         },
       ],
+      viewport: { x: 0.1, y: 0.2, zoom: 1.9876 },
     };
 
     const textData = deserialize(flowData);
@@ -262,5 +263,6 @@ describe('FlowTest parser', () => {
 
     expect(_flowData.nodes).toEqual(flowData.nodes);
     expect(_flowData.edges).toEqual(flowData.edges);
+    expect(_flowData.viewport).toEqual(flowData.viewport);
   });
 });

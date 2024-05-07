@@ -1,14 +1,15 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_TYPES } from 'constants/Common';
-import useEnvStore from 'stores/EnvStore';
-import { toast } from 'react-toastify';
 
-const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVariable }) => {
-  const [key, setKey] = useState('');
-  const [value, setValue] = useState('');
+const EditEnvVariableModal = ({ closeFn = () => null, open = false, editKey, editValue, handleAddVariable }) => {
+  const [value, setValue] = useState(editValue);
+
+  useEffect(() => {
+    setValue(editValue);
+  }, [editValue]);
 
   return (
     <Transition appear show={open} as={Fragment}>
@@ -41,18 +42,10 @@ const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVari
                   as='h3'
                   className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
                 >
-                  Add Variable
+                  Edit Variable
                 </Dialog.Title>
                 <div className='mt-6'>
-                  <div className='mt-4'>
-                    <input
-                      id='key'
-                      className='block w-full rounded border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
-                      placeholder='Key'
-                      value={key}
-                      onChange={(event) => setKey(event.target.value)}
-                    />
-                  </div>
+                  <div className='mt-4'>{editKey}</div>
                   <div className='mt-4'>
                     <input
                       id='value'
@@ -72,21 +65,11 @@ const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVari
                     isDisabled={false}
                     fullWidth={true}
                     onClickHandle={() => {
-                      const variables = useEnvStore.getState().variables;
-                      if (key.trim() === '') {
-                        toast.error('Variable name cannot be empty.');
-                      } else if (variables[key] != undefined) {
-                        toast.error('A variable with the same name already exists.');
-                      } else {
-                        handleAddVariable(key, value);
-                        //reset
-                        setKey('');
-                        setValue('');
-                      }
+                      handleAddVariable(editKey, value);
                       closeFn();
                     }}
                   >
-                    Add
+                    Edit
                   </Button>
                 </div>
               </Dialog.Panel>
@@ -98,9 +81,9 @@ const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVari
   );
 };
 
-AddEnvVariableModal.propTypes = {
+EditEnvVariableModal.propTypes = {
   closeFn: PropTypes.func.isRequired,
   open: PropTypes.boolean.isRequired,
 };
 
-export default AddEnvVariableModal;
+export default EditEnvVariableModal;

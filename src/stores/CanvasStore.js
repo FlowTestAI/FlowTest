@@ -10,6 +10,7 @@ const useCanvasStore = create((set, get) => ({
   logs: [],
   collectionId: '',
   timeout: '60000',
+  viewport: { x: 0, y: 0, zoom: 1 },
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -42,12 +43,17 @@ const useCanvasStore = create((set, get) => ({
   },
   setLogs: (logs) => {
     set({ logs });
+    useTabStore.getState().updateFlowTestLogs(get().logs);
   },
   setCollectionId: (collectionId) => {
     set({ collectionId });
   },
   setTimeout: (timeout) => {
     set({ timeout });
+  },
+  setViewport: (viewport) => {
+    set({ viewport });
+    useTabStore.getState().updateFlowTestViewport(get().viewport);
   },
   setAuthNodeType: (nodeId, authType) => {
     set({
@@ -249,10 +255,7 @@ const useCanvasStore = create((set, get) => ({
               ...node.data,
               requestBody: {
                 type,
-                body: {
-                  ...node.data.requestBody?.body,
-                  ...data,
-                },
+                body: data,
               },
             };
           }

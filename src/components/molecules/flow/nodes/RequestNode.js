@@ -137,7 +137,7 @@ const RequestNode = ({ id, data }) => {
             </div>
             <div className='p-2 border-t border-neutral-300'>
               <div className='flex items-center justify-between'>
-                <div>Post Request</div>
+                <div>Post Response</div>
                 <button
                   onClick={() => {
                     setModalType('post-response');

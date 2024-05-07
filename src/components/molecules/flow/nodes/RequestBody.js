@@ -4,13 +4,27 @@ import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import useCanvasStore from 'stores/CanvasStore';
+import JsonEditor from '../../../atoms/JsonEditor';
+import { toast } from 'react-toastify';
 
 const requestBodyTypeOptions = ['None', 'form-data', 'raw-json'];
 
 const RequestBody = ({ nodeId, nodeData }) => {
   const setRequestNodeBody = useCanvasStore((state) => state.setRequestNodeBody);
+  const [cachedValues, setCachedValues] = React.useState({});
 
   const uploadFileForRequestNode = useRef(null);
+
+  const updateCachedValues = () => {
+    if (nodeData.requestBody) {
+      if (nodeData.requestBody.type) {
+        setCachedValues({
+          ...cachedValues,
+          [nodeData.requestBody.type]: nodeData.requestBody.body,
+        });
+      }
+    }
+  };
 
   const handleFileUpload = async (e) => {
     if (!e.target.files) return;
@@ -29,6 +43,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
         const value = result;
 
         setRequestNodeBody(nodeId, 'form-data', {
+          key: nodeData.requestBody.body.key,
           value: value,
           name: name,
         });
@@ -40,24 +55,35 @@ const RequestBody = ({ nodeId, nodeData }) => {
   const handleFormDataKey = (e) => {
     setRequestNodeBody(nodeId, 'form-data', {
       key: e.target.value,
+      value: nodeData.requestBody.body.value,
+      name: nodeData.requestBody.body.name,
     });
   };
 
-  const handleRawJson = (e) => {
-    setRequestNodeBody(nodeId, 'raw-json', e.target.value);
+  const handleRawJson = (value) => {
+    setRequestNodeBody(nodeId, 'raw-json', value);
   };
 
   const handleClose = (option) => {
+    updateCachedValues();
     if (option == 'None') {
       setRequestNodeBody(nodeId, option, undefined);
     } else if (option == 'raw-json') {
-      setRequestNodeBody(nodeId, option, '');
+      if (cachedValues['raw-json']) {
+        setRequestNodeBody(nodeId, option, cachedValues['raw-json']);
+      } else {
+        setRequestNodeBody(nodeId, option, '');
+      }
     } else if (option == 'form-data') {
-      setRequestNodeBody(nodeId, option, {
-        key: '',
-        value: '',
-        name: '',
-      });
+      if (cachedValues['form-data']) {
+        setRequestNodeBody(nodeId, option, cachedValues['form-data']);
+      } else {
+        setRequestNodeBody(nodeId, option, {
+          key: '',
+          value: '',
+          name: '',
+        });
+      }
     }
   };
 
@@ -97,15 +123,28 @@ const RequestBody = ({ nodeId, nodeData }) => {
         </Menu>
       </div>
       {nodeData.requestBody && nodeData.requestBody.type === 'raw-json' && (
-        <div className='p-4 border-t border-neutral-300 bg-slate-50'>
-          <textarea
-            placeholder='Enter json'
-            className='w-full p-2 nodrag nowheel min-w-72'
-            name='username'
-            onChange={(e) => handleRawJson(e)}
-            rows={6}
-            value={nodeData.requestBody.body}
-          />
+        <div className='p-1 border-t border-neutral-300 bg-slate-50'>
+          <div className='w-full nodrag nowheel min-w-72'>
+            <button
+              onClick={() => {
+                try {
+                  const bodyJson = JSON.parse(nodeData.requestBody.body);
+                  const prettyBodyJson = JSON.stringify(bodyJson, null, 2);
+                  setRequestNodeBody(nodeId, 'raw-json', prettyBodyJson);
+                } catch (e) {
+                  toast.error('Unable to beautify. Invalid JSON format.');
+                }
+              }}
+            >
+              Beautify
+            </button>
+            <JsonEditor
+              placeholder='Enter json'
+              name='request-body-json'
+              onChange={(e) => handleRawJson(e)}
+              value={nodeData.requestBody.body}
+            />
+          </div>
         </div>
       )}
       {nodeData.requestBody && nodeData.requestBody.type === 'form-data' && (

@@ -1,33 +1,13 @@
-import { isEqual, reduce, map } from 'lodash';
+import _, { isEqual, map } from 'lodash';
 
-export const orderNodesByTags = (nodes) => {
-  const result = {};
-  if (nodes) {
-    nodes.map((node) => {
-      node.tags.map((tag) => {
-        if (!result[tag]) {
-          result[tag] = [];
-        }
-        result[tag].push(node);
-      });
-    });
-  }
-  return Object.keys(result)
-    .sort()
-    .reduce((obj, key) => {
-      obj[key] = result[key];
-      return obj;
-    }, {});
-};
-
-export const compareTwoObjects = function (a, b) {
-  var result = {
+export const compare = (a, b) => {
+  const result = {
     different: [],
     missing_from_first: [],
     missing_from_second: [],
   };
 
-  reduce(
+  _.reduce(
     a,
     function (result, value, key) {
       if (Object.prototype.hasOwnProperty.call(b, key)) {
@@ -39,7 +19,7 @@ export const compareTwoObjects = function (a, b) {
             result.different.push(key);
             return result;
           } else {
-            var deeper = compareTwoObjects(a[key], b[key]);
+            var deeper = compare(a[key], b[key]);
             result.different = result.different.concat(
               map(deeper.different, (sub_path) => {
                 return key + '.' + sub_path;
@@ -68,7 +48,7 @@ export const compareTwoObjects = function (a, b) {
     result,
   );
 
-  reduce(
+  _.reduce(
     b,
     function (result, value, key) {
       if (Object.prototype.hasOwnProperty.call(a, key)) {
@@ -83,49 +63,3 @@ export const compareTwoObjects = function (a, b) {
 
   return result;
 };
-
-export const initFlowData = {
-  nodes: [
-    {
-      id: '0',
-      type: 'startNode',
-      position: {
-        x: 150,
-        y: 150,
-      },
-      deletable: false,
-      width: 90,
-      height: 60,
-    },
-    {
-      id: '1',
-      type: 'authNode',
-      description: 'Define authentication for the requests',
-      data: {},
-      position: {
-        x: 400,
-        y: 150,
-      },
-      width: 147,
-      height: 107,
-    },
-  ],
-  edges: [
-    {
-      id: 'reactflow__edge-0-1',
-      source: '0',
-      sourceHandle: null,
-      target: '1',
-      targetHandle: null,
-      type: 'buttonedge',
-    },
-  ],
-  viewport: { x: 0, y: 0, zoom: 1 },
-};
-
-export const timeoutForGraphRun = [
-  { value: '300000', label: '5 minutes' },
-  { value: '600000', label: '10 minutes' },
-  { value: '900000', label: '15 minutes' },
-  { value: '1800000', label: '30 minutes' },
-];

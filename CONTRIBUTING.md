@@ -42,7 +42,7 @@ pnpm install
 
 ### Implement your changes
 
-This project is a monorepo. The code for the CLI is in the `package/flowtest-cli` directory, (add here learn what flowtest-electron is vs the main src folder)
+This project is a monorepo. FlowTestAI is offered as a local electron desktop app. In lieu of that it has two major components, the main logical part of the application resides in `packages/flowtest-electron` and the renderer (UI) part of the application resides in `src`. We are also actively developing the CLI and it resides in `packages/flowtest-cli` directory.
 
 Here are some useful scripts for when you are developing:
 

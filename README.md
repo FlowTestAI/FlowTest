@@ -64,6 +64,14 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
 
    NOTE: if you use npm and corepack to install pnpm you will have two instances of pnpm. Make sure the version you're using is the correct version for the repo. Check the [pnpm docs](https://pnpm.io/installation) and [corepack](https://github.com/nodejs/corepack) for troubleshooting. Pnpm installed with npm will overrun corepacks pnpm instance.
 
+## Contribution 🤝
+*"Little drops of water make a mighty ocean"*
+
+No contribution is small even if it means fixing a spelling mistake. Follow our contributing guide below.
+https://github.com/FlowTestAI/FlowTest/blob/main/CONTRIBUTING.md
+
+Fun fact: our contributing guide itself was an external contribution 🍺
+
 ## Support 🙋
 
 - ❓ QNA: feel free to ask questions, request new features or start a constructive discussion here [discussion](https://github.com/FlowTestAI/FlowTest/discussions)

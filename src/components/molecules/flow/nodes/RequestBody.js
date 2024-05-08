@@ -4,8 +4,8 @@ import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import useCanvasStore from 'stores/CanvasStore';
-import JsonEditor from '../../../atoms/JsonEditor';
 import { toast } from 'react-toastify';
+import { Editor } from 'components/atoms/Editor';
 
 const requestBodyTypeOptions = ['None', 'form-data', 'raw-json'];
 
@@ -138,12 +138,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
             >
               Beautify
             </button>
-            <JsonEditor
-              placeholder='Enter json'
-              name='request-body-json'
-              onChange={(e) => handleRawJson(e)}
-              value={nodeData.requestBody.body}
-            />
+            <Editor name='request-body-json' onChange={(e) => handleRawJson(e)} value={nodeData.requestBody.body} />
           </div>
         </div>
       )}

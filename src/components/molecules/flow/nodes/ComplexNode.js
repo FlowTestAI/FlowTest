@@ -6,6 +6,9 @@ import { getAllFlowTests } from 'stores/utils';
 import useCollectionStore from 'stores/CollectionStore';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { useKeyPress } from 'reactflow';
+import { readFlowTest } from 'service/collection';
+import { toast } from 'react-toastify';
 
 // ToDo: Change standard select element(s) with headless list element
 const ComplexNode = ({ id, data }) => {
@@ -24,45 +27,65 @@ const ComplexNode = ({ id, data }) => {
     }
   }
 
-  return (
-    <FlowNode
-      title='Flow Node'
-      handleLeft={true}
-      handleLeftData={{ type: 'target' }}
-      handleRight={true}
-      handleRightData={{ type: 'source' }}
-    >
-      <div>
-        <Tippy
-          content={data.relativePath && data.relativePath !== '' ? data.relativePath : 'Select a flow'}
-          placement='top'
-          maxWidth='none'
-        >
-          <select
-            onChange={(event) => {
-              const value = event.target?.value;
-              setFlowForComplexNode(id, value);
-            }}
-            name='flow'
-            value={data.relativePath ? data.relativePath : ''}
-            className='h-12 p-2 border rounded outline-none cursor-default bg-background-light max-w-48 border-cyan-950'
-          >
-            <option key='None' value=''>
-              Select a flow
-            </option>
-            {flowTests.map((flowTestPath) => {
-              return (
-                <option key={flowTestPath} value={flowTestPath} className='overflow-scroll'>
-                  {flowTestPath}
-                </option>
-              );
-            })}
-          </select>
-        </Tippy>
+  const cmdPressed = useKeyPress('Meta'); // 'Meta' key for Cmd on Mac
 
-        <p className='hidden'></p>
-      </div>
-    </FlowNode>
+  const handleMouseClick = (event, relativePath) => {
+    if (cmdPressed && event.type === 'click') {
+      console.log('Cmd + Click action triggered ' + relativePath);
+      if (relativePath && relativePath.trim() != '') {
+        readFlowTest(ipcRenderer.join(collection.pathname, relativePath), collectionId)
+          .then((result) => {
+            console.log(`Read flowtest: path = ${relativePath}, collectionId = ${collectionId}`);
+          })
+          .catch((error) => {
+            console.log(`Error reading flowtest: ${error}`);
+            toast.error(`Error reading flowtest`);
+          });
+      }
+    }
+  };
+
+  return (
+    <div onClick={(e) => handleMouseClick(e, data.relativePath)}>
+      <FlowNode
+        title='Flow Node'
+        handleLeft={true}
+        handleLeftData={{ type: 'target' }}
+        handleRight={true}
+        handleRightData={{ type: 'source' }}
+      >
+        <div>
+          <Tippy
+            content={data.relativePath && data.relativePath !== '' ? data.relativePath : 'Select a flow'}
+            placement='top'
+            maxWidth='none'
+          >
+            <select
+              onChange={(event) => {
+                const value = event.target?.value;
+                setFlowForComplexNode(id, value);
+              }}
+              name='flow'
+              value={data.relativePath ? data.relativePath : ''}
+              className='h-12 p-2 border rounded outline-none cursor-default bg-background-light max-w-48 border-cyan-950'
+            >
+              <option key='None' value=''>
+                Select a flow
+              </option>
+              {flowTests.map((flowTestPath) => {
+                return (
+                  <option key={flowTestPath} value={flowTestPath} className='overflow-scroll'>
+                    {flowTestPath}
+                  </option>
+                );
+              })}
+            </select>
+          </Tippy>
+
+          <p className='hidden'></p>
+        </div>
+      </FlowNode>
+    </div>
   );
 };
 

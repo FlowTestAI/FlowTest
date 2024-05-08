@@ -6,6 +6,8 @@ import 'tippy.js/dist/tippy.css';
 import SelectEnvironment from 'components/atoms/SelectEnvironment';
 import { useTabStore } from 'stores/TabStore';
 import useCollectionStore from 'stores/CollectionStore';
+import Button from 'components/atoms/common/Button';
+import { BUTTON_TYPES, BUTTON_INTENT_TYPES } from 'constants/Common';
 
 const WorkspaceHeader = () => {
   const collections = useCollectionStore((state) => state.collections);
@@ -14,14 +16,14 @@ const WorkspaceHeader = () => {
   const environmentData = focusTab ? collections.find((c) => c.id === focusTab.collectionId)?.environments : [];
 
   return (
-    <div className='flex items-center justify-between pr-4 border-b border-neutral-300 bg-slate-100'>
+    <div className='flex items-center justify-between pr-4 min-h-12'>
       <div className='flex items-center overflow-x-auto'>
         <Tabs />
-        <button className='flex cursor-not-allowed flex-col items-center bg-slate-100 p-3.5 text-center text-slate-400'>
+        <Button btnType={BUTTON_TYPES.disabled} isDisabled={true} fullWidth={true}>
           <Tippy content='Coming Soon!' placement='right'>
-            <PlusIcon className='w-5 h-5' />
+            <PlusIcon className='w-5 h-5 outline-none' />
           </Tippy>
-        </button>
+        </Button>
       </div>
       <SelectEnvironment environments={environmentData} />
     </div>

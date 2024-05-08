@@ -8,7 +8,7 @@ import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 // ToDo: Combine this component with OptionsMenu in sidebar atoms to make it generic
 const EnvOptionsMenu = ({ pathName, itemType, collectionId }) => {
   const menuItemsStyles =
-    'group flex w-full items-center rounded px-2 py-2 text-sm text-gray-900 transition duration-200 ease-out hover:bg-slate-100';
+    'group flex w-full items-center rounded px-2 py-2 text-sm text-gray-900 transition duration-200 ease-out hover:bg-background-light';
   return (
     <Menu
       as='div'

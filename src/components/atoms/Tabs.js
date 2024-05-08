@@ -38,9 +38,7 @@ const Tabs = () => {
   const closeTab = useTabStore((state) => state.closeTab);
   const [closingTabId, setClosingTabId] = useState('');
   const [closingCollectionId, setClosingCollectionId] = useState('');
-
-  // const activeTabStyles =
-  //   'before:absolute before:h-[0.25rem] before:w-full before:bg-slate-300 before:content-[""] before:bottom-0 before:left-0 bg-cyan-950 text-white';
+  // ToDo: change color according to theme
   const activeTabStyles = 'bg-cyan-900 text-white';
   const tabCommonStyles =
     'tab flex items-center gap-x-2 border-r border-neutral-300 pr-0 tracking-[0.15em] transition duration-300 ease-in text-sm flex-nowrap';
@@ -84,8 +82,8 @@ const Tabs = () => {
                 {tabUnsavedChanges(tab) ? '*' : ''}
                 {tab.name}
               </a>
-              {/* close needs to be a separate clickable component other wise it gets confused with above */}
               <div
+                // ToDo: change color according to theme
                 className={`flex h-full items-center px-2 ${focusTabId === tab.id ? 'text-white hover:bg-cyan-950 ' : 'text-cyan-900 hover:bg-slate-200'} `}
                 data-tab-id={tab.id}
                 onClick={(e) => handleCloseTab(e, tab)}

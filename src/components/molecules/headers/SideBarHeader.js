@@ -17,7 +17,7 @@ const SideBarHeader = () => {
     }
   });
   return (
-    <div className='flex justify-between p-2 border-b border-neutral-300 text-cyan-950'>
+    <div className='flex justify-between p-2'>
       <div className='flex items-center justify-start gap-1'>
         <a className='flex items-center justify-between gap-1 link-hover link'>
           <UserIcon className='w-3 h-3' />

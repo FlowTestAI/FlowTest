@@ -2,7 +2,7 @@ import React, { Fragment, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition, Listbox } from '@headlessui/react';
 import Button from 'components/atoms/common/Button';
-import { BUTTON_TYPES, GENAI_MODELS } from 'constants/Common';
+import { BUTTON_INTENT_TYPES, BUTTON_TYPES, GENAI_MODELS } from 'constants/Common';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { Square3Stack3DIcon } from '@heroicons/react/24/outline';
 import { generateFlowData } from '../flow/flowtestai';
@@ -50,11 +50,8 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
-                <Dialog.Title
-                  as='h3'
-                  className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
-                >
+              <Dialog.Panel className='w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
+                <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
                   Use our AI to generate the flow
                 </Dialog.Title>
                 <div className='mt-6'>
@@ -137,11 +134,17 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                   </div>
                 </div>
                 <div className='flex items-center gap-2 mt-6'>
-                  <Button btnType={BUTTON_TYPES.error} isDisabled={false} onClickHandle={closeFn} fullWidth={true}>
+                  <Button
+                    btnType={BUTTON_TYPES.primary}
+                    intentType={BUTTON_INTENT_TYPES.error}
+                    isDisabled={false}
+                    onClickHandle={closeFn}
+                    fullWidth={true}
+                  >
                     Cancel
                   </Button>
                   <Button
-                    btnType={BUTTON_TYPES.info}
+                    btnType={BUTTON_TYPES.primary}
                     isDisabled={false}
                     fullWidth={true}
                     onClickHandle={() => {

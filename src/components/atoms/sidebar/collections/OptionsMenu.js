@@ -8,7 +8,7 @@ import { OBJ_TYPES } from 'constants/Common';
 
 const OptionsMenu = ({ collectionId, directory, itemType }) => {
   const menuItemsStyles =
-    'group flex w-full items-center rounded px-2 py-2 text-sm text-gray-900 transition duration-200 ease-out hover:bg-slate-100';
+    'group flex w-full items-center rounded p-2 text-sm transition duration-200 ease-out hover:bg-background-light hover:font-semibold hover:font-cyan-950';
   return (
     <Menu
       as='div'

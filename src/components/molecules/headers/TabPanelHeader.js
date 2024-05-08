@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
-import {
-  DocumentArrowDownIcon,
-  DocumentArrowUpIcon,
-  SparklesIcon,
-  DocumentTextIcon,
-  RocketLaunchIcon,
-} from '@heroicons/react/24/outline';
+import { SparklesIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import SaveFlowModal from '../modals/SaveFlowModal';
-
 import { useTabStore } from 'stores/TabStore';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_TYPES, OBJ_TYPES } from 'constants/Common';
@@ -17,7 +10,7 @@ import GenerateFlowTestModal from '../modals/GenerateFlowTestModal';
 import useCanvasStore from 'stores/CanvasStore';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
-import TimeSelector from 'components/atoms/common/TimeSelector';
+import TimeoutSelector from 'components/atoms/common/TimeoutSelector';
 import { timeoutForGraphRun } from '../flow/utils';
 
 const TabPanelHeader = () => {
@@ -38,40 +31,49 @@ const TabPanelHeader = () => {
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
 
   return (
-    <div className='flex items-center justify-between gap-4 px-6 py-2 border-b border-neutral-300'>
+    <div className='flex items-center justify-between px-4 py-3'>
       {focusTab ? (
         <>
-          <div className='text-base tracking-[0.15em]'>{focusTab.name}</div>
-          <div className='flex items-center justify-between gap-4 border-l border-neutral-300'>
+          <div className='py-3 text-base tracking-[0.15em]'>{focusTab.name}</div>
+
+          <div className='flex items-center justify-between gap-4 pl-4 border-l border-gray-300'>
             {focusTab.type === OBJ_TYPES.flowtest && (
-              <TimeSelector
-                defaultOptionData={{ value: '60000', label: '1 minute' }}
-                optionsData={timeoutForGraphRun}
-                onSelectHandler={(event) => {
-                  setTimeout(event.target?.value);
-                }}
-              />
+              // ToDo: Check this
+              <div className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded border border-cyan-900 bg-background-light px-4 py-2.5 text-cyan-900 transition hover:bg-background'>
+                <TimeoutSelector
+                  optionsData={timeoutForGraphRun}
+                  onSelectHandler={(timeValue) => {
+                    setTimeout(timeValue);
+                  }}
+                />
+              </div>
             )}
 
-            <SaveFlowModal tab={focusTab} />
+            <div className='flex items-center justify-center h-12'>
+              <SaveFlowModal tab={focusTab} />
+            </div>
             {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
-              <>
-                <div
+              <div>
+                <Button
                   id='graph-logs-side-sheet'
-                  className='flex items-center justify-between h-12 pl-4 border-l outline-none max-w-32 border-neutral-300'
-                  onClick={() =>
+                  btnType={BUTTON_TYPES.secondary}
+                  isDisabled={false}
+                  onClickHandle={() =>
                     setSlidingPaneState({
                       isPaneOpen: true,
                       isPaneOpenLeft: false,
                     })
                   }
+                  fullWidth={true}
+                  onlyIcon={true}
+                  padding={'px-4 py-2.5'}
                 >
                   <Tippy content='Logs' placement='top'>
                     <label htmlFor='graph-logs-side-sheet'>
                       <DocumentTextIcon className='w-5 h-5' />
                     </label>
                   </Tippy>
-                </div>
+                </Button>
                 <SlidingPane
                   className='side-sheet'
                   overlayClassName='side-sheet-overlay'
@@ -97,14 +99,14 @@ const TabPanelHeader = () => {
                     ))}
                   </ul>
                 </SlidingPane>
-              </>
+              </div>
             ) : (
               <></>
             )}
             {focusTab.type === OBJ_TYPES.flowtest && (
-              <div className='pl-4 border-l gen_ai_button border-neutral-300'>
+              <div className='gen_ai_button'>
                 <Button
-                  btnType={BUTTON_TYPES.tertiary}
+                  btnType={BUTTON_TYPES.secondary}
                   isDisabled={false}
                   onClickHandle={() => setGenerateFlowTestModalOpen(true)}
                   fullWidth={true}
@@ -123,7 +125,7 @@ const TabPanelHeader = () => {
           </div>
         </>
       ) : (
-        <div className='text-base tracking-[0.15em]'> Please select a flow from the sidebar </div>
+        <div className='py-3 text-base'> Please select a flow from the sidebar </div>
       )}
     </div>
   );

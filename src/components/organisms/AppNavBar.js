@@ -17,17 +17,19 @@ const AppNavBar = () => {
     updateNavigationSelectedValue(dataAttributeValue);
   };
 
+  const selectedNavItemStyles = 'before:bg-cyan-900 bg-background text-cyan-900';
+  const nonSelectedNavItemStyles = 'hover:bg-cyan-900 hover:text-white';
   return (
     <nav
-      className={`relative flex h-screen ${collapseNavBarValue ? 'w-14' : 'w-28'} flex-col border-r border-neutral-300 text-cyan-950 transition-all delay-150 duration-300`}
+      className={`relative flex h-screen flex-col transition-all delay-150 duration-300 ${collapseNavBarValue ? 'min-w-14' : 'min-w-28'} border-r border-gray-300`}
     >
       <button className='relative' onClick={handleOnClick} data-nav-item={AppNavBarItems.collections.value}>
         <div
-          className={`${
+          className={`text-cyan-900 ${
             navigationSelectedValue === AppNavBarItems.collections.value
-              ? 'bg-slate-100 before:absolute before:left-0 before:top-0 before:h-full before:w-[0.25rem] before:bg-cyan-950 before:content-[""]'
-              : 'hover:bg-cyan-950 hover:text-white'
-          } flex w-full flex-col items-center px-2 py-4 text-center transition-all delay-150 duration-300`}
+              ? `before:absolute before:left-0 before:top-0 before:h-full before:w-[0.25rem] before:content-[""] ${selectedNavItemStyles}`
+              : nonSelectedNavItemStyles
+          } delay-50 flex w-full flex-col items-center px-2 py-4 text-center transition-all duration-100`}
         >
           {collapseNavBarValue ? (
             <Tippy content={AppNavBarItems.collections.displayValue} placement='right'>
@@ -51,11 +53,11 @@ const AppNavBar = () => {
       </button>
       <button className='relative' onClick={handleOnClick} data-nav-item={AppNavBarItems.environments.value}>
         <div
-          className={`${
+          className={`text-cyan-900 ${
             navigationSelectedValue === AppNavBarItems.environments.value
-              ? 'bg-slate-100 before:absolute before:left-0 before:top-0 before:h-full before:w-[0.25rem] before:bg-cyan-950 before:content-[""]'
-              : 'hover:bg-cyan-950 hover:text-white'
-          } flex w-full flex-col items-center px-2 py-4 text-center transition-all delay-150 duration-300`}
+              ? `before:absolute before:left-0 before:top-0 before:h-full before:w-[0.25rem] before:content-[""] ${selectedNavItemStyles}`
+              : nonSelectedNavItemStyles
+          } delay-50 flex w-full flex-col items-center px-2 py-4 text-center transition-all duration-100`}
         >
           {collapseNavBarValue ? (
             <Tippy content={AppNavBarItems.environments.displayValue} placement='right'>
@@ -77,33 +79,35 @@ const AppNavBar = () => {
           </Transition>
         </div>
       </button>
-      <button className='px-2 py-4 cursor-not-allowed' data-nav-item={AppNavBarItems.history.value}>
-        {collapseNavBarValue ? (
-          <div className='transition-all duration-300 delay-150'>
-            <Tippy content={AppNavBarItems.history.displayValue + ': Coming Soon!'} placement='right'>
-              <div className='flex flex-col items-center text-center text-slate-400'>
+      <button className='px-2 py-4 cursor-not-allowed ' data-nav-item={AppNavBarItems.history.value}>
+        <div className='text-gray-300'>
+          {collapseNavBarValue ? (
+            <div className='transition-all duration-300 delay-150'>
+              <Tippy content={AppNavBarItems.history.displayValue + ': Coming Soon!'} placement='right'>
+                <div className='flex flex-col items-center text-center '>
+                  <ClockIcon className='w-4 h-4 mb-2' />
+                </div>
+              </Tippy>
+            </div>
+          ) : (
+            <Tippy content='Coming Soon!' placement='right'>
+              <div className='flex flex-col items-center text-center '>
                 <ClockIcon className='w-4 h-4 mb-2' />
               </div>
             </Tippy>
-          </div>
-        ) : (
-          <Tippy content='Coming Soon!' placement='right'>
-            <div className='flex flex-col items-center text-center text-slate-400'>
-              <ClockIcon className='w-4 h-4 mb-2' />
-            </div>
-          </Tippy>
-        )}
-        <Transition
-          show={!collapseNavBarValue}
-          enter='transition-all ease-in-out duration-500 delay-[200ms]'
-          enterFrom='opacity-0 translate-y-6'
-          enterTo='opacity-100 translate-y-0'
-          leave='transition-all ease-in-out duration-300'
-          leaveFrom='opacity-100'
-          leaveTo='opacity-0'
-        >
-          {AppNavBarItems.history.displayValue}
-        </Transition>
+          )}
+          <Transition
+            show={!collapseNavBarValue}
+            enter='transition-all ease-in-out duration-500 delay-[200ms]'
+            enterFrom='opacity-0 translate-y-6'
+            enterTo='opacity-100 translate-y-0'
+            leave='transition-all ease-in-out duration-300'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            {AppNavBarItems.history.displayValue}
+          </Transition>
+        </div>
       </button>
     </nav>
   );

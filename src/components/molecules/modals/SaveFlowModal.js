@@ -7,6 +7,8 @@ import 'tippy.js/dist/tippy.css';
 import { updateEnvironmentFile, updateFlowTest } from 'service/collection';
 import { toast } from 'react-toastify';
 import { OBJ_TYPES } from 'constants/Common';
+import Button from 'components/atoms/common/Button';
+import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 
 const SaveFlowModal = ({ tab }) => {
   let [isOpen, setIsOpen] = useState(false);
@@ -48,13 +50,18 @@ const SaveFlowModal = ({ tab }) => {
 
   return (
     <>
-      <div className='flex items-center justify-center h-12 pl-4 border-l border-neutral-300'>
-        <button type='button' onClick={saveHandle}>
-          <Tippy content='Save' placement='top'>
-            <InboxArrowDownIcon className='w-5 h-5' />
-          </Tippy>
-        </button>
-      </div>
+      <Button
+        btnType={BUTTON_TYPES.secondary}
+        isDisabled={false}
+        onClickHandle={saveHandle}
+        fullWidth={true}
+        onlyIcon={true}
+        padding={'px-4 py-2.5'}
+      >
+        <Tippy content='Save' placement='top'>
+          <InboxArrowDownIcon className='w-5 h-5' />
+        </Tippy>
+      </Button>
 
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as='div' className='relative z-10' onClose={closeModal}>
@@ -81,8 +88,8 @@ const SaveFlowModal = ({ tab }) => {
                 leaveFrom='opacity-100 scale-100'
                 leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
-                  <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 text-centre'>
+                <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
+                  <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-centre'>
                     Save New Flow Test
                   </Dialog.Title>
                   <div className='mt-2'>
@@ -95,20 +102,24 @@ const SaveFlowModal = ({ tab }) => {
                     />
                   </div>
                   <div className='flex items-center gap-2 mt-4'>
-                    <button
-                      type='button'
-                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md grow basis-0 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
-                      onClick={closeModal}
+                    <Button
+                      btnType={BUTTON_TYPES.primary}
+                      intentType={BUTTON_INTENT_TYPES.error}
+                      isDisabled={false}
+                      onClickHandle={closeModal}
+                      fullWidth={true}
                     >
                       Cancel
-                    </button>
-                    <button
-                      type='button'
-                      className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
-                      onClick={handleSave}
+                    </Button>
+                    <Button
+                      btnType={BUTTON_TYPES.primary}
+                      intentType={BUTTON_INTENT_TYPES.success}
+                      isDisabled={false}
+                      onClickHandle={handleSave}
+                      fullWidth={true}
                     >
-                      Save
-                    </button>
+                      Create
+                    </Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

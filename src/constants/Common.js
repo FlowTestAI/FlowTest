@@ -11,6 +11,11 @@ export const BUTTON_TYPES = {
   primary: 'primary',
   secondary: 'secondary',
   tertiary: 'tertiary',
+  minimal: 'minimal',
+  disabled: 'disabled',
+};
+
+export const BUTTON_INTENT_TYPES = {
   info: 'info',
   success: 'success',
   warning: 'warning',

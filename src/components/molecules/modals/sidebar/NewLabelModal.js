@@ -4,6 +4,9 @@ import { Dialog, Transition } from '@headlessui/react';
 import { createFolder, createFlowTest, createEnvironmentFile } from 'service/collection';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 import { toast } from 'react-toastify';
+import Button from 'components/atoms/common/Button';
+import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
+import TextInput from 'components/atoms/common/TextInput';
 
 const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectionId, menuOption }) => {
   const [labelValue, setLabelValue] = useState('');
@@ -25,7 +28,7 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
           </Transition.Child>
 
           <div className='fixed inset-0 overflow-y-auto'>
-            <div className='flex min-h-full items-center justify-center p-4 text-center'>
+            <div className='flex items-center justify-center min-h-full p-4 text-center'>
               <Transition.Child
                 as={Fragment}
                 enter='ease-out duration-300'
@@ -35,37 +38,34 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                 leaveFrom='opacity-100 scale-100'
                 leaveTo='opacity-0 scale-95'
               >
-                <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
-                  <Dialog.Title
-                    as='h3'
-                    className='border-b border-neutral-300 pb-4 text-center text-lg font-semibold text-gray-900'
-                  >
+                <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
+                  <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
                     {`Create a ${menuOption}`}
                   </Dialog.Title>
                   <div className='mt-6'>
-                    <input
-                      type='text'
-                      className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-100 dark:focus:ring-blue-100'
-                      placeholder='label'
-                      required
-                      onChange={(event) => {
+                    <TextInput
+                      placeHolder={`label`}
+                      onChangeHandler={(event) => {
                         const labelValue = event.target.value;
                         setLabelValue(labelValue);
                       }}
+                      name={'label'}
                     />
                   </div>
-                  <div className='mt-6 flex items-center gap-2'>
-                    <button
-                      type='button'
-                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-sky-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-sky-300'
-                      onClick={closeFn}
+                  <div className='flex items-center gap-2 mt-6'>
+                    <Button
+                      btnType={BUTTON_TYPES.secondary}
+                      intentType={BUTTON_INTENT_TYPES.error}
+                      isDisabled={false}
+                      onClickHandle={closeFn}
+                      fullWidth={true}
                     >
                       Cancel
-                    </button>
-                    <button
-                      type='button'
-                      className='inline-flex w-full grow basis-0 justify-center rounded-md border border-transparent bg-green-100 px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-400'
-                      onClick={() => {
+                    </Button>
+                    <Button
+                      btnType={BUTTON_TYPES.primary}
+                      isDisabled={false}
+                      onClickHandle={() => {
                         console.log(
                           `modalType :: ${menuOption} :: labelValue :: ${labelValue} :: pathName :: ${pathName} :: collectionId :: ${collectionId}`,
                         );
@@ -115,9 +115,10 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                         }
                         closeFn();
                       }}
+                      fullWidth={true}
                     >
                       Create
-                    </button>
+                    </Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

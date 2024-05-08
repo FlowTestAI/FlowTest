@@ -130,7 +130,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
         <>
           <NodeHorizontalDivider />
           <div className='p-4 bg-background'>
-            <div className='w-full nodrag nowheel min-w-72'>
+            <div className='w-full nodrag nowheel min-w-72 bg-gray-50'>
               <Editor name='request-body-json' onChange={(e) => handleRawJson(e)} value={nodeData.requestBody.body} />
               <Button
                 btnType={BUTTON_TYPES.secondary}

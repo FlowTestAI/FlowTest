@@ -7,6 +7,7 @@ import { indentWithTab, history } from '@codemirror/commands';
 import { json } from '@codemirror/lang-json';
 import { defaultKeymap } from '@codemirror/commands';
 import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
+import 'components/atoms/Editor.css';
 
 export const Editor = ({ ...props }) => {
   const editor = useRef();
@@ -39,5 +40,5 @@ export const Editor = ({ ...props }) => {
     };
   }, []);
 
-  return <div ref={editor} className='max-h-96 max-w-80'></div>;
+  return <div ref={editor} className='cm-editor cm-scroller'></div>;
 };

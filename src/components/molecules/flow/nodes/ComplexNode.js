@@ -31,7 +31,6 @@ const ComplexNode = ({ id, data }) => {
 
   const handleMouseClick = (event, relativePath) => {
     if (cmdPressed && event.type === 'click') {
-      console.log('Cmd + Click action triggered ' + relativePath);
       if (relativePath && relativePath.trim() != '') {
         readFlowTest(ipcRenderer.join(collection.pathname, relativePath), collectionId)
           .then((result) => {

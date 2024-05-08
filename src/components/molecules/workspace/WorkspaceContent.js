@@ -39,7 +39,12 @@ const WorkspaceContent = () => {
   return (
     <div className='flex flex-col h-full'>
       <TabPanelHeader />
-      {focusTab && (focusTab.type === OBJ_TYPES.flowtest ? <Flow collectionId={focusTab.collectionId} /> : <Env />)}
+      {focusTab &&
+        (focusTab.type === OBJ_TYPES.flowtest ? (
+          <Flow tab={focusTab} collectionId={focusTab.collectionId} />
+        ) : (
+          <Env tab={focusTab} />
+        ))}
     </div>
   );
 };

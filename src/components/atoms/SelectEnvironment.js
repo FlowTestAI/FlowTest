@@ -15,9 +15,9 @@ const SelectEnvironment = ({ environments }) => {
 
   return (
     <Listbox value={selected} onChange={setSelected}>
-      <div className='relative flex h-full pl-4 border-l border-neutral-300'>
+      <div className='relative flex h-full pl-4 border-l border-gray-300'>
         <Listbox.Button
-          className={`flex items-center justify-between gap-4 sm:text-sm ${environments.length ? 'cursor-default' : 'cursor-not-allowed'}`}
+          className={`flex items-center justify-between gap-2 sm:text-sm ${environments.length ? 'cursor-default' : 'cursor-not-allowed'}`}
         >
           <Square3Stack3DIcon className='w-4 h-4' />
           <div className='min-w-32'>{selected ? selected : 'Select environment'}</div>
@@ -30,19 +30,17 @@ const SelectEnvironment = ({ environments }) => {
                 <Listbox.Option
                   key={environmentIndex}
                   className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                      active ? 'bg-amber-100 text-amber-900' : 'text-gray-900'
+                    `relative cursor-default select-none py-2 pl-10 pr-4 hover:font-semibold ${
+                      active ? 'bg-background-light text-slate-900' : ''
                     }`
                   }
                   value={environment.name}
                 >
                   {({ selected }) => (
                     <>
-                      <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                        {environment.name}
-                      </span>
+                      <span className={`block truncate`}>{environment.name}</span>
                       {selected ? (
-                        <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600'>
+                        <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
                           <CheckIcon className='w-5 h-5' aria-hidden='true' />
                         </span>
                       ) : null}

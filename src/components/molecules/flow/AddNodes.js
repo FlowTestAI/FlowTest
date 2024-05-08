@@ -7,6 +7,7 @@ import { Disclosure } from '@headlessui/react';
 import { ChevronUpIcon } from '@heroicons/react/20/solid';
 import useCollectionStore from 'stores/CollectionStore';
 import { orderNodesByTags } from './utils';
+import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
 
 // ToDo: Move these constants to constants file/folder
 const requestNodes = [
@@ -77,35 +78,34 @@ const AddNodes = ({ collectionId }) => {
   const nodesByTags = orderNodesByTags(collection.nodes);
 
   return (
-    <>
-      <div className='absolute bottom-4 right-4 z-[2000] max-w-sm px-4 '>
-        <Popover className='relative'>
-          {({ open }) => (
-            <>
-              <Popover.Button className='inline-flex items-center p-3 text-base font-medium text-white rounded-full group bg-cyan-950 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75'>
-                {open ? (
-                  <MinusIcon className='w-8 h-8 transition duration-300 ease-in-out' aria-hidden='true' />
-                ) : (
-                  <PlusIcon className='w-8 h-8 transition duration-300 ease-in-out' aria-hidden='true' />
-                )}
-              </Popover.Button>
-              <Transition
-                as={Fragment}
-                enter='transition ease-out duration-200'
-                enterFrom='opacity-0 translate-y-1'
-                enterTo='opacity-100 translate-y-0'
-                leave='transition ease-in duration-150'
-                leaveFrom='opacity-100 translate-y-0'
-                leaveTo='opacity-0 translate-y-1'
-              >
-                <Popover.Panel className='absolute bottom-full w-screen max-w-sm translate-x-[-90%] transform rounded-lg bg-white shadow-2xl'>
-                  <>
-                    <div className='mx-auto max-h-[60vh] w-full max-w-md overflow-scroll rounded-2xl p-2'>
-                      <h3 className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'>
-                        Add Nodes
-                      </h3>
+    <div className='absolute bottom-4 right-4 z-[2000]'>
+      <Popover className='relative'>
+        {({ open }) => (
+          <>
+            <Popover.Button className='group inline-flex items-center rounded border-cyan-900 bg-cyan-900 px-4 py-2.5 text-base font-medium text-white hover:border-cyan-950 hover:bg-cyan-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75'>
+              {open ? (
+                <MinusIcon className='w-6 h-6 transition duration-300 ease-in-out' aria-hidden='true' />
+              ) : (
+                <PlusIcon className='w-6 h-6 transition duration-300 ease-in-out' aria-hidden='true' />
+              )}
+            </Popover.Button>
+            <Transition
+              as={Fragment}
+              enter='transition ease-out duration-200'
+              enterFrom='opacity-0 translate-y-1'
+              enterTo='opacity-100 translate-y-0'
+              leave='transition ease-in duration-150'
+              leaveFrom='opacity-100 translate-y-0'
+              leaveTo='opacity-0 translate-y-1'
+            >
+              <Popover.Panel className='absolute bottom-full w-screen max-w-sm translate-x-[-90%] transform rounded-lg bg-white shadow-2xl'>
+                <>
+                  <div className='mx-auto max-h-[60vh] w-full max-w-md overflow-scroll rounded-2xl p-2'>
+                    <h3 className='py-4 text-lg font-semibold text-center border-b '>Add Nodes</h3>
+                    <HorizontalDivider />
+                    <div className='py-4'>
                       {/* Requests */}
-                      <Disclosure as='div' className='mt-4'>
+                      <Disclosure as='div'>
                         {({ open }) => (
                           <>
                             <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
@@ -322,14 +322,14 @@ const AddNodes = ({ collectionId }) => {
                         )}
                       </Disclosure>
                     </div>
-                  </>
-                </Popover.Panel>
-              </Transition>
-            </>
-          )}
-        </Popover>
-      </div>
-    </>
+                  </div>
+                </>
+              </Popover.Panel>
+            </Transition>
+          </>
+        )}
+      </Popover>
+    </div>
   );
 };
 

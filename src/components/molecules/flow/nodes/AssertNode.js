@@ -7,6 +7,7 @@ import { getInputType } from 'utils/common';
 import { CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ } from 'constants/Common';
 import useCanvasStore from 'stores/CanvasStore';
 
+// ToDo: Change standard select element(s) with headless list element
 const operatorMenu = (id, data) => {
   const setAssertNodeOperator = useCanvasStore((state) => state.setAssertNodeOperator);
 
@@ -18,13 +19,14 @@ const operatorMenu = (id, data) => {
     }
   };
 
+  // ToDo: Change standard select element(s) with headless list element
   return (
     <div className='mb-4'>
       <select
         onChange={handleOperatorSelection}
         name='operator-type'
         value={data.operator ? data.operator : CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value}
-        className='w-full h-12 px-1 py-2 border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'
+        className='w-full h-12 p-2 text-left border rounded outline-none cursor-default bg-background-light border-cyan-950'
       >
         <option value={CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value}>
           {CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.displayValue}
@@ -67,13 +69,13 @@ const variableElem = (id, data, varName) => {
   };
 
   return (
-    <div className='flex items-center justify-center mb-4 text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
+    <div className='flex items-center justify-center mb-4 text-sm border rounded outline-none cursor-default bg-background-light border-cyan-950'>
       {data.variables && data.variables[varName] ? (
         data.variables[varName].type === 'Boolean' ? (
           <select
             onChange={(event) => setAssertNodeVariable(id, varName, 'Boolean', event.target?.value)}
             name='boolean-val'
-            className='nodrag h-12 w-full rounded-br-md rounded-tr-md  p-2.5 px-1 '
+            className='nodrag h-12 w-full bg-transparent p-2.5 px-1 outline-none'
             value={data.variables[varName].value}
           >
             <option value='true'>True</option>
@@ -85,7 +87,7 @@ const variableElem = (id, data, varName) => {
           <input
             id='outlined-adornment-weight'
             type={getInputType(data.variables[varName].type)}
-            className='nodrag nowheel block h-12 w-full rounded-bl-md rounded-tl-md  p-2.5'
+            className='nodrag nowheel block h-12 w-full bg-transparent p-2.5 outline-none'
             name='variable-value'
             placeholder={varName}
             value={data.variables[varName].value}
@@ -112,7 +114,7 @@ const variableElem = (id, data, varName) => {
         <input
           id='outlined-adornment-weight'
           type='text'
-          className='nodrag nowheel block h-12 w-full rounded-bl-md rounded-tl-md  p-2.5'
+          className='nodrag nowheel block h-12 w-full bg-transparent p-2.5 outline-none'
           name='variable-value'
           placeholder={varName}
           value=''
@@ -127,7 +129,7 @@ const variableElem = (id, data, varName) => {
       <select
         onChange={handleInputTypeSelection}
         name='var-input-type'
-        className='w-full h-8 p-0 px-1 border-l nodrag rounded-br-md rounded-tr-md border-l-neutral-500'
+        className='w-full h-8 p-0 px-1 bg-transparent border-l outline-none nodrag border-cyan-950'
         value={data.variables && data.variables[varName] ? data.variables[varName].type : 'String'}
       >
         <option value='Select'>Select</option>

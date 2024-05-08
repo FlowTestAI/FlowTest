@@ -2,6 +2,9 @@ import React, { useState, Fragment } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import 'tippy.js/dist/tippy.css';
+import Button from 'components/atoms/common/Button';
+import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
+import TextInputWithLabel from 'components/atoms/common/TextInputWithLabel';
 
 export const variableTypes = [
   {
@@ -56,18 +59,16 @@ const AddVariableModal = ({ closeFn = () => null, open = false, modalType, onVar
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl max-w-min rounded-2xl'>
-                <Dialog.Title
-                  as='h3'
-                  className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
-                >
+              <Dialog.Panel className='w-full p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl max-w-min'>
+                <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
                   Create a new variable
                 </Dialog.Title>
-                <div className='mt-6 flex w-24 min-w-[40vw] items-center justify-center rounded-md border border-neutral-500 text-sm text-neutral-500 outline-0 focus:ring-0'>
+
+                <div className='order bg-background-light mt-6 flex w-24 min-w-[40vw] items-center justify-center rounded border border-slate-700 p-2.5 text-sm text-slate-900 outline-none'>
                   <input
                     id='keyName'
                     type='text'
-                    className='nodrag nowheel block h-12 w-full rounded-bl-md rounded-tl-md  p-2.5'
+                    className='block w-full h-12 bg-transparent outline-none nodrag nowheel'
                     name='keyName'
                     placeholder='Enter variable name'
                     onChange={(e) => setVariableName(e.target.value)}
@@ -79,7 +80,7 @@ const AddVariableModal = ({ closeFn = () => null, open = false, modalType, onVar
                     }}
                     name='var-input-type'
                     defaultValue={variableType}
-                    className='nodrag h-12 w-full max-w-[30%] rounded-br-md rounded-tr-md border-l border-l-neutral-500 p-0 px-1'
+                    className='nodrag h-12 w-full max-w-[30%] border-l border-slate-700 bg-transparent p-0 px-1 outline-none'
                   >
                     {variableTypes.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -89,25 +90,28 @@ const AddVariableModal = ({ closeFn = () => null, open = false, modalType, onVar
                   </select>
                 </div>
                 <div className='flex items-center gap-2 mt-6'>
-                  <button
-                    type='button'
-                    className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-blue-900 border border-transparent rounded-md grow basis-0 bg-sky-100 hover:bg-sky-300'
-                    onClick={closeFn}
+                  <Button
+                    btnType={BUTTON_TYPES.secondary}
+                    intentType={BUTTON_INTENT_TYPES.error}
+                    isDisabled={false}
+                    onClickHandle={closeFn}
+                    fullWidth={true}
                   >
                     Cancel
-                  </button>
-                  <button
-                    type='button'
-                    className='inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-green-900 bg-green-100 border border-transparent rounded-md grow basis-0 hover:bg-green-400'
-                    onClick={() => {
+                  </Button>
+                  <Button
+                    btnType={BUTTON_TYPES.primary}
+                    isDisabled={false}
+                    onClickHandle={() => {
                       if (variableName.trim() != '') {
                         onVariableAdd(modalType, variableName, variableType);
                       }
                       closeFn();
                     }}
+                    fullWidth={true}
                   >
                     Add variable
-                  </button>
+                  </Button>
                 </div>
               </Dialog.Panel>
             </Transition.Child>

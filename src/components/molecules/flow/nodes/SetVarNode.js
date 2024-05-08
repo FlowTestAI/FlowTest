@@ -6,7 +6,9 @@ import { variableTypes } from 'components/molecules/modals/flow/AddVariableModal
 import useCanvasStore from 'stores/CanvasStore';
 import { CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ } from 'constants/Common';
 import EvaluateOperators from '../constants/evaluateOperators';
+import TextInput from 'components/atoms/common/TextInput';
 
+// ToDo: Change standard select element(s) with headless list element
 const SetVarNode = ({ id, data }) => {
   const setVariableNodeName = useCanvasStore((state) => state.setVariableNodeName);
   const setVariableNodeType = useCanvasStore((state) => state.setVariableNodeType);
@@ -18,12 +20,12 @@ const SetVarNode = ({ id, data }) => {
   const renderVariable = () => {
     return (
       <div className='flex items-center justify-between pb-2'>
-        <div className='flex items-center justify-between text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
+        <div className='flex items-center justify-between text-sm border rounded outline-none cursor-default bg-background-light border-cyan-950'>
           {data.variable.type === 'Boolean' ? (
             <select
               onChange={(e) => variableNodeChangeVar(id, e.target.value)}
               name='boolean-val'
-              className='nodrag h-9 w-full rounded-br-md rounded-tr-md  p-2.5 px-1 '
+              className='nodrag h-9 w-full bg-transparent p-2.5 px-1 outline-none '
               value={data.variable.value}
             >
               <option value='true'>True</option>
@@ -34,7 +36,7 @@ const SetVarNode = ({ id, data }) => {
           ) : (
             <input
               type={getInputType(data.variable.type)}
-              className='nodrag nowheel block h-9 w-full rounded-bl-md rounded-tl-md  p-2.5'
+              className='nodrag nowheel block h-9 w-full bg-transparent p-2.5 outline-none '
               name='variable-value'
               data-type={getInputType(data.variable.type)}
               onChange={(e) => variableNodeChangeVar(id, e.target.value)}
@@ -65,7 +67,7 @@ const SetVarNode = ({ id, data }) => {
               ? data.variable.value.operator
               : CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value
           }
-          className='w-full h-12 px-1 py-2 border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'
+          className='w-full h-12 p-2 border rounded outline-none cursor-default bg-background-light border-cyan-950'
         >
           <option value={CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.value}>
             {CHOOSE_OPERATOR_DEFAULT_VALUE_OBJ.displayValue}
@@ -106,13 +108,13 @@ const SetVarNode = ({ id, data }) => {
     };
 
     return (
-      <div className='flex items-center justify-center mb-4 text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
+      <div className='flex items-center justify-center mb-4 text-sm border rounded outline-none cursor-default bg-background-light border-cyan-950'>
         {data.variable && data.variable.value.variables && data.variable.value.variables[varName] ? (
           data.variable.value.variables[varName].type === 'Boolean' ? (
             <select
               onChange={(event) => setVariableNodeExpressionsVariable(id, varName, 'Boolean', event.target?.value)}
               name='boolean-val'
-              className='nodrag h-12 w-full rounded-br-md rounded-tr-md  p-2.5 px-1 '
+              className='nodrag h-12 w-full bg-transparent p-2.5 px-1 outline-none'
               value={data.variable.value.variables[varName].value}
             >
               <option value='true'>True</option>
@@ -124,7 +126,7 @@ const SetVarNode = ({ id, data }) => {
             <input
               id='outlined-adornment-weight'
               type={getInputType(data.variable.value.variables[varName].type)}
-              className='nodrag nowheel block h-12 w-full rounded-bl-md rounded-tl-md  p-2.5'
+              className='nodrag nowheel block h-12 w-full bg-transparent p-2.5 outline-none'
               name='variable-value'
               placeholder={varName}
               value={data.variable.value.variables[varName].value}
@@ -151,7 +153,7 @@ const SetVarNode = ({ id, data }) => {
           <input
             id='outlined-adornment-weight'
             type='text'
-            className='nodrag nowheel block h-12 w-full rounded-bl-md rounded-tl-md  p-2.5'
+            className='nodrag nowheel block h-12 w-full bg-transparent p-2.5 outline-none'
             name='variable-value'
             placeholder={varName}
             value=''
@@ -166,7 +168,7 @@ const SetVarNode = ({ id, data }) => {
         <select
           onChange={handleInputTypeSelection}
           name='var-input-type'
-          className='w-full h-8 p-0 px-1 border-l nodrag rounded-br-md rounded-tr-md border-l-neutral-500'
+          className='w-full h-8 p-0 px-1 bg-transparent border-l outline-none nodrag border-cyan-950'
           value={
             data.variable && data.variable.value.variables && data.variable.value.variables[varName]
               ? data.variable.value.variables[varName].type
@@ -192,31 +194,27 @@ const SetVarNode = ({ id, data }) => {
       handleRight={true}
       handleRightData={{ type: 'source' }}
     >
-      <div>
-        <div>
-          <input
-            type='text'
-            placeholder={`Enter variable name`}
-            className='nodrag nowheel  mb-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
-            name='variable_name'
-            onChange={(e) => setVariableNodeName(id, e.target.value)}
-            value={data.variable && data.variable.name ? data.variable.name : ''}
-          />
-          <select
-            onChange={(e) => setVariableNodeType(id, e.target.value)}
-            name='var-input-type'
-            className='w-full h-8 p-0 px-1 border-l nodrag rounded-br-md rounded-tr-md border-l-neutral-500'
-            value={data.variable && data.variable.type ? data.variable.type : ''}
-          >
-            <option value=''>None</option>
-            {variableTypes.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-            <option value='Expression'>Expression</option>
-          </select>
-        </div>
+      <div className='flex flex-col gap-4'>
+        <TextInput
+          placeHolder={`Enter variable name`}
+          onChangeHandler={(e) => setVariableNodeName(id, e.target.value)}
+          name={'variable_name'}
+          value={data.variable && data.variable.name ? data.variable.name : ''}
+        />
+        <select
+          onChange={(e) => setVariableNodeType(id, e.target.value)}
+          name='var-input-type'
+          className='w-full p-2 border rounded outline-none cursor-default bg-background-light border-cyan-950'
+          value={data.variable && data.variable.type ? data.variable.type : ''}
+        >
+          <option value=''>None</option>
+          {variableTypes.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+          <option value='Expression'>Expression</option>
+        </select>
         {data.variable && data.variable.type ? (
           data.variable.type === 'Expression' ? (
             <div>

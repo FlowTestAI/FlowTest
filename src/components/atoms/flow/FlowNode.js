@@ -8,11 +8,22 @@ const FlowNode = ({ children, title, handleLeft, handleLeftData, handleRight, ha
       {handleLeft ? <Handle type={handleLeftData?.type} position={Position.Left} /> : ''}
       <div
         className={`${
-          children ? 'flex-col px-4 py-2' : 'items-center justify-center px-6 py-4'
-        } flex rounded-md border-2 border-neutral-200 bg-white`}
+          children ? 'flex-col' : 'items-center justify-center px-6 py-4'
+        } bg-background-lighter flex rounded-md border-2 border-slate-300`}
       >
-        <h3 className={`${children ? 'mb-4' : ''}  text-base font-semibold`}>{title}</h3>
-        {children}
+        {children ? (
+          <>
+            <div className='px-4 py-2 border-b-2 border-slate-300'>
+              <h3 className='text-xl font-medium'>{title}</h3>
+            </div>
+            <div className='p-4'>{children}</div>
+          </>
+        ) : (
+          <>
+            <h3 className='text-xl font-medium'>{title}</h3>
+            {children}
+          </>
+        )}
       </div>
       {handleRight ? (
         <Handle

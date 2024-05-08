@@ -5,9 +5,6 @@ import 'reactflow/dist/style.css';
 import { cloneDeep } from 'lodash';
 import { toast } from 'react-toastify';
 
-// css
-import './index.css';
-
 // ReactFlow Canvas
 import CustomEdge from './edges/ButtonEdge';
 
@@ -26,6 +23,8 @@ import ComplexNode from './nodes/ComplexNode';
 import { initFlowData } from './utils';
 import SetVarNode from './nodes/SetVarNode';
 import { saveHandle } from '../modals/SaveFlowModal';
+import Button from 'components/atoms/common/Button';
+import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -194,9 +193,9 @@ const Flow = ({ tab, collectionId }) => {
   const onGraphComplete = (status, logs) => {
     setLogs(logs);
     if (status == 'Success') {
-      toast.success('FlowTest Run Success! View Logs');
+      toast.success(`FlowTest Run Success! \n View Logs`);
     } else if (status == 'Failed') {
-      toast.error('FlowTest Run Failed! View Logs');
+      toast.error(`FlowTest Run Failed! \n View Logs`);
     }
     runnableEdges(false);
   };
@@ -228,54 +227,59 @@ const Flow = ({ tab, collectionId }) => {
           setViewport(data);
         }}
         isValidConnection={isValidConnection}
+        fitView
       >
-        <Controls onFitView={() => setViewport(reactFlowInstance.getViewport())}>
-          <ControlButton
-            className='p-1'
-            onClick={async () => {
-              runnableEdges(true);
-              const startTime = Date.now();
-              try {
-                let result = undefined;
-                let g = undefined;
-                let envVariables = {};
-
-                const activeEnv = useCollectionStore
-                  .getState()
-                  .collections.find((c) => c.id === collectionId)
-                  ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
-                if (activeEnv) {
-                  envVariables = cloneDeep(activeEnv.variables);
-                }
-
-                // ============= flow =====================
-                g = new Graph(
-                  cloneDeep(reactFlowInstance.getNodes()),
-                  cloneDeep(reactFlowInstance.getEdges()),
-                  startTime,
-                  result ? result.envVars : envVariables,
-                  result ? result.logs : [],
-                );
-                result = await g.run();
-
-                if (result.status === 'Failed') {
-                  onGraphComplete(result.status, result.logs);
-                  return;
-                }
-
-                result.logs.push(`Total time: ${Date.now() - startTime} ms`);
-                onGraphComplete(result.status, result.logs);
-              } catch (error) {
-                toast.error(`Error running graph: ${error}`);
-                runnableEdges(false);
-              }
-            }}
-            title='run'
-          >
-            Run
-          </ControlButton>
-        </Controls>
         <Background variant='dots' gap={12} size={1} />
+        <Controls
+          className='flex shadow-none border-cyan-900'
+          onFitView={() => setViewport(reactFlowInstance.getViewport())}
+        ></Controls>
+        <Button
+          classes={'absolute bottom-4 right-20 z-[2000] text-xl'}
+          btnType={BUTTON_TYPES.primary}
+          isDisabled={false}
+          onClickHandle={async () => {
+            runnableEdges(true);
+            const startTime = Date.now();
+            try {
+              let result = undefined;
+              let g = undefined;
+              let envVariables = {};
+
+              const activeEnv = useCollectionStore
+                .getState()
+                .collections.find((c) => c.id === collectionId)
+                ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+              if (activeEnv) {
+                envVariables = cloneDeep(activeEnv.variables);
+              }
+
+              // ============= flow =====================
+              g = new Graph(
+                cloneDeep(reactFlowInstance.getNodes()),
+                cloneDeep(reactFlowInstance.getEdges()),
+                startTime,
+                result ? result.envVars : envVariables,
+                result ? result.logs : [],
+              );
+              result = await g.run();
+
+              if (result.status === 'Failed') {
+                onGraphComplete(result.status, result.logs);
+                return;
+              }
+
+              result.logs.push(`Total time: ${Date.now() - startTime} ms`);
+              onGraphComplete(result.status, result.logs);
+            } catch (error) {
+              toast.error(`Error running graph: ${error}`);
+              runnableEdges(false);
+            }
+          }}
+          fullWidth={false}
+        >
+          Run
+        </Button>
         <AddNodes collectionId={collectionId} />
       </ReactFlow>
     </div>

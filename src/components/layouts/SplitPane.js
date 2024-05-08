@@ -2,7 +2,7 @@ import React from 'react';
 import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
 import Workspace from '../organisms/workspace/Workspace';
-import AppNavBar from 'components/organisms/appNavBar';
+import AppNavBar from 'components/organisms/AppNavBar';
 import SideBar from 'components/organisms/SideBar';
 
 const SplitPane = () => {

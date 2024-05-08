@@ -1,8 +1,9 @@
 import React from 'react';
 import { BaseEdge, EdgeLabelRenderer, getSmoothStepPath } from 'reactflow';
 import useCanvasStore from 'stores/CanvasStore';
-
-import './buttonedge.css';
+import Button from 'components/atoms/common/Button';
+import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 // eslint-disable-next-line react/prop-types
 export default function CustomEdge({
@@ -42,16 +43,21 @@ export default function CustomEdge({
           }}
           className='nodrag nopan'
         >
-          <button
-            className='edgebutton'
-            onClick={(evt) => {
+          <Button
+            btnType={BUTTON_TYPES.secondary}
+            intentType={BUTTON_INTENT_TYPES.error}
+            classes={'rounded-full'}
+            isDisabled={false}
+            onlyIcon={true}
+            onClickHandle={(evt) => {
               evt.stopPropagation();
               // alert(`remove ${id}`);
               setEdges(useCanvasStore.getState().edges.filter((e) => e.id !== id));
             }}
+            fullWidth={false}
           >
-            ×
-          </button>
+            <XMarkIcon className='w-3 h-3' />
+          </Button>
         </div>
       </EdgeLabelRenderer>
     </>

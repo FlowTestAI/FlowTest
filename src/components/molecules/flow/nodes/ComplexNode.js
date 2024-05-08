@@ -7,6 +7,7 @@ import useCollectionStore from 'stores/CollectionStore';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
+// ToDo: Change standard select element(s) with headless list element
 const ComplexNode = ({ id, data }) => {
   const { ipcRenderer } = window;
 
@@ -44,7 +45,7 @@ const ComplexNode = ({ id, data }) => {
             }}
             name='flow'
             value={data.relativePath ? data.relativePath : ''}
-            className='h-12 px-1 py-2 border rounded-lg outline-none max-w-48 border-neutral-500 text-neutral-500 outline-0 focus:w-auto focus:ring-0'
+            className='h-12 p-2 border rounded outline-none cursor-default bg-background-light max-w-48 border-cyan-950'
           >
             <option key='None' value=''>
               Select a flow

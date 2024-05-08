@@ -70,7 +70,7 @@ const Env = ({ tab }) => {
       </table>
       <div className='mt-6'>
         <Button
-          btnType={BUTTON_TYPES.tertiary}
+          btnType={BUTTON_TYPES.primary}
           isDisabled={false}
           onClickHandle={() => setAddVariableModalOpen(true)}
           fullWidth={true}

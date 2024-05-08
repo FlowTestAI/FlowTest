@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import Button from 'components/atoms/common/Button';
-import { BUTTON_TYPES } from 'constants/Common';
+import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 import { PropTypes } from 'prop-types';
+import TextInput from 'components/atoms/common/TextInput';
 
 const NewCollectionModal = ({ closeFn = () => null, open = false }) => {
   // ToDo: Save the file with the given file name
@@ -26,7 +27,7 @@ const NewCollectionModal = ({ closeFn = () => null, open = false }) => {
         </Transition.Child>
 
         <div className='fixed inset-0 overflow-y-auto'>
-          <div className='flex min-h-full items-center justify-center p-4 text-center'>
+          <div className='flex items-center justify-center min-h-full p-4 text-center'>
             <Transition.Child
               as={Fragment}
               enter='ease-out duration-300'
@@ -36,26 +37,29 @@ const NewCollectionModal = ({ closeFn = () => null, open = false }) => {
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
-                <Dialog.Title
-                  as='h3'
-                  className='border-b border-neutral-300 pb-4 text-center text-lg font-semibold text-gray-900'
-                >
+              <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
+                <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
                   Create a new collection
                 </Dialog.Title>
                 <div className='mt-6'>
-                  <input
-                    type='text'
-                    className='input input-bordered w-full rounded'
-                    placeholder='Collection name'
-                    required
-                  />
+                  <TextInput placeHolder={`Collection name`} name={'Collection name'} />
                 </div>
-                <div className='mt-6 flex items-center gap-2'>
-                  <Button btnType={BUTTON_TYPES.error} isDisabled={false} onClickHandle={closeFn} fullWidth={true}>
+                <div className='flex items-center gap-2 mt-6'>
+                  <Button
+                    btnType={BUTTON_TYPES.primary}
+                    intentType={BUTTON_INTENT_TYPES.error}
+                    isDisabled={false}
+                    onClickHandle={closeFn}
+                    fullWidth={true}
+                  >
                     Cancel
                   </Button>
-                  <Button btnType={BUTTON_TYPES.success} isDisabled={false} fullWidth={true}>
+                  <Button
+                    btnType={BUTTON_TYPES.primary}
+                    intentType={BUTTON_INTENT_TYPES.success}
+                    isDisabled={false}
+                    fullWidth={true}
+                  >
                     Create
                   </Button>
                 </div>

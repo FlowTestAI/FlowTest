@@ -7,6 +7,8 @@ import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { getDefaultValue } from 'utils/common';
 import AddVariableModal from 'components/molecules/modals/flow/AddVariableModal';
 import useCanvasStore from 'stores/CanvasStore';
+import TextInput from 'components/atoms/common/TextInput';
+import NodeHorizontalDivider from 'components/atoms/flow/NodeHorizontalDivider';
 
 const RequestNode = ({ id, data }) => {
   const setRequestNodeUrl = useCanvasStore((state) => state.setRequestNodeUrl);
@@ -108,20 +110,21 @@ const RequestNode = ({ id, data }) => {
     >
       <div className='min-w-60'>
         <div className='pb-4'>
-          <input
-            type='text'
-            placeholder={`Enter URL for a ${data.requestType} request`}
-            className='nodrag nowheel block w-full rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
-            name='username'
-            onChange={handleUrlInputChange}
+          <TextInput
+            placeHolder={`Enter URL for a ${data.requestType} request`}
+            onChangeHandler={handleUrlInputChange}
+            name={'username'}
             value={data.url ? data.url : ''}
           />
         </div>
+        <NodeHorizontalDivider />
         <RequestBody nodeId={id} nodeData={data} />
-        <div className='p-4 border-t border-b border-neutral-300 bg-slate-100'>
+        <NodeHorizontalDivider />
+        <div className='p-4 bg-background'>
           <h3>Variables</h3>
           <div className='mt-4'>
-            <div className='p-2 border-t border-neutral-300'>
+            <NodeHorizontalDivider />
+            <div className='p-2'>
               <div className='flex items-center justify-between'>
                 <div>Pre Request</div>
                 <button
@@ -135,7 +138,8 @@ const RequestNode = ({ id, data }) => {
               </div>
               {renderVariables('pre-request')}
             </div>
-            <div className='p-2 border-t border-neutral-300'>
+            <NodeHorizontalDivider />
+            <div className='p-2'>
               <div className='flex items-center justify-between'>
                 <div>Post Response</div>
                 <button
@@ -151,6 +155,7 @@ const RequestNode = ({ id, data }) => {
             </div>
           </div>
         </div>
+        <NodeHorizontalDivider />
       </div>
       <AddVariableModal
         closeFn={() => setVariableDialogOpen(false)}

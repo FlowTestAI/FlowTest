@@ -1,0 +1,7 @@
+.cm-editor {
+  height: 380px;
+  width: 380px;
+}
+.cm-scroller {
+  overflow: auto;
+}

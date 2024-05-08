@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { PropTypes } from 'prop-types';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, ControlButton } from 'reactflow';
+import ReactFlow, { Controls, Background, ControlButton, useKeyPress } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { cloneDeep, isEqual } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { toast } from 'react-toastify';
 
 // ReactFlow Canvas
@@ -22,6 +22,7 @@ import Graph from './graph/Graph';
 import ComplexNode from './nodes/ComplexNode';
 import { initFlowData } from './utils';
 import SetVarNode from './nodes/SetVarNode';
+import { saveHandle } from '../modals/SaveFlowModal';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 
@@ -80,7 +81,7 @@ const selector = (state) => ({
   setViewport: state.setViewport,
 });
 
-const Flow = ({ collectionId }) => {
+const Flow = ({ tab, collectionId }) => {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, setLogs, viewport, setViewport } =
     useCanvasStore(selector);
 
@@ -201,8 +202,11 @@ const Flow = ({ collectionId }) => {
 
   reactFlowInstance?.setViewport(viewport);
 
+  const cmdAndSPressed = useKeyPress(['Meta+s', 'Strg+s']);
+
   return (
     <div className='flex-auto'>
+      {cmdAndSPressed && saveHandle(tab)}
       <ReactFlow
         nodes={nodes}
         edges={edges}

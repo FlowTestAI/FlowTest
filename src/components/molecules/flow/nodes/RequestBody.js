@@ -4,8 +4,8 @@ import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import useCanvasStore from 'stores/CanvasStore';
-import JsonEditor from '../../../atoms/JsonEditor';
 import { toast } from 'react-toastify';
+import { Editor } from 'components/atoms/Editor';
 import NodeHorizontalDivider from 'components/atoms/flow/NodeHorizontalDivider';
 import TextInputWithLabel from 'components/atoms/common/TextInputWithLabel';
 import Button from 'components/atoms/common/Button';
@@ -115,7 +115,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
               {requestBodyTypeOptions.map((bodyTypeOption, index) => (
                 <Menu.Item key={index} data-click-from='body-type-menu' onClick={() => handleClose(bodyTypeOption)}>
                   <button
-                    className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group hover:bg-background-light'
+                    className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md hover:bg-background-light group'
                     data-click-from='body-type-menu'
                   >
                     {bodyTypeOption}
@@ -130,13 +130,8 @@ const RequestBody = ({ nodeId, nodeData }) => {
         <>
           <NodeHorizontalDivider />
           <div className='p-4 bg-background'>
-            <div className='w-full nodrag nowheel min-w-72'>
-              <JsonEditor
-                placeholder='Enter json'
-                name='request-body-json'
-                onChange={(e) => handleRawJson(e)}
-                value={nodeData.requestBody.body}
-              />
+            <div className='w-full nodrag nowheel min-w-72 bg-gray-50'>
+              <Editor name='request-body-json' onChange={(e) => handleRawJson(e)} value={nodeData.requestBody.body} />
               <Button
                 btnType={BUTTON_TYPES.secondary}
                 classes={'mt-2'}

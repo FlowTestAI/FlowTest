@@ -41,7 +41,12 @@ const WorkspaceContent = () => {
     <div className='flex flex-col h-full'>
       <TabPanelHeader />
       <HorizontalDivider />
-      {focusTab && (focusTab.type === OBJ_TYPES.flowtest ? <Flow collectionId={focusTab.collectionId} /> : <Env />)}
+      {focusTab &&
+        (focusTab.type === OBJ_TYPES.flowtest ? (
+          <Flow tab={focusTab} collectionId={focusTab.collectionId} />
+        ) : (
+          <Env tab={focusTab} />
+        ))}
     </div>
   );
 };

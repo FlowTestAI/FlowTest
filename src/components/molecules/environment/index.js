@@ -7,8 +7,10 @@ import ConfirmActionModal from '../modals/ConfirmActionModal';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_TYPES, OBJ_TYPES } from 'constants/Common';
 import EditEnvVariableModal from '../modals/EditEnvVariableModal';
+import { useKeyPress } from 'reactflow';
+import { saveHandle } from '../modals/SaveFlowModal';
 
-const Env = () => {
+const Env = ({ tab }) => {
   const variables = useEnvStore((state) => state.variables);
   const handleAddVariable = useEnvStore((state) => state.handleAddVariable);
   const handleDeleteVariable = useEnvStore((state) => state.handleDeleteVariable);
@@ -21,8 +23,11 @@ const Env = () => {
   const [editKey, setEditKey] = useState('');
   const [editValue, setEditValue] = useState('');
 
+  const cmdAndSPressed = useKeyPress(['Meta+s', 'Strg+s']);
+
   return (
     <div className='p-4'>
+      {cmdAndSPressed && saveHandle(tab)}
       <table className='w-full leading-normal'>
         <thead>
           <tr className='text-xs font-bold tracking-wider text-left uppercase bg-ghost-50 text-ghost-600'>

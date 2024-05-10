@@ -1,9 +1,17 @@
 import { isEqual, reduce, map } from 'lodash';
 
-export const orderNodesByTags = (nodes) => {
+export const orderNodesByTags = (nodes, filter) => {
   const result = {};
-  if (nodes) {
-    nodes.map((node) => {
+  let filterNodes = nodes;
+  if (filter.trim() != '') {
+    filterNodes = nodes.filter(
+      (n) =>
+        n.operationId.toLowerCase().includes(filter.toLowerCase()) ||
+        n.description.toLowerCase().includes(filter.toLowerCase()),
+    );
+  }
+  if (filterNodes) {
+    filterNodes.map((node) => {
       node.tags.map((tag) => {
         if (!result[tag]) {
           result[tag] = [];

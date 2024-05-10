@@ -1,4 +1,5 @@
 import { GENAI_MODELS } from 'constants/Common';
+import { addOrUpdateDotEnvironmentFile } from 'service/collection';
 import useCollectionStore from 'stores/CollectionStore';
 
 const translateGeneratedNodesToOpenApiNodes = (generatedNodes, openApiNodes) => {
@@ -34,27 +35,32 @@ const translateGeneratedNodesToOpenApiNodes = (generatedNodes, openApiNodes) => 
   return outputNodes;
 };
 
-export const generateFlowData = async (instruction, modelName, collectionId) => {
+export const generateFlowData = async (instruction, modelName, modelKey, collectionId) => {
   try {
     const { ipcRenderer } = window;
 
     const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
     if (collection) {
       if (modelName === GENAI_MODELS.openai) {
-        const apiKey = collection.dotEnvVariables['OPENAI_APIKEY'];
-        if (apiKey) {
-          const generatedNodes = await ipcRenderer.invoke('renderer:generate-nodes-ai', instruction, collectionId, {
-            name: GENAI_MODELS.openai,
-            apiKey,
+        if (!collection.dotEnvVariables) {
+          await ipcRenderer.invoke('renderer:create-dotenv', collection.pathname, `OPENAI_APIKEY=${modelKey}`);
+        } else if (
+          !Object.prototype.hasOwnProperty.call(collection.dotEnvVariables, 'OPENAI_APIKEY') ||
+          modelKey != collection.dotEnvVariables['OPENAI_APIKEY']
+        ) {
+          await addOrUpdateDotEnvironmentFile(collectionId, {
+            ...collection.dotEnvVariables,
+            OPENAI_APIKEY: modelKey,
           });
-          const flowData = {
-            nodes: translateGeneratedNodesToOpenApiNodes(generatedNodes, collection.nodes),
-          };
-          return flowData;
-        } else {
-          // prompt the user to add openai api key
-          return Promise.reject(new Error(`OpenAI api key not added`));
         }
+        const generatedNodes = await ipcRenderer.invoke('renderer:generate-nodes-ai', instruction, collectionId, {
+          name: GENAI_MODELS.openai,
+          apiKey: modelKey,
+        });
+        const flowData = {
+          nodes: translateGeneratedNodesToOpenApiNodes(generatedNodes, collection.nodes),
+        };
+        return flowData;
       } else {
         return Promise.reject(new Error(`model: ${modelName} not supported`));
       }

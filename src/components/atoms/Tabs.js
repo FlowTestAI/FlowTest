@@ -5,6 +5,7 @@ import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 import { isEqual } from 'lodash';
 import { OBJ_TYPES } from 'constants/Common';
 import { compare } from './util';
+import { saveHandle } from 'components/molecules/modals/SaveFlowModal';
 
 const tabUnsavedChanges = (tab) => {
   if (tab.type === OBJ_TYPES.flowtest && tab.flowDataDraft) {
@@ -36,7 +37,7 @@ const Tabs = () => {
   const focusTab = tabs.find((t) => t.id === focusTabId);
   const [confirmActionModalOpen, setConfirmActionModalOpen] = useState(false);
   const closeTab = useTabStore((state) => state.closeTab);
-  const [closingTabId, setClosingTabId] = useState('');
+  const [closingTab, setClosingTab] = useState('');
   const [closingCollectionId, setClosingCollectionId] = useState('');
   // ToDo: change color according to theme
   const activeTabStyles = 'bg-cyan-900 text-white';
@@ -48,7 +49,7 @@ const Tabs = () => {
     event.stopPropagation();
     event.preventDefault();
 
-    setClosingTabId(tab.id);
+    setClosingTab(tab);
     setClosingCollectionId(tab.collectionId);
 
     if (tabUnsavedChanges(tab)) {
@@ -94,13 +95,19 @@ const Tabs = () => {
           );
         })}
       <ConfirmActionModal
-        closeFn={() => setConfirmActionModalOpen(false)}
+        closeFn={() => {
+          closeTab(closingTab.id, closingCollectionId);
+          setConfirmActionModalOpen(false);
+        }}
         open={confirmActionModalOpen}
         message={messageForConfirmActionModal}
         actionFn={() => {
-          closeTab(closingTabId, closingCollectionId);
+          saveHandle(closingTab);
+          closeTab(closingTab.id, closingCollectionId);
           setConfirmActionModalOpen(false);
         }}
+        leftButtonMessage={'Close Withuout Saving'}
+        rightButtonMessage={'Save And Close'}
       />
     </div>
   );

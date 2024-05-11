@@ -14,7 +14,7 @@ In order to not waste your time implementing a change that has already been decl
 
 ### Setup your environment locally
 
-_Some commands will assume you have the Github CLI installed, if you haven't, consider [installing it](https://github.com/cli/cli#installation), but you can always use the Web UI if you prefer that instead._
+_Some commands will assume you have the GitHub CLI installed, if you haven't, consider [installing it](https://github.com/cli/cli#installation), but you can always use the Web UI if you prefer that instead._
 
 In order to contribute to this project, you will need to fork the repository:
 

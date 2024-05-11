@@ -93,6 +93,7 @@ const Tabs = () => {
           closeTab(closingTab.id, closingCollectionId);
           setConfirmActionModalOpen(false);
         }}
+        closeModal={() => setConfirmActionModalOpen(false)}
         leftButtonMessage={'Close Withuout Saving'}
         rightButtonMessage={'Save And Close'}
       />

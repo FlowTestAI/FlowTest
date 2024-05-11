@@ -26,7 +26,7 @@ const SideBarSubHeader = () => {
           btnType={BUTTON_TYPES.tertiary}
           classes={'rounded-none'}
           isDisabled={false}
-          onClickHandle={() => setOpenCollectionModal(true)}
+          onClickHandle={() => setImportCollectionModal(true)}
           fullWidth={true}
         >
           <PlusIcon className='w-4 h-4' />

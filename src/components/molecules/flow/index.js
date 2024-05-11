@@ -227,7 +227,6 @@ const Flow = ({ tab, collectionId }) => {
           setViewport(data);
         }}
         isValidConnection={isValidConnection}
-        fitView
       >
         <Background variant='dots' gap={12} size={1} />
         <Controls

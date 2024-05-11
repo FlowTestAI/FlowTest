@@ -2,7 +2,8 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import Button from 'components/atoms/common/Button';
-import { BUTTON_TYPES } from 'constants/Common';
+import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
+import TextInput from 'components/atoms/common/TextInput';
 
 const EditEnvVariableModal = ({ closeFn = () => null, open = false, editKey, editValue, handleAddVariable }) => {
   const [value, setValue] = useState(editValue);
@@ -37,31 +38,34 @@ const EditEnvVariableModal = ({ closeFn = () => null, open = false, editKey, edi
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'>
-                <Dialog.Title
-                  as='h3'
-                  className='pb-4 text-lg font-semibold text-center text-gray-900 border-b border-neutral-300'
-                >
+              <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
+                <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
                   Edit Variable
                 </Dialog.Title>
                 <div className='mt-6'>
                   <div className='mt-4'>{editKey}</div>
                   <div className='mt-4'>
-                    <input
+                    <TextInput
                       id='value'
-                      className='block w-full rounded border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
-                      placeholder='Value'
+                      placeHolder={`Value`}
+                      onChangeHandler={(event) => setValue(event.target.value)}
+                      name={'Value'}
                       value={value}
-                      onChange={(event) => setValue(event.target.value)}
                     />
                   </div>
                 </div>
                 <div className='flex items-center gap-2 mt-6'>
-                  <Button btnType={BUTTON_TYPES.error} isDisabled={false} onClickHandle={closeFn} fullWidth={true}>
+                  <Button
+                    btnType={BUTTON_TYPES.secondary}
+                    intentType={BUTTON_INTENT_TYPES.error}
+                    isDisabled={false}
+                    onClickHandle={closeFn}
+                    fullWidth={true}
+                  >
                     Cancel
                   </Button>
                   <Button
-                    btnType={BUTTON_TYPES.info}
+                    btnType={BUTTON_TYPES.secondary}
                     isDisabled={false}
                     fullWidth={true}
                     onClickHandle={() => {

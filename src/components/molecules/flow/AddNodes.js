@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Popover, Transition } from '@headlessui/react';
 import { PlusIcon, MinusIcon } from '@heroicons/react/20/solid';
 import { Fragment } from 'react';
 import { Disclosure } from '@headlessui/react';
-import { ChevronUpIcon } from '@heroicons/react/20/solid';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import useCollectionStore from 'stores/CollectionStore';
 import { orderNodesByTags } from './utils';
 import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
@@ -64,9 +64,7 @@ const setVarNode = {
 };
 
 const AddNodes = ({ collectionId }) => {
-  // const [open, setOpen] = useState(false);
-  // const anchorRef = useRef(null);
-  // const ps = useRef();
+  const [searchFilter, setSearchFilter] = useState('');
 
   const onDragStart = (event, node) => {
     event.dataTransfer.setData('application/reactflow', JSON.stringify(node));
@@ -75,7 +73,7 @@ const AddNodes = ({ collectionId }) => {
 
   // Get all requests of this collections
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-  const nodesByTags = orderNodesByTags(collection.nodes);
+  const nodesByTags = orderNodesByTags(collection.nodes, searchFilter);
 
   return (
     <div className='absolute bottom-4 right-4 z-[2000]'>
@@ -110,7 +108,7 @@ const AddNodes = ({ collectionId }) => {
                           <>
                             <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
                               <span>Requests</span>
-                              <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5`} />
+                              <ChevronDownIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5`} />
                             </Disclosure.Button>
 
                             <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
@@ -137,17 +135,28 @@ const AddNodes = ({ collectionId }) => {
                             <>
                               <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
                                 <span>{collection.name}</span>
-                                <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
+                                <ChevronDownIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
                               </Disclosure.Button>
                               <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                                 <div>
+                                  <div className='flex items-center justify-between text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
+                                    <input
+                                      type='text'
+                                      className='nodrag nowheel block h-9 w-full min-w-40 rounded-bl-md rounded-tl-md p-2.5'
+                                      name='search-nodes'
+                                      placeholder='Search Nodes'
+                                      onChange={(e) => setSearchFilter(e.target.value)}
+                                      value={searchFilter}
+                                    />
+                                  </div>
+                                  <HorizontalDivider />
                                   {Object.entries(nodesByTags).map(([tag, nodes], index) => (
                                     <Disclosure as='div' key={index}>
                                       {({ open }) => (
                                         <>
                                           <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
                                             <span>{tag}</span>
-                                            <ChevronUpIcon
+                                            <ChevronDownIcon
                                               className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `}
                                             />
                                           </Disclosure.Button>
@@ -189,7 +198,7 @@ const AddNodes = ({ collectionId }) => {
                           <>
                             <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
                               <span>Output</span>
-                              <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
+                              <ChevronDownIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
                             </Disclosure.Button>
                             <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                               <div
@@ -212,7 +221,7 @@ const AddNodes = ({ collectionId }) => {
                           <>
                             <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
                               <span>Assert</span>
-                              <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
+                              <ChevronDownIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
                             </Disclosure.Button>
                             <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                               <div
@@ -235,7 +244,7 @@ const AddNodes = ({ collectionId }) => {
                           <>
                             <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
                               <span>Delay</span>
-                              <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
+                              <ChevronDownIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
                             </Disclosure.Button>
                             <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                               <div
@@ -258,7 +267,7 @@ const AddNodes = ({ collectionId }) => {
                           <>
                             <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
                               <span>Authentication</span>
-                              <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
+                              <ChevronDownIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
                             </Disclosure.Button>
                             <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                               <div
@@ -281,7 +290,7 @@ const AddNodes = ({ collectionId }) => {
                           <>
                             <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
                               <span>Complex</span>
-                              <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
+                              <ChevronDownIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
                             </Disclosure.Button>
                             <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                               <div
@@ -304,7 +313,7 @@ const AddNodes = ({ collectionId }) => {
                           <>
                             <Disclosure.Button className='flex justify-between w-full px-4 py-2 text-lg font-medium text-left border-t border-b bg-gray-50 hover:bg-gray-100 focus:outline-none focus-visible:ring'>
                               <span>Set Variable</span>
-                              <ChevronUpIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
+                              <ChevronDownIcon className={`${open ? 'rotate-180 transform' : ''} h-5 w-5 `} />
                             </Disclosure.Button>
                             <Disclosure.Panel className='px-4 pt-4 pb-2 text-sm border-l border-r'>
                               <div

@@ -11,7 +11,13 @@ import 'components/atoms/Editor.css';
 
 export const Editor = ({ ...props }) => {
   const editor = useRef();
-  //const [code, setCode] = useState('{}');
+  const [view, setView] = useState(null);
+
+  if (view) {
+    if (props.value != view.state.doc.toString()) {
+      view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: props.value } });
+    }
+  }
 
   const onUpdate = EditorView.updateListener.of((v) => {
     if (props.onChange) {
@@ -34,9 +40,11 @@ export const Editor = ({ ...props }) => {
     });
 
     const view = new EditorView({ state, parent: editor.current });
+    setView(view);
 
     return () => {
       view.destroy();
+      setView(null);
     };
   }, []);
 

@@ -21,6 +21,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
 
   const [selectedModel, setSelectedModel] = useState(null);
   const [textareaValue, setTextareaValue] = useState('');
+  const [modelkey, setModelKey] = useState('');
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
@@ -55,7 +56,21 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                   Use our AI to generate the flow
                 </Dialog.Title>
                 <div className='mt-6'>
-                  <Listbox value={selectedModel} onChange={setSelectedModel}>
+                  <Listbox
+                    value={selectedModel}
+                    onChange={(m) => {
+                      if (GENAI_MODELS.openai) {
+                        if (
+                          collection &&
+                          collection.dotEnvVariables &&
+                          Object.prototype.hasOwnProperty.call(collection.dotEnvVariables, 'OPENAI_APIKEY')
+                        ) {
+                          setModelKey(collection.dotEnvVariables['OPENAI_APIKEY']);
+                        }
+                      }
+                      setSelectedModel(m);
+                    }}
+                  >
                     <div className='relative flex w-full h-full'>
                       <Listbox.Button className='flex items-center justify-between w-full gap-4 px-2 py-4 border rounded cursor-default border-neutral-300'>
                         <div className='pl-2 text-left min-w-32'>{selectedModel ? selectedModel : 'Select model'}</div>
@@ -109,16 +124,10 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                         type='text'
                         className='nodrag nowheel block w-full p-2.5'
                         name='keyName'
-                        placeholder='Enter your Open AI key'
-                        value={
-                          collection &&
-                          collection.dotEnvVariables &&
-                          Object.prototype.hasOwnProperty.call(collection.dotEnvVariables, 'OPENAI_APIKEY')
-                            ? collection.dotEnvVariables['OPENAI_APIKEY']
-                            : 'Enter your OPENAI key: https://flowtestai.gitbook.io/flowtestai/generative-ai'
-                        }
-                        readOnly='readonly'
-                        //onChange={(e) => setOpenAIKey(e.target.value)}
+                        placeholder='Enter your OPENAI api key'
+                        value={modelkey.trim() != '' ? modelkey : 'Enter your OPENAI api key'}
+                        //readOnly='readonly'
+                        onChange={(e) => setModelKey(e.target.value)}
                       />
                     </div>
                   ) : (
@@ -129,6 +138,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                       id='gen-ai-text'
                       className='block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded min-h-80 bg-gray-50 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'
                       placeholder='Describe your flow step by step'
+                      value={textareaValue}
                       onChange={(event) => setTextareaValue(event.target.value)}
                     />
                   </div>
@@ -152,9 +162,14 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                         toast.info('Please describe your flow');
                       } else if (selectedModel === null) {
                         toast.info('Please select a model');
+                      } else if (modelkey.trim() === '') {
+                        toast.info(`Please enter ${selectedModel} api key`);
                       } else {
                         setShowLoader(true);
-                        promiseWithTimeout(generateFlowData(textareaValue, selectedModel, collectionId), 30000)
+                        promiseWithTimeout(
+                          generateFlowData(textareaValue, selectedModel, modelkey, collectionId),
+                          30000,
+                        )
                           .then((flowData) => {
                             setShowLoader(false);
                             if (isEqual(flowData.nodes, [])) {

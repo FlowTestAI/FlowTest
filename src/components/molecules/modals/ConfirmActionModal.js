@@ -4,10 +4,18 @@ import { Dialog, Transition } from '@headlessui/react';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_TYPES, BUTTON_INTENT_TYPES } from 'constants/Common';
 
-const ConfirmActionModal = ({ message, actionFn = () => null, closeFn = () => null, open = false }) => {
+const ConfirmActionModal = ({
+  message,
+  actionFn = () => null,
+  closeFn = () => null,
+  open = false,
+  closeModal,
+  leftButtonMessage = 'Cancel',
+  rightButtonMessage = 'Continue',
+}) => {
   return (
     <Transition appear show={open} as={Fragment}>
-      <Dialog as='div' className='relative z-10' onClose={closeFn}>
+      <Dialog as='div' className='relative z-10' onClose={closeModal || closeFn}>
         <Transition.Child
           as={Fragment}
           enter='ease-out duration-300'
@@ -46,7 +54,7 @@ const ConfirmActionModal = ({ message, actionFn = () => null, closeFn = () => nu
                     onClickHandle={closeFn}
                     fullWidth={true}
                   >
-                    Cancel
+                    {leftButtonMessage}
                   </Button>
                   <Button
                     btnType={BUTTON_TYPES.secondary}
@@ -55,7 +63,7 @@ const ConfirmActionModal = ({ message, actionFn = () => null, closeFn = () => nu
                     fullWidth={true}
                     onClickHandle={actionFn}
                   >
-                    Continue
+                    {rightButtonMessage}
                   </Button>
                 </div>
               </Dialog.Panel>

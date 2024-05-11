@@ -220,11 +220,12 @@ export const addOrUpdateDotEnvironmentFile = (collectionId, variables) => {
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 
   if (collection) {
+    const env = Object.entries(variables)
+      .map(([key, value]) => `${key}: "${value}"`)
+      .join('\n');
+
     return new Promise((resolve, reject) => {
-      ipcRenderer
-        .invoke('renderer:addOrUpdate-dotEnvironment', collection.pathname, variables)
-        .then(resolve)
-        .catch(reject);
+      ipcRenderer.invoke('renderer:addOrUpdate-dotEnvironment', collection.pathname, env).then(resolve).catch(reject);
     });
   } else {
     return Promise.reject(new Error('Collection not found'));

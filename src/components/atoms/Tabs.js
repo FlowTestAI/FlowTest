@@ -4,29 +4,16 @@ import { useTabStore } from 'stores/TabStore';
 import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
 import { isEqual } from 'lodash';
 import { OBJ_TYPES } from 'constants/Common';
-import { compare } from './util';
+import { isSaveNeeded } from './util';
 import { saveHandle } from 'components/molecules/modals/SaveFlowModal';
 
 const tabUnsavedChanges = (tab) => {
   if (tab.type === OBJ_TYPES.flowtest && tab.flowDataDraft) {
-    const draftNodesSansOutput = tab.flowDataDraft.nodes.map((node) => {
-      if (node.type === 'outputNode' && node.data.output) {
-        const { ['output']: _, ...data } = node.data;
-        return {
-          ...node,
-          data,
-        };
-      }
-      return node;
-    });
-    if (!isEqual(tab.flowData.nodes, draftNodesSansOutput) || !isEqual(tab.flowData.edges, tab.flowDataDraft.edges)) {
-      console.log('Detected unsaved changes: ', compare(tab.flowData, tab.flowDataDraft));
-      return true;
-    }
+    return isSaveNeeded(tab.flowData, tab.flowDataDraft);
   } else if (tab.type === OBJ_TYPES.environment && tab.variablesDraft && !isEqual(tab.variables, tab.variablesDraft)) {
     return true;
   } else {
-    false;
+    return false;
   }
 };
 

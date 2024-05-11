@@ -216,7 +216,6 @@ export const deleteEnvironmentFile = (name, collectionId) => {
 
 export const addOrUpdateDotEnvironmentFile = (collectionId, variables) => {
   const { ipcRenderer } = window;
-  console.log(variables);
 
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
 

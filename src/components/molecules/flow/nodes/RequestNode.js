@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { PropTypes } from 'prop-types';
 import RequestBody from './RequestBody';
 import FlowNode from 'components/atoms/flow/FlowNode';
@@ -9,9 +9,12 @@ import AddVariableModal from 'components/molecules/modals/flow/AddVariableModal'
 import useCanvasStore from 'stores/CanvasStore';
 import TextInput from 'components/atoms/common/TextInput';
 import NodeHorizontalDivider from 'components/atoms/flow/NodeHorizontalDivider';
+import { Listbox, Transition } from '@headlessui/react';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 const RequestNode = ({ id, data }) => {
   const setRequestNodeUrl = useCanvasStore((state) => state.setRequestNodeUrl);
+  const setRequestNodeType = useCanvasStore((state) => state.setRequestNodeType);
   const requestNodeAddPreRequestVar = useCanvasStore((state) => state.requestNodeAddPreRequestVar);
   const requestNodeDeletePreRequestVar = useCanvasStore((state) => state.requestNodeDeletePreRequestVar);
   const requestNodeChangePreRequestVar = useCanvasStore((state) => state.requestNodeChangePreRequestVar);
@@ -100,6 +103,8 @@ const RequestNode = ({ id, data }) => {
     );
   };
 
+  const requestTypes = ['GET', 'PUT', 'POST', 'DELETE'];
+
   return (
     <FlowNode
       title={data.requestType + ' Request'}
@@ -109,13 +114,61 @@ const RequestNode = ({ id, data }) => {
       handleRightData={{ type: 'source' }}
     >
       <div className='min-w-80'>
-        <div className='pb-4'>
-          <TextInput
-            placeHolder={`Enter URL for a ${data.requestType} request`}
-            onChangeHandler={handleUrlInputChange}
-            name={'username'}
-            value={data.url ? data.url : ''}
-          />
+        <div className='flex'>
+          <Listbox
+            value={data.requestType}
+            onChange={(selectedValue) => {
+              setRequestNodeType(id, selectedValue);
+            }}
+          >
+            <div className='relative min-w-36'>
+              <Listbox.Button className='relative w-full p-2 text-left border rounded cursor-default border-cyan-950'>
+                <span className='block truncate'>{data.requestType}</span>
+                <span className='absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'>
+                  <ChevronUpDownIcon className='w-5 h-5' aria-hidden='true' />
+                </span>
+              </Listbox.Button>
+              <Transition
+                as={Fragment}
+                leave='transition ease-in duration-100'
+                leaveFrom='opacity-100'
+                leaveTo='opacity-0'
+              >
+                <Listbox.Options className='absolute w-full py-1 mt-1 overflow-auto text-base bg-white max-h-60 focus:outline-none'>
+                  {requestTypes.map((reqType) => (
+                    <Listbox.Option
+                      key={reqType}
+                      className={({ active }) =>
+                        `relative cursor-default select-none py-2 pl-10 pr-4 hover:font-semibold ${
+                          active ? 'bg-background-light text-slate-900' : ''
+                        }`
+                      }
+                      value={reqType}
+                    >
+                      {({ selected }) => (
+                        <>
+                          <span className={`block`}>{reqType}</span>
+                          {selected ? (
+                            <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
+                              <CheckIcon className='w-5 h-5' aria-hidden='true' />
+                            </span>
+                          ) : null}
+                        </>
+                      )}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </Transition>
+            </div>
+          </Listbox>
+          <div className='pb-4'>
+            <TextInput
+              placeHolder={`Enter URL for a ${data.requestType} request`}
+              onChangeHandler={handleUrlInputChange}
+              name={'url'}
+              value={data.url ? data.url : ''}
+            />
+          </div>
         </div>
         <NodeHorizontalDivider />
         <RequestBody nodeId={id} nodeData={data} />

@@ -7,19 +7,11 @@ import OptionsMenu from 'components/atoms/sidebar/collections/OptionsMenu';
 import { toast } from 'react-toastify';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
-import ConfirmActionModal from 'components/molecules/modals/ConfirmActionModal';
-import { deleteFlowTest } from 'service/collection';
 import useCollectionStore from 'stores/CollectionStore';
 
 const Collection = ({ collectionId, item, depth }) => {
   //const [isExpanded, setIsExpanded] = useState(false);
   const clickItem = useCollectionStore((state) => state.clickItem);
-  const [confirmActionModalOpen, setConfirmActionModalOpen] = useState(false);
-  const [flowTestPathToDelete, setFlowTestPathToDelete] = useState('');
-
-  const messageForConfirmActionModal =
-    'Do you wish to delete this flowtest? This action deletes it from disk and cannot be undone';
 
   const getListDisplayTitle = () => {
     if (item.type === OBJ_TYPES.collection) {
@@ -75,15 +67,13 @@ const Collection = ({ collectionId, item, depth }) => {
             <DocumentIcon className='w-4 h-4' />
             <span>{item.name}</span>
           </div>
-          <div
-            className='relative inline-block p-2 text-left transition duration-200 ease-out rounded rounded-l-none hover:bg-slate-200'
-            onClick={() => {
-              setFlowTestPathToDelete(item.pathname);
-              setConfirmActionModalOpen(true);
-            }}
-          >
-            <TrashIcon className='w-4 h-4' aria-hidden='true' />
-          </div>
+          <OptionsMenu
+            data-click-from='options-menu'
+            directory={item}
+            data-item-type={OBJ_TYPES.flowtest}
+            itemType={OBJ_TYPES.flowtest}
+            collectionId={collectionId}
+          />
         </div>
       );
     }
@@ -132,24 +122,6 @@ const Collection = ({ collectionId, item, depth }) => {
           </>
         )}
       </li>
-      <ConfirmActionModal
-        closeFn={() => setConfirmActionModalOpen(false)}
-        open={confirmActionModalOpen}
-        message={messageForConfirmActionModal}
-        actionFn={() => {
-          deleteFlowTest(flowTestPathToDelete, collectionId)
-            .then((result) => {
-              console.log(
-                `Deleted flowtest: path = ${flowTestPathToDelete}, collectionId = ${collectionId}, result: ${result}`,
-              );
-            })
-            .catch((error) => {
-              console.log(`Error deleting flowtest = ${flowTestPathToDelete}: ${error}`);
-              toast.error(`Error deleting flowtest`);
-            });
-          setConfirmActionModalOpen(false);
-        }}
-      />
     </>
   );
 };

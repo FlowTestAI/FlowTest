@@ -6,4 +6,5 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   on: (channel, handler) => ipcRenderer.on(channel, (event, ...args) => handler(...args)),
   join: (...args) => path.join(...args),
   relative: (...args) => path.relative(...args),
+  dirname: (...args) => path.dirname(...args),
 });

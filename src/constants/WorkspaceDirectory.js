@@ -19,6 +19,11 @@ export const DirectoryOptionsActions = {
     value: 'new-flow',
     dataSetValue: 'new-flow',
   },
+  cloneFlow: {
+    displayValue: 'Clone Flow',
+    value: 'clone-flow',
+    dataSetValue: 'clone-flow',
+  },
   addNewEnvironment: {
     displayValue: 'New Environment',
     value: 'new-environment',

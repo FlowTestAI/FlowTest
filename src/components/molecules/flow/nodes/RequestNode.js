@@ -108,7 +108,7 @@ const RequestNode = ({ id, data }) => {
       handleRight={true}
       handleRightData={{ type: 'source' }}
     >
-      <div className='min-w-60'>
+      <div className='min-w-80'>
         <div className='pb-4'>
           <TextInput
             placeHolder={`Enter URL for a ${data.requestType} request`}

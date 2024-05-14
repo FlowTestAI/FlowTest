@@ -269,6 +269,35 @@ export const createFlowTest = (name, folderPath, collectionId) => {
   }
 };
 
+export const cloneFlowTest = (name, flowTestPath, collectionId) => {
+  try {
+    const { ipcRenderer } = window;
+
+    const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+    if (collection) {
+      const flowtest = findItemInCollectionByPathname(collection, flowTestPath);
+      if (flowtest) {
+        return new Promise((resolve, reject) => {
+          ipcRenderer.invoke('renderer:clone-flowtest', name, flowTestPath).then(resolve).catch(reject);
+          useEventStore.getState().addEvent({
+            id: uuidv4(),
+            type: 'OPEN_NEW_FLOWTEST',
+            collectionId,
+            name: `${name}.flow`,
+            path: ipcRenderer.dirname(flowTestPath),
+          });
+        });
+      }
+    } else {
+      return Promise.reject(new Error('Collection not found'));
+    }
+  } catch (error) {
+    console.log(`Error cloning flowtest: ${error}`);
+    //toast.error('Error creating new flowtest');
+    return Promise.reject(new Error('Error cloning flowtest'));
+  }
+};
+
 export const readFlowTest = (pathname, collectionId) => {
   try {
     const { ipcRenderer } = window;

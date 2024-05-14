@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
-import { createFolder, createFlowTest, createEnvironmentFile } from 'service/collection';
+import { createFolder, createFlowTest, createEnvironmentFile, cloneFlowTest } from 'service/collection';
 import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 import { toast } from 'react-toastify';
 import Button from 'components/atoms/common/Button';
@@ -93,6 +93,21 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                             .catch((error) => {
                               console.log(`Error creating new flowtest: ${error}`);
                               toast.error(`Error creating new flowtest`);
+                              closeFn();
+                            });
+                        } else if (menuOption === 'clone-flow') {
+                          console.log(labelValue);
+                          console.log(pathName);
+                          cloneFlowTest(labelValue, pathName, collectionId)
+                            .then((result) => {
+                              console.log(
+                                `Cloned a new flowtest: name = ${labelValue}, path = ${pathName}, collectionId = ${collectionId}, result: ${result} \n`,
+                              );
+                              toast.success(`Cloned the flowtest: ${labelValue}`);
+                            })
+                            .catch((error) => {
+                              console.log(`Error cloning flowtest: ${error}`);
+                              toast.error(`Error cloning flowtest`);
                               closeFn();
                             });
                         } else if (menuOption === 'collection') {

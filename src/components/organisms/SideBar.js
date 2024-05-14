@@ -11,6 +11,7 @@ const SideBar = () => {
     <div className='flex-auto overflow-auto'>
       <SideBarHeader />
       <HorizontalDivider />
+      {/* ToDo: Remove the check for collections here as it is not required with UX */}
       <>{collections.length != 0 ? <Content collections={collections} /> : <Empty />}</>
     </div>
   );

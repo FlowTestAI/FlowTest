@@ -27,7 +27,7 @@ const TimeoutSelector = ({ optionsData, onSelectHandler = () => null }) => {
       >
         <div className='relative flex h-full'>
           <Listbox.Button
-            className={`flex items-center justify-between sm:text-sm ${optionsData.length ? 'cursor-default' : 'cursor-not-allowed'}`}
+            className={`flex items-center justify-between gap-1 sm:text-sm ${optionsData.length ? 'cursor-default' : 'cursor-not-allowed'}`}
           >
             <ClockIcon className='w-5 h-5' />
             <div className='min-w-24'>{selected ? selected : 'Select Timeout'}</div>

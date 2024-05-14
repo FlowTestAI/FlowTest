@@ -1,7 +1,11 @@
 import React from 'react';
 
-const HorizontalDivider = () => {
-  return <div className='h-[1px] w-full bg-gray-300'></div>;
+const HorizontalDivider = ({ themeColor, themeStyles }) => {
+  return (
+    <div
+      className={`h-[1px] w-full  ${themeColor ? themeColor : 'bg-gray-300'}  ${themeStyles ? themeStyles : ''}`}
+    ></div>
+  );
 };
 
 export default HorizontalDivider;

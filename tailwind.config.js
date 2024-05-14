@@ -66,6 +66,8 @@ module.exports = {
     },
     fontFamily: {
       openSans: ['Open Sans', 'sans-serif'],
+      anticDidone: ['Antic Didone', 'serif'],
+      montserrat: ['Montserrat', 'sans-serif'],
     },
   },
   plugins: [require('daisyui')],

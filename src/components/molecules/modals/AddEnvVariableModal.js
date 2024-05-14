@@ -11,9 +11,26 @@ const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVari
   const [key, setKey] = useState('');
   const [value, setValue] = useState('');
 
+  const [showKeyError, setShowKeyError] = useState(false);
+  const [showValueError, setShowValueError] = useState(false);
+
+  const resetFields = () => {
+    setKey('');
+    setValue('');
+    setShowKeyError(false);
+    setShowValueError(false);
+  };
+
   return (
     <Transition appear show={open} as={Fragment}>
-      <Dialog as='div' className='relative z-10' onClose={closeFn}>
+      <Dialog
+        as='div'
+        className='relative z-10'
+        onClose={() => {
+          resetFields();
+          closeFn();
+        }}
+      >
         <Transition.Child
           as={Fragment}
           enter='ease-out duration-300'
@@ -50,6 +67,7 @@ const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVari
                       name={'Key'}
                       value={key}
                     />
+                    {showKeyError ? <div className='py-2 text-red-600'>Please provide a key</div> : ''}
                   </div>
                   <div className='mt-4'>
                     <TextInput
@@ -59,6 +77,7 @@ const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVari
                       name={'Value'}
                       value={value}
                     />
+                    {showValueError ? <div className='py-2 text-red-600'>Please provide a key</div> : ''}
                   </div>
                 </div>
                 <div className='flex items-center gap-2 mt-6'>
@@ -66,7 +85,10 @@ const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVari
                     btnType={BUTTON_TYPES.secondary}
                     intentType={BUTTON_INTENT_TYPES.error}
                     isDisabled={false}
-                    onClickHandle={closeFn}
+                    onClickHandle={() => {
+                      resetFields();
+                      closeFn();
+                    }}
                     fullWidth={true}
                   >
                     Cancel
@@ -76,6 +98,14 @@ const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVari
                     isDisabled={false}
                     fullWidth={true}
                     onClickHandle={() => {
+                      if (!key || key === '') {
+                        setShowKeyError(true);
+                        return;
+                      }
+                      if (!value || value === '') {
+                        setShowValueError(true);
+                        return;
+                      }
                       const variables = useEnvStore.getState().variables;
                       if (key.trim() === '') {
                         toast.error('Variable name cannot be empty.');
@@ -87,6 +117,7 @@ const AddEnvVariableModal = ({ closeFn = () => null, open = false, handleAddVari
                         setKey('');
                         setValue('');
                       }
+                      resetFields();
                       closeFn();
                     }}
                   >

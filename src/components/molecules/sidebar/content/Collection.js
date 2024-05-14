@@ -26,7 +26,7 @@ const Collection = ({ collectionId, item, depth }) => {
       // this is for collections tab thus we have archive box icon
       return (
         <div
-          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded hover:bg-background-light text-balance text-start'
+          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-background-light'
           onClick={(event) => {
             const clickFromElementDataSet = event.target.dataset;
             const clickFrom = clickFromElementDataSet?.clickFrom;
@@ -57,7 +57,7 @@ const Collection = ({ collectionId, item, depth }) => {
     if (item.type === OBJ_TYPES.flowtest && item.name.match(FLOW_FILE_SUFFIX_REGEX)) {
       return (
         <div
-          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded hover:bg-background-light text-balance text-start'
+          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-background-light'
           onClick={() => {
             readFlowTest(item.pathname, collectionId)
               .then((result) => {
@@ -91,7 +91,7 @@ const Collection = ({ collectionId, item, depth }) => {
     if (item.type === OBJ_TYPES.folder) {
       return (
         <div
-          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded hover:bg-background-light text-balance text-start'
+          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-background-light'
           onClick={(event) => {
             const clickFrom = event.target.dataset?.clickFrom;
             if (!clickFrom || clickFrom !== 'options-menu') {
@@ -124,7 +124,7 @@ const Collection = ({ collectionId, item, depth }) => {
             {item.items?.map((childItem, index) => (
               <ul
                 key={index}
-                className='before:background-dark before:absolute before:bottom-0 before:top-0 before:w-[1px] before:opacity-100'
+                className='before:absolute before:bottom-0 before:top-0 before:w-[1px] before:bg-background-dark before:opacity-100'
               >
                 <Collection collectionId={collectionId} item={childItem} depth={depth + 1} />
               </ul>

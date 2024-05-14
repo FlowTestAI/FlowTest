@@ -13,48 +13,6 @@ const Button = ({
   onlyIcon,
   padding,
 }) => {
-  // const btnColorStyles = {
-  //   primary: {
-  //     default: 'border-denim-600 bg-denim-600 text-white hover:bg-denim-700', // with bg color
-  //     intent: {
-  //       info: 'border-sky-600 bg-sky-600 text-white hover:bg-sky-700',
-  //       success: 'border-green-600 bg-green-600 text-white hover:bg-green-700',
-  //       warning: 'border-amber-600 bg-amber-600 text-white hover:bg-amber-700',
-  //       error: 'border-red-600 bg-red-600 text-white hover:bg-red-700',
-  //     },
-  //   },
-  //   secondary: {
-  //     default: 'border border-denim-600 bg-denim-50 text-denim-600 hover:bg-denim-100', // outline
-  //     intent: {
-  //       info: 'border border-sky-600 bg-sky-50 text-sky-600 hover:bg-sky-100',
-  //       success: 'border border-green-600 bg-green-50 text-green-600 hover:bg-green-100',
-  //       warning: 'border border-amber-600 bg-amber-50 text-amber-600 hover:bg-amber-100',
-  //       error: 'border border-red-600 bg-red-50 text-red-600 hover:bg-red-100',
-  //     },
-  //   },
-  //   tertiary: {
-  //     default: 'text-denim-600 hover:bg-denim-100', // without border
-  //     intent: {
-  //       info: 'text-sky-600 hover:bg-sky-100',
-  //       success: 'text-green-600 hover:bg-green-100',
-  //       warning: 'text-amber-600 hover:bg-amber-100',
-  //       error: 'text-red-600 hover:bg-red-100',
-  //     },
-  //   },
-  //   minimal: {
-  //     default: 'text-fog-600 hover:text-fog-900 hover:font-semibold hover:bg-fog-50',
-  //     intent: {
-  //       info: 'text-sky-600 hover:text-sky-900 hover:font-semibold',
-  //       success: 'text-green-600 hover:text-green-900 hover:font-semibold',
-  //       warning: 'text-amber-600 hover:text-amber-900 hover:font-semibold',
-  //       error: 'text-red-600 hover:text-red-900 hover:font-semibold',
-  //     },
-  //   },
-  //   disabled: {
-  //     default: 'text-fog-600 hover:text-fog-900 hover:font-semibold hover:bg-fog-50 cursor-not-allowed',
-  //   },
-  // };
-
   const btnColorStyles = {
     primary: {
       default: 'border-cyan-900 text-white bg-cyan-900 hover:border-cyan-950 hover:bg-cyan-950', // with bg color
@@ -93,7 +51,7 @@ const Button = ({
       },
     },
     disabled: {
-      default: 'text-gray-300 hover:font-semibold cursor-not-allowed',
+      default: 'text-gray-300 border border-gray-300 cursor-not-allowed',
     },
   };
 

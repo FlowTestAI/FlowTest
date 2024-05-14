@@ -1,8 +1,6 @@
 .cm-editor {
-  height: 100%;
-  width: 100%;
-  min-width: 288px;
-  resize: both;
+  max-width: 384px;
+  max-height: 384px;
   overflow: auto !important;
 }
 .cm-scroller {

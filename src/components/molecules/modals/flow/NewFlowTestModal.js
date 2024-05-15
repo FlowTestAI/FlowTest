@@ -2,21 +2,18 @@ import React, { Fragment, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition, Listbox } from '@headlessui/react';
 import { createFolder, createFlowTest, createEnvironmentFile } from 'service/collection';
-import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
 import { toast } from 'react-toastify';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_INTENT_TYPES, BUTTON_TYPES, OBJ_TYPES } from 'constants/Common';
 import TextInput from 'components/atoms/common/TextInput';
-import Collection from '../../sidebar/content/Collection';
 import useCollectionStore from 'stores/CollectionStore';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { isEmpty } from 'lodash';
-import TimeoutSelector from 'components/atoms/common/TimeoutSelector';
-import { timeoutForGraphRun } from 'components/molecules/flow/utils';
+import { flattenItems } from 'stores/utils';
 
 const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
+  const { ipcRenderer } = window;
   const collections = useCollectionStore.getState().collections;
-  console.log(`\n \n Inside NewFlowTestModal :: collections :: ${JSON.stringify(collections)} \n \n `);
 
   const [flowtestName, setFlowtestName] = useState('');
   const [selectedCollection, setSelectionCollection] = useState({});
@@ -25,7 +22,7 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
   // Error flags
   const [showFlowtestNameError, setShowFlowtestNameError] = useState(false);
   const [showCollectionSelectionError, setShowCollectionSelectionError] = useState(false);
-  const [showFolderSelectionError, setShowFolderSelectionError] = useState(false);
+  //const [showFolderSelectionError, setShowFolderSelectionError] = useState(false);
   const containsFolder = (collection) => {
     const items = collection.items;
     let haveFolderItem = false;
@@ -44,7 +41,7 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
     setSelectedFolder({});
     setShowFlowtestNameError(false);
     setShowCollectionSelectionError(false);
-    setShowFolderSelectionError(false);
+    //setShowFolderSelectionError(false);
   };
   return (
     <div>
@@ -94,14 +91,14 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
                         }}
                         name={'flowtest-name'}
                       />
-                      {showFlowtestNameError ? (
+                      {flowtestName.trim() === '' && showFlowtestNameError ? (
                         <div className='py-2 text-red-600'>Please provide a name for your new flowtest</div>
                       ) : (
                         ''
                       )}
                     </div>
                     <div>
-                      <div className='flex justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                      <div className='flex justify-between gap-2 transition border rounded bg-background-light hover:bg-background whitespace-nowrap border-cyan-900 text-cyan-900'>
                         <Listbox
                           value={selectedCollection}
                           onChange={(value) => {
@@ -154,7 +151,7 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
                           </div>
                         </Listbox>
                       </div>
-                      {showCollectionSelectionError ? (
+                      {isEmpty(selectedCollection) && showCollectionSelectionError ? (
                         <div className='py-2 text-red-600'>
                           Please provide a collection in which you wants to create your new flowtest
                         </div>
@@ -165,7 +162,7 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
 
                     {!isEmpty(selectedCollection) && containsFolder(selectedCollection) ? (
                       <div>
-                        <div className='flex justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                        <div className='flex justify-between gap-2 transition border rounded bg-background-light hover:bg-background whitespace-nowrap border-cyan-900 text-cyan-900'>
                           <Listbox
                             value={selectedFolder}
                             onChange={(value) => {
@@ -184,7 +181,7 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
                                 leaveTo='opacity-0'
                               >
                                 <Listbox.Options className='absolute right-0 z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded shadow-lg top-10 max-h-60 ring-1 ring-black/5'>
-                                  {selectedCollection.items.map((collectionItem, index) => {
+                                  {flattenItems(selectedCollection.items).map((collectionItem, index) => {
                                     if (collectionItem.type === OBJ_TYPES.folder) {
                                       return (
                                         <Listbox.Option
@@ -201,7 +198,10 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
                                               <span
                                                 className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}
                                               >
-                                                {collectionItem.name}
+                                                {ipcRenderer.relative(
+                                                  selectedCollection.pathname,
+                                                  collectionItem.pathname,
+                                                )}
                                               </span>
                                               {selected ? (
                                                 <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
@@ -219,13 +219,13 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
                             </div>
                           </Listbox>
                         </div>
-                        {showFolderSelectionError ? (
+                        {/* {selectedFolder.trim() === '' && showFolderSelectionError ? (
                           <div className='py-2 text-red-600'>
-                            Please provide a folder in which you wants to create your new flowtest
+                            Please provide a folder in which you want to create your new flowtest
                           </div>
                         ) : (
                           ''
-                        )}
+                        )} */}
                       </div>
                     ) : (
                       ''
@@ -249,7 +249,7 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
                       isDisabled={false}
                       onClickHandle={() => {
                         let pathName = '';
-                        if (!flowtestName || flowtestName === '') {
+                        if (!flowtestName || flowtestName.trim() === '') {
                           setShowFlowtestNameError(true);
                           return;
                         }
@@ -257,22 +257,14 @@ const NewFlowTestModal = ({ closeFn = () => null, open = false }) => {
                           setShowCollectionSelectionError(true);
                           return;
                         }
-                        if (containsFolder(selectedCollection)) {
-                          if (!selectedFolder || !selectedFolder.pathname || selectedFolder.pathname === '') {
-                            setShowFolderSelectionError(true);
-                            return;
-                          } else {
-                            pathName = selectedFolder.pathname;
-                          }
-                        } else {
+                        if (!selectedFolder || !selectedFolder.pathname || selectedFolder.pathname === '') {
                           pathName = selectedCollection.pathname;
+                        } else {
+                          pathName = selectedFolder.pathname;
                         }
                         setShowFlowtestNameError(false);
                         setShowCollectionSelectionError(false);
-                        setShowFolderSelectionError(false);
-                        console.log(
-                          `\n \n flowtestName :: ${flowtestName} :: pathName :: ${selectedFolder.pathname} :: collectionId :: ${selectedCollection.id} \n \n`,
-                        );
+                        //setShowFolderSelectionError(false);
 
                         createFlowTest(flowtestName, pathName, selectedCollection.id)
                           .then((result) => {

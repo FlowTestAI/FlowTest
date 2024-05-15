@@ -16,7 +16,6 @@ import { timeoutForGraphRun } from 'components/molecules/flow/utils';
 
 const NewEnvironmentFileModal = ({ closeFn = () => null, open = false }) => {
   const collections = useCollectionStore.getState().collections;
-  console.log(`\n \n Inside NewFlowTestModal :: collections :: ${JSON.stringify(collections)} \n \n `);
 
   const [environmentFileName, setEnvironmentFileName] = useState('');
   const [selectedCollection, setSelectionCollection] = useState({});
@@ -78,14 +77,14 @@ const NewEnvironmentFileModal = ({ closeFn = () => null, open = false }) => {
                         }}
                         name={'environment-file-name'}
                       />
-                      {showEnvironmentFileNameError ? (
+                      {environmentFileName.trim() === '' && showEnvironmentFileNameError ? (
                         <div className='py-2 text-red-600'>Please provide a name for your new environment file</div>
                       ) : (
                         ''
                       )}
                     </div>
                     <div>
-                      <div className='flex justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                      <div className='flex justify-between gap-2 transition border rounded bg-background-light hover:bg-background whitespace-nowrap border-cyan-900 text-cyan-900'>
                         <Listbox
                           value={selectedCollection}
                           onChange={(value) => {
@@ -137,7 +136,7 @@ const NewEnvironmentFileModal = ({ closeFn = () => null, open = false }) => {
                           </div>
                         </Listbox>
                       </div>
-                      {showCollectionSelectionError ? (
+                      {isEmpty(selectedCollection) && showCollectionSelectionError ? (
                         <div className='py-2 text-red-600'>
                           Please provide a collection in which you wants to create your new environment file
                         </div>
@@ -163,7 +162,7 @@ const NewEnvironmentFileModal = ({ closeFn = () => null, open = false }) => {
                       btnType={BUTTON_TYPES.primary}
                       isDisabled={false}
                       onClickHandle={() => {
-                        if (!environmentFileName || environmentFileName === '') {
+                        if (!environmentFileName || environmentFileName.trim() === '') {
                           setShowEnvironmentFileNameError(true);
                           return;
                         }

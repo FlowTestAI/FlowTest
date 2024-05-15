@@ -22,17 +22,21 @@ const WorkspaceHeader = () => {
       <div className='flex items-center justify-between pr-4 min-h-12'>
         <div className='flex items-center overflow-x-auto'>
           <Tabs />
-          <div className='inline-flex items-center justify-center whitespace-nowrap hover:bg-background-light'>
-            <Button
-              btnType={BUTTON_TYPES.tertiary}
-              classes={'min-h-12'}
-              isDisabled={false}
-              onClickHandle={() => setNewFlowTestModal(true)}
-              fullWidth={true}
-            >
-              <PlusIcon className='w-5 h-5 outline-none' />
-            </Button>
-          </div>
+          {collections.length != 0 ? (
+            <div className='inline-flex items-center justify-center hover:bg-background-light whitespace-nowrap'>
+              <Button
+                btnType={BUTTON_TYPES.tertiary}
+                classes={'min-h-12'}
+                isDisabled={false}
+                onClickHandle={() => setNewFlowTestModal(true)}
+                fullWidth={true}
+              >
+                <PlusIcon className='w-5 h-5 outline-none' />
+              </Button>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
         <SelectEnvironment environments={environmentData} />
       </div>

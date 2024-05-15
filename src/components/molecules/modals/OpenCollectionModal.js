@@ -93,13 +93,13 @@ const OpenCollectionModal = ({ closeFn = () => null, open = false }) => {
                   Open a Collection
                 </Dialog.Title>
                 {/* ToDo: Add the message of instructions here, if that is not required then we can remove this div */}
-                <div className='mt-4'>
+                {/* <div className='mt-4'>
                   <p> Message or instructions here</p>
-                </div>
+                </div> */}
                 <div className='mt-4'>
                   <ul className='text-lg font-medium'>
                     <li
-                      className={`cursor-pointer rounded border border-transparent px-2 py-4 hover:bg-background-light ${selectedFilePath ? 'text-green-500' : ''}`}
+                      className={`hover:bg-background-light cursor-pointer rounded border border-transparent px-2 py-4 ${selectedFilePath ? 'text-green-500' : ''}`}
                       onClick={handleImportCollectionClick}
                       data-import-type='yaml'
                     >
@@ -111,7 +111,7 @@ const OpenCollectionModal = ({ closeFn = () => null, open = false }) => {
                         </div>
                         <div className='flex items-center justify-start'>
                           {/* <DocumentArrowUpIcon className='w-4 h-4' /> */}
-                          Attach OpenAPI spec with existing collection
+                          Import an OpenAPI V3 spec
                           {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
                           <div className='hidden'>
                             <input
@@ -127,14 +127,14 @@ const OpenCollectionModal = ({ closeFn = () => null, open = false }) => {
 
                       {selectedFilePath ? (
                         <div className='px-2 py-4 my-4 ml-12 text-green-600 bg-green-100 border border-green-600 rounded'>
-                          Selected file path: ${selectedFilePath}
+                          {selectedFilePath}
                         </div>
                       ) : (
                         ''
                       )}
                     </li>
                     <li
-                      className={`flex cursor-pointer items-center justify-start gap-4 px-2 py-4 hover:bg-background-light ${selectedFilePath ? 'cursor-default' : 'cursor-not-allowed'}`}
+                      className={`hover:bg-background-light flex cursor-pointer items-center justify-start gap-4 px-2 py-4 ${selectedFilePath ? 'cursor-default' : 'cursor-not-allowed'}`}
                       onClick={handleDirectorySelectionClick}
                     >
                       <div className='flex items-center justify-center w-8 h-8 border-4 rounded-full border-cyan-900'>
@@ -144,7 +144,7 @@ const OpenCollectionModal = ({ closeFn = () => null, open = false }) => {
                         className={`flex items-center justify-start ${selectedFilePath ? 'cursor-default' : 'cursor-not-allowed text-gray-400'}`}
                       >
                         {/* <FolderPlusIcon className='w-5 h-5' /> */}
-                        Select a directory for your Collection
+                        Select the directory of an existing collection
                       </div>
                     </li>
                   </ul>

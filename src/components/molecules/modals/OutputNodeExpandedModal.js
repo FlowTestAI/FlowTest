@@ -31,7 +31,7 @@ const OuputNodeExpandedModal = ({ closeFn = () => null, open = false, data }) =>
           <div className='fixed inset-0 bg-black/25' />
         </Transition.Child>
 
-        <div className='fixed inset-0 overflow-y-auto'>
+        <div className='fixed inset-0 max-h-[600px] max-w-[600px] overflow-y-auto'>
           <div className='flex items-center justify-center min-h-full p-4 text-center'>
             <Transition.Child
               as={Fragment}
@@ -51,7 +51,7 @@ const OuputNodeExpandedModal = ({ closeFn = () => null, open = false, data }) =>
                     name='output-text'
                     value={JSON.stringify(data, null, 2)}
                     readOnly={true}
-                    classes={'w-[600px] h-[80px'}
+                    classes={'w-[600px] h-[600px]'}
                   />
                 </div>
               </Dialog.Panel>

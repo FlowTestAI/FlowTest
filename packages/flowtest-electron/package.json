@@ -1,7 +1,7 @@
 {
   "name": "flowtestai",
   "productName": "FlowTestAI",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/FlowTestAI/FlowTest/tree/main",
   "description": "GenAI powered OpenSource IDE for API first workflows",
   "main": "electron-main.js",

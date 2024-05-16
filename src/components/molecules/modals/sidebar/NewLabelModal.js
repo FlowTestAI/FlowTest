@@ -10,11 +10,23 @@ import TextInput from 'components/atoms/common/TextInput';
 
 const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectionId, menuOption }) => {
   const [labelValue, setLabelValue] = useState('');
+  const [showLabelValueError, setShowLabelValueError] = useState(false);
 
+  const resetFields = () => {
+    setLabelValue('');
+    setShowLabelValueError(false);
+  };
   return (
     <div>
       <Transition appear show={open} as={Fragment}>
-        <Dialog as='div' className='relative z-10' onClose={closeFn}>
+        <Dialog
+          as='div'
+          className='relative z-10'
+          onClose={() => {
+            resetFields();
+            closeFn();
+          }}
+        >
           <Transition.Child
             as={Fragment}
             enter='ease-out duration-300'
@@ -51,13 +63,17 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                       }}
                       name={'label'}
                     />
+                    {showLabelValueError ? <div className='py-2 text-red-600'>Please provide a label value</div> : ''}
                   </div>
                   <div className='flex items-center gap-2 mt-6'>
                     <Button
                       btnType={BUTTON_TYPES.secondary}
                       intentType={BUTTON_INTENT_TYPES.error}
                       isDisabled={false}
-                      onClickHandle={closeFn}
+                      onClickHandle={() => {
+                        resetFields();
+                        closeFn();
+                      }}
                       fullWidth={true}
                     >
                       Cancel
@@ -66,6 +82,10 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                       btnType={BUTTON_TYPES.primary}
                       isDisabled={false}
                       onClickHandle={() => {
+                        if (!labelValue || labelValue === '') {
+                          setShowLabelValueError(true);
+                          return;
+                        }
                         console.log(
                           `modalType :: ${menuOption} :: labelValue :: ${labelValue} :: pathName :: ${pathName} :: collectionId :: ${collectionId}`,
                         );
@@ -128,6 +148,7 @@ const NewLabelModal = ({ closeFn = () => null, open = false, pathName, collectio
                               closeFn();
                             });
                         }
+                        resetFields();
                         closeFn();
                       }}
                       fullWidth={true}

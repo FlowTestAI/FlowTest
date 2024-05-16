@@ -7,7 +7,7 @@ import 'tippy.js/dist/tippy.css';
 import { Transition } from '@headlessui/react';
 
 // ToDo: May be make this section collapsable and only show Icons when collapsed
-const AppNavBar = () => {
+const AppNavBar = ({ showRightBorder = true }) => {
   const navigationSelectedValue = useNavigationStore((state) => state.selectedNavVal);
   const updateNavigationSelectedValue = useNavigationStore((state) => state.setNavState);
   const collapseNavBarValue = useNavigationStore((state) => state.collapseNavBar);
@@ -21,7 +21,7 @@ const AppNavBar = () => {
   const nonSelectedNavItemStyles = 'hover:bg-cyan-900 hover:text-white';
   return (
     <nav
-      className={`relative flex h-screen flex-col transition-all delay-150 duration-300 ${collapseNavBarValue ? 'min-w-14' : 'min-w-28'} border-r border-gray-300`}
+      className={`relative flex h-screen flex-col transition-all delay-150 duration-300 ${collapseNavBarValue ? 'min-w-14' : 'min-w-28'} ${showRightBorder ? 'border-r border-gray-300' : ''}`}
     >
       <button className='relative' onClick={handleOnClick} data-nav-item={AppNavBarItems.collections.value}>
         <div

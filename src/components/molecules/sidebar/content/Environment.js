@@ -23,7 +23,7 @@ const Environment = ({ collectionId, collection }) => {
     <>
       <li>
         <div
-          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded hover:bg-background-light text-balance text-start'
+          className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-background-light'
           onClick={(event) => {
             const clickFromElementDataSet = event.target.dataset;
             const clickFrom = clickFromElementDataSet?.clickFrom;
@@ -51,11 +51,11 @@ const Environment = ({ collectionId, collection }) => {
             {collection.environments?.map((environment, index) => (
               <ul
                 key={index}
-                className='before:background-dark before:absolute before:bottom-0 before:top-0 before:w-[1px] before:opacity-100'
+                className='before:absolute before:bottom-0 before:top-0 before:w-[1px] before:bg-background-dark before:opacity-100'
               >
                 <li>
                   <div
-                    className='flex flex-row items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded hover:bg-background-light text-balance text-start'
+                    className='flex flex-row items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start hover:bg-background-light'
                     onClick={() => {
                       try {
                         readEnvironmentFile(environment.name, collectionId);

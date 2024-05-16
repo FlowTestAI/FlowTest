@@ -66,7 +66,7 @@ const ComplexNode = ({ id, data }) => {
               }}
               name='flow'
               value={data.relativePath ? data.relativePath : ''}
-              className='h-12 p-2 border rounded outline-none cursor-default bg-background-light max-w-48 border-cyan-950'
+              className='h-12 p-2 border rounded outline-none cursor-default max-w-48 border-cyan-950 bg-background-light'
             >
               <option key='None' value=''>
                 Select a flow

@@ -6,7 +6,7 @@ import TabPanelHeader from '../headers/TabPanelHeader';
 import { OBJ_TYPES } from 'constants/Common';
 import Env from '../environment';
 import useEnvStore from 'stores/EnvStore';
-import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
+import EmptyWorkSpaceContent from './EmptyWorkSpaceContent';
 
 const WorkspaceContent = () => {
   const setNodes = useCanvasStore((state) => state.setNodes);
@@ -40,13 +40,15 @@ const WorkspaceContent = () => {
   return (
     <div className='flex flex-col h-full'>
       <TabPanelHeader />
-      <HorizontalDivider />
-      {focusTab &&
-        (focusTab.type === OBJ_TYPES.flowtest ? (
+      {focusTab ? (
+        focusTab.type === OBJ_TYPES.flowtest ? (
           <Flow tab={focusTab} collectionId={focusTab.collectionId} />
         ) : (
           <Env tab={focusTab} />
-        ))}
+        )
+      ) : (
+        <EmptyWorkSpaceContent />
+      )}
     </div>
   );
 };

@@ -114,14 +114,14 @@ const RequestNode = ({ id, data }) => {
       handleRightData={{ type: 'source' }}
     >
       <div className='min-w-80'>
-        <div className='flex'>
+        <div className='flex items-center justify-center gap-2 py-4'>
           <Listbox
             value={data.requestType}
             onChange={(selectedValue) => {
               setRequestNodeType(id, selectedValue);
             }}
           >
-            <div className='relative min-w-36'>
+            <div className='relative w-36'>
               <Listbox.Button className='relative w-full p-2 text-left border rounded cursor-default border-cyan-950'>
                 <span className='block truncate'>{data.requestType}</span>
                 <span className='absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'>
@@ -134,12 +134,12 @@ const RequestNode = ({ id, data }) => {
                 leaveFrom='opacity-100'
                 leaveTo='opacity-0'
               >
-                <Listbox.Options className='absolute w-full py-1 mt-1 overflow-auto text-base bg-white max-h-60 focus:outline-none'>
+                <Listbox.Options className='absolute z-50 w-full py-1 mt-1 overflow-auto text-base bg-white max-h-60 focus:outline-none'>
                   {requestTypes.map((reqType) => (
                     <Listbox.Option
                       key={reqType}
                       className={({ active }) =>
-                        `relative cursor-default select-none py-2 pl-10 pr-4 hover:font-semibold ${
+                        `relative cursor-default select-none py-2 pl-7 pr-4 hover:font-semibold ${
                           active ? 'bg-background-light text-slate-900' : ''
                         }`
                       }
@@ -149,7 +149,7 @@ const RequestNode = ({ id, data }) => {
                         <>
                           <span className={`block`}>{reqType}</span>
                           {selected ? (
-                            <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
+                            <span className='absolute inset-y-0 left-0 flex items-center pl-1 font-semibold'>
                               <CheckIcon className='w-5 h-5' aria-hidden='true' />
                             </span>
                           ) : null}
@@ -161,14 +161,12 @@ const RequestNode = ({ id, data }) => {
               </Transition>
             </div>
           </Listbox>
-          <div className='pb-4'>
-            <TextInput
-              placeHolder={`Enter URL for a ${data.requestType} request`}
-              onChangeHandler={handleUrlInputChange}
-              name={'url'}
-              value={data.url ? data.url : ''}
-            />
-          </div>
+          <TextInput
+            placeHolder={`Enter URL for a ${data.requestType} request`}
+            onChangeHandler={handleUrlInputChange}
+            name={'url'}
+            value={data.url ? data.url : ''}
+          />
         </div>
         <NodeHorizontalDivider />
         <RequestBody nodeId={id} nodeData={data} />

@@ -47,7 +47,12 @@ const OuputNodeExpandedModal = ({ closeFn = () => null, open = false, data }) =>
                   Ouput
                 </Dialog.Title>
                 <div className='mt-6'>
-                  <Editor name='output-text' value={JSON.stringify(data, null, 2)} readOnly={true} />
+                  <Editor
+                    name='output-text'
+                    value={JSON.stringify(data, null, 2)}
+                    readOnly={true}
+                    classes={'w-40 h-40'}
+                  />
                 </div>
               </Dialog.Panel>
             </Transition.Child>

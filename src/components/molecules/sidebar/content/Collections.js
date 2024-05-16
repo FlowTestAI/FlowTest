@@ -81,6 +81,9 @@ const Collections = ({ collections }) => {
             case DirectoryOptionsActions.addNewFlow.value:
               setNewLabelModal(true);
               break;
+            case DirectoryOptionsActions.cloneFlow.value:
+              setNewLabelModal(true);
+              break;
             case DirectoryOptionsActions.delete.value:
               setSelectedItemType(itemType);
               setConfirmActionModalOpen(true);

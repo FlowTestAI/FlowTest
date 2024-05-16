@@ -237,6 +237,16 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
+  ipcMain.handle('renderer:clone-flowtest', async (event, name, flowtestPath) => {
+    try {
+      const content = readFile(flowtestPath);
+      createFile(`${name}.flow`, path.dirname(flowtestPath), content);
+      console.log(`Cloned file: ${name}.flow`);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
   ipcMain.handle('renderer:read-flowtest', async (event, pathname, collectionId) => {
     try {
       const content = readFile(pathname);

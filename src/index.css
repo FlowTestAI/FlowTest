@@ -129,13 +129,11 @@ details summary::-webkit-details-marker {
 }
 
 /* Editor related styles */
-.cm-editor {
-  height: 100%;
-  width: 100%;
-  min-width: 288px;
-  resize: both;
+/* .cm-editor {
+  max-width: 384px;
+  max-height: 384px;
   overflow: auto !important;
 }
 .cm-scroller {
   overflow: auto;
-}
+} */

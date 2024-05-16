@@ -226,6 +226,8 @@ const Flow = ({ tab, collectionId }) => {
         onMoveEnd={(event, data) => {
           setViewport(data);
         }}
+        minZoom={0}
+        maxZoom={2}
         isValidConnection={isValidConnection}
       >
         <Background variant='dots' gap={12} size={1} />

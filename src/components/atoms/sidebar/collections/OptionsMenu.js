@@ -36,44 +36,67 @@ const OptionsMenu = ({ collectionId, directory, itemType }) => {
           data-click-from='options-menu'
           data-item-type={itemType}
         >
-          <div className='px-1 py-1' data-click-from='options-menu' data-item-type={itemType}>
-            <Menu.Item data-click-from='options-menu' data-item-type={itemType}>
-              <button
-                className={menuItemsStyles}
-                data-click-from='options-menu'
-                data-options-menu-item={DirectoryOptionsActions.addNewFolder.value}
-                data-path-name={directory.pathname}
-                data-item-type={itemType}
-                data-collection-id={collectionId}
-              >
-                <FolderPlusIcon
-                  className='w-4 h-4 mr-2'
-                  aria-hidden='true'
+          {itemType === OBJ_TYPES.collection || itemType === OBJ_TYPES.folder ? (
+            <div className='px-1 py-1' data-click-from='options-menu' data-item-type={itemType}>
+              <Menu.Item data-click-from='options-menu' data-item-type={itemType}>
+                <button
+                  className={menuItemsStyles}
                   data-click-from='options-menu'
+                  data-options-menu-item={DirectoryOptionsActions.addNewFolder.value}
+                  data-path-name={directory.pathname}
                   data-item-type={itemType}
-                />
-                {DirectoryOptionsActions.addNewFolder.displayValue}
-              </button>
-            </Menu.Item>
-            <Menu.Item data-click-from='options-menu' data-item-type={itemType}>
-              <button
-                className={menuItemsStyles}
-                data-click-from='options-menu'
-                data-options-menu-item={DirectoryOptionsActions.addNewFlow.value}
-                data-path-name={directory.pathname}
-                data-item-type={itemType}
-                data-collection-id={collectionId}
-              >
-                <PencilSquareIcon
-                  className='w-4 h-4 mr-2'
-                  aria-hidden='true'
+                  data-collection-id={collectionId}
+                >
+                  <FolderPlusIcon
+                    className='w-4 h-4 mr-2'
+                    aria-hidden='true'
+                    data-click-from='options-menu'
+                    data-item-type={itemType}
+                  />
+                  {DirectoryOptionsActions.addNewFolder.displayValue}
+                </button>
+              </Menu.Item>
+              <Menu.Item data-click-from='options-menu' data-item-type={itemType}>
+                <button
+                  className={menuItemsStyles}
                   data-click-from='options-menu'
+                  data-options-menu-item={DirectoryOptionsActions.addNewFlow.value}
+                  data-path-name={directory.pathname}
                   data-item-type={itemType}
-                />
-                {DirectoryOptionsActions.addNewFlow.displayValue}
-              </button>
-            </Menu.Item>
-          </div>
+                  data-collection-id={collectionId}
+                >
+                  <PencilSquareIcon
+                    className='w-4 h-4 mr-2'
+                    aria-hidden='true'
+                    data-click-from='options-menu'
+                    data-item-type={itemType}
+                  />
+                  {DirectoryOptionsActions.addNewFlow.displayValue}
+                </button>
+              </Menu.Item>
+            </div>
+          ) : (
+            <div className='px-1 py-1' data-click-from='options-menu' data-item-type={itemType}>
+              <Menu.Item data-click-from='options-menu' data-item-type={itemType}>
+                <button
+                  className={menuItemsStyles}
+                  data-click-from='options-menu'
+                  data-options-menu-item={DirectoryOptionsActions.cloneFlow.value}
+                  data-path-name={directory.pathname}
+                  data-item-type={itemType}
+                  data-collection-id={collectionId}
+                >
+                  <PencilSquareIcon
+                    className='w-4 h-4 mr-2'
+                    aria-hidden='true'
+                    data-click-from='options-menu'
+                    data-item-type={itemType}
+                  />
+                  {DirectoryOptionsActions.cloneFlow.displayValue}
+                </button>
+              </Menu.Item>
+            </div>
+          )}
           <div className='px-1 py-1' data-click-from='options-menu' data-item-type={itemType}>
             <Menu.Item data-click-from='options-menu' data-item-type={itemType}>
               <button

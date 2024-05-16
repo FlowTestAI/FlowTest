@@ -86,6 +86,22 @@ const useCanvasStore = create((set, get) => ({
     });
     useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
+  setRequestNodeType: (nodeId, requestType) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          node.data = {
+            ...node.data,
+            requestType,
+          };
+        }
+
+        return node;
+      }),
+    });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
+  },
   setRequestNodeUrl: (nodeId, url) => {
     set({
       nodes: get().nodes.map((node) => {

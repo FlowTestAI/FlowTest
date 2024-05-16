@@ -47,5 +47,5 @@ export const Editor = ({ ...props }) => {
     };
   }, []);
 
-  return <div ref={editor} className='cm-editor cm-scroller'></div>;
+  return <div ref={editor} className={`${props.classes} overflow-auto`}></div>;
 };

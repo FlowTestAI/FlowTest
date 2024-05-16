@@ -42,16 +42,16 @@ const OuputNodeExpandedModal = ({ closeFn = () => null, open = false, data }) =>
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
+              <Dialog.Panel className='w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl '>
                 <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
                   Ouput
                 </Dialog.Title>
-                <div className='mt-6'>
+                <div className='mt-6 max-h-[600px] max-w-[600px]'>
                   <Editor
                     name='output-text'
                     value={JSON.stringify(data, null, 2)}
                     readOnly={true}
-                    classes={'w-1/2 h-1/2'}
+                    classes={'w-[600px] h-[600px]'}
                   />
                 </div>
               </Dialog.Panel>

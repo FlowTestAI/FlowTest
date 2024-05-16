@@ -43,7 +43,9 @@ const EditEnvVariableModal = ({ closeFn = () => null, open = false, editKey, edi
                   Edit Variable
                 </Dialog.Title>
                 <div className='mt-6'>
-                  <div className='mt-4'>{editKey}</div>
+                  <div className='mt-4'>
+                    <TextInput id='value' placeHolder={editKey} name={'Value'} value={editKey} disableState={true} />
+                  </div>
                   <div className='mt-4'>
                     <TextInput
                       id='value'

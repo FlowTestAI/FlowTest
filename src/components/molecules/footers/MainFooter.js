@@ -2,8 +2,10 @@ import React from 'react';
 import { ArrowLeftEndOnRectangleIcon, ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/outline';
 import Tippy from '@tippyjs/react';
 import useNavigationStore from 'stores/AppNavBarStore';
+import useCollectionStore from 'stores/CollectionStore';
 
 const MainFooter = () => {
+  const collections = useCollectionStore((state) => state.collections);
   const collapseNavBarValue = useNavigationStore((state) => state.collapseNavBar);
   const updateNavCollapseState = useNavigationStore((state) => state.setNavCollapseState);
   return (
@@ -11,8 +13,13 @@ const MainFooter = () => {
       <label className='py-1 cursor-pointer swap swap-rotate'>
         <input
           type='checkbox'
-          onClick={() => {
-            updateNavCollapseState(!collapseNavBarValue);
+          onClick={(event) => {
+            if (collections.length) {
+              updateNavCollapseState(!collapseNavBarValue);
+            } else {
+              event.preventDefault();
+              event.stopPropagation();
+            }
           }}
         />
         <ArrowRightStartOnRectangleIcon className='w-6 h-6 swap-on' />

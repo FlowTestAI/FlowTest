@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PlusIcon } from '@heroicons/react/20/solid';
 import Tabs from '../../atoms/Tabs';
 import Tippy from '@tippyjs/react';
@@ -8,25 +8,40 @@ import { useTabStore } from 'stores/TabStore';
 import useCollectionStore from 'stores/CollectionStore';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_TYPES, BUTTON_INTENT_TYPES } from 'constants/Common';
+import NewFlowTestModal from '../modals/flow/NewFlowTestModal';
 
 const WorkspaceHeader = () => {
   const collections = useCollectionStore((state) => state.collections);
   const focusTabId = useTabStore((state) => state.focusTabId);
   const focusTab = useTabStore.getState().tabs.find((t) => t.id === focusTabId);
   const environmentData = focusTab ? collections.find((c) => c.id === focusTab.collectionId)?.environments : [];
+  const [newFlowTestModal, setNewFlowTestModal] = useState(false);
 
   return (
-    <div className='flex items-center justify-between pr-4 min-h-12'>
-      <div className='flex items-center overflow-x-auto'>
-        <Tabs />
-        <Button btnType={BUTTON_TYPES.disabled} isDisabled={true} fullWidth={true}>
-          <Tippy content='Coming Soon!' placement='right'>
-            <PlusIcon className='w-5 h-5 outline-none' />
-          </Tippy>
-        </Button>
+    <>
+      <div className='flex items-center justify-between pr-4 min-h-12'>
+        <div className='flex items-center overflow-x-auto'>
+          <Tabs />
+          {collections.length != 0 ? (
+            <div className='inline-flex items-center justify-center hover:bg-background-light whitespace-nowrap'>
+              <Button
+                btnType={BUTTON_TYPES.tertiary}
+                classes={'min-h-12'}
+                isDisabled={false}
+                onClickHandle={() => setNewFlowTestModal(true)}
+                fullWidth={true}
+              >
+                <PlusIcon className='w-5 h-5 outline-none' />
+              </Button>
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
+        <SelectEnvironment environments={environmentData} />
       </div>
-      <SelectEnvironment environments={environmentData} />
-    </div>
+      <NewFlowTestModal closeFn={() => setNewFlowTestModal(false)} open={newFlowTestModal} />
+    </>
   );
 };
 

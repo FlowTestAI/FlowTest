@@ -1,13 +1,16 @@
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
-import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
+import { DocumentArrowUpIcon, FolderPlusIcon, CheckIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'constants/ImportCollectionTypes';
 import { createCollection } from 'service/collection';
 import { toast } from 'react-toastify';
+import useCollectionStore from 'stores/CollectionStore';
 
 const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
+  const [selectedFilePath, setSelectedFilePath] = useState('');
   const importYamlFile = useRef(null);
+
   const handleImportCollectionClick = (event) => {
     const elem = event.currentTarget;
     const importType = elem.dataset.importType;
@@ -36,15 +39,16 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
 
   const handleFileSelection = async (event) => {
     const yamlPath = event.target.files[0].path;
+    setSelectedFilePath(yamlPath);
+  };
 
-    closeFn();
-
+  const handleDirectorySelectionClick = async () => {
     // This solution will only work in Electron not in webapp
     selectDirectory()
       .then((dirPath) => {
         // if user presses cancel in choosing directory dialog, this is returned undefined
         if (dirPath) {
-          createCollection(yamlPath, dirPath);
+          createCollection(selectedFilePath, dirPath);
           toast.success('Successfully created the collection');
         }
       })
@@ -52,11 +56,23 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
         console.log(`Failed to create collection: ${error}`);
         toast.error('Failed to create the collection');
       });
+
+    //resetting data
+    setSelectedFilePath('');
+    closeFn();
+    return;
   };
 
   return (
     <Transition appear show={open} as={Fragment}>
-      <Dialog as='div' className='relative z-10' onClose={closeFn}>
+      <Dialog
+        as='div'
+        className='relative z-10'
+        onClose={() => {
+          setSelectedFilePath('');
+          closeFn();
+        }}
+      >
         <Transition.Child
           as={Fragment}
           enter='ease-out duration-300'
@@ -80,53 +96,64 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
+              <Dialog.Panel className='w-full max-w-xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
                 <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
-                  Collections
+                  Import a Collection
                 </Dialog.Title>
+                {/* ToDo: Add the message of instructions here, if that is not required then we can remove this div */}
+                {/* <div className='mt-4'>
+                  <p> Message or instructions here</p>
+                </div> */}
                 <div className='mt-4'>
-                  <ul className='text-sm font-medium'>
+                  <ul className='text-lg font-medium'>
                     <li
-                      className='flex items-center justify-start gap-2 p-2 border border-transparent rounded cursor-pointer hover:bg-background-light'
+                      className={`hover:bg-background-light cursor-pointer rounded border border-transparent px-2 py-4 ${selectedFilePath ? 'text-green-500' : ''}`}
                       onClick={handleImportCollectionClick}
                       data-import-type='yaml'
                     >
-                      <DocumentArrowUpIcon className='w-4 h-4' />
-                      Import an OpenAPI spec to start a new collection
-                      {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
-                      <div className='hidden'>
-                        <input
-                          type='file'
-                          id='file'
-                          accept='.yaml,.yml'
-                          ref={importYamlFile}
-                          onChange={handleFileSelection}
-                        />
+                      <div className='flex items-center justify-start gap-4'>
+                        <div
+                          className={`${selectedFilePath ? 'border-green-600 bg-green-500 text-white before:h-40' : 'border-cyan-900 before:h-[38px]'} relative flex h-8 w-8 items-center justify-center rounded-full border-4 before:absolute before:left-[10px] before:top-[27px] before:w-[4px] before:bg-cyan-900 before:opacity-100`}
+                        >
+                          {selectedFilePath ? <CheckIcon className='w-5 h-5' /> : '1'}
+                        </div>
+                        <div className='flex items-center justify-start'>
+                          {/* <DocumentArrowUpIcon className='w-5 h-5' /> */}
+                          Import an OpenAPI V3 spec
+                          {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
+                          <div className='hidden'>
+                            <input
+                              type='file'
+                              id='file'
+                              accept='.yaml,.yml'
+                              ref={importYamlFile}
+                              onChange={handleFileSelection}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {selectedFilePath ? (
+                        <div className='px-2 py-4 my-4 ml-12 text-green-600 bg-green-100 border border-green-600 rounded'>
+                          {selectedFilePath}
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </li>
+                    <li
+                      className={`hover:bg-background-light flex cursor-pointer items-center justify-start gap-4 px-2 py-4 ${selectedFilePath ? 'cursor-default' : 'cursor-not-allowed'}`}
+                      onClick={handleDirectorySelectionClick}
+                    >
+                      <div className='flex items-center justify-center w-8 h-8 border-4 rounded-full border-cyan-900'>
+                        2
+                      </div>
+                      <div
+                        className={`flex items-center justify-start ${selectedFilePath ? 'cursor-default' : 'cursor-not-allowed text-gray-400'}`}
+                      >
+                        {/* <FolderPlusIcon className='w-5 h-5' /> */}
+                        Select a directory to create your collection
                       </div>
                     </li>
-                    {/* For future refer */}
-                    {/* <li className='flex items-center justify-start gap-2 p-2 cursor-pointer hover:bg-background-light'>
-                      <DocumentArrowUpIcon className='w-4 h-4' />
-                      Import from Open API
-                      <input
-                        type='file'
-                        id='file'
-                        ref={importYamlFile}
-                        style={{ display: 'none' }}
-                        onChange={handleOnChangeForImportYaml}
-                      />
-                    </li>
-                    <li className='flex items-center justify-start gap-2 p-2 cursor-pointer hover:bg-background-light'>
-                      <DocumentArrowUpIcon className='w-4 h-4' />
-                      Import from Postman
-                      <input
-                        type='file'
-                        id='file'
-                        ref={importYamlFile}
-                        style={{ display: 'none' }}
-                        onChange={handleOnChangeForImportYaml}
-                      />
-                    </li> */}
                   </ul>
                 </div>
               </Dialog.Panel>

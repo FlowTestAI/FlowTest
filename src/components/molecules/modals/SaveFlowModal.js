@@ -5,7 +5,8 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import { updateEnvironmentFile, updateFlowTest } from 'service/collection';
 import { toast } from 'react-toastify';
-import { OBJ_TYPES } from 'constants/Common';
+import { BUTTON_TYPES, OBJ_TYPES } from 'constants/Common';
+import Button from 'components/atoms/common/Button';
 
 export const saveHandle = (tab) => {
   if (tab.type == OBJ_TYPES.flowtest && tab.flowDataDraft) {
@@ -33,15 +34,18 @@ export const saveHandle = (tab) => {
 
 const SaveFlowModal = ({ tab }) => {
   return (
-    <>
-      <div className='flex items-center justify-center h-12 pl-4 border-l border-neutral-300'>
-        <button type='button' onClick={() => saveHandle(tab)}>
-          <Tippy content='Save' placement='top'>
-            <InboxArrowDownIcon className='w-5 h-5' />
-          </Tippy>
-        </button>
-      </div>
-    </>
+    <Button
+      btnType={BUTTON_TYPES.secondary}
+      isDisabled={false}
+      onClickHandle={() => saveHandle(tab)}
+      fullWidth={true}
+      onlyIcon={true}
+      padding={'px-4 py-2.5'}
+    >
+      <Tippy content='Save' placement='top'>
+        <InboxArrowDownIcon className='w-5 h-5' />
+      </Tippy>
+    </Button>
   );
 };
 

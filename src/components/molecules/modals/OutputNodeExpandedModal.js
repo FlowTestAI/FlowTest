@@ -31,7 +31,7 @@ const OuputNodeExpandedModal = ({ closeFn = () => null, open = false, data }) =>
           <div className='fixed inset-0 bg-black/25' />
         </Transition.Child>
 
-        <div className='fixed inset-0 max-h-[600px] max-w-[600px] overflow-y-auto'>
+        <div className='fixed inset-0 overflow-y-auto'>
           <div className='flex items-center justify-center min-h-full p-4 text-center'>
             <Transition.Child
               as={Fragment}
@@ -42,11 +42,11 @@ const OuputNodeExpandedModal = ({ closeFn = () => null, open = false, data }) =>
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
+              <Dialog.Panel className='w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl '>
                 <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
                   Ouput
                 </Dialog.Title>
-                <div className='mt-6'>
+                <div className='mt-6 max-h-[600px] max-w-[600px]'>
                   <Editor
                     name='output-text'
                     value={JSON.stringify(data, null, 2)}

@@ -19,22 +19,22 @@ const EmptyWorkSpaceContent = () => {
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
   const [newEnvironmentFileModal, setNewEnvironmentFileModal] = useState(false);
   return (
-    <div className='flex items-center justify-center h-full text-cyan-900'>
-      <div className='flex flex-col gap-10'>
-        <div className='w-3/4 text-center'>
+    <div className='flex h-full items-center justify-center text-cyan-900'>
+      <div className='flex max-w-xl flex-col gap-8 2xl:gap-10'>
+        <div className='text-center'>
           <div className='flex items-center justify-center'>
-            <RectangleStackIcon className='w-32 h-32' />
+            <RectangleStackIcon className='h-24 w-24' />
           </div>
-          <p className='mt-4 text-3xl'>
-            A <span className='italic font-semibold font-montserrat'>Collection</span> is a ...
+          <p className='text-2xl'>
+            A <span className='font-montserrat font-semibold italic'>Collection</span> is a ...
           </p>
-          <p className='mt-6 text-base'>
+          <p className='mt-2 text-sm italic 2xl:mt-4'>
             A Collection is a set of flows where each flow is a set of API requests chained together, along with each
             endpoint&lsquo;s authorization type, parameters, headers, request bodies, and settings. A collection enables
             you to organize your flows into folders or subfolders directly on your local file system. You can then
             collaborate on these collections with team members using git or any version control system.
           </p>
-          <div className='flex items-center justify-between gap-6 pt-8'>
+          <div className='flex items-center justify-between gap-6 pt-4 2xl:pt-6'>
             {collections.length ? (
               <>
                 <Button
@@ -79,21 +79,21 @@ const EmptyWorkSpaceContent = () => {
         {collections.length ? (
           <>
             <HorizontalDivider themeColor={'bg-cyan-900'} themeStyles={'opacity-75'} />
-            <div className='w-3/4 text-center'>
+            <div className='text-center'>
               <div className='flex items-center justify-center'>
-                <Square3Stack3DIcon className='w-32 h-32' />
+                <Square3Stack3DIcon className='h-24 w-24' />
               </div>
-              <p className='mt-4 text-3xl'>
-                An <span className='italic font-semibold font-montserrat'>Environment</span> is a ...
+              <p className='text-2xl'>
+                An <span className='font-montserrat font-semibold italic'>Environment</span> is a ...
               </p>
-              <p className='mt-6 text-base'>
+              <p className='mt-2 text-sm italic 2xl:mt-4'>
                 An environment is a set of one or more variables that you can reference when sending API requests using
                 &#123;&#123; variable &#125;&#125;. When you switch between environments, all of the variables in your
                 requests will use the values from the current environment. This is helpful if you need to use different
                 values in your requests depending on the context, for example, if you are sending a request to a test
                 server or a production server.
               </p>
-              <div className='flex items-center justify-between gap-6 pt-8'>
+              <div className='flex items-center justify-between gap-6 pt-4 2xl:pt-6'>
                 <Button
                   btnType={BUTTON_TYPES.primary}
                   isDisabled={false}

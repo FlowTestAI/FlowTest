@@ -33,7 +33,7 @@ const OutputNode = ({ id, data }) => {
             name='output-text'
             value={JSON.stringify(data.output, null, 2)}
             readOnly={true}
-            classes={'w-80 h-80'}
+            classes={'w-96 h-96'}
           />
         ) : (
           <div className='p-2'>{'Run flow to see data'}</div>

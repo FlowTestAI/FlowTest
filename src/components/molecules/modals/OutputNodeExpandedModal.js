@@ -51,7 +51,7 @@ const OuputNodeExpandedModal = ({ closeFn = () => null, open = false, data }) =>
                     name='output-text'
                     value={JSON.stringify(data, null, 2)}
                     readOnly={true}
-                    classes={'w-40 h-40'}
+                    classes={'w-1/2 h-1/2'}
                   />
                 </div>
               </Dialog.Panel>

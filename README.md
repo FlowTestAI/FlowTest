@@ -28,10 +28,42 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
 
 ## Development 🔧
 
+### Prerequisite
+
+This package uses version 18 of Node.js. There are different ways that you can install Node.js, following are steps for [Node Verson Manager or NVM](https://github.com/nvm-sh/nvm). If you need steps for other methods than NVM then please check [Official Node.js documentation](https://nodejs.org/en/download/package-manager).
+
+1. Installs nvm (Node Version Manager)
+
+   ```bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+   ```
+
+2. Download and install Node.js
+
+   ```bash
+   nvm install 18
+   ```
+
+3. Verifies the right Node.js version is in the environment
+
+   ```bash
+   node -v # should print `v18.20.2`
+   ```
+
+4. Verifies the right NPM version is in the environment
+
+   ```bash
+   npm -v # should print `10.5.0`
+   ```
+
+### Main setup
+
 1. Clone the repository
+
    ```bash
    git clone https://github.com/FlowTestAI/FlowTest.git
    ```
+
 2. Go into repository folder
 
    ```bash
@@ -51,9 +83,11 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
    ```
 
 4. Install all project dependencies:
+
    ```bash
    pnpm install
    ```
+
 5. Build and start the app:
 
    ```bash
@@ -65,7 +99,8 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
    NOTE: if you use npm and corepack to install pnpm you will have two instances of pnpm. Make sure the version you're using is the correct version for the repo. Check the [pnpm docs](https://pnpm.io/installation) and [corepack](https://github.com/nodejs/corepack) for troubleshooting. Pnpm installed with npm will overrun corepacks pnpm instance.
 
 ## Contribution 🤝
-*"Little drops of water make a mighty ocean"*
+
+_"Little drops of water make a mighty ocean"_
 
 No contribution is small even if it means fixing a spelling mistake. Follow our contributing guide below.
 https://github.com/FlowTestAI/FlowTest/blob/main/CONTRIBUTING.md

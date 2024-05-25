@@ -9,14 +9,10 @@ import TextInput from 'components/atoms/common/TextInput';
 const AuthNode = ({ id, data }) => {
   const setAuthNodeType = useCanvasStore((state) => state.setAuthNodeType);
   const setBasicAuthValues = useCanvasStore((state) => state.setBasicAuthValues);
-  const [selected, setSelected] = useState('no-auth');
+  const [selected, setSelected] = useState(data.type ? data.type : 'no-auth');
 
   const handleChange = (value, option) => {
     setBasicAuthValues(id, option, value);
-  };
-
-  const handleSelection = (event) => {
-    setAuthNodeType(id, event.target?.value);
   };
 
   return (

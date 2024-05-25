@@ -12,7 +12,7 @@ const Environments = ({ collections }) => {
 
   return (
     <div
-      className='h-[87vh] flex-auto overflow-auto'
+      className='h-[87vh] flex-auto overflow-auto pb-14'
       onClick={(event) => {
         const clickFromElementDataSet = event.target.dataset;
         const clickFrom = clickFromElementDataSet?.clickFrom;
@@ -38,7 +38,7 @@ const Environments = ({ collections }) => {
         }
       }}
     >
-      <ul className='w-full menu'>
+      <ul className='menu w-full'>
         {collections.map((collection) => (
           <Environment key={collection.id} collectionId={collection.id} collection={collection} />
         ))}

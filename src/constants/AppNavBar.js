@@ -19,3 +19,22 @@ export const AppNavBarItems = {
     disable: true,
   },
 };
+
+export const AppNavBarStyles = {
+  collapsedNavBarWidth: {
+    absolute: 56,
+    pixelInString: '56px',
+    tailwindValue: {
+      default: 'w-14',
+      min: 'min-w-14',
+    },
+  },
+  expandedNavBarWidth: {
+    absolute: 12,
+    pixelInString: '12px',
+    tailwindValue: {
+      default: 'w-28',
+      min: 'min-w-28',
+    },
+  },
+};

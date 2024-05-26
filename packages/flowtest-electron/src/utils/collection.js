@@ -1,3 +1,10 @@
+const { generateRequestBodyExample } = require('./generate-request-body');
+const {
+  generateQueryParamsExample,
+  generateParameterExample,
+  generatePathParamsExample,
+} = require('./generate-request-parameters');
+
 const computeUrl = (baseUrl, path) => {
   if (baseUrl.charAt(baseUrl.length - 1) === '/' && path.charAt(0) === '/') {
     return baseUrl + path.substring(1, path.length);
@@ -28,15 +35,13 @@ const parseOpenAPISpec = (collection) => {
         const tags = request['tags'];
         var url = replaceSingleToDoubleCurlyBraces(computeUrl(baseUrl, path));
         var variables = {};
+        var requestBody = {};
+        const pathParameters = [];
+        const queryParameters = [];
 
-        // console.log(operationId)
-        // Get is easy, others are hard
-        if (requestType.toUpperCase() === 'GET' && request['parameters']) {
+        if (request['parameters']) {
           let firstQueryParam = true;
           request['parameters'].map((value, _) => {
-            // path parameters are included in url
-            // handle multiple parameters
-            // allow different type of variables in request node like string, int, array etc...
             if (value['in'] === 'query') {
               if (firstQueryParam) {
                 url = url.concat(`?${value['name']}={{${value['name']}}}`);
@@ -44,14 +49,54 @@ const parseOpenAPISpec = (collection) => {
               } else {
                 url = url.concat(`&${value['name']}={{${value['name']}}}`);
               }
+              queryParameters.push(value);
+            }
+
+            if (value['in'] === 'path') {
+              pathParameters.push(value);
             }
           });
         }
 
+        if (queryParameters.length > 0) {
+          const res = generateQueryParamsExample(queryParameters);
+          Array.from(res.entries()).map(([key, value], index) => {
+            variables[key] = {
+              type: typeof value,
+              value,
+            };
+          });
+        }
+
+        if (pathParameters.length > 0) {
+          const res = generatePathParamsExample(pathParameters);
+          Array.from(res.entries()).map(([key, value], index) => {
+            variables[key] = {
+              type: typeof value,
+              value,
+            };
+          });
+        }
+
         if (request['requestBody']) {
-          if (request['requestBody']['application/json']) {
-            // console.log('requestBody: ', request["requestBody"]["content"]["schema"])
-            // generate an example to be used in request body
+          if (request['requestBody']['content']['application/json']) {
+            requestBody = {
+              type: 'raw-json',
+              body: JSON.stringify(
+                generateRequestBodyExample(request['requestBody']['content']['application/json']['schema']),
+              ),
+            };
+          }
+
+          if (request['requestBody']['content']['multipart/form-data']) {
+            requestBody = {
+              type: 'form-data',
+              body: {
+                key: '',
+                value: '',
+                name: '',
+              },
+            };
           }
         }
 
@@ -61,8 +106,10 @@ const parseOpenAPISpec = (collection) => {
           operationId: operationId,
           requestType: requestType.toUpperCase(),
           tags: tags,
+          requestBody,
+          preReqVars: variables,
         };
-        // console.log(finalNode);
+
         parsedNodes.push(finalNode);
       });
     });
@@ -72,4 +119,6 @@ const parseOpenAPISpec = (collection) => {
   return parsedNodes;
 };
 
-module.exports = parseOpenAPISpec;
+module.exports = {
+  parseOpenAPISpec,
+};

@@ -11,6 +11,7 @@ import TextInput from 'components/atoms/common/TextInput';
 import NodeHorizontalDivider from 'components/atoms/flow/NodeHorizontalDivider';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import requestNodes from '../constants/requestNodes';
 
 const RequestNode = ({ id, data }) => {
   const setRequestNodeUrl = useCanvasStore((state) => state.setRequestNodeUrl);
@@ -103,8 +104,6 @@ const RequestNode = ({ id, data }) => {
     );
   };
 
-  const requestTypes = ['GET', 'PUT', 'POST', 'DELETE'];
-
   return (
     <FlowNode
       title={data.requestType + ' Request'}
@@ -135,28 +134,30 @@ const RequestNode = ({ id, data }) => {
                 leaveTo='opacity-0'
               >
                 <Listbox.Options className='absolute z-50 w-full py-1 mt-1 overflow-auto text-base bg-white max-h-60 focus:outline-none'>
-                  {requestTypes.map((reqType) => (
-                    <Listbox.Option
-                      key={reqType}
-                      className={({ active }) =>
-                        `relative cursor-default select-none py-2 pl-7 pr-4 hover:font-semibold ${
-                          active ? 'bg-background-light text-slate-900' : ''
-                        }`
-                      }
-                      value={reqType}
-                    >
-                      {({ selected }) => (
-                        <>
-                          <span className={`block`}>{reqType}</span>
-                          {selected ? (
-                            <span className='absolute inset-y-0 left-0 flex items-center pl-1 font-semibold'>
-                              <CheckIcon className='w-5 h-5' aria-hidden='true' />
-                            </span>
-                          ) : null}
-                        </>
-                      )}
-                    </Listbox.Option>
-                  ))}
+                  {requestNodes
+                    .map((el) => el.requestType)
+                    .map((reqType) => (
+                      <Listbox.Option
+                        key={reqType}
+                        className={({ active }) =>
+                          `relative cursor-default select-none py-2 pl-7 pr-4 hover:font-semibold ${
+                            active ? 'bg-background-light text-slate-900' : ''
+                          }`
+                        }
+                        value={reqType}
+                      >
+                        {({ selected }) => (
+                          <>
+                            <span className={`block`}>{reqType}</span>
+                            {selected ? (
+                              <span className='absolute inset-y-0 left-0 flex items-center pl-1 font-semibold'>
+                                <CheckIcon className='w-5 h-5' aria-hidden='true' />
+                              </span>
+                            ) : null}
+                          </>
+                        )}
+                      </Listbox.Option>
+                    ))}
                 </Listbox.Options>
               </Transition>
             </div>

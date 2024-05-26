@@ -8,30 +8,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import useCollectionStore from 'stores/CollectionStore';
 import { orderNodesByTags } from './utils';
 import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
-
-// ToDo: Move these constants to constants file/folder
-const requestNodes = [
-  {
-    requestType: 'GET',
-    description: 'GET is used to request data from a specified resource.',
-    type: 'requestNode',
-  },
-  {
-    requestType: 'POST',
-    description: 'POST is used to send data to a server to create/update a resource.',
-    type: 'requestNode',
-  },
-  {
-    requestType: 'PUT',
-    description: 'PUT is used to send data to a server to create/update a resource. PUT requests are idempotent.',
-    type: 'requestNode',
-  },
-  {
-    requestType: 'DELETE',
-    description: 'The DELETE method deletes the specified resource.',
-    type: 'requestNode',
-  },
-];
+import requestNodes from './constants/requestNodes';
 
 const outputNode = {
   description: 'Displays any data received.',

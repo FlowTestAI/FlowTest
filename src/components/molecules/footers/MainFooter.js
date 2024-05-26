@@ -6,24 +6,25 @@ import useCollectionStore from 'stores/CollectionStore';
 
 const MainFooter = () => {
   const collections = useCollectionStore((state) => state.collections);
-  const collapseNavBarValue = useNavigationStore((state) => state.collapseNavBar);
+  const isNavBarCollapsed = useNavigationStore((state) => state.collapseNavBar);
   const updateNavCollapseState = useNavigationStore((state) => state.setNavCollapseState);
   return (
     <footer className='flex items-center justify-between px-6 py-2 text-xs'>
-      <label className='py-1 cursor-pointer swap swap-rotate'>
+      <label className='swap swap-rotate cursor-pointer py-1'>
         <input
           type='checkbox'
           onClick={(event) => {
             if (collections.length) {
-              updateNavCollapseState(!collapseNavBarValue);
+              // since default is false for isNavBarCollapsed
+              updateNavCollapseState(!isNavBarCollapsed);
             } else {
               event.preventDefault();
               event.stopPropagation();
             }
           }}
         />
-        <ArrowRightStartOnRectangleIcon className='w-6 h-6 swap-on' />
-        <ArrowLeftEndOnRectangleIcon className='w-6 h-6 swap-off' />
+        <ArrowRightStartOnRectangleIcon className='swap-on h-6 w-6' />
+        <ArrowLeftEndOnRectangleIcon className='swap-off h-6 w-6' />
       </label>
       <div className='flex items-center justify-between gap-4 font-semibold'>
         <Tippy content='External Link' placement='top'>

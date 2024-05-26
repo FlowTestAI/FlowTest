@@ -13,6 +13,7 @@ const SplitPane = () => {
     <main className='h-full'>
       <Allotment>
         <Allotment.Pane
+          preferredSize={isNavBarCollapsed ? AppNavBarStyles.collapsedNavBarWidth.absolute : 450}
           minSize={isNavBarCollapsed ? AppNavBarStyles.collapsedNavBarWidth.absolute : 450}
           maxSize={isNavBarCollapsed ? AppNavBarStyles.collapsedNavBarWidth.absolute : 600}
           separator={isNavBarCollapsed ? false : true}
@@ -20,7 +21,7 @@ const SplitPane = () => {
           <div className='flex h-full text-xs'>
             <AppNavBar />
             {!isNavBarCollapsed ? (
-              <div className='h-full w-full'>
+              <div className='w-full h-full'>
                 <Allotment>
                   <Allotment.Pane>
                     <SideBar />

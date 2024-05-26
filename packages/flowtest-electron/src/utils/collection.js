@@ -42,9 +42,6 @@ const parseOpenAPISpec = (collection) => {
         if (request['parameters']) {
           let firstQueryParam = true;
           request['parameters'].map((value, _) => {
-            // path parameters are included in url
-            // handle multiple parameters
-            // allow different type of variables in request node like string, int, array etc...
             if (value['in'] === 'query') {
               if (firstQueryParam) {
                 url = url.concat(`?${value['name']}={{${value['name']}}}`);

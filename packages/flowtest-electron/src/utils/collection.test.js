@@ -54,6 +54,13 @@ const userSchema = {
       pattern: '^[a-zA-Z0-9]{3,}$',
       example: 'user123',
     },
+    interests: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+      example: ['coding', 'reading'],
+    },
   },
 };
 

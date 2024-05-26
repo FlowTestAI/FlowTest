@@ -1,27 +1,31 @@
-const generateRequestBodyExample = (schema) => {
+const generateRequestBodyExample = (schema, level = 0, context = { processedSchemas: new Set() }) => {
   if (!schema) return {};
+
+  if (schema.example !== undefined) {
+    return schema.example;
+  }
 
   if (schema.enum) {
     return schema.example || schema.enum[0];
   }
 
   if (schema.oneOf) {
-    return generateRequestBodyExample(schema.oneOf[0]);
+    return generateRequestBodyExample(schema.oneOf[0], level + 1, context);
   }
 
   if (schema.anyOf) {
-    return generateRequestBodyExample(schema.anyOf[0]);
+    return generateRequestBodyExample(schema.anyOf[0], level + 1, context);
   }
 
   if (schema.allOf) {
-    return generateAllOfExample(schema.allOf);
+    return generateAllOfExample(schema.allOf, level + 1, context);
   }
 
   switch (schema.type) {
     case 'object':
-      return generateObjectExample(schema);
+      return generateObjectExample(schema, level + 1, context);
     case 'array':
-      return generateArrayExample(schema);
+      return generateArrayExample(schema, level + 1, context);
     case 'string':
       return generateStringExample(schema);
     case 'integer':
@@ -35,33 +39,46 @@ const generateRequestBodyExample = (schema) => {
   }
 };
 
-const generateAllOfExample = (schemas) => {
+const generateAllOfExample = (schemas, level, context) => {
   const example = {};
   schemas.forEach((subSchema) => {
-    const subExample = generateRequestBodyExample(subSchema);
+    const subExample = generateRequestBodyExample(subSchema, level, context);
     Object.assign(example, subExample);
   });
   return example;
 };
 
-const generateObjectExample = (schema) => {
+const generateObjectExample = (schema, level, context) => {
+  if (schema.example !== undefined) {
+    return schema.example;
+  }
+
+  if (context.processedSchemas.has(schema) && level > 1) {
+    return {};
+  }
+  context.processedSchemas.add(schema);
+
   const example = {};
   const properties = schema.properties || {};
 
   for (const [key, propertySchema] of Object.entries(properties)) {
-    example[key] = generateRequestBodyExample(propertySchema);
+    example[key] = generateRequestBodyExample(propertySchema, level, context);
   }
 
+  context.processedSchemas.delete(schema);
   return example;
 };
 
-const generateArrayExample = (schema) => {
+const generateArrayExample = (schema, level, context) => {
+  if (schema.example !== undefined) {
+    return schema.example;
+  }
   const itemsSchema = schema.items || {};
-  return [generateRequestBodyExample(itemsSchema)];
+  return [generateRequestBodyExample(itemsSchema, level, context)];
 };
 
 const generateStringExample = (schema) => {
-  let example = schema.example || 'string';
+  let example = String(schema.example || 'string');
 
   if (schema.minLength || schema.maxLength) {
     example = generateStringWithLengthConstraints(example, schema.minLength, schema.maxLength);

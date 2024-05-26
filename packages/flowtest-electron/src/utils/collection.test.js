@@ -1,10 +1,16 @@
-const { generateExample } = require('./collection.js');
+const { generateRequestBodyExample } = require('./generate-request-body.js');
+const { generatePathParamsExample, generateQueryParamsExample } = require('./generate-request-parameters.js');
 
 describe('collection parser', () => {
   it('should generate request body example', () => {
-    console.log(JSON.stringify(generateExample(userSchema), null, 2));
-    console.log(JSON.stringify(generateExample(productSchema), null, 2));
-    console.log(JSON.stringify(generateExample(complexSchema), null, 2));
+    console.log(JSON.stringify(generateRequestBodyExample(userSchema), null, 2));
+    console.log(JSON.stringify(generateRequestBodyExample(productSchema), null, 2));
+    console.log(JSON.stringify(generateRequestBodyExample(complexSchema), null, 2));
+  });
+
+  it('should generate request parameters example', () => {
+    console.log('Path Parameters Example:', generatePathParamsExample(pathParameters).toString());
+    console.log('Query Parameters Example:', generateQueryParamsExample(queryParameters).toString());
   });
 });
 
@@ -136,3 +142,80 @@ const complexSchema = {
     },
   },
 };
+
+// Example usage:
+
+const pathParameters = [
+  {
+    name: 'userId',
+    in: 'path',
+    required: true,
+    schema: {
+      type: 'integer',
+      format: 'int64',
+      example: 123,
+      minimum: 1,
+    },
+  },
+  {
+    name: 'username',
+    in: 'path',
+    required: true,
+    schema: {
+      type: 'string',
+      minLength: 3,
+      maxLength: 20,
+      example: 'john_doe',
+    },
+  },
+];
+
+const queryParameters = [
+  {
+    name: 'page',
+    in: 'query',
+    schema: {
+      type: 'integer',
+      example: 1,
+      minimum: 1,
+    },
+  },
+  {
+    name: 'limit',
+    in: 'query',
+    schema: {
+      type: 'integer',
+      example: 10,
+      minimum: 1,
+      maximum: 100,
+    },
+  },
+  {
+    name: 'sort',
+    in: 'query',
+    schema: {
+      type: 'string',
+      enum: ['asc', 'desc'],
+      example: 'asc',
+    },
+  },
+  {
+    name: 'filter',
+    in: 'query',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'string',
+        example: 'status:active',
+      },
+    },
+  },
+  {
+    name: 'search',
+    in: 'query',
+    schema: {
+      type: 'string',
+      example: 'example',
+    },
+  },
+];

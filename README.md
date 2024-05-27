@@ -30,7 +30,7 @@ FlowTestAI is an electron app that runs entirely in your local environment inter
 
 ### Prerequisite
 
-This package uses version 18 of Node.js. There are different ways that you can install Node.js, following are steps for [Node Verson Manager or NVM](https://github.com/nvm-sh/nvm). If you need steps for other methods than NVM then please check [Official Node.js documentation](https://nodejs.org/en/download/package-manager).
+This package uses version >= 18 of Node.js. There are different ways that you can install Node.js, following are steps for [Node Verson Manager or NVM](https://github.com/nvm-sh/nvm). If you need steps for other methods than NVM then please check [Official Node.js documentation](https://nodejs.org/en/download/package-manager). Here is a sample walkthrough installing version 18.
 
 1. Installs nvm (Node Version Manager)
 

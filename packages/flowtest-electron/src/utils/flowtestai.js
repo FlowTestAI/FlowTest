@@ -7,7 +7,7 @@ const { OpenAIEmbeddings } = require('@langchain/openai');
 
 const SYSTEM_MESSAGE = `You are a helpful assistant. \ 
         Respond to the following prompt by using function_call and then summarize actions. \ 
-        Ask for clarification if a user request is ambiguous.`;
+        If a user request is ambiguous, choose the best response possible.`;
 
 // Maximum number of function calls allowed to prevent infinite or lengthy loops
 const MAX_CALLS = 10;
@@ -62,33 +62,29 @@ class FlowtestAI {
           };
         }
 
-        const f = { name: function_name, description: desc, parameters: schema };
-        // ignore functions with circular dependency
-        if (!this.isCyclic(f)) {
+        const f = {
+          type: 'function',
+          function: { name: function_name, description: desc, parameters: schema },
+        };
+
+        if (this.isCyclic(f)) {
+          functions.push({
+            type: 'function',
+            function: { name: function_name, description: desc, parameters: {} },
+          });
+        } else {
           functions.push(f);
         }
       });
     });
-    // console.log(JSON.stringify(functions));
+
     return functions;
   }
 
   async filter_functions(functions, instruction, apiKey) {
-    const chunkSize = 32;
-    const chunks = [];
-
-    for (let i = 0; i < functions.length; i += chunkSize) {
-      const chunk = functions.slice(i, i + chunkSize);
-      chunks.push(chunk);
-    }
-
-    const documents = chunks.map((chunk) => {
-      return JSON.stringify(
-        chunk.map((f) => {
-          const { parameters, ...fDescription } = f;
-          return fDescription;
-        }),
-      );
+    const documents = functions.map((f) => {
+      const { parameters, ...fDescription } = f.function;
+      return JSON.stringify(fDescription);
     });
 
     const vectorStore = await MemoryVectorStore.fromTexts(
@@ -99,17 +95,17 @@ class FlowtestAI {
       }),
     );
 
-    // 32 x 4 = 128 (max no of functions accepted by openAI function calling)
-    const retrievedDocuments = await vectorStore.similaritySearch(instruction, 4);
+    // 128 (max no of functions accepted by openAI function calling)
+    const retrievedDocuments = await vectorStore.similaritySearch(instruction, 10);
     var selectedFunctions = [];
     retrievedDocuments.forEach((document) => {
       const pDocument = JSON.parse(document.pageContent);
-      pDocument.forEach((outputF) => {
-        const findF = functions.find((f) => f.name === outputF.name && f.description === outputF.description);
-        if (findF) {
-          selectedFunctions = selectedFunctions.concat(findF);
-        }
-      });
+      const findF = functions.find(
+        (f) => f.function.name === pDocument.name && f.function.description === pDocument.description,
+      );
+      if (findF) {
+        selectedFunctions = selectedFunctions.concat(findF);
+      }
     });
 
     return selectedFunctions;
@@ -121,15 +117,16 @@ class FlowtestAI {
     });
 
     return await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo-16k-0613',
-      functions: functions,
-      function_call: 'auto', // "auto" means the model can pick between generating a message or calling a function.
+      model: 'gpt-4', //gpt-3.5-turbo-16k-0613
+      tools: functions,
+      tool_choice: 'auto', // "auto" means the model can pick between generating a message or calling a function.
       temperature: 0,
       messages: messages,
     });
   }
 
   async process_user_instruction(functions, instruction, apiKey) {
+    //console.log(functions.map((f) => f.function.name));
     let result = [];
     let num_calls = 0;
     const messages = [
@@ -139,23 +136,24 @@ class FlowtestAI {
 
     while (num_calls < MAX_CALLS) {
       const response = await this.get_openai_response(functions, messages, apiKey);
-      // console.log(response)
       const message = response['choices'][0]['message'];
 
-      if (message['function_call']) {
-        console.log('Function call #: ', num_calls + 1);
-        console.log(message['function_call']);
+      if (message.tool_calls) {
         messages.push(message);
+        message.tool_calls.map((tool_call) => {
+          console.log('Function call #: ', num_calls + 1);
+          console.log(JSON.stringify(tool_call));
 
-        // We'll simply add a message to simulate successful function call.
-        messages.push({
-          role: 'function',
-          content: 'success',
-          name: message['function_call']['name'],
+          // We'll simply add a message to simulate successful function call.
+          messages.push({
+            role: 'tool',
+            content: 'success',
+            tool_call_id: tool_call.id,
+          });
+          result.push(tool_call.function);
+
+          num_calls += 1;
         });
-        result.push(message['function_call']);
-
-        num_calls += 1;
       } else {
         console.log('Message: ');
         console.log(message['content']);

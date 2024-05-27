@@ -65,6 +65,11 @@ const generateObjectExample = (schema, level, context) => {
     example[key] = generateRequestBodyExample(propertySchema, level, context);
   }
 
+  if (schema.additionalProperties) {
+    example.additionalProperty1 = generateRequestBodyExample(schema.additionalProperties, level, context);
+    example.additionalProperty2 = generateRequestBodyExample(schema.additionalProperties, level, context);
+  }
+
   context.processedSchemas.delete(schema);
   return example;
 };

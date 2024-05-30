@@ -9,7 +9,7 @@ const MainFooter = () => {
   const isNavBarCollapsed = useNavigationStore((state) => state.collapseNavBar);
   const updateNavCollapseState = useNavigationStore((state) => state.setNavCollapseState);
   return (
-    <footer className='flex items-center justify-between px-6 py-2 text-xs'>
+    <footer className='flex items-center justify-between px-4 py-3 text-xs'>
       <label className='swap swap-rotate cursor-pointer py-1'>
         <input
           type='checkbox'

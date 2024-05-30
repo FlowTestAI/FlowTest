@@ -31,4 +31,5 @@ export const OBJ_TYPES = {
 
 export const GENAI_MODELS = {
   openai: 'OPENAI',
+  bedrock_claude: 'BEDROCK_CLAUDE',
 };

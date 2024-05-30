@@ -14,7 +14,7 @@ const createFile = require('../utils/filemanager/createfile');
 const updateFile = require('../utils/filemanager/updatefile');
 const deleteFile = require('../utils/filemanager/deletefile');
 const readFile = require('../utils/filemanager/readfile');
-const FlowtestAI = require('../utils/flowtestai');
+const FlowtestAI = require('../ai/flowtestai');
 const { stringify, parse } = require('flatted');
 const { deserialize, serialize } = require('../utils/flowparser/parser');
 

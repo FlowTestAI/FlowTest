@@ -59,7 +59,7 @@ const RequestNode = ({ id, data }) => {
     const variables = vType === 'pre-request' ? data.preReqVars : data.postRespVars;
     return (
       <>
-        {variables ? (
+        {variables && Object.keys(variables).length > 0 ? (
           <div className='p-2 pt-4 border-t border-neutral-300 bg-slate-50'>
             {Object.keys(variables).map((id) => (
               <div className='flex items-center justify-between pb-2' key={id}>

@@ -31,6 +31,8 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
   const [selectedModel, setSelectedModel] = useState(null);
   const [textareaValue, setTextareaValue] = useState('');
   const [modelKey, setModelKey] = useState('');
+  const [bedrockAccessKeyId, setBedrockAccessKeyId] = useState('');
+  const [bedrockSecretAccessKey, setBedrockSecretAccessKey] = useState('');
 
   const [flowtestName, setFlowtestName] = useState('');
   const [selectedCollection, setSelectionCollection] = useState(
@@ -44,6 +46,8 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
   const [showSelectedModelError, setSelectedModelError] = useState(false);
   const [showModelKeyError, setShowModelKeyError] = useState(false);
   const [showDescribeFlowError, setShowDescribeFlowError] = useState(false);
+  const [showBedrockAccessKeyIdError, setShowBedrockAccessKeyIdError] = useState(false);
+  const [showBedrockSecretAccessKeyError, setShowBedrockSecretAccessKeyError] = useState(false);
   //const [showFolderSelectionError, setShowFolderSelectionError] = useState(false);
 
   const resetFields = () => {
@@ -60,7 +64,8 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
     setShowModelKeyError(false);
     setShowDescribeFlowError(false);
     setSelectedModelError(false);
-    //setShowFolderSelectionError(false);
+    setShowBedrockAccessKeyIdError(false);
+    setShowBedrockSecretAccessKeyError(false);
   };
 
   const containsFolder = (collection) => {
@@ -133,7 +138,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                   {!collectionId && (
                     <>
                       <div>
-                        <div className='flex justify-between gap-2 transition border rounded bg-background-light hover:bg-background whitespace-nowrap border-cyan-900 text-cyan-900'>
+                        <div className='flex justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
                           <Listbox
                             value={selectedCollection}
                             onChange={(value) => {
@@ -196,7 +201,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                       </div>
                       {!isEmpty(selectedCollection) && containsFolder(selectedCollection) ? (
                         <div>
-                          <div className='justify-between gap-2 transition border rounded bg-background-light hover:bg-background whitespace-nowrap border-cyan-900 text-cyan-900'>
+                          <div className='justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
                             <Listbox
                               value={selectedFolder}
                               onChange={(value) => {
@@ -270,20 +275,42 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                 <div>
                   {!isEmpty(selectedCollection) && (
                     <div>
-                      <div className='justify-between gap-2 transition border rounded bg-background-light hover:bg-background whitespace-nowrap border-cyan-900 text-cyan-900'>
+                      <div className='justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
                         <Listbox
                           value={selectedModel}
                           onChange={(m) => {
-                            if (GENAI_MODELS.openai) {
-                              if (
-                                selectedCollection &&
-                                selectedCollection.dotEnvVariables &&
-                                Object.prototype.hasOwnProperty.call(
-                                  selectedCollection.dotEnvVariables,
-                                  'OPENAI_APIKEY',
-                                )
-                              ) {
-                                setModelKey(selectedCollection.dotEnvVariables['OPENAI_APIKEY']);
+                            if (selectedCollection && selectedCollection.dotEnvVariables) {
+                              if (GENAI_MODELS.openai) {
+                                if (
+                                  Object.prototype.hasOwnProperty.call(
+                                    selectedCollection.dotEnvVariables,
+                                    'OPENAI_APIKEY',
+                                  )
+                                ) {
+                                  setModelKey(selectedCollection.dotEnvVariables['OPENAI_APIKEY']);
+                                }
+                              }
+
+                              if (GENAI_MODELS.bedrock_claude) {
+                                if (
+                                  Object.prototype.hasOwnProperty.call(
+                                    selectedCollection.dotEnvVariables,
+                                    'BEDROCK_ACCESS_KEYID',
+                                  )
+                                ) {
+                                  setBedrockAccessKeyId(selectedCollection.dotEnvVariables['BEDROCK_ACCESS_KEYID']);
+                                }
+
+                                if (
+                                  Object.prototype.hasOwnProperty.call(
+                                    selectedCollection.dotEnvVariables,
+                                    'BEDROCK_SECRET_ACCESSKEY',
+                                  )
+                                ) {
+                                  setBedrockSecretAccessKey(
+                                    selectedCollection.dotEnvVariables['BEDROCK_SECRET_ACCESSKEY'],
+                                  );
+                                }
                               }
                             }
                             setSelectedModel(m);
@@ -339,12 +366,12 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                   )}
                   {selectedModel === GENAI_MODELS.openai ? (
                     <div>
-                      <div className='flex items-center justify-center w-full h-12 mt-6 text-sm border rounded bg-background-light hover:bg-background border-cyan-900 text-cyan-900'>
+                      <div className='flex items-center justify-center w-full h-12 mt-6 text-sm border rounded border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
                         <label
                           className='flex items-center w-32 h-full px-4 bg-transparent border-r border-cyan-900'
                           htmlFor='openAIkey'
                         >
-                          OpenAI Key
+                          API_KEY
                         </label>
                         <input
                           id='openAIkey'
@@ -359,6 +386,64 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                       </div>
                       {modelKey.trim() === '' && showModelKeyError ? (
                         <div className='py-2 text-red-600'> {`Please enter ${selectedModel} api key`}</div>
+                      ) : (
+                        ''
+                      )}
+                    </div>
+                  ) : (
+                    ''
+                  )}
+                  {selectedModel === GENAI_MODELS.bedrock_claude ? (
+                    <div>
+                      <div className='flex items-center justify-center w-full h-12 mt-6 text-sm border rounded border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                        <label
+                          className='flex items-center w-32 h-full px-4 bg-transparent border-r border-cyan-900'
+                          htmlFor='bedrockAccessKeyId'
+                        >
+                          ACCESS_KEYID
+                        </label>
+                        <input
+                          id='bedrockAccessKeyId'
+                          type='text'
+                          className='nodrag nowheel block w-full bg-transparent p-2.5 outline-none'
+                          name='keyId'
+                          placeholder='Enter your BEDROCK access key id'
+                          value={
+                            bedrockAccessKeyId.trim() != '' ? bedrockAccessKeyId : 'Enter your BEDROCK access key id'
+                          }
+                          //readOnly='readonly'
+                          onChange={(e) => setBedrockAccessKeyId(e.target.value)}
+                        />
+                      </div>
+                      {bedrockAccessKeyId.trim() === '' && showBedrockAccessKeyIdError ? (
+                        <div className='py-2 text-red-600'> {`Please enter ${selectedModel} access key id`}</div>
+                      ) : (
+                        ''
+                      )}
+                      <div className='flex items-center justify-center w-full h-12 mt-6 text-sm border rounded border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                        <label
+                          className='flex items-center w-32 h-full px-4 bg-transparent border-r border-cyan-900'
+                          htmlFor='bedrockSecretAccessKey'
+                        >
+                          SECRET_ACCESSKEY
+                        </label>
+                        <input
+                          id='bedrockSecretAccessKey'
+                          type='text'
+                          className='nodrag nowheel block w-full bg-transparent p-2.5 outline-none'
+                          name='keyName'
+                          placeholder='Enter your BEDROCK secret access key'
+                          value={
+                            bedrockSecretAccessKey.trim() != ''
+                              ? bedrockSecretAccessKey
+                              : 'Enter your BEDROCK secret access key'
+                          }
+                          //readOnly='readonly'
+                          onChange={(e) => setBedrockSecretAccessKey(e.target.value)}
+                        />
+                      </div>
+                      {bedrockSecretAccessKey.trim() === '' && showBedrockSecretAccessKeyError ? (
+                        <div className='py-2 text-red-600'> {`Please enter ${selectedModel} secret access key`}</div>
                       ) : (
                         ''
                       )}
@@ -425,8 +510,24 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                         return;
                       }
 
-                      if (!modelKey || modelKey.trim() === '') {
+                      if (selectedModel === GENAI_MODELS.openai && (!modelKey || modelKey.trim() === '')) {
                         setShowModelKeyError(true);
+                        return;
+                      }
+
+                      if (
+                        selectedModel === GENAI_MODELS.bedrock_claude &&
+                        (!bedrockAccessKeyId || bedrockAccessKeyId.trim() === '')
+                      ) {
+                        setShowBedrockAccessKeyIdError(true);
+                        return;
+                      }
+
+                      if (
+                        selectedModel === GENAI_MODELS.bedrock_claude &&
+                        (!bedrockSecretAccessKey || bedrockSecretAccessKey.trim() === '')
+                      ) {
+                        setShowBedrockSecretAccessKeyError(true);
                         return;
                       }
 
@@ -437,16 +538,21 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
 
                       setShowFlowtestNameError(false);
                       setShowCollectionSelectionError(false);
-                      //setShowFolderSelectionError(false);
                       setShowModelKeyError(false);
+                      setShowBedrockAccessKeyIdError(false);
+                      setShowBedrockSecretAccessKeyError(false);
                       setShowDescribeFlowError(false);
                       setSelectedModelError(false);
 
+                      const creds =
+                        selectedModel === GENAI_MODELS.openai
+                          ? modelKey
+                          : { accessKeyId: bedrockAccessKeyId, secretAccessKey: bedrockSecretAccessKey };
                       function gen() {
                         setShowLoader(true);
                         promiseWithTimeout(
-                          generateFlowData(textareaValue, selectedModel, modelKey, selectedCollection.id),
-                          30000,
+                          generateFlowData(textareaValue, selectedModel, creds, selectedCollection.id),
+                          60000,
                         )
                           .then((flowData) => {
                             setShowLoader(false);

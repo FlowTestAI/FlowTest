@@ -1,14 +1,15 @@
 import { computeNodeVariables, computeVariables } from '../compute/utils';
+import { LogLevel } from '../GraphLogger';
 import Node from './node';
 
 class requestNode extends Node {
-  constructor(nodeData, prevNodeOutputData, envVariables, auth, logs) {
+  constructor(nodeData, prevNodeOutputData, envVariables, auth, logger) {
     super('requestNode');
     this.nodeData = nodeData;
     this.prevNodeOutputData = prevNodeOutputData;
     this.envVariables = envVariables;
     this.auth = auth;
-    this.logs = logs;
+    this.logger = logger;
   }
 
   async evaluate() {
@@ -32,28 +33,37 @@ class requestNode extends Node {
     const res = await this.runHttpRequest(options);
 
     if (res.error) {
-      //console.debug('Failure at node: ', node);
-      //console.debug('Error encountered: ', JSON.stringify(res.error));
-      this.logs.push(`Request failed: ${JSON.stringify(res.error)}`);
+      this.logger.add(LogLevel.ERROR, 'HTTP request failed', {
+        type: 'requestNode',
+        data: { request: { type: options.method, url: options.url }, response: res.error, preReqVars: evalVariables },
+      });
       return {
         status: 'Failed',
-        //node,
       };
     } else {
-      this.logs.push(`Request successful: ${JSON.stringify(res)}`);
-      console.debug('Response: ', JSON.stringify(res));
       if (this.nodeData.postRespVars) {
         const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, res.data);
+        this.logger.add(LogLevel.INFO, 'HTTP request success', {
+          type: 'requestNode',
+          data: {
+            request: { type: options.method, url: options.url },
+            response: res,
+            preReqVars: evalVariables,
+            postRespVars: evalPostRespVars,
+          },
+        });
         return {
           status: 'Success',
-          //node,
           data: res.data,
           postRespVars: evalPostRespVars,
         };
       }
+      this.logger.add(LogLevel.INFO, 'HTTP request success', {
+        type: 'requestNode',
+        data: { request: { type: options.method, url: options.url }, response: res, preReqVars: evalVariables },
+      });
       return {
         status: 'Success',
-        //node,
         data: res.data,
       };
     }
@@ -95,7 +105,6 @@ class requestNode extends Node {
       options.auth.password = this.auth.password;
     }
 
-    this.logs.push(`${restMethod} ${finalUrl}`);
     return options;
   }
 

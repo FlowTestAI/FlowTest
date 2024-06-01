@@ -303,6 +303,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         status: result.status,
         statusText: result.statusText,
         data: result.data,
+        headers: result.headers,
       };
     } catch (error) {
       if (error?.response) {

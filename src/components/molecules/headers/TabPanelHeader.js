@@ -100,7 +100,7 @@ const TabPanelHeader = () => {
                     <ul className='min-h-full p-4 menu w-80 bg-base-200 text-base-content'>
                       {graphRunLogs.map((item, index) => (
                         <li key={index}>
-                          <a>{item}</a>
+                          <a>{JSON.stringify(item)}</a>
                         </li>
                       ))}
                     </ul>

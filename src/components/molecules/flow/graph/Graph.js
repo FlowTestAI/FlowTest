@@ -222,7 +222,6 @@ class Graph {
       this.logger.add(LogLevel.INFO, 'End Flowtest');
       return {
         status: 'Success',
-        logs: this.logs,
         envVars: this.envVariables,
       };
     }
@@ -238,11 +237,13 @@ class Graph {
       this.logger.add(LogLevel.INFO, 'End Flowtest');
       return {
         status: result.status,
+        envVars: this.envVariables,
       };
     } else {
       this.logger.add(LogLevel.INFO, 'End Flowtest');
       return {
         status: 'Success',
+        envVars: this.envVariables,
       };
     }
   }

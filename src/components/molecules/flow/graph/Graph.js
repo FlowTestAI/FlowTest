@@ -11,7 +11,7 @@ import setVarNode from './compute/setvarnode';
 import { LogLevel } from './GraphLogger';
 
 class Graph {
-  constructor(nodes, edges, startTime, initialEnvVars, logger) {
+  constructor(nodes, edges, startTime, initialEnvVars, logger, caller) {
     this.nodes = nodes;
     this.edges = edges;
     this.logger = logger;
@@ -20,6 +20,7 @@ class Graph {
     this.graphRunNodeOutput = {};
     this.auth = undefined;
     this.envVariables = initialEnvVars;
+    this.caller = caller;
   }
 
   #checkTimeout() {
@@ -70,7 +71,9 @@ class Graph {
       if (node.type === 'outputNode') {
         //this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
         this.logger.add(LogLevel.INFO, '', { type: 'outputNode', data: prevNodeOutputData });
-        useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
+        if (this.caller === 'main') {
+          useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
+        }
         result = {
           status: 'Success',
           data: prevNodeOutputData,
@@ -141,6 +144,7 @@ class Graph {
             this.startTime,
             this.envVariables,
             this.logger,
+            node.type,
           );
           result = await cNode.evaluate();
           this.envVariables = result.envVars;
@@ -208,11 +212,13 @@ class Graph {
 
   async run() {
     // reset every output node for a fresh run
-    this.nodes.forEach((node) => {
-      if (node.type === 'outputNode') {
-        useCanvasStore.getState().unSetOutputNode(node.id);
-      }
-    });
+    if (this.caller === 'main') {
+      this.nodes.forEach((node) => {
+        if (node.type === 'outputNode') {
+          useCanvasStore.getState().unSetOutputNode(node.id);
+        }
+      });
+    }
     this.graphRunNodeOutput = {};
 
     this.logger.add(LogLevel.INFO, 'Start Flowtest');

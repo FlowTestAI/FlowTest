@@ -262,6 +262,7 @@ const Flow = ({ tab, collectionId }) => {
                 startTime,
                 envVariables,
                 logger,
+                'main',
               );
               const result = await g.run();
               logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);

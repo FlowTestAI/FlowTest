@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import { readFlowTestSync } from 'service/collection';
 import useCanvasStore from 'stores/CanvasStore';
 import authNode from './compute/authnode';
-import complexNode from './compute/complexnode';
+import nestedFlowNode from './compute/nestedflownode';
 import assertNode from './compute/assertnode';
 import requestNode from './compute/requestnode';
 import setVarNode from './compute/setvarnode';
@@ -135,10 +135,10 @@ class Graph {
         }
       }
 
-      if (node.type === 'complexNode') {
+      if (node.type === 'flowNode') {
         const flowData = await readFlowTestSync(node.data.relativePath);
         if (flowData) {
-          const cNode = new complexNode(
+          const cNode = new nestedFlowNode(
             cloneDeep(flowData.nodes),
             cloneDeep(flowData.edges),
             this.startTime,

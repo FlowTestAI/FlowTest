@@ -8,7 +8,7 @@ class RequestNode extends Node {
   serialize(id, data, metadata) {
     return {
       id,
-      type: 'requestNode',
+      type: this.type,
       data,
       ...metadata,
     };

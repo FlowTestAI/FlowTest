@@ -11,7 +11,7 @@ import { readFlowTest } from 'service/collection';
 import { toast } from 'react-toastify';
 
 // ToDo: Change standard select element(s) with headless list element
-const ComplexNode = ({ id, data }) => {
+const NestedFlowNode = ({ id, data }) => {
   const { ipcRenderer } = window;
 
   const setFlowForComplexNode = useCanvasStore((state) => state.setFlowForComplexNode);
@@ -88,8 +88,8 @@ const ComplexNode = ({ id, data }) => {
   );
 };
 
-ComplexNode.propTypes = {
+NestedFlowNode.propTypes = {
   data: PropTypes.object.isRequired,
 };
 
-export default ComplexNode;
+export default NestedFlowNode;

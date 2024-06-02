@@ -19,7 +19,7 @@ import useCanvasStore from 'stores/CanvasStore';
 import useCollectionStore from 'stores/CollectionStore';
 import { useTabStore } from 'stores/TabStore';
 import Graph from './graph/Graph';
-import ComplexNode from './nodes/ComplexNode';
+import NestedFlowNode from './nodes/NestedFlowNode';
 import { initFlowData } from './utils';
 import SetVarNode from './nodes/SetVarNode';
 import { saveHandle } from '../modals/SaveFlowModal';
@@ -96,7 +96,7 @@ const Flow = ({ tab, collectionId }) => {
       assertNode: AssertNode,
       delayNode: DelayNode,
       authNode: AuthNode,
-      complexNode: ComplexNode,
+      flowNode: NestedFlowNode,
       setVarNode: SetVarNode,
     }),
     [],

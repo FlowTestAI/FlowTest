@@ -1,7 +1,7 @@
 import Graph1 from '../Graph';
 import Node from './node';
 
-class complexNode extends Node {
+class nestedFlowNode extends Node {
   constructor(nodes, edges, startTime, initialEnvVars, logger, caller) {
     super('complexNode');
     this.internalGraph = new Graph1(nodes, edges, startTime, initialEnvVars, logger, caller);
@@ -13,4 +13,4 @@ class complexNode extends Node {
   }
 }
 
-export default complexNode;
+export default nestedFlowNode;

@@ -8,7 +8,7 @@ class DelayNode extends Node {
   serialize(id, data, metadata) {
     return {
       id,
-      type: 'delayNode',
+      type: this.type,
       data,
       ...metadata,
     };

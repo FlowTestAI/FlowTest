@@ -46,7 +46,7 @@ class requestNode extends Node {
         this.logger.add(LogLevel.INFO, 'HTTP request success', {
           type: 'requestNode',
           data: {
-            request: { type: options.method, url: options.url },
+            request: { type: options.method, url: options.url, data: options.data },
             response: res,
             preReqVars: evalVariables,
             postRespVars: evalPostRespVars,

@@ -52,7 +52,7 @@ class assertNode extends Node {
       default:
         throw 'Unsupported operator';
     }
-    this.logger.add(LogLevel.INFO, '', { type: 'assertNode', data: { var1, var2, result } });
+    this.logger.add(LogLevel.INFO, '', { type: 'assertNode', data: { var1, var2, operator, result } });
 
     return result;
   }

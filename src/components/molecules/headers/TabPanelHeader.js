@@ -13,6 +13,9 @@ import 'react-sliding-pane/dist/react-sliding-pane.css';
 import TimeoutSelector from 'components/atoms/common/TimeoutSelector';
 import { timeoutForGraphRun } from 'components/molecules/flow/utils';
 import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
+import { JsonView, allExpanded, collapseAllNested, darkStyles, defaultStyles } from 'react-json-view-lite';
+import 'react-json-view-lite/dist/index.css';
+import { LogLevel } from '../flow/graph/GraphLogger';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
@@ -30,6 +33,84 @@ const TabPanelHeader = () => {
   });
 
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
+
+  const renderLog = (log) => {
+    if (log.logLevel === LogLevel.INFO) {
+      let message = '';
+      let json = undefined;
+      if (log.message.trim() != '') {
+        message = log.message;
+      }
+
+      if (log.node != undefined) {
+        const type = log.node.type;
+        if (type === 'outputNode') {
+          json = {
+            output: log.node.data,
+          };
+        }
+
+        if (type === 'assertNode') {
+          const data = log.node.data;
+          message = `Assert : ${data.var1} ${data.operator} ${data.var2} = ${data.result}`;
+        }
+
+        if (type === 'delayNode') {
+          message = `Waiting for ${log.node.data} ms`;
+        }
+
+        if (type === 'setVarNode') {
+          const data = log.node.data;
+          message = `Setting Variable:  ${data.name} = ${data.value}`;
+        }
+
+        if (type === 'requestNode') {
+          const data = log.node.data;
+          message = `${data.request.type.toUpperCase()} ${data.request.url}`;
+          json = data;
+        }
+      }
+
+      return (
+        <div className='flex flex-col items-start'>
+          <div className='flex flex-row items-start'>
+            <div>
+              <p style={{ color: 'red' }}>{log.timestamp}</p>
+            </div>
+            <div>
+              <p> : {message}</p>
+            </div>
+          </div>
+          <div>
+            {json != undefined ? (
+              <React.Fragment>
+                <JsonView data={json} shouldExpandNode={collapseAllNested} style={defaultStyles} />
+              </React.Fragment>
+            ) : (
+              <></>
+            )}
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className='flex flex-col items-start'>
+          <p style={{ color: 'red' }}>
+            {log.timestamp} : {log.message}
+          </p>
+          <div>
+            {log.node != undefined ? (
+              <React.Fragment>
+                <JsonView data={log.node.data} shouldExpandNode={collapseAllNested} style={defaultStyles} />
+              </React.Fragment>
+            ) : (
+              <></>
+            )}
+          </div>
+        </div>
+      );
+    }
+  };
 
   return (
     <>
@@ -97,11 +178,9 @@ const TabPanelHeader = () => {
                       aria-label='close sidebar'
                       className='drawer-overlay'
                     ></label>
-                    <ul className='min-h-full p-4 menu w-80 bg-base-200 text-base-content'>
+                    <ul className='min-h-full p-4 menu bg-base-200 text-base-content'>
                       {graphRunLogs.map((item, index) => (
-                        <li key={index}>
-                          <a>{JSON.stringify(item)}</a>
-                        </li>
+                        <li key={index}>{renderLog(item)}</li>
                       ))}
                     </ul>
                   </SlidingPane>

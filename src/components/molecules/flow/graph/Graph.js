@@ -159,7 +159,7 @@ class Graph {
         const sNode = new setVarNode(node.data, prevNodeOutputData, this.envVariables);
         const newVariable = sNode.evaluate();
         if (newVariable != undefined) {
-          this.logger.add(LogLevel.INFO, 'Set Variable', {
+          this.logger.add(LogLevel.INFO, '', {
             type: 'setVarNode',
             data: {
               name: Object.keys(newVariable)[0],
@@ -177,7 +177,6 @@ class Graph {
       }
 
       if (this.#checkTimeout()) {
-        this.logger.add(LogLevel.ERROR, `Timeout of ${this.timeout} ms exceeded, stopping graph run`, node);
         throw `Timeout of ${this.timeout} ms exceeded, stopping graph run`;
       }
     } catch (err) {

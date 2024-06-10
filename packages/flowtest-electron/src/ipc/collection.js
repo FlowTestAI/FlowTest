@@ -317,7 +317,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
       } else {
         return {
           error: {
-            message: 'An unknown error occurred while running the request',
+            message: `An error occurred while running the request : ${error?.message}`,
           },
         };
       }

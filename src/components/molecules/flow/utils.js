@@ -12,12 +12,19 @@ export const orderNodesByTags = (nodes, filter) => {
   }
   if (filterNodes) {
     filterNodes.map((node) => {
-      node.tags.map((tag) => {
-        if (!result[tag]) {
-          result[tag] = [];
+      if (node.tags) {
+        node.tags.map((tag) => {
+          if (!result[tag]) {
+            result[tag] = [];
+          }
+          result[tag].push(node);
+        });
+      } else {
+        if (!result['All']) {
+          result['All'] = [];
         }
-        result[tag].push(node);
-      });
+        result['All'].push(node);
+      }
     });
   }
   return Object.keys(result)

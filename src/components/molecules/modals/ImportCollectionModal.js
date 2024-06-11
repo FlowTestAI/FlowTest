@@ -107,7 +107,7 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
                 <div className='mt-4'>
                   <ul className='text-lg font-medium'>
                     <li
-                      className={`hover:bg-background-light cursor-pointer rounded border border-transparent px-2 py-4 ${selectedFilePath ? 'text-green-500' : ''}`}
+                      className={`cursor-pointer rounded border border-transparent px-2 py-4 hover:bg-background-light ${selectedFilePath ? 'text-green-500' : ''}`}
                       onClick={handleImportCollectionClick}
                       data-import-type='yaml'
                     >
@@ -125,7 +125,7 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
                             <input
                               type='file'
                               id='file'
-                              accept='.yaml,.yml'
+                              accept='.yaml,.yml,.json'
                               ref={importYamlFile}
                               onChange={handleFileSelection}
                             />
@@ -141,7 +141,7 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
                       )}
                     </li>
                     <li
-                      className={`hover:bg-background-light flex cursor-pointer items-center justify-start gap-4 px-2 py-4 ${selectedFilePath ? 'cursor-default' : 'cursor-not-allowed'}`}
+                      className={`flex cursor-pointer items-center justify-start gap-4 px-2 py-4 hover:bg-background-light ${selectedFilePath ? 'cursor-default' : 'cursor-not-allowed'}`}
                       onClick={handleDirectorySelectionClick}
                     >
                       <div className='flex items-center justify-center w-8 h-8 border-4 rounded-full border-cyan-900'>

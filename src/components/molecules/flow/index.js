@@ -243,6 +243,7 @@ const Flow = ({ tab, collectionId }) => {
           onClickHandle={async () => {
             runnableEdges(true);
             const startTime = Date.now();
+            const logger = new GraphLogger();
             try {
               let envVariables = {};
 
@@ -255,7 +256,6 @@ const Flow = ({ tab, collectionId }) => {
               }
 
               // ============= flow =====================
-              const logger = new GraphLogger();
               const g = new Graph(
                 cloneDeep(reactFlowInstance.getNodes()),
                 cloneDeep(reactFlowInstance.getEdges()),
@@ -266,10 +266,11 @@ const Flow = ({ tab, collectionId }) => {
               );
               const result = await g.run();
               logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
-
               onGraphComplete(result.status, logger.get());
             } catch (error) {
-              toast.error(`Error running graph: ${error}`);
+              logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
+              onGraphComplete('Failed', logger.get());
+              toast.error(`Internal error running graph`);
               runnableEdges(false);
             }
           }}

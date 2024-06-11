@@ -197,7 +197,7 @@ class Graph {
       if (connectingEdge != undefined) {
         const nextNode = this.nodes.find(
           (node) =>
-            ['requestNode', 'outputNode', 'assertNode', 'delayNode', 'authNode', 'complexNode', 'setVarNode'].includes(
+            ['requestNode', 'outputNode', 'assertNode', 'delayNode', 'authNode', 'flowNode', 'setVarNode'].includes(
               node.type,
             ) && node.id === connectingEdge.target,
         );

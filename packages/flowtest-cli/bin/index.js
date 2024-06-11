@@ -46,7 +46,13 @@ const argv = yargs(hideBin(process.argv))
     async (argv) => {
       console.log(`Reading file: ${argv.file}`);
       if (argv.file.toLowerCase().endsWith(`.flow`)) {
-        const content = readFile(argv.file);
+        let content = undefined;
+        try {
+          content = readFile(argv.file);
+        } catch (error) {
+          console.error(chalk.red(`${error}`));
+          process.exit(1);
+        }
         try {
           const flowData = serialize(JSON.parse(content));
           // output json output to a file

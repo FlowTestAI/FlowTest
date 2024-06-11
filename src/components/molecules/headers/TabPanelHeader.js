@@ -52,7 +52,7 @@ const TabPanelHeader = () => {
 
         if (type === 'assertNode') {
           const data = log.node.data;
-          message = `Assert : ${data.var1} ${data.operator} ${data.var2} = ${data.result}`;
+          message = `Assert : ${data.var1} of type ${typeof data.var1} ${data.operator} ${data.var2} of type ${typeof data.var2} = ${data.result}`;
         }
 
         if (type === 'delayNode') {

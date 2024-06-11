@@ -189,7 +189,7 @@ class Graph {
         throw `Timeout of ${this.timeout} ms exceeded, stopping graph run`;
       }
     } catch (err) {
-      console.log(chalk.red(`Flow failed at: ${JSON.stringify(node)} due to ${err}`));
+      console.log(chalk.red(`Flow failed at: ${JSON.stringify(node.data)} due to ${err}`));
       return {
         status: 'Failed',
       };

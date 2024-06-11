@@ -9,42 +9,6 @@ const { Graph } = require('../graph/Graph');
 const { cloneDeep } = require('lodash');
 const dotenv = require('dotenv');
 
-const omelette = require('omelette');
-
-// Initialize tab completion
-const completion = omelette('flow');
-
-completion.on('complete', (fragment, data) => {
-  if (data.line.endsWith('--file ') || data.line.endsWith('--env ')) {
-    completion.reply([]);
-  } else {
-    // Dynamically list directories and files as suggestions
-    const fs = require('fs');
-    const path = require('path');
-
-    const lineParts = data.line.split(' ');
-    const basePath = lineParts[lineParts.length - 1];
-
-    try {
-      const items = fs.readdirSync(basePath, { withFileTypes: true });
-      //   console.log(`Base path: ${basePath}`);
-      //   console.log(`Items: ${JSON.stringify(items)}`);
-      const results = items.map((item) => path.join(basePath, item.name) + (item.isDirectory() ? '/' : ''));
-      completion.reply(results);
-    } catch (error) {
-      completion.reply([]);
-    }
-  }
-});
-
-completion.init();
-
-if (~process.argv.indexOf('--completion')) {
-  completion.setupShellInitFile();
-  console.log('Run `source ~/.bashrc` or restart your terminal to activate completion.');
-  process.exit();
-}
-
 const getEnvVariables = (pathname) => {
   const content = readFile(pathname);
   const buf = Buffer.from(content);
@@ -82,7 +46,13 @@ const argv = yargs(hideBin(process.argv))
     async (argv) => {
       console.log(`Reading file: ${argv.file}`);
       if (argv.file.toLowerCase().endsWith(`.flow`)) {
-        const content = readFile(argv.file);
+        let content = undefined;
+        try {
+          content = readFile(argv.file);
+        } catch (error) {
+          console.error(chalk.red(`${error}`));
+          process.exit(1);
+        }
         try {
           const flowData = serialize(JSON.parse(content));
           // output json output to a file
@@ -94,7 +64,6 @@ const argv = yargs(hideBin(process.argv))
             startTime,
             argv.timeout ? argv.timeout : 60000,
             argv.env ? getEnvVariables(argv.env) : {},
-            [],
           );
           console.log(chalk.yellow('Running Graph \n'));
           if (flowData.nodes.find((n) => n.type === 'complexNode')) {
@@ -115,7 +84,7 @@ const argv = yargs(hideBin(process.argv))
           process.exit(1);
           //console.log(chalk.green(JSON.stringify(result)));
         } catch (error) {
-          console.error(chalk.red(`Error running flow due to: ${error}`));
+          console.error(chalk.red(`Internal error running flow`));
           process.exit(1);
         }
       } else {

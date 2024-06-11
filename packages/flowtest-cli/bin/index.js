@@ -114,7 +114,7 @@ const argv = yargs(hideBin(process.argv))
           process.exit(1);
           //console.log(chalk.green(JSON.stringify(result)));
         } catch (error) {
-          console.error(chalk.red(`Error running flow due to: ${error}`));
+          console.error(chalk.red(`Internal error running flow`));
           process.exit(1);
         }
       } else {

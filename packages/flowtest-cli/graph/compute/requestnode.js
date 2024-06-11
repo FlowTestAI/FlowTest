@@ -41,6 +41,7 @@ class requestNode extends Node {
     // step 3
     const options = this.formulateRequest(finalUrl, variablesDict);
 
+    console.log(chalk.green(`   ✓ `) + chalk.dim(`type = ${this.nodeData.requestType.toUpperCase()}`));
     console.log(chalk.green(`   ✓ `) + chalk.dim(`url = ${finalUrl}`));
 
     const res = await this.runHttpRequest(options);

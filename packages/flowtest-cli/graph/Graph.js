@@ -174,7 +174,7 @@ class Graph {
         const sNode = new setVarNode(node.data, prevNodeOutputData, this.envVariables);
         const newVariable = sNode.evaluate();
         if (newVariable != undefined) {
-          console.log(chalk.green(`   ✓ `) + chalk.dim(`Evaluate variable: ${JSON.stringify(newVariable)}`));
+          console.log(chalk.green(`   ✓ `) + chalk.dim(`Set variable: ${JSON.stringify(newVariable)}`));
           this.envVariables = {
             ...this.envVariables,
             ...newVariable,

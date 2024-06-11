@@ -4,21 +4,23 @@ import { cloneDeep } from 'lodash';
 import { readFlowTestSync } from 'service/collection';
 import useCanvasStore from 'stores/CanvasStore';
 import authNode from './compute/authnode';
-import complexNode from './compute/complexnode';
+import nestedFlowNode from './compute/nestedflownode';
 import assertNode from './compute/assertnode';
 import requestNode from './compute/requestnode';
 import setVarNode from './compute/setvarnode';
+import { LogLevel } from './GraphLogger';
 
 class Graph {
-  constructor(nodes, edges, startTime, initialEnvVars, initialLogs) {
+  constructor(nodes, edges, startTime, initialEnvVars, logger, caller) {
     this.nodes = nodes;
     this.edges = edges;
-    this.logs = initialLogs;
+    this.logger = logger;
     this.timeout = useCanvasStore.getState().timeout;
     this.startTime = startTime;
     this.graphRunNodeOutput = {};
     this.auth = undefined;
     this.envVariables = initialEnvVars;
+    this.caller = caller;
   }
 
   #checkTimeout() {
@@ -67,8 +69,11 @@ class Graph {
       console.debug('Executing node: ', node);
 
       if (node.type === 'outputNode') {
-        this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
-        useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
+        //this.logs.push(`Output: ${JSON.stringify(prevNodeOutputData)}`);
+        this.logger.add(LogLevel.INFO, '', { type: 'outputNode', data: prevNodeOutputData });
+        if (this.caller === 'main') {
+          useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
+        }
         result = {
           status: 'Success',
           data: prevNodeOutputData,
@@ -81,17 +86,15 @@ class Graph {
           node.data.variables,
           prevNodeOutputData,
           this.envVariables,
-          this.logs,
+          this.logger,
         );
         if (eNode.evaluate()) {
-          this.logs.push('Result: true');
           result = {
             status: 'Success',
             data: prevNodeOutputData,
             output: true,
           };
         } else {
-          this.logs.push('Result: false');
           result = {
             status: 'Success',
             data: prevNodeOutputData,
@@ -106,7 +109,7 @@ class Graph {
           return new Promise((resolve) => setTimeout(resolve, Math.min(ms, this.timeout)));
         };
         await wait(delay);
-        this.logs.push(`Wait for: ${delay} ms`);
+        this.logger.add(LogLevel.INFO, '', { type: 'delayNode', data: delay });
         result = {
           status: 'Success',
         };
@@ -121,7 +124,7 @@ class Graph {
       }
 
       if (node.type === 'requestNode') {
-        const rNode = new requestNode(node.data, prevNodeOutputData, this.envVariables, this.auth, this.logs);
+        const rNode = new requestNode(node.data, prevNodeOutputData, this.envVariables, this.auth, this.logger);
         result = await rNode.evaluate();
         // add post response variables if any
         if (result.postRespVars) {
@@ -132,15 +135,16 @@ class Graph {
         }
       }
 
-      if (node.type === 'complexNode') {
+      if (node.type === 'flowNode') {
         const flowData = await readFlowTestSync(node.data.relativePath);
         if (flowData) {
-          const cNode = new complexNode(
+          const cNode = new nestedFlowNode(
             cloneDeep(flowData.nodes),
             cloneDeep(flowData.edges),
             this.startTime,
             this.envVariables,
-            this.logs,
+            this.logger,
+            node.type,
           );
           result = await cNode.evaluate();
           this.envVariables = result.envVars;
@@ -155,7 +159,13 @@ class Graph {
         const sNode = new setVarNode(node.data, prevNodeOutputData, this.envVariables);
         const newVariable = sNode.evaluate();
         if (newVariable != undefined) {
-          this.logs.push(`Evaluate variable: ${JSON.stringify(newVariable)}`);
+          this.logger.add(LogLevel.INFO, '', {
+            type: 'setVarNode',
+            data: {
+              name: Object.keys(newVariable)[0],
+              value: newVariable[Object.keys(newVariable)[0]],
+            },
+          });
           this.envVariables = {
             ...this.envVariables,
             ...newVariable,
@@ -170,14 +180,14 @@ class Graph {
         throw `Timeout of ${this.timeout} ms exceeded, stopping graph run`;
       }
     } catch (err) {
-      this.logs.push(`Flow failed at: ${JSON.stringify(node)} due to ${err}`);
+      this.logger.add(LogLevel.ERROR, `Flow failed due to ${err}`, node);
       return {
         status: 'Failed',
       };
     }
 
     if (result === undefined) {
-      this.logs.push(`Flow failed at: ${JSON.stringify(node)}`);
+      this.logger.add(LogLevel.ERROR, 'Flow failed due to failure to evaluate result', node);
       return {
         status: 'Failed',
       };
@@ -187,7 +197,7 @@ class Graph {
       if (connectingEdge != undefined) {
         const nextNode = this.nodes.find(
           (node) =>
-            ['requestNode', 'outputNode', 'assertNode', 'delayNode', 'authNode', 'complexNode', 'setVarNode'].includes(
+            ['requestNode', 'outputNode', 'assertNode', 'delayNode', 'authNode', 'flowNode', 'setVarNode'].includes(
               node.type,
             ) && node.id === connectingEdge.target,
         );
@@ -201,21 +211,22 @@ class Graph {
 
   async run() {
     // reset every output node for a fresh run
-    this.nodes.forEach((node) => {
-      if (node.type === 'outputNode') {
-        useCanvasStore.getState().unSetOutputNode(node.id);
-      }
-    });
+    if (this.caller === 'main') {
+      this.nodes.forEach((node) => {
+        if (node.type === 'outputNode') {
+          useCanvasStore.getState().unSetOutputNode(node.id);
+        }
+      });
+    }
     this.graphRunNodeOutput = {};
 
-    this.logs.push('Start Flowtest');
+    this.logger.add(LogLevel.INFO, 'Start Flowtest');
     const startNode = this.nodes.find((node) => node.type === 'startNode');
     if (startNode == undefined) {
-      this.logs.push('No start node found');
-      this.logs.push('End Flowtest');
+      this.logger.add(LogLevel.INFO, 'No start node found');
+      this.logger.add(LogLevel.INFO, 'End Flowtest');
       return {
         status: 'Success',
-        logs: this.logs,
         envVars: this.envVariables,
       };
     }
@@ -228,17 +239,15 @@ class Graph {
       // if (result.status == 'Failed') {
       //   console.debug('Flow failed at: ', result.node);
       // }
-      this.logs.push('End Flowtest');
+      this.logger.add(LogLevel.INFO, 'End Flowtest');
       return {
         status: result.status,
-        logs: this.logs,
         envVars: this.envVariables,
       };
     } else {
-      this.logs.push('End Flowtest');
+      this.logger.add(LogLevel.INFO, 'End Flowtest');
       return {
         status: 'Success',
-        logs: this.logs,
         envVars: this.envVariables,
       };
     }

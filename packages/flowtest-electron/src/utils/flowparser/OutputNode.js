@@ -8,7 +8,7 @@ class OutputNode extends Node {
   serialize(id, data, metadata) {
     return {
       id,
-      type: 'outputNode',
+      type: this.type,
       data,
       ...metadata,
     };

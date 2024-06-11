@@ -155,14 +155,14 @@ describe('FlowTest parser', () => {
         },
         {
           id: '10',
-          type: 'complexNode',
+          type: 'flowNode',
           position: {
             x: 2427.6600136878287,
             y: 94.18397266812065,
           },
           data: {
             description: 'Helps to create nested flows',
-            type: 'complexNode',
+            type: 'flowNode',
             relativePath: 'sample.flow',
           },
           width: 164,

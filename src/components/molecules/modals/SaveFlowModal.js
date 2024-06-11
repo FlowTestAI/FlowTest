@@ -7,18 +7,25 @@ import { updateEnvironmentFile, updateFlowTest } from 'service/collection';
 import { toast } from 'react-toastify';
 import { BUTTON_TYPES, OBJ_TYPES } from 'constants/Common';
 import Button from 'components/atoms/common/Button';
+import { isSaveNeeded } from 'components/atoms/util';
 
 export const saveHandle = (tab) => {
   if (tab.type == OBJ_TYPES.flowtest && tab.flowDataDraft) {
-    updateFlowTest(tab.pathname, tab.flowDataDraft, tab.collectionId)
-      .then((result) => {
-        console.log(`Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}, result: ${result}`);
-        toast.success(`Updated the flowtest: ${tab.pathname}`);
-      })
-      .catch((error) => {
-        console.log(`Error updating flowtest = ${tab.pathname}: ${error}`);
-        toast.error(`Error while updating flowtest: ${tab.pathname}`);
-      });
+    if (isSaveNeeded(tab.flowData, tab.flowDataDraft)) {
+      updateFlowTest(tab.pathname, tab.flowDataDraft, tab.collectionId)
+        .then((result) => {
+          console.log(
+            `Updated flowtest: path = ${tab.pathname}, collectionId = ${tab.collectionId}, result: ${result}`,
+          );
+          toast.success(`Updated the flowtest: ${tab.pathname}`);
+        })
+        .catch((error) => {
+          console.log(`Error updating flowtest = ${tab.pathname}: ${error}`);
+          toast.error(`Error while updating flowtest: ${tab.pathname}`);
+        });
+    } else {
+      toast.info('Nothing to save');
+    }
   } else if (tab.type == OBJ_TYPES.environment && tab.variablesDraft) {
     updateEnvironmentFile(tab.name, tab.collectionId, tab.variablesDraft)
       .then((result) => {

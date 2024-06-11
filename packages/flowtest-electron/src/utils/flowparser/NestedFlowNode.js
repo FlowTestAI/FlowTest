@@ -1,14 +1,14 @@
 const { Node } = require('./Node');
 
-class ComplexNode extends Node {
+class NestedFlowNode extends Node {
   constructor() {
-    super('complexNode');
+    super('flowNode');
   }
 
   serialize(id, data, metadata) {
     return {
       id,
-      type: 'complexNode',
+      type: this.type,
       data,
       ...metadata,
     };
@@ -30,5 +30,5 @@ class ComplexNode extends Node {
 }
 
 module.exports = {
-  ComplexNode,
+  NestedFlowNode,
 };

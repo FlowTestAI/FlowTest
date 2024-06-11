@@ -8,7 +8,7 @@ class AssertNode extends Node {
   serialize(id, data, metadata) {
     return {
       id,
-      type: 'assertNode',
+      type: this.type,
       data,
       ...metadata,
     };

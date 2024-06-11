@@ -8,7 +8,7 @@ class SetVarNode extends Node {
   serialize(id, data, metadata) {
     return {
       id,
-      type: 'setVarNode',
+      type: this.type,
       data,
       ...metadata,
     };

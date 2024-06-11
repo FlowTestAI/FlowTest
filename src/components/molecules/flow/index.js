@@ -19,12 +19,13 @@ import useCanvasStore from 'stores/CanvasStore';
 import useCollectionStore from 'stores/CollectionStore';
 import { useTabStore } from 'stores/TabStore';
 import Graph from './graph/Graph';
-import ComplexNode from './nodes/ComplexNode';
+import NestedFlowNode from './nodes/NestedFlowNode';
 import { initFlowData } from './utils';
 import SetVarNode from './nodes/SetVarNode';
 import { saveHandle } from '../modals/SaveFlowModal';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
+import GraphLogger, { LogLevel } from './graph/GraphLogger';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -95,7 +96,7 @@ const Flow = ({ tab, collectionId }) => {
       assertNode: AssertNode,
       delayNode: DelayNode,
       authNode: AuthNode,
-      complexNode: ComplexNode,
+      flowNode: NestedFlowNode,
       setVarNode: SetVarNode,
     }),
     [],
@@ -242,9 +243,8 @@ const Flow = ({ tab, collectionId }) => {
           onClickHandle={async () => {
             runnableEdges(true);
             const startTime = Date.now();
+            const logger = new GraphLogger();
             try {
-              let result = undefined;
-              let g = undefined;
               let envVariables = {};
 
               const activeEnv = useCollectionStore
@@ -256,24 +256,21 @@ const Flow = ({ tab, collectionId }) => {
               }
 
               // ============= flow =====================
-              g = new Graph(
+              const g = new Graph(
                 cloneDeep(reactFlowInstance.getNodes()),
                 cloneDeep(reactFlowInstance.getEdges()),
                 startTime,
-                result ? result.envVars : envVariables,
-                result ? result.logs : [],
+                envVariables,
+                logger,
+                'main',
               );
-              result = await g.run();
-
-              if (result.status === 'Failed') {
-                onGraphComplete(result.status, result.logs);
-                return;
-              }
-
-              result.logs.push(`Total time: ${Date.now() - startTime} ms`);
-              onGraphComplete(result.status, result.logs);
+              const result = await g.run();
+              logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
+              onGraphComplete(result.status, logger.get());
             } catch (error) {
-              toast.error(`Error running graph: ${error}`);
+              logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
+              onGraphComplete('Failed', logger.get());
+              toast.error(`Internal error running graph`);
               runnableEdges(false);
             }
           }}

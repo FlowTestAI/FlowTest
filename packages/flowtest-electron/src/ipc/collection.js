@@ -303,6 +303,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         status: result.status,
         statusText: result.statusText,
         data: result.data,
+        headers: result.headers,
       };
     } catch (error) {
       if (error?.response) {
@@ -316,7 +317,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
       } else {
         return {
           error: {
-            message: 'An unknown error occurred while running the request',
+            message: `An error occurred while running the request : ${error?.message}`,
           },
         };
       }

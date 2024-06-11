@@ -8,7 +8,7 @@ class AuthNode extends Node {
   serialize(id, data, metadata) {
     return {
       id,
-      type: 'authNode',
+      type: this.type,
       data,
       ...metadata,
     };

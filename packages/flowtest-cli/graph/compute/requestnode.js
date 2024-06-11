@@ -18,17 +18,15 @@ const convertBase64ToBlob = async (base64) => {
 };
 
 class requestNode extends Node {
-  constructor(nodeData, prevNodeOutputData, envVariables, auth, logs) {
+  constructor(nodeData, prevNodeOutputData, envVariables, auth) {
     super('requestNode');
     this.nodeData = nodeData;
     this.prevNodeOutputData = prevNodeOutputData;
     this.envVariables = envVariables;
     this.auth = auth;
-    this.logs = logs;
   }
 
   async evaluate() {
-    //console.log('Evaluating request node');
     // step1 evaluate pre request variables of this node
     const evalVariables = computeNodeVariables(this.nodeData.preReqVars, this.prevNodeOutputData);
 
@@ -43,37 +41,27 @@ class requestNode extends Node {
     // step 3
     const options = this.formulateRequest(finalUrl, variablesDict);
 
-    //console.debug('Avialable variables: ', variablesDict);
-    //console.debug('Evaluated Url: ', finalUrl);
     console.log(chalk.green(`   ✓ `) + chalk.dim(`url = ${finalUrl}`));
 
     const res = await this.runHttpRequest(options);
 
     if (res.error) {
-      //console.debug('Failure at node: ', node);
-      //console.debug('Error encountered: ', JSON.stringify(res.error));
-      //this.logs.push(`Request failed: ${JSON.stringify(res.error)}`);
       console.log(chalk.red(`   ✕ `) + chalk.dim(`Request failed: ${JSON.stringify(res.error)}`));
       return {
         status: 'Failed',
-        //node,
       };
     } else {
-      //this.logs.push(`Request successful: ${JSON.stringify(res)}`);
-      //console.debug('Response: ', JSON.stringify(res));
       console.log(chalk.green(`   ✓ `) + chalk.dim(`Request successful: ${JSON.stringify(res)}`));
       if (this.nodeData.postRespVars) {
         const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, res.data);
         return {
           status: 'Success',
-          //node,
           data: res.data,
           postRespVars: evalPostRespVars,
         };
       }
       return {
         status: 'Success',
-        //node,
         data: res.data,
       };
     }
@@ -115,7 +103,6 @@ class requestNode extends Node {
       options.auth.password = this.auth.password;
     }
 
-    this.logs.push(`${restMethod} ${finalUrl}`);
     return options;
   }
 
@@ -140,6 +127,7 @@ class requestNode extends Node {
         status: result.status,
         statusText: result.statusText,
         data: result.data,
+        headers: result.headers,
       };
     } catch (error) {
       if (error?.response) {
@@ -153,7 +141,7 @@ class requestNode extends Node {
       } else {
         return {
           error: {
-            message: `An unknown error occurred while running the request : ${error}`,
+            message: `An error occurred while running the request : ${error?.message}`,
           },
         };
       }

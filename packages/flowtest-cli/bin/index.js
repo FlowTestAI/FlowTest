@@ -94,7 +94,6 @@ const argv = yargs(hideBin(process.argv))
             startTime,
             argv.timeout ? argv.timeout : 60000,
             argv.env ? getEnvVariables(argv.env) : {},
-            [],
           );
           console.log(chalk.yellow('Running Graph \n'));
           if (flowData.nodes.find((n) => n.type === 'complexNode')) {

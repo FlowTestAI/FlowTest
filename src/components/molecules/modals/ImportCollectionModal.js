@@ -98,7 +98,7 @@ const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
             >
               <Dialog.Panel className='w-full max-w-xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
                 <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
-                  Import a Collection
+                  Create a Collection
                 </Dialog.Title>
                 {/* ToDo: Add the message of instructions here, if that is not required then we can remove this div */}
                 {/* <div className='mt-4'>

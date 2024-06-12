@@ -9,7 +9,7 @@ const FlowNode = ({ children, title, handleLeft, handleLeftData, handleRight, ha
       <div
         className={`${
           children ? 'flex-col' : 'items-center justify-center px-6 py-4'
-        } bg-background-lighter flex rounded-md border-2 border-slate-300`}
+        } flex rounded-md border-2 border-slate-300 bg-background-lighter`}
       >
         {children ? (
           <>

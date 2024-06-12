@@ -12,6 +12,7 @@ import NodeHorizontalDivider from 'components/atoms/flow/NodeHorizontalDivider';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import requestNodes from '../constants/requestNodes';
+import { TextEditor } from 'components/atoms/common/TextEditor';
 
 const RequestNode = ({ id, data }) => {
   const setRequestNodeUrl = useCanvasStore((state) => state.setRequestNodeUrl);
@@ -51,8 +52,8 @@ const RequestNode = ({ id, data }) => {
     }
   };
 
-  const handleUrlInputChange = (event) => {
-    setRequestNodeUrl(id, event.target.value);
+  const handleUrlInputChange = (value) => {
+    setRequestNodeUrl(id, value);
   };
 
   const renderVariables = (vType) => {
@@ -64,12 +65,14 @@ const RequestNode = ({ id, data }) => {
             {Object.keys(variables).map((id) => (
               <div className='flex items-center justify-between pb-2' key={id}>
                 <div className='flex items-center justify-between text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
-                  <label className='px-4 py-2 border-r rounded-bl-md rounded-tl-md border-r-neutral-500'>{id}</label>
+                  <label className='w-1/4 px-4 py-2 border-r rounded-bl-md rounded-tl-md border-r-neutral-500'>
+                    {id}
+                  </label>
                   {variables[id].type === 'Boolean' ? (
                     <select
                       onChange={(e) => handleVariableChange(e, vType, id)}
                       name='boolean-val'
-                      className='nodrag h-9 w-full min-w-40 rounded-br-md  rounded-tr-md p-2.5 px-1'
+                      className='nodrag h-9 w-2/4 min-w-40 rounded-br-md  rounded-tr-md p-2.5 px-1'
                       value={variables[id].value}
                     >
                       <option value='true'>True</option>
@@ -80,14 +83,14 @@ const RequestNode = ({ id, data }) => {
                   ) : (
                     <input
                       type={getInputType(variables[id].type)}
-                      className='nodrag nowheel block h-9 w-full min-w-40 rounded-bl-md rounded-tl-md p-2.5'
+                      className='nodrag nowheel block h-9 w-2/4 min-w-40 rounded-bl-md rounded-tl-md p-2.5'
                       name='variable-value'
                       data-type={getInputType(variables[id].type)}
                       onChange={(e) => handleVariableChange(e, vType, id)}
                       value={variables[id].value}
                     />
                   )}
-                  <div className='px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>
+                  <div className='w-1/4 px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>
                     {variables[id].type}
                   </div>
                 </div>
@@ -112,15 +115,16 @@ const RequestNode = ({ id, data }) => {
       handleRight={true}
       handleRightData={{ type: 'source' }}
     >
-      <div className='min-w-80'>
+      <div className='w-96'>
         <div className='flex items-center justify-center gap-2 py-4'>
           <Listbox
             value={data.requestType}
             onChange={(selectedValue) => {
               setRequestNodeType(id, selectedValue);
             }}
+            className='w-1/4'
           >
-            <div className='relative w-36'>
+            <div>
               <Listbox.Button className='relative w-full p-2 text-left border rounded cursor-default border-cyan-950'>
                 <span className='block truncate'>{data.requestType}</span>
                 <span className='absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'>
@@ -133,7 +137,7 @@ const RequestNode = ({ id, data }) => {
                 leaveFrom='opacity-100'
                 leaveTo='opacity-0'
               >
-                <Listbox.Options className='absolute z-50 w-full py-1 mt-1 overflow-auto text-base bg-white max-h-60 focus:outline-none'>
+                <Listbox.Options className='absolute z-50 py-1 mt-1 overflow-auto text-base bg-white max-h-60 w-36 focus:outline-none'>
                   {requestNodes
                     .map((el) => el.requestType)
                     .map((reqType) => (
@@ -162,7 +166,7 @@ const RequestNode = ({ id, data }) => {
               </Transition>
             </div>
           </Listbox>
-          <TextInput
+          <TextEditor
             placeHolder={`Enter URL for a ${data.requestType} request`}
             onChangeHandler={handleUrlInputChange}
             name={'url'}

@@ -115,7 +115,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
               {requestBodyTypeOptions.map((bodyTypeOption, index) => (
                 <Menu.Item key={index} data-click-from='body-type-menu' onClick={() => handleClose(bodyTypeOption)}>
                   <button
-                    className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md hover:bg-background-light group'
+                    className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group hover:bg-background-light'
                     data-click-from='body-type-menu'
                   >
                     {bodyTypeOption}
@@ -136,7 +136,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
                   name='request-body-json'
                   onChange={(e) => handleRawJson(e)}
                   value={nodeData.requestBody.body}
-                  classes={'w-96 h-96'}
+                  classes={'w-full max-h-96'}
                 />
               </div>
               <Button

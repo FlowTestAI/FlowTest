@@ -27,7 +27,7 @@ const parseOpenAPISpec = (collection) => {
   let parsedNodes = [];
   try {
     // servers is array,, figure case where there can be multiple servers
-    const baseUrl = collection['servers'][0]['url'];
+    const baseUrl = collection['servers'].length > 1 ? '{baseUrl}' : collection['servers'][0]['url'];
     Object.entries(collection['paths']).map(([path, operations], _) => {
       const commonParameters = Object.prototype.hasOwnProperty.call(operations, 'parameters')
         ? operations['parameters']

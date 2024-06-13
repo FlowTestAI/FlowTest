@@ -16,6 +16,8 @@ import { TextEditor } from 'components/atoms/common/TextEditor';
 import useCollectionStore from 'stores/CollectionStore';
 import { useTabStore } from 'stores/TabStore';
 import { cloneDeep } from 'lodash';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 const RequestNode = ({ id, data }) => {
   const setRequestNodeUrl = useCanvasStore((state) => state.setRequestNodeUrl);
@@ -59,17 +61,38 @@ const RequestNode = ({ id, data }) => {
     setRequestNodeUrl(id, value);
   };
 
-  const renderNewVars = (vType) => {
+  const Tooltip = ({ text }) => {
+    return (
+      <Tippy content={text} placement='top' maxWidth='none'>
+        <svg
+          tabIndex='-1'
+          id='tooltipId'
+          xmlns='http://www.w3.org/2000/svg'
+          width='14'
+          height='14'
+          fill='currentColor'
+          className='inline-block ml-2 cursor-pointer'
+          viewBox='0 0 16 16'
+          style={{ marginTop: 1 }}
+        >
+          <path d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z' />
+          <path d='M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z' />
+        </svg>
+      </Tippy>
+    );
+  };
+
+  const renderVariables = (vType) => {
     const variables = vType === 'pre-request' ? data.preReqVars : data.postRespVars;
     return (
-      <>
+      <div>
         {variables && Object.keys(variables).length > 0 ? (
           <table className='leading-normal'>
             <thead>
               <tr className='text-xs font-bold tracking-wider text-left bg-ghost-50 text-ghost-600'>
-                <th className='p-1 border border-ghost-200'>Name</th>
-                <th className='p-1 border border-ghost-200 '>Value</th>
-                <th className='p-1 border border-ghost-200 '></th>
+                <th className='w-2/6 p-1 border border-ghost-200'>Name</th>
+                <th className='w-4/6 p-1 border border-ghost-200 '>Value</th>
+                <th className='w-1/6 p-1 border border-ghost-200 '></th>
               </tr>
             </thead>
             <tbody>
@@ -78,7 +101,7 @@ const RequestNode = ({ id, data }) => {
                   <td className='p-1 whitespace-no-wrap'>
                     <input
                       type='text'
-                      className='nodrag nowheel block h-9 rounded-bl-md rounded-tl-md p-2.5'
+                      className='nodrag nowheel block h-9 w-full p-2.5'
                       name='variable-name'
                       value={id}
                       readOnly
@@ -89,18 +112,24 @@ const RequestNode = ({ id, data }) => {
                       <select
                         onChange={(e) => handleVariableChange(e, vType, id)}
                         name='boolean-val'
-                        className='nodrag h-9 rounded-br-md  rounded-tr-md p-2.5 px-1'
+                        className=' nodrag nowheel h-9 w-full p-2.5 px-1'
                         value={variables[id].value}
                       >
                         <option value='true'>True</option>
                         <option value='false'>False</option>
                       </select>
                     ) : variables[id].type === 'Now' ? (
-                      <div></div>
+                      <input
+                        type='text'
+                        className='nodrag nowheel block h-9 w-full p-2.5'
+                        name='variable-name'
+                        value='Date.now()'
+                        readOnly
+                      />
                     ) : (
                       <input
                         type={getInputType(variables[id].type)}
-                        className='nodrag nowheel block h-9 rounded-bl-md rounded-tl-md p-2.5'
+                        className='nodrag nowheel block h-9 w-full p-2.5'
                         name='variable-value'
                         data-type={getInputType(variables[id].type)}
                         onChange={(e) => handleVariableChange(e, vType, id)}
@@ -108,7 +137,8 @@ const RequestNode = ({ id, data }) => {
                       />
                     )}
                   </td>
-                  <td className='p-1 whitespace-no-wrap'>
+                  <td className='flex p-1 whitespace-no-wrap'>
+                    <Tooltip text={variables[id].type} />
                     <div onClick={(e) => handleDeleteVariable(e, vType, id)} className='pl-2 text-neutral-500'>
                       <TrashIcon className='w-4 h-4' />
                     </div>
@@ -120,58 +150,7 @@ const RequestNode = ({ id, data }) => {
         ) : (
           ''
         )}
-      </>
-    );
-  };
-
-  const renderVariables = (vType) => {
-    const variables = vType === 'pre-request' ? data.preReqVars : data.postRespVars;
-    return (
-      <>
-        {variables && Object.keys(variables).length > 0 ? (
-          <div className='p-2 pt-4 border-t border-neutral-300 bg-slate-50'>
-            {Object.keys(variables).map((id) => (
-              <div className='flex items-center justify-between pb-2' key={id}>
-                <div className='flex items-center justify-between text-sm border rounded-md border-neutral-500 text-neutral-500 outline-0 focus:ring-0'>
-                  <label className='w-1/4 px-4 py-2 border-r rounded-bl-md rounded-tl-md border-r-neutral-500'>
-                    {id}
-                  </label>
-                  {variables[id].type === 'Boolean' ? (
-                    <select
-                      onChange={(e) => handleVariableChange(e, vType, id)}
-                      name='boolean-val'
-                      className='nodrag h-9 w-2/4 min-w-40 rounded-br-md  rounded-tr-md p-2.5 px-1'
-                      value={variables[id].value}
-                    >
-                      <option value='true'>True</option>
-                      <option value='false'>False</option>
-                    </select>
-                  ) : variables[id].type === 'Now' ? (
-                    <div></div>
-                  ) : (
-                    <input
-                      type={getInputType(variables[id].type)}
-                      className='nodrag nowheel block h-9 w-2/4 min-w-40 rounded-bl-md rounded-tl-md p-2.5'
-                      name='variable-value'
-                      data-type={getInputType(variables[id].type)}
-                      onChange={(e) => handleVariableChange(e, vType, id)}
-                      value={variables[id].value}
-                    />
-                  )}
-                  <div className='w-1/4 px-4 py-2 border-l rounded-br-md rounded-tr-md border-l-neutral-500'>
-                    {variables[id].type}
-                  </div>
-                </div>
-                <div onClick={(e) => handleDeleteVariable(e, vType, id)} className='pl-2 text-neutral-500'>
-                  <TrashIcon className='w-4 h-4' />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          ''
-        )}
-      </>
+      </div>
     );
   };
 
@@ -274,7 +253,7 @@ const RequestNode = ({ id, data }) => {
                   <PlusIcon className='w-4 h-4' />
                 </button>
               </div>
-              {renderNewVars('pre-request')}
+              {renderVariables('pre-request')}
             </div>
             <NodeHorizontalDivider />
             <div>

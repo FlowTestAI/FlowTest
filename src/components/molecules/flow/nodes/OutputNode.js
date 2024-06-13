@@ -27,13 +27,13 @@ const OutputNode = ({ id, data }) => {
       ) : (
         <></>
       )}
-      <div className='w-full text-xs text-gray-900 border border-gray-300 rounded-lg nodrag nowheel min-w-72 bg-gray-50 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'>
+      <div className='text-xs text-gray-900 border border-gray-300 rounded-lg nodrag nowheel min-w-72 max-w-96 bg-gray-50 outline-blue-300 focus:border-blue-100 focus:ring-blue-100'>
         {data.output ? (
           <Editor
             name='output-text'
             value={JSON.stringify(data.output, null, 2)}
             readOnly={true}
-            classes={'w-96 h-96'}
+            classes={'w-full max-h-96'}
           />
         ) : (
           <div className='p-2'>{'Run flow to see data'}</div>

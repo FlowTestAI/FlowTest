@@ -5,6 +5,10 @@ import useCanvasStore from 'stores/CanvasStore';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import TextInput from 'components/atoms/common/TextInput';
+import { TextEditor } from 'components/atoms/common/TextEditor';
+import useCollectionStore from 'stores/CollectionStore';
+import { useTabStore } from 'stores/TabStore';
+import { cloneDeep } from 'lodash';
 
 const AuthNode = ({ id, data }) => {
   const setAuthNodeType = useCanvasStore((state) => state.setAuthNodeType);
@@ -13,6 +17,20 @@ const AuthNode = ({ id, data }) => {
 
   const handleChange = (value, option) => {
     setBasicAuthValues(id, option, value);
+  };
+
+  const getActiveVariables = () => {
+    const collectionId = useCanvasStore.getState().collectionId;
+    if (collectionId) {
+      const activeEnv = useCollectionStore
+        .getState()
+        .collections.find((c) => c.id === collectionId)
+        ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+      if (activeEnv) {
+        return Object.keys(cloneDeep(activeEnv.variables));
+      }
+    }
+    return [];
   };
 
   return (
@@ -89,17 +107,21 @@ const AuthNode = ({ id, data }) => {
         </Listbox>
         {data.type === 'basic-auth' && (
           <div className='flex flex-col gap-2 py-4'>
-            <TextInput
+            <TextEditor
               placeHolder={`Username`}
-              onChangeHandler={(e) => handleChange(e.target.value, 'username')}
+              onChangeHandler={(value) => handleChange(value, 'username')}
               name={'username'}
               value={data.username ? data.username : ''}
+              completionOptions={getActiveVariables()}
+              styles={'w-full'}
             />
-            <TextInput
+            <TextEditor
               placeHolder={`Password`}
-              onChangeHandler={(e) => handleChange(e.target.value, 'password')}
+              onChangeHandler={(value) => handleChange(value, 'password')}
               name={'username'}
               value={data.password ? data.password : ''}
+              completionOptions={getActiveVariables()}
+              styles={'w-full'}
             />
           </div>
         )}

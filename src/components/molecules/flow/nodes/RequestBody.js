@@ -10,6 +10,9 @@ import NodeHorizontalDivider from 'components/atoms/flow/NodeHorizontalDivider';
 import TextInputWithLabel from 'components/atoms/common/TextInputWithLabel';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_TYPES } from 'constants/Common';
+import useCollectionStore from 'stores/CollectionStore';
+import { useTabStore } from 'stores/TabStore';
+import { cloneDeep } from 'lodash';
 
 const requestBodyTypeOptions = ['None', 'form-data', 'raw-json'];
 
@@ -91,6 +94,20 @@ const RequestBody = ({ nodeId, nodeData }) => {
     }
   };
 
+  const getActiveVariables = () => {
+    const collectionId = useCanvasStore.getState().collectionId;
+    if (collectionId) {
+      const activeEnv = useCollectionStore
+        .getState()
+        .collections.find((c) => c.id === collectionId)
+        ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+      if (activeEnv) {
+        return Object.keys(cloneDeep(activeEnv.variables));
+      }
+    }
+    return [];
+  };
+
   return (
     <>
       <div className='flex items-center justify-between p-4 bg-background'>
@@ -115,7 +132,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
               {requestBodyTypeOptions.map((bodyTypeOption, index) => (
                 <Menu.Item key={index} data-click-from='body-type-menu' onClick={() => handleClose(bodyTypeOption)}>
                   <button
-                    className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md hover:bg-background-light group'
+                    className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group hover:bg-background-light'
                     data-click-from='body-type-menu'
                   >
                     {bodyTypeOption}
@@ -136,7 +153,8 @@ const RequestBody = ({ nodeId, nodeData }) => {
                   name='request-body-json'
                   onChange={(e) => handleRawJson(e)}
                   value={nodeData.requestBody.body}
-                  classes={'w-96 h-96'}
+                  classes={'w-full max-h-96'}
+                  completionOptions={getActiveVariables()}
                 />
               </div>
               <Button

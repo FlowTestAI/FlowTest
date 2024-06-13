@@ -1,23 +1,33 @@
 import { isEqual, reduce, map } from 'lodash';
+import requestNodes from './constants/requestNodes';
 
 export const orderNodesByTags = (nodes, filter) => {
   const result = {};
-  let filterNodes = nodes;
+  let filterNodes = nodes.filter(
+    (node) => node.requestType && requestNodes.map((req) => req.requestType).includes(node.requestType),
+  );
   if (filter.trim() != '') {
     filterNodes = nodes.filter(
       (n) =>
-        n.operationId.toLowerCase().includes(filter.toLowerCase()) ||
-        n.description.toLowerCase().includes(filter.toLowerCase()),
+        (n.operationId && n.operationId.toLowerCase().includes(filter.toLowerCase())) ||
+        (n.description && n.description.toLowerCase().includes(filter.toLowerCase())),
     );
   }
   if (filterNodes) {
     filterNodes.map((node) => {
-      node.tags.map((tag) => {
-        if (!result[tag]) {
-          result[tag] = [];
+      if (node.tags) {
+        node.tags.map((tag) => {
+          if (!result[tag]) {
+            result[tag] = [];
+          }
+          result[tag].push(node);
+        });
+      } else {
+        if (!result['no_tag']) {
+          result['no_tag'] = [];
         }
-        result[tag].push(node);
-      });
+        result['no_tag'].push(node);
+      }
     });
   }
   return Object.keys(result)

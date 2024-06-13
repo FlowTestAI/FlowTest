@@ -30,7 +30,7 @@ const SideBarSubHeader = () => {
           fullWidth={true}
         >
           <PlusIcon className='w-4 h-4' />
-          <span className='font-semibold'>Import</span>
+          <span className='font-semibold'>Create</span>
         </Button>
       </div>
       <div>

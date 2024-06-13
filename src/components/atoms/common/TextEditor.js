@@ -9,27 +9,30 @@ import { defaultKeymap } from '@codemirror/commands';
 import { syntaxHighlighting, defaultHighlightStyle, HighlightStyle, StreamLanguage } from '@codemirror/language';
 import { autocompletion, CompletionContext } from '@codemirror/autocomplete';
 import { tags, styleTags } from '@lezer/highlight';
+import { isEqual } from 'lodash';
 
-// Define the autocomplete function
-const myCompletions = (context) => {
-  let word = context.matchBefore(/{{\w*$/);
-  if (!word) return null;
+// Function to dynamically generate autocomplete options
+const createAutocompleteSource = (options) => {
+  return (context) => {
+    let word = context.matchBefore(/\{\{\w*$/);
+    if (!word) return null;
 
-  return {
-    from: word.from,
-    options: [
-      { label: '{{example1}}', type: 'keyword' },
-      { label: '{{example2}}', type: 'variable' },
-      { label: '{{example3}}', type: 'text' },
-    ],
+    return {
+      from: word.from,
+      options: options.map((option) => ({ label: `{{${option}}}`, type: 'keyword' })),
+    };
   };
 };
 
-// Configure the autocomplete extension
-const myAutocomplete = autocompletion({
-  override: [myCompletions],
-  activateOnTyping: true,
-});
+// Create a Compartment for autocomplete
+const autocompleteCompartment = new Compartment();
+
+// Function to update autocomplete options
+const updateAutocompleteOptions = (view, newOptions) => {
+  view.dispatch({
+    effects: autocompleteCompartment.reconfigure(autocompletion({ override: [createAutocompleteSource(newOptions)] })),
+  });
+};
 
 // Custom styles to hide scrollbar
 const hideScrollbar = EditorView.theme({
@@ -94,11 +97,16 @@ const highlightStyle = EditorView.baseTheme({
   },
 });
 
-export const TextEditor = ({ id, placeHolder, onChangeHandler, name, value, disableState }) => {
+export const TextEditor = ({ placeHolder, onChangeHandler, value, disableState, completionOptions, styles }) => {
   const editor1 = useRef();
   const [view, setView] = useState(null);
+  const [dynamicOptions, setDynamicOptions] = useState([]);
 
   if (view) {
+    if (!isEqual(dynamicOptions, completionOptions)) {
+      updateAutocompleteOptions(view, completionOptions);
+      setDynamicOptions(completionOptions);
+    }
     if (value != view.state.doc.toString()) {
       view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: value } });
     }
@@ -116,7 +124,7 @@ export const TextEditor = ({ id, placeHolder, onChangeHandler, name, value, disa
       extensions: [
         //EditorView.lineWrapping,
         placeholder(placeHolder),
-        myAutocomplete,
+        //myAutocomplete,
         //basicSetup,
         keymap.of([defaultKeymap, indentWithTab]),
         onUpdate,
@@ -126,6 +134,7 @@ export const TextEditor = ({ id, placeHolder, onChangeHandler, name, value, disa
         rebindEnterKey,
         highlightPlugin,
         highlightStyle,
+        autocompleteCompartment.of(autocompletion({ override: [createAutocompleteSource(dynamicOptions)] })),
       ],
     });
 
@@ -139,8 +148,8 @@ export const TextEditor = ({ id, placeHolder, onChangeHandler, name, value, disa
   }, []);
 
   const mainStyles =
-    'nodrag nowheel block w-3/4 rounded border border-slate-700 bg-background-light p-2.5 text-sm outline-none';
+    'nodrag nowheel block rounded border border-slate-700 bg-background-light p-2.5 text-sm outline-none';
   const intentStyles = disableState ? 'cursor-not-allowed text-slate-400' : 'text-slate-900';
 
-  return <div ref={editor1} className={`${mainStyles} ${intentStyles}`}></div>;
+  return <div ref={editor1} className={`${mainStyles} ${intentStyles} ${styles}`}></div>;
 };

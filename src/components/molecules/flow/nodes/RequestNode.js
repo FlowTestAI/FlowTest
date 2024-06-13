@@ -13,6 +13,9 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import requestNodes from '../constants/requestNodes';
 import { TextEditor } from 'components/atoms/common/TextEditor';
+import useCollectionStore from 'stores/CollectionStore';
+import { useTabStore } from 'stores/TabStore';
+import { cloneDeep } from 'lodash';
 
 const RequestNode = ({ id, data }) => {
   const setRequestNodeUrl = useCanvasStore((state) => state.setRequestNodeUrl);
@@ -107,6 +110,20 @@ const RequestNode = ({ id, data }) => {
     );
   };
 
+  const getActiveVariables = () => {
+    const collectionId = useCanvasStore.getState().collectionId;
+    if (collectionId) {
+      const activeEnv = useCollectionStore
+        .getState()
+        .collections.find((c) => c.id === collectionId)
+        ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+      if (activeEnv) {
+        return Object.keys(cloneDeep(activeEnv.variables));
+      }
+    }
+    return [];
+  };
+
   return (
     <FlowNode
       title={data.requestType + ' Request'}
@@ -171,6 +188,8 @@ const RequestNode = ({ id, data }) => {
             onChangeHandler={handleUrlInputChange}
             name={'url'}
             value={data.url ? data.url : ''}
+            completionOptions={getActiveVariables()}
+            styles={'w-3/4'}
           />
         </div>
         <NodeHorizontalDivider />

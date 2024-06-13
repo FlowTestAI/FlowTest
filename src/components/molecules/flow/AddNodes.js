@@ -50,7 +50,6 @@ const AddNodes = ({ collectionId }) => {
 
   // Get all requests of this collections
   const collection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-  console.log(collection);
   const nodesByTags = orderNodesByTags(collection.nodes, searchFilter);
 
   return (

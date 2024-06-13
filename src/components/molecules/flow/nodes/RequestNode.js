@@ -59,6 +59,71 @@ const RequestNode = ({ id, data }) => {
     setRequestNodeUrl(id, value);
   };
 
+  const renderNewVars = (vType) => {
+    const variables = vType === 'pre-request' ? data.preReqVars : data.postRespVars;
+    return (
+      <>
+        {variables && Object.keys(variables).length > 0 ? (
+          <table className='leading-normal'>
+            <thead>
+              <tr className='text-xs font-bold tracking-wider text-left bg-ghost-50 text-ghost-600'>
+                <th className='p-1 border border-ghost-200'>Name</th>
+                <th className='p-1 border border-ghost-200 '>Value</th>
+                <th className='p-1 border border-ghost-200 '></th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(variables).map((id, index) => (
+                <tr key={index} className='text-sm border-b border-gray-200 text-ghost-700 hover:bg-ghost-50'>
+                  <td className='p-1 whitespace-no-wrap'>
+                    <input
+                      type='text'
+                      className='nodrag nowheel block h-9 rounded-bl-md rounded-tl-md p-2.5'
+                      name='variable-name'
+                      value={id}
+                      readOnly
+                    />
+                  </td>
+                  <td className='p-1 whitespace-no-wrap'>
+                    {variables[id].type === 'Boolean' ? (
+                      <select
+                        onChange={(e) => handleVariableChange(e, vType, id)}
+                        name='boolean-val'
+                        className='nodrag h-9 rounded-br-md  rounded-tr-md p-2.5 px-1'
+                        value={variables[id].value}
+                      >
+                        <option value='true'>True</option>
+                        <option value='false'>False</option>
+                      </select>
+                    ) : variables[id].type === 'Now' ? (
+                      <div></div>
+                    ) : (
+                      <input
+                        type={getInputType(variables[id].type)}
+                        className='nodrag nowheel block h-9 rounded-bl-md rounded-tl-md p-2.5'
+                        name='variable-value'
+                        data-type={getInputType(variables[id].type)}
+                        onChange={(e) => handleVariableChange(e, vType, id)}
+                        value={variables[id].value}
+                      />
+                    )}
+                  </td>
+                  <td className='p-1 whitespace-no-wrap'>
+                    <div onClick={(e) => handleDeleteVariable(e, vType, id)} className='pl-2 text-neutral-500'>
+                      <TrashIcon className='w-4 h-4' />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          ''
+        )}
+      </>
+    );
+  };
+
   const renderVariables = (vType) => {
     const variables = vType === 'pre-request' ? data.preReqVars : data.postRespVars;
     return (
@@ -124,84 +189,82 @@ const RequestNode = ({ id, data }) => {
     return [];
   };
 
+  const listBox = () => {
+    return (
+      <Listbox
+        value={data.requestType}
+        onChange={(selectedValue) => {
+          setRequestNodeType(id, selectedValue);
+        }}
+        className='text-xl'
+      >
+        <div>
+          <Listbox.Button className='relative flex text-left cursor-default border-cyan-950'>
+            <span className='block truncate'>{data.requestType}</span>
+            <span className='p-1'>
+              <ChevronUpDownIcon className='w-5 h-5' aria-hidden='true' />
+            </span>
+          </Listbox.Button>
+          <Transition as={Fragment} leave='transition ease-in duration-100' leaveFrom='opacity-100' leaveTo='opacity-0'>
+            <Listbox.Options className='absolute z-50 py-1 mt-1 overflow-auto text-base bg-white max-h-60 w-36 focus:outline-none'>
+              {requestNodes
+                .map((el) => el.requestType)
+                .map((reqType) => (
+                  <Listbox.Option
+                    key={reqType}
+                    className={({ active }) =>
+                      `relative cursor-default select-none py-2 pl-7 pr-4 hover:font-semibold ${
+                        active ? 'bg-background-light text-slate-900' : ''
+                      }`
+                    }
+                    value={reqType}
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className={`block`}>{reqType}</span>
+                        {selected ? (
+                          <span className='absolute inset-y-0 left-0 flex items-center pl-1 font-semibold'>
+                            <CheckIcon className='w-5 h-5' aria-hidden='true' />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
+                ))}
+            </Listbox.Options>
+          </Transition>
+        </div>
+      </Listbox>
+    );
+  };
+
   return (
     <FlowNode
-      title={data.requestType + ' Request'}
+      title={listBox()}
       handleLeft={true}
       handleLeftData={{ type: 'target' }}
       handleRight={true}
       handleRightData={{ type: 'source' }}
     >
       <div className='w-96'>
-        <div className='flex items-center justify-center gap-2 py-4'>
-          <Listbox
-            value={data.requestType}
-            onChange={(selectedValue) => {
-              setRequestNodeType(id, selectedValue);
-            }}
-            className='w-1/4'
-          >
-            <div>
-              <Listbox.Button className='relative w-full p-2 text-left border rounded cursor-default border-cyan-950'>
-                <span className='block truncate'>{data.requestType}</span>
-                <span className='absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'>
-                  <ChevronUpDownIcon className='w-5 h-5' aria-hidden='true' />
-                </span>
-              </Listbox.Button>
-              <Transition
-                as={Fragment}
-                leave='transition ease-in duration-100'
-                leaveFrom='opacity-100'
-                leaveTo='opacity-0'
-              >
-                <Listbox.Options className='absolute z-50 py-1 mt-1 overflow-auto text-base bg-white max-h-60 w-36 focus:outline-none'>
-                  {requestNodes
-                    .map((el) => el.requestType)
-                    .map((reqType) => (
-                      <Listbox.Option
-                        key={reqType}
-                        className={({ active }) =>
-                          `relative cursor-default select-none py-2 pl-7 pr-4 hover:font-semibold ${
-                            active ? 'bg-background-light text-slate-900' : ''
-                          }`
-                        }
-                        value={reqType}
-                      >
-                        {({ selected }) => (
-                          <>
-                            <span className={`block`}>{reqType}</span>
-                            {selected ? (
-                              <span className='absolute inset-y-0 left-0 flex items-center pl-1 font-semibold'>
-                                <CheckIcon className='w-5 h-5' aria-hidden='true' />
-                              </span>
-                            ) : null}
-                          </>
-                        )}
-                      </Listbox.Option>
-                    ))}
-                </Listbox.Options>
-              </Transition>
-            </div>
-          </Listbox>
-          <TextEditor
-            placeHolder={`Enter URL for a ${data.requestType} request`}
-            onChangeHandler={handleUrlInputChange}
-            name={'url'}
-            value={data.url ? data.url : ''}
-            completionOptions={getActiveVariables()}
-            styles={'w-3/4'}
-          />
-        </div>
+        <TextEditor
+          placeHolder={`Enter URL for a ${data.requestType} request`}
+          onChangeHandler={handleUrlInputChange}
+          name={'url'}
+          value={data.url ? data.url : ''}
+          completionOptions={getActiveVariables()}
+          styles={'w-full mb-2'}
+        />
         <NodeHorizontalDivider />
         <RequestBody nodeId={id} nodeData={data} />
         <NodeHorizontalDivider />
-        <div className='p-4 bg-background'>
-          <h3>Variables</h3>
-          <div className='mt-4'>
+        <div className='bg-background'>
+          <h3 className='p-2'>Variables</h3>
+          <div>
             <NodeHorizontalDivider />
-            <div className='p-2'>
+            <div>
               <div className='flex items-center justify-between'>
-                <div>Pre Request</div>
+                <div className='p-2'>Pre Request</div>
                 <button
                   onClick={() => {
                     setModalType('pre-request');
@@ -211,12 +274,12 @@ const RequestNode = ({ id, data }) => {
                   <PlusIcon className='w-4 h-4' />
                 </button>
               </div>
-              {renderVariables('pre-request')}
+              {renderNewVars('pre-request')}
             </div>
             <NodeHorizontalDivider />
-            <div className='p-2'>
+            <div>
               <div className='flex items-center justify-between'>
-                <div>Post Response</div>
+                <div className='p-2'>Post Response</div>
                 <button
                   onClick={() => {
                     setModalType('post-response');

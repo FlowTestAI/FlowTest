@@ -8,6 +8,7 @@ const { serialize } = require('../../flowtest-electron/src/utils/flowparser/pars
 const { Graph } = require('../graph/Graph');
 const { cloneDeep } = require('lodash');
 const dotenv = require('dotenv');
+const { GraphLogger, LogLevel } = require('../graph/GraphLogger');
 
 const getEnvVariables = (pathname) => {
   const content = readFile(pathname);
@@ -57,6 +58,7 @@ const argv = yargs(hideBin(process.argv))
           const flowData = serialize(JSON.parse(content));
           // output json output to a file
           //console.log(chalk.green(JSON.stringify(flowData)));
+          const logger = new GraphLogger();
           const startTime = Date.now();
           const g = new Graph(
             cloneDeep(flowData.nodes),
@@ -64,6 +66,7 @@ const argv = yargs(hideBin(process.argv))
             startTime,
             argv.timeout ? argv.timeout : 60000,
             argv.env ? getEnvVariables(argv.env) : {},
+            logger,
           );
           console.log(chalk.yellow('Running Graph \n'));
           if (flowData.nodes.find((n) => n.type === 'complexNode')) {
@@ -80,7 +83,9 @@ const argv = yargs(hideBin(process.argv))
           } else {
             console.log(chalk.bold('Graph Run: ') + chalk.red(`   ✕ `) + chalk.dim(result.status));
           }
+          logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
           console.log(chalk.bold('Total Time: ') + chalk.dim(`${Date.now() - startTime} ms`));
+          console.log(logger.get());
           process.exit(1);
           //console.log(chalk.green(JSON.stringify(result)));
         } catch (error) {

@@ -2,6 +2,7 @@ const AssertOperators = require('../constants/assertOperators');
 const { computeNodeVariable } = require('./utils');
 const Node = require('./node');
 const chalk = require('chalk');
+const { LogLevel } = require('../GraphLogger');
 
 class assertNode extends Node {
   constructor(operator, variables, prevNodeOutputData, envVariables, logs) {
@@ -43,17 +44,26 @@ class assertNode extends Node {
           `Assert var1: ${JSON.stringify(var1)} of type: ${typeof var1}, var2: ${JSON.stringify(var2)} of type: ${typeof var2} with operator: ${operator}`,
         ),
     );
-    if (operator == AssertOperators.isEqualTo) {
-      return var1 === var2;
-    } else if (operator == AssertOperators.isNotEqualTo) {
-      return var1 != var2;
-    } else if (operator == AssertOperators.isGreaterThan) {
-      return var1 > var2;
-    } else if (operator == AssertOperators.isLessThan) {
-      return var1 < var2;
-    } else {
-      throw 'Operator unrecognized';
+    let result;
+    switch (operator) {
+      case AssertOperators.isEqualTo:
+        result = var1 === var2;
+        break;
+      case AssertOperators.isNotEqualTo:
+        result = var1 != var2;
+        break;
+      case AssertOperators.isGreaterThan:
+        result = var1 > var2;
+        break;
+      case AssertOperators.isLessThan:
+        result = var1 < var2;
+        break;
+      default:
+        throw 'Unsupported operator';
     }
+    this.logger.add(LogLevel.INFO, '', { type: 'assertNode', data: { var1, var2, operator, result } });
+
+    return result;
   }
 }
 

@@ -10,12 +10,13 @@ const path = require('path');
 const readFile = require('../../flowtest-electron/src/utils/filemanager/readfile');
 const { serialize } = require('../../flowtest-electron/src/utils/flowparser/parser');
 const Node = require('./compute/node');
+const { LogLevel } = require('./GraphLogger');
 
 class nestedFlowNode extends Node {
-  constructor(nodes, edges, startTime, timeout, initialEnvVars) {
+  constructor(nodes, edges, startTime, timeout, initialEnvVars, logger) {
     super('flowNode');
     try {
-      this.internalGraph = new Graph(nodes, edges, startTime, timeout, initialEnvVars);
+      this.internalGraph = new Graph(nodes, edges, startTime, timeout, initialEnvVars, logger);
     } catch (error) {
       console.log(error);
     }
@@ -27,7 +28,7 @@ class nestedFlowNode extends Node {
 }
 
 class Graph {
-  constructor(nodes, edges, startTime, timeout, initialEnvVars) {
+  constructor(nodes, edges, startTime, timeout, initialEnvVars, logger) {
     this.nodes = nodes;
     this.edges = edges;
     this.timeout = timeout;
@@ -35,6 +36,7 @@ class Graph {
     this.graphRunNodeOutput = {};
     this.auth = undefined;
     this.envVariables = initialEnvVars;
+    this.logger = logger;
   }
 
   #checkTimeout() {
@@ -83,6 +85,7 @@ class Graph {
       if (node.type === 'outputNode') {
         console.log('Output Node');
         console.log(chalk.green(`   ✓ `) + chalk.dim(`${JSON.stringify(prevNodeOutputData)}`));
+        this.logger.add(LogLevel.INFO, '', { type: 'outputNode', data: prevNodeOutputData });
         result = {
           status: 'Success',
           data: prevNodeOutputData,
@@ -121,6 +124,7 @@ class Graph {
         };
         console.log('Delay Node: ' + chalk.green(`....waiting for: ${delay} ms`));
         await wait(delay);
+        this.logger.add(LogLevel.INFO, '', { type: 'delayNode', data: delay });
         result = {
           status: 'Success',
         };
@@ -137,7 +141,7 @@ class Graph {
 
       if (node.type === 'requestNode') {
         console.log('Request Node');
-        const rNode = new requestNode(node.data, prevNodeOutputData, this.envVariables, this.auth);
+        const rNode = new requestNode(node.data, prevNodeOutputData, this.envVariables, this.auth, this.logger);
         result = await rNode.evaluate();
         // add post response variables if any
         if (result.postRespVars) {
@@ -159,6 +163,7 @@ class Graph {
             this.startTime,
             this.timeout,
             this.envVariables,
+            this.logger,
           );
           result = await cNode.evaluate();
           this.envVariables = result.envVars;
@@ -175,6 +180,13 @@ class Graph {
         const newVariable = sNode.evaluate();
         if (newVariable != undefined) {
           console.log(chalk.green(`   ✓ `) + chalk.dim(`Set variable: ${JSON.stringify(newVariable)}`));
+          this.logger.add(LogLevel.INFO, '', {
+            type: 'setVarNode',
+            data: {
+              name: Object.keys(newVariable)[0],
+              value: newVariable[Object.keys(newVariable)[0]],
+            },
+          });
           this.envVariables = {
             ...this.envVariables,
             ...newVariable,
@@ -190,6 +202,7 @@ class Graph {
       }
     } catch (err) {
       console.log(chalk.red(`Flow failed at: ${JSON.stringify(node.data)} due to ${err}`));
+      this.logger.add(LogLevel.ERROR, `Flow failed due to ${err}`, node);
       return {
         status: 'Failed',
       };
@@ -197,6 +210,7 @@ class Graph {
 
     if (result === undefined) {
       console.log(chalk.red(`Flow failed due to failure to evaluate result at node: ${node.data}`));
+      this.logger.add(LogLevel.ERROR, 'Flow failed due to failure to evaluate result', node);
       return {
         status: 'Failed',
       };
@@ -222,10 +236,14 @@ class Graph {
     this.graphRunNodeOutput = {};
 
     console.log(chalk.green('Start Flowtest'));
+    this.logger.add(LogLevel.INFO, 'Start Flowtest');
+
     const startNode = this.nodes.find((node) => node.type === 'startNode');
     if (startNode == undefined) {
       console.log(chalk.red(`✕ `) + chalk.red('No start node found'));
       console.log(chalk.red('End Flowtest'));
+      this.logger.add(LogLevel.INFO, 'No start node found');
+      this.logger.add(LogLevel.INFO, 'End Flowtest');
       return {
         status: 'Success',
         envVars: this.envVariables,
@@ -242,12 +260,14 @@ class Graph {
       } else {
         console.log(chalk.green('End Flowtest'));
       }
+      this.logger.add(LogLevel.INFO, 'End Flowtest');
       return {
         status: result.status,
         envVars: this.envVariables,
       };
     } else {
       console.log(chalk.green('End Flowtest'));
+      this.logger.add(LogLevel.INFO, 'End Flowtest');
       return {
         status: 'Success',
         envVars: this.envVariables,

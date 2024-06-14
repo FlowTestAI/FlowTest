@@ -2,6 +2,7 @@ const { computeNodeVariables, computeVariables } = require('./utils');
 const Node = require('./node');
 const axios = require('axios');
 const chalk = require('chalk');
+const { LogLevel } = require('../GraphLogger');
 
 const newAbortSignal = () => {
   const abortController = new AbortController();
@@ -18,12 +19,13 @@ const convertBase64ToBlob = async (base64) => {
 };
 
 class requestNode extends Node {
-  constructor(nodeData, prevNodeOutputData, envVariables, auth) {
+  constructor(nodeData, prevNodeOutputData, envVariables, auth, logger) {
     super('requestNode');
     this.nodeData = nodeData;
     this.prevNodeOutputData = prevNodeOutputData;
     this.envVariables = envVariables;
     this.auth = auth;
+    this.logger = logger;
   }
 
   async evaluate() {
@@ -48,6 +50,10 @@ class requestNode extends Node {
 
     if (res.error) {
       console.log(chalk.red(`   ✕ `) + chalk.dim(`Request failed: ${JSON.stringify(res.error)}`));
+      this.logger.add(LogLevel.ERROR, 'HTTP request failed', {
+        type: 'requestNode',
+        data: { request: { type: options.method, url: options.url }, response: res.error, preReqVars: evalVariables },
+      });
       return {
         status: 'Failed',
       };
@@ -55,12 +61,25 @@ class requestNode extends Node {
       console.log(chalk.green(`   ✓ `) + chalk.dim(`Request successful: ${JSON.stringify(res)}`));
       if (this.nodeData.postRespVars) {
         const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, res.data);
+        this.logger.add(LogLevel.INFO, 'HTTP request success', {
+          type: 'requestNode',
+          data: {
+            request: { type: options.method, url: options.url, data: options.data },
+            response: res,
+            preReqVars: evalVariables,
+            postRespVars: evalPostRespVars,
+          },
+        });
         return {
           status: 'Success',
           data: res.data,
           postRespVars: evalPostRespVars,
         };
       }
+      this.logger.add(LogLevel.INFO, 'HTTP request success', {
+        type: 'requestNode',
+        data: { request: { type: options.method, url: options.url }, response: res, preReqVars: evalVariables },
+      });
       return {
         status: 'Success',
         data: res.data,

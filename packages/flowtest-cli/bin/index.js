@@ -9,6 +9,7 @@ const { Graph } = require('../graph/Graph');
 const { cloneDeep } = require('lodash');
 const dotenv = require('dotenv');
 const { GraphLogger, LogLevel } = require('../graph/GraphLogger');
+const axiosClient = require('./axiosClient');
 
 const getEnvVariables = (pathname) => {
   const content = readFile(pathname);
@@ -42,6 +43,10 @@ const argv = yargs(hideBin(process.argv))
           describe: 'timeout for graph run in ms',
           demandOption: false,
           type: 'number',
+        })
+        .option('scan', {
+          alias: 's',
+          describe: 'generate and upload build scan',
         });
     },
     async (argv) => {
@@ -85,7 +90,18 @@ const argv = yargs(hideBin(process.argv))
           }
           logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
           console.log(chalk.bold('Total Time: ') + chalk.dim(`${Date.now() - startTime} ms`));
-          console.log(logger.get());
+          //console.log(logger.get());
+
+          if (argv.scan) {
+            try {
+              const response = await axiosClient.post('/upload', btoa(JSON.stringify(logger.get())));
+              console.log(response.data.data[0].id);
+            } catch (error) {
+              //console.log(error);
+              console.log(chalk.red(`   ✕ `) + chalk.dim('Unable to upload build scan'));
+            }
+          }
+
           process.exit(1);
           //console.log(chalk.green(JSON.stringify(result)));
         } catch (error) {

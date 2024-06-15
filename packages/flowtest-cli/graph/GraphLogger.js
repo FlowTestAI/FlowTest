@@ -1,7 +1,7 @@
 const LogLevel = Object.freeze({
-  INFO: 0,
-  WARN: 1,
-  ERROR: 2,
+  INFO: 'info',
+  WARN: 'warn',
+  ERROR: 'error',
 });
 
 class GraphLogger {
@@ -11,7 +11,7 @@ class GraphLogger {
 
   add(logLevel, message, node) {
     this.logs.push({
-      logLevel,
+      level: logLevel,
       timestamp: new Date().toISOString(),
       message,
       node,

@@ -33,7 +33,7 @@ class assertNode extends Node {
 
     const operator = this.operator;
     if (operator == undefined) {
-      throw 'Operator undefined';
+      throw Error('Operator undefined');
     }
     // this.logs.push(
     //   `Assert var1: ${JSON.stringify(var1)} of type: ${typeof var1}, var2: ${JSON.stringify(var2)} of type: ${typeof var2} with operator: ${operator}`,
@@ -59,7 +59,7 @@ class assertNode extends Node {
         result = var1 < var2;
         break;
       default:
-        throw 'Unsupported operator';
+        throw Error('Unsupported operator');
     }
     this.logger.add(LogLevel.INFO, '', { type: 'assertNode', data: { var1, var2, operator, result } });
 

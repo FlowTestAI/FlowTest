@@ -5,12 +5,12 @@ const chalk = require('chalk');
 const { LogLevel } = require('../GraphLogger');
 
 class assertNode extends Node {
-  constructor(operator, variables, prevNodeOutputData, envVariables, logs) {
+  constructor(operator, variables, prevNodeOutputData, envVariables, logger) {
     super('assertNode');
     this.operator = operator;
     this.variables = variables;
     this.prevNodeOutputData = prevNodeOutputData;
-    this.logs = logs;
+    this.logger = logger;
     this.envVariables = envVariables;
   }
 

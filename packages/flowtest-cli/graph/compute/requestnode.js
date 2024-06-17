@@ -161,7 +161,9 @@ class requestNode extends Node {
       } else {
         return {
           error: {
-            message: `An error occurred while running the request : ${error?.message}`,
+            status: '',
+            statusText: '',
+            data: `An error occurred while running the request : ${error?.message}`,
           },
         };
       }

@@ -18,6 +18,11 @@ const getEnvVariables = (pathname) => {
   return parsed;
 };
 
+function bytesToBase64(bytes) {
+  const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join('');
+  return btoa(binString);
+}
+
 // Define the CLI application using yargs
 const argv = yargs(hideBin(process.argv))
   .usage('Usage: $0 <command> [options]')
@@ -93,8 +98,16 @@ const argv = yargs(hideBin(process.argv))
           //console.log(logger.get());
 
           if (argv.scan) {
+            const data = {
+              version: 1,
+              name: argv.file.toString(),
+              scan: logger.get(),
+            };
             try {
-              const response = await axiosClient.post('/upload', btoa(JSON.stringify(logger.get())));
+              const response = await axiosClient.post(
+                '/upload',
+                bytesToBase64(new TextEncoder().encode(JSON.stringify(data))),
+              );
               console.log(response.data.data[0].id);
             } catch (error) {
               //console.log(error);

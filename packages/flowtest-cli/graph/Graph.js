@@ -85,7 +85,7 @@ class Graph {
       if (node.type === 'outputNode') {
         console.log('Output Node');
         console.log(chalk.green(`   ✓ `) + chalk.dim(`${JSON.stringify(prevNodeOutputData)}`));
-        this.logger.add(LogLevel.INFO, '', { type: 'outputNode', data: prevNodeOutputData });
+        this.logger.add(LogLevel.INFO, '', { type: 'outputNode', data: { output: prevNodeOutputData } });
         result = {
           status: 'Success',
           data: prevNodeOutputData,
@@ -98,7 +98,7 @@ class Graph {
           node.data.variables,
           prevNodeOutputData,
           this.envVariables,
-          this.logs,
+          this.logger,
         );
         if (eNode.evaluate()) {
           console.log(chalk.green(`   ✓ `) + chalk.dim('True'));
@@ -124,7 +124,7 @@ class Graph {
         };
         console.log('Delay Node: ' + chalk.green(`....waiting for: ${delay} ms`));
         await wait(delay);
-        this.logger.add(LogLevel.INFO, '', { type: 'delayNode', data: delay });
+        this.logger.add(LogLevel.INFO, '', { type: 'delayNode', data: { delay } });
         result = {
           status: 'Success',
         };

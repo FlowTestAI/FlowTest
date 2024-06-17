@@ -422,7 +422,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                       )}
                       <div className='flex items-center justify-center w-full h-12 mt-6 text-sm border rounded border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
                         <label
-                          className='flex items-center w-32 h-full px-4 bg-transparent border-r border-cyan-900'
+                          className='flex items-center h-full px-4 bg-transparent border-r w-fit border-cyan-900'
                           htmlFor='bedrockSecretAccessKey'
                         >
                           SECRET_ACCESSKEY

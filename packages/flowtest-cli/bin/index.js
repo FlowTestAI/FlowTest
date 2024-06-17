@@ -8,6 +8,8 @@ const { serialize } = require('../../flowtest-electron/src/utils/flowparser/pars
 const { Graph } = require('../graph/Graph');
 const { cloneDeep } = require('lodash');
 const dotenv = require('dotenv');
+const { GraphLogger, LogLevel } = require('../graph/GraphLogger');
+const { baseUrl, axiosClient } = require('./axiosClient');
 
 const getEnvVariables = (pathname) => {
   const content = readFile(pathname);
@@ -15,6 +17,11 @@ const getEnvVariables = (pathname) => {
   const parsed = dotenv.parse(buf);
   return parsed;
 };
+
+function bytesToBase64(bytes) {
+  const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join('');
+  return btoa(binString);
+}
 
 // Define the CLI application using yargs
 const argv = yargs(hideBin(process.argv))
@@ -41,6 +48,10 @@ const argv = yargs(hideBin(process.argv))
           describe: 'timeout for graph run in ms',
           demandOption: false,
           type: 'number',
+        })
+        .option('scan', {
+          alias: 's',
+          describe: 'generate and upload build scan',
         });
     },
     async (argv) => {
@@ -57,6 +68,7 @@ const argv = yargs(hideBin(process.argv))
           const flowData = serialize(JSON.parse(content));
           // output json output to a file
           //console.log(chalk.green(JSON.stringify(flowData)));
+          const logger = new GraphLogger();
           const startTime = Date.now();
           const g = new Graph(
             cloneDeep(flowData.nodes),
@@ -64,6 +76,7 @@ const argv = yargs(hideBin(process.argv))
             startTime,
             argv.timeout ? argv.timeout : 60000,
             argv.env ? getEnvVariables(argv.env) : {},
+            logger,
           );
           console.log(chalk.yellow('Running Graph \n'));
           if (flowData.nodes.find((n) => n.type === 'complexNode')) {
@@ -80,7 +93,28 @@ const argv = yargs(hideBin(process.argv))
           } else {
             console.log(chalk.bold('Graph Run: ') + chalk.red(`   ✕ `) + chalk.dim(result.status));
           }
+          logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
           console.log(chalk.bold('Total Time: ') + chalk.dim(`${Date.now() - startTime} ms`));
+          //console.log(logger.get());
+
+          if (argv.scan) {
+            const data = {
+              version: 1,
+              name: argv.file.toString(),
+              scan: logger.get(),
+            };
+            try {
+              const response = await axiosClient.post(
+                '/upload',
+                bytesToBase64(new TextEncoder().encode(JSON.stringify(data))),
+              );
+              console.log(chalk.bold('Build Scan: ') + chalk.dim(`${baseUrl}/scan/${response.data.data[0].id}`));
+            } catch (error) {
+              //console.log(error);
+              console.log(chalk.red(`   ✕ `) + chalk.dim('Unable to upload build scan'));
+            }
+          }
+
           process.exit(1);
           //console.log(chalk.green(JSON.stringify(result)));
         } catch (error) {

@@ -2,8 +2,10 @@
 const axios = require('axios');
 const axiosRetry = require('axios-retry').default;
 
+const baseUrl = 'http://localhost:3000';
+
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: `${baseUrl}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -20,4 +22,7 @@ axiosRetry(axiosClient, {
   },
 });
 
-module.exports = axiosClient;
+module.exports = {
+  baseUrl,
+  axiosClient,
+};

@@ -9,7 +9,7 @@ const { Graph } = require('../graph/Graph');
 const { cloneDeep } = require('lodash');
 const dotenv = require('dotenv');
 const { GraphLogger, LogLevel } = require('../graph/GraphLogger');
-const axiosClient = require('./axiosClient');
+const { baseUrl, axiosClient } = require('./axiosClient');
 
 const getEnvVariables = (pathname) => {
   const content = readFile(pathname);
@@ -108,7 +108,7 @@ const argv = yargs(hideBin(process.argv))
                 '/upload',
                 bytesToBase64(new TextEncoder().encode(JSON.stringify(data))),
               );
-              console.log(response.data.data[0].id);
+              console.log(chalk.bold('Build Scan: ') + chalk.dim(`${baseUrl}/scan/${response.data.data[0].id}`));
             } catch (error) {
               //console.log(error);
               console.log(chalk.red(`   ✕ `) + chalk.dim('Unable to upload build scan'));

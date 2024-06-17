@@ -17,8 +17,8 @@ axiosRetry(axiosClient, {
     return retryCount * 1000; // Time interval between retries (1000 ms = 1 second)
   },
   retryCondition: (error) => {
-    // Retry on network errors or 5xx server errors
-    return error.response?.status === 500 || error.code === 'ECONNABORTED';
+    // Retry on network errors or rate limit errors or 5xx server errors
+    return error.response?.status === 500 || error.response?.status === 429 || error.code === 'ECONNABORTED';
   },
 });
 

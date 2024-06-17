@@ -110,7 +110,15 @@ const argv = yargs(hideBin(process.argv))
               );
               console.log(chalk.bold('Build Scan: ') + chalk.dim(`${baseUrl}/scan/${response.data.data[0].id}`));
             } catch (error) {
-              //console.log(error);
+              if (error?.response) {
+                if (error.response?.status === 403 || error.response?.status === 429) {
+                  console.log(chalk.red(`   ${JSON.stringify(error.response?.data)}`));
+                }
+
+                if (error.response?.status === 500) {
+                  console.log(chalk.red('   Internal Server Error'));
+                }
+              }
               console.log(chalk.red(`   ✕ `) + chalk.dim('Unable to upload build scan'));
             }
           }

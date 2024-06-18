@@ -15,7 +15,8 @@
     "start": "electron .",
     "test": "jest",
     "pack": "NODE_ENV=production electron-builder --dir",
-    "dist": "NODE_ENV=production electron-builder"
+    "dist:mac": "NODE_ENV=production electron-builder --mac",
+    "dist:win": "SET NODE_ENV=production & electron-builder --win"
   },
   "author": "Sajal Jain <jsajal1993@gmail.com>",
   "license": "MIT",

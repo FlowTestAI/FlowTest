@@ -25,25 +25,6 @@ const pathExists = (path) => {
   }
 };
 
-function trim(text) {
-  return String(text).replace(/^\/|\/$/g, '');
-}
-
-/**
- * Concatenate the given paths to one single path
- *
- * @param   {...string} segments
- * @returns {string}
- */
-const concatRoute = (...segments) => {
-  let path = segments
-    .filter((value) => value && String(value).length > 0)
-    .map((segment) => '/' + trim(segment))
-    .join('');
-
-  return '/' + trim(path.replace(/(\/)+/g, '/'));
-};
-
 const getSubdirectoriesFromRoot = (rootPath, pathname) => {
   // convert to unix style path
   pathname = slash(pathname);
@@ -68,6 +49,8 @@ const isMacOS = () => {
   return process.platform === 'darwin';
 };
 
+const PATH_SEPARATOR = isWindowsOS() ? '\\' : '/';
+
 const slash = (path) => {
   const isExtendedLengthPath = /^\\\\\?\\/.test(path);
 
@@ -78,13 +61,11 @@ const slash = (path) => {
   return path.replace(/\\/g, '/');
 };
 
-const PATH_SEPARATOR = isWindowsOS() ? '\\' : '/';
-
 module.exports = {
   isDirectory,
   pathExists,
-  concatRoute,
   getSubdirectoriesFromRoot,
   getDirectoryName,
+  isMacOS,
   PATH_SEPARATOR,
 };

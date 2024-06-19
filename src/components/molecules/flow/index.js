@@ -26,6 +26,7 @@ import { saveHandle } from '../modals/SaveFlowModal';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 import GraphLogger, { LogLevel } from './graph/GraphLogger';
+import Mousetrap from 'mousetrap';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -203,11 +204,16 @@ const Flow = ({ tab, collectionId }) => {
 
   reactFlowInstance?.setViewport(viewport);
 
-  const cmdAndSPressed = useKeyPress(['Meta+s', 'Strg+s']);
+  //const cmdAndSPressed = useKeyPress(['Meta+s', 'Strg+s', 'Ctrl+s']);
+  // Bind Ctrl+S and Cmd+S
+  Mousetrap.bind(['ctrl+s', 'command+s'], function (e) {
+    e.preventDefault();
+    saveHandle(tab);
+    return false;
+  });
 
   return (
     <div className='flex-auto'>
-      {cmdAndSPressed && saveHandle(tab)}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -233,7 +239,7 @@ const Flow = ({ tab, collectionId }) => {
       >
         <Background variant='dots' gap={12} size={1} />
         <Controls
-          className='flex shadow-none border-cyan-900'
+          className='flex border-cyan-900 shadow-none'
           onFitView={() => setViewport(reactFlowInstance.getViewport())}
         ></Controls>
         <Button

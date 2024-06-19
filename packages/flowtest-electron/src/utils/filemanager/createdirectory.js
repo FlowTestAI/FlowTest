@@ -1,23 +1,24 @@
 const fs = require('fs');
-const { isDirectory, concatRoute, pathExists } = require('./filesystem');
+const { isDirectory, pathExists } = require('./filesystem');
+const path = require('path');
 
-const createDirectory = (name, path) => {
+const createDirectory = (name, basePath) => {
   // now validate the name and path
   if (!name) {
     throw new Error('Directory name is required');
   }
 
-  if (!path) {
+  if (!basePath) {
     throw new Error('Directory path is required');
   }
 
   // check if the directory exists
-  if (!isDirectory(path)) {
+  if (!isDirectory(basePath)) {
     throw new Error('Path is not a directory');
   }
 
   // check if the directory already exists
-  const directoryPath = concatRoute(path, name);
+  const directoryPath = path.join(basePath, name);
 
   if (isDirectory(directoryPath)) {
     throw new Error('The directory already exists');

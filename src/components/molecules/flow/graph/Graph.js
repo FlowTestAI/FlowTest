@@ -112,6 +112,7 @@ class Graph {
         this.logger.add(LogLevel.INFO, '', { type: 'delayNode', data: delay });
         result = {
           status: 'Success',
+          data: prevNodeOutputData,
         };
       }
 
@@ -120,6 +121,7 @@ class Graph {
         this.auth = node.data.type ? aNode.evaluate() : undefined;
         result = {
           status: 'Success',
+          data: prevNodeOutputData,
         };
       }
 
@@ -151,6 +153,7 @@ class Graph {
         } else {
           result = {
             status: 'Success',
+            data: prevNodeOutputData,
           };
         }
       }
@@ -173,6 +176,7 @@ class Graph {
         }
         result = {
           status: 'Success',
+          data: prevNodeOutputData,
         };
       }
 

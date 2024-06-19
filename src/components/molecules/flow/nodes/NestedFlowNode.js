@@ -6,7 +6,6 @@ import { getAllFlowTests } from 'stores/utils';
 import useCollectionStore from 'stores/CollectionStore';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { useKeyPress } from 'reactflow';
 import { readFlowTest } from 'service/collection';
 import { toast } from 'react-toastify';
 
@@ -27,10 +26,8 @@ const NestedFlowNode = ({ id, data }) => {
     }
   }
 
-  const cmdPressed = useKeyPress('Meta'); // 'Meta' key for Cmd on Mac
-
   const handleMouseClick = (event, relativePath) => {
-    if (cmdPressed && event.type === 'click') {
+    if ((event.metaKey || event.ctrlKey) && event.type === 'click') {
       if (relativePath && relativePath.trim() != '') {
         readFlowTest(ipcRenderer.join(collection.pathname, relativePath), collectionId)
           .then((result) => {
@@ -66,7 +63,7 @@ const NestedFlowNode = ({ id, data }) => {
               }}
               name='flow'
               value={data.relativePath ? data.relativePath : ''}
-              className='h-12 p-2 border rounded outline-none cursor-default max-w-48 border-cyan-950 bg-background-light'
+              className='h-12 max-w-48 cursor-default rounded border border-cyan-950 bg-background-light p-2 outline-none'
             >
               <option key='None' value=''>
                 Select a flow

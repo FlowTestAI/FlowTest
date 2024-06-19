@@ -33,6 +33,9 @@ const useCanvasStore = create((set, get) => ({
     });
     useTabStore.getState().updateFlowTestEdges(get().edges);
   },
+  setIntialState: ({ nodes, edges, viewport }) => {
+    set((state) => ({ ...state, ...{ nodes, edges, viewport } }));
+  },
   setNodes: (nodes) => {
     set({ nodes });
     useTabStore.getState().updateFlowTestNodes(get().nodes);

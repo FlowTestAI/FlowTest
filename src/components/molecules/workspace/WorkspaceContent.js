@@ -9,11 +9,9 @@ import useEnvStore from 'stores/EnvStore';
 import EmptyWorkSpaceContent from './EmptyWorkSpaceContent';
 
 const WorkspaceContent = () => {
-  const setNodes = useCanvasStore((state) => state.setNodes);
-  const setEdges = useCanvasStore((state) => state.setEdges);
+  const setIntialState = useCanvasStore((state) => state.setIntialState);
   const setLogs = useCanvasStore((state) => state.setLogs);
   const setCollectionId = useCanvasStore((state) => state.setCollectionId);
-  const setViewport = useCanvasStore((state) => state.setViewport);
 
   const setVariables = useEnvStore((state) => state.setVariables);
 
@@ -27,18 +25,16 @@ const WorkspaceContent = () => {
     // perform actions based on the new tabId
     if (focusTab.type === OBJ_TYPES.flowtest) {
       const result = init(focusTab.flowDataDraft ? focusTab.flowDataDraft : focusTab.flowData);
-      setNodes(result.nodes);
-      setEdges(result.edges);
+      setIntialState(result);
       setLogs(focusTab.logs);
       setCollectionId(focusTab.collectionId);
-      setViewport(result.viewport);
     } else if (focusTab.type === OBJ_TYPES.environment) {
       setVariables(focusTab.variablesDraft ? focusTab.variablesDraft : focusTab.variables);
     }
   }
 
   return (
-    <div className='flex flex-col h-full'>
+    <div className='flex h-full flex-col'>
       <TabPanelHeader />
       {focusTab ? (
         focusTab.type === OBJ_TYPES.flowtest ? (

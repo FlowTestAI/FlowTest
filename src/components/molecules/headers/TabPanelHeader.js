@@ -22,7 +22,6 @@ const TabPanelHeader = () => {
   const tabs = useTabStore((state) => state.tabs);
   const focusTab = tabs.find((t) => t.id === focusTabId);
 
-  const graphRunLogs = useCanvasStore((state) => state.logs);
   const setTimeout = useCanvasStore((state) => state.setTimeout);
 
   const [slidingPaneState, setSlidingPaneState] = useState({
@@ -119,7 +118,7 @@ const TabPanelHeader = () => {
           <div className='flex items-center justify-between px-4 py-3'>
             <div className='py-3 text-base tracking-[0.15em]'>{focusTab.name}</div>
 
-            <div className='flex items-center justify-between gap-4 pl-4 border-l border-gray-300'>
+            <div className='flex items-center justify-between gap-4 border-l border-gray-300 pl-4'>
               {focusTab.type === OBJ_TYPES.flowtest && (
                 // ToDo: Check this
                 <div className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded border border-cyan-900 bg-background-light px-4 py-2.5 text-cyan-900 transition hover:bg-background'>
@@ -132,10 +131,10 @@ const TabPanelHeader = () => {
                 </div>
               )}
 
-              <div className='flex items-center justify-center h-12'>
+              <div className='flex h-12 items-center justify-center'>
                 <SaveFlowModal tab={focusTab} />
               </div>
-              {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
+              {focusTab.type === OBJ_TYPES.flowtest && focusTab.logs && focusTab.logs.length != 0 ? (
                 <div>
                   <Button
                     id='graph-logs-side-sheet'
@@ -153,7 +152,7 @@ const TabPanelHeader = () => {
                   >
                     <Tippy content='Logs' placement='top'>
                       <label htmlFor='graph-logs-side-sheet'>
-                        <DocumentTextIcon className='w-5 h-5' />
+                        <DocumentTextIcon className='h-5 w-5' />
                       </label>
                     </Tippy>
                   </Button>
@@ -178,8 +177,8 @@ const TabPanelHeader = () => {
                       aria-label='close sidebar'
                       className='drawer-overlay'
                     ></label>
-                    <ul className='min-h-full p-4 menu bg-base-200 text-base-content'>
-                      {graphRunLogs.map((item, index) => (
+                    <ul className='menu min-h-full bg-base-200 p-4 text-base-content'>
+                      {focusTab.logs.map((item, index) => (
                         <li key={index}>{renderLog(item)}</li>
                       ))}
                     </ul>
@@ -197,7 +196,7 @@ const TabPanelHeader = () => {
                     fullWidth={true}
                     className='flex items-center justify-between gap-x-4'
                   >
-                    <SparklesIcon className='w-5 h-5' />
+                    <SparklesIcon className='h-5 w-5' />
                     Generate
                   </Button>
                   <GenerateFlowTestModal

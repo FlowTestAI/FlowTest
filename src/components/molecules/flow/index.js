@@ -78,14 +78,15 @@ const selector = (state) => ({
   onConnect: state.onConnect,
   setNodes: state.setNodes,
   setEdges: state.setEdges,
-  setLogs: state.setLogs,
   viewport: state.viewport,
   setViewport: state.setViewport,
 });
 
 const Flow = ({ tab, collectionId }) => {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, setLogs, viewport, setViewport } =
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, viewport, setViewport } =
     useCanvasStore(selector);
+
+  const setLogs = useTabStore((state) => state.updateFlowTestLogs);
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
@@ -193,7 +194,7 @@ const Flow = ({ tab, collectionId }) => {
   };
 
   const onGraphComplete = (status, logs) => {
-    setLogs(logs);
+    setLogs(tab.id, logs);
     if (status == 'Success') {
       toast.success(`FlowTest Run Success! \n View Logs`);
     } else if (status == 'Failed') {

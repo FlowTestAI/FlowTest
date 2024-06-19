@@ -1,6 +1,7 @@
 import { OBJ_TYPES } from 'constants/Common';
 import { cloneDeep } from 'lodash';
 import { create } from 'zustand';
+import { produce } from 'immer';
 
 export const useTabStore = create((set, get) => ({
   tabs: [],
@@ -34,51 +35,61 @@ export const useTabStore = create((set, get) => ({
   },
   // these state changes are meant to be triggered by canvas in focus
   updateFlowTestNodes: (nodes) => {
-    if (get().focusTabId) {
-      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
-      if (existingTab) {
-        if (!existingTab.flowDataDraft) {
-          existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+    set(
+      produce((state) => {
+        if (state.focusTabId) {
+          const existingTab = state.tabs.find((t) => t.id === state.focusTabId);
+          if (existingTab) {
+            if (!existingTab.flowDataDraft) {
+              existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+            }
+            existingTab.flowDataDraft.nodes = nodes;
+          }
         }
-        existingTab.flowDataDraft.nodes = nodes;
-      }
-      console.log(existingTab);
-    }
+      }),
+    );
   },
   // these state changes are meant to be triggered by canvas in focus
   updateFlowTestEdges: (edges) => {
-    if (get().focusTabId) {
-      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
-      if (existingTab) {
-        if (!existingTab.flowDataDraft) {
-          existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+    set(
+      produce((state) => {
+        if (state.focusTabId) {
+          const existingTab = state.tabs.find((t) => t.id === state.focusTabId);
+          if (existingTab) {
+            if (!existingTab.flowDataDraft) {
+              existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+            }
+            existingTab.flowDataDraft.edges = edges;
+          }
         }
-        existingTab.flowDataDraft.edges = edges;
-      }
-      console.log(existingTab);
-    }
+      }),
+    );
   },
   // these state changes are meant to be triggered by canvas in focus
   updateFlowTestViewport: (viewport) => {
-    if (get().focusTabId) {
-      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
-      if (existingTab) {
-        if (!existingTab.flowDataDraft) {
-          existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+    set(
+      produce((state) => {
+        if (state.focusTabId) {
+          const existingTab = state.tabs.find((t) => t.id === state.focusTabId);
+          if (existingTab) {
+            if (!existingTab.flowDataDraft) {
+              existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+            }
+            existingTab.flowDataDraft.viewport = viewport;
+          }
         }
-        existingTab.flowDataDraft.viewport = viewport;
-      }
-      console.log(existingTab);
-    }
+      }),
+    );
   },
-  updateFlowTestLogs: (logs) => {
-    if (get().focusTabId) {
-      const existingTab = get().tabs.find((t) => t.id === get().focusTabId);
-      if (existingTab) {
-        existingTab.logs = logs;
-      }
-      console.log(existingTab);
-    }
+  updateFlowTestLogs: (tabId, logs) => {
+    set(
+      produce((state) => {
+        const existingTab = state.tabs.find((t) => t.id === tabId);
+        if (existingTab) {
+          existingTab.logs = logs;
+        }
+      }),
+    );
   },
   addEnvTab: (env, collectionId) => {
     const existingTab = get().tabs.find(

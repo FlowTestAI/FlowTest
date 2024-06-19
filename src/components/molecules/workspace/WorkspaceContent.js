@@ -10,7 +10,6 @@ import EmptyWorkSpaceContent from './EmptyWorkSpaceContent';
 
 const WorkspaceContent = () => {
   const setIntialState = useCanvasStore((state) => state.setIntialState);
-  const setLogs = useCanvasStore((state) => state.setLogs);
   const setCollectionId = useCanvasStore((state) => state.setCollectionId);
 
   const setVariables = useEnvStore((state) => state.setVariables);
@@ -26,7 +25,6 @@ const WorkspaceContent = () => {
     if (focusTab.type === OBJ_TYPES.flowtest) {
       const result = init(focusTab.flowDataDraft ? focusTab.flowDataDraft : focusTab.flowData);
       setIntialState(result);
-      setLogs(focusTab.logs);
       setCollectionId(focusTab.collectionId);
     } else if (focusTab.type === OBJ_TYPES.environment) {
       setVariables(focusTab.variablesDraft ? focusTab.variablesDraft : focusTab.variables);

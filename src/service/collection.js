@@ -8,6 +8,7 @@ import { useTabStore } from 'stores/TabStore';
 import useCanvasStore from 'stores/CanvasStore';
 import { initFlowData } from 'components/molecules/flow/utils';
 import { cloneDeep } from 'lodash';
+import useSettingsStore from 'stores/SettingsStore';
 
 export const createCollection = (openAPISpecFilePath, collectionFolderPath) => {
   const { ipcRenderer } = window;
@@ -399,5 +400,25 @@ export const deleteFlowTest = (pathname, collectionId) => {
     console.log(`Error deleting flowtest: ${error}`);
     //toast.error('Error deleting flowtest');
     return Promise.reject(new Error('Error deleting flowtest'));
+  }
+};
+
+export const uploadGraphRunLogs = async (name, logs) => {
+  try {
+    const { ipcRenderer } = window;
+    const logSyncConfig = useSettingsStore.getState().logSyncConfig;
+    if (logSyncConfig.enabled) {
+      return await ipcRenderer.invoke('renderer:upload-logs', name, logSyncConfig, logs);
+    } else {
+      return {
+        upload: 'disabled',
+        message: 'Enable flow scans today to get more value out of your APIs',
+      };
+    }
+  } catch (error) {
+    return {
+      upload: 'fail',
+      message: 'Unable to upload flow scan',
+    };
   }
 };

@@ -16,6 +16,7 @@ import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
 import { JsonView, allExpanded, collapseAllNested, darkStyles, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 import { LogLevel } from '../flow/graph/GraphLogger';
+import { ShieldCheckIcon, BarsArrowUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
@@ -111,6 +112,31 @@ const TabPanelHeader = () => {
     }
   };
 
+  // this gives forced reflow warning?
+  const renderFlowScan = (flowScan) => {
+    if (flowScan.upload === 'disabled') {
+      return (
+        <div className='flex flex-col items-start'>
+          <Tippy content={flowScan.message} placement='top'>
+            <BarsArrowUpIcon className='h-4 w-4' />
+            {'Activate Flow Scan'}
+          </Tippy>
+        </div>
+      );
+    } else if (flowScan.upload === 'success') {
+      <div className='flex flex-col items-start'>
+        <ShieldCheckIcon className='h-4 w-4' />
+        {flowScan.url}
+      </div>;
+    } else if (flowScan.upload === 'fail') {
+      <div className='flex flex-col items-start'>
+        <ExclamationTriangleIcon className='h-4 w-4' />
+        {flowScan.message}
+        {flowScan?.reason}
+      </div>;
+    }
+  };
+
   return (
     <>
       {focusTab ? (
@@ -134,7 +160,7 @@ const TabPanelHeader = () => {
               <div className='flex h-12 items-center justify-center'>
                 <SaveFlowModal tab={focusTab} />
               </div>
-              {focusTab.type === OBJ_TYPES.flowtest && focusTab.logs && focusTab.logs.length != 0 ? (
+              {focusTab.type === OBJ_TYPES.flowtest && focusTab.run.logs && focusTab.run.logs.length != 0 ? (
                 <div>
                   <Button
                     id='graph-logs-side-sheet'
@@ -178,7 +204,8 @@ const TabPanelHeader = () => {
                       className='drawer-overlay'
                     ></label>
                     <ul className='menu min-h-full bg-base-200 p-4 text-base-content'>
-                      {focusTab.logs.map((item, index) => (
+                      <li key='scan'>{renderFlowScan(focusTab.run.scan)}</li>
+                      {focusTab.run.logs.map((item, index) => (
                         <li key={index}>{renderLog(item)}</li>
                       ))}
                     </ul>

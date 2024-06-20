@@ -45,7 +45,7 @@ const argv = yargs(hideBin(process.argv))
         })
         .option('timeout', {
           alias: 't',
-          describe: 'timeout for graph run in ms',
+          describe: 'timeout for flow run in ms',
           demandOption: false,
           type: 'number',
         })
@@ -78,7 +78,7 @@ const argv = yargs(hideBin(process.argv))
             argv.env ? getEnvVariables(argv.env) : {},
             logger,
           );
-          console.log(chalk.yellow('Running Graph \n'));
+          console.log(chalk.yellow('Running Flow \n'));
           if (flowData.nodes.find((n) => n.type === 'complexNode')) {
             console.log(
               chalk.blue(
@@ -89,9 +89,9 @@ const argv = yargs(hideBin(process.argv))
           const result = await g.run();
           console.log('\n');
           if (result.status === 'Success') {
-            console.log(chalk.bold('Graph Run: ') + chalk.green(`   ✓ `) + chalk.dim(result.status));
+            console.log(chalk.bold('Flow Run: ') + chalk.green(`   ✓ `) + chalk.dim(result.status));
           } else {
-            console.log(chalk.bold('Graph Run: ') + chalk.red(`   ✕ `) + chalk.dim(result.status));
+            console.log(chalk.bold('Flow Run: ') + chalk.red(`   ✕ `) + chalk.dim(result.status));
           }
           logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
           console.log(chalk.bold('Total Time: ') + chalk.dim(`${Date.now() - startTime} ms`));
@@ -108,10 +108,10 @@ const argv = yargs(hideBin(process.argv))
                 '/upload',
                 bytesToBase64(new TextEncoder().encode(JSON.stringify(data))),
               );
-              console.log(chalk.bold('Build Scan: ') + chalk.dim(`${baseUrl}/scan/${response.data.data[0].id}`));
+              console.log(chalk.bold('Flow Scan: ') + chalk.dim(`${baseUrl}/scan/${response.data.data[0].id}`));
             } catch (error) {
               if (error?.response) {
-                if (error.response?.status === 403 || error.response?.status === 429) {
+                if (error.response?.status >= 400 && error.response?.status < 500) {
                   console.log(chalk.red(`   ${JSON.stringify(error.response?.data)}`));
                 }
 
@@ -119,7 +119,7 @@ const argv = yargs(hideBin(process.argv))
                   console.log(chalk.red('   Internal Server Error'));
                 }
               }
-              console.log(chalk.red(`   ✕ `) + chalk.dim('Unable to upload build scan'));
+              console.log(chalk.red(`   ✕ `) + chalk.dim('Unable to upload flow scan'));
             }
           }
 

@@ -27,7 +27,7 @@ import Button from 'components/atoms/common/Button';
 import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 import GraphLogger, { LogLevel } from './graph/GraphLogger';
 import Mousetrap from 'mousetrap';
-import useSettingsStore from 'stores/SettingsStore';
+import { uploadGraphRunLogs } from 'service/collection';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -88,7 +88,6 @@ const Flow = ({ tab, collectionId }) => {
     useCanvasStore(selector);
 
   const setLogs = useTabStore((state) => state.updateFlowTestLogs);
-  const logSyncConfig = useSettingsStore((state) => state.logSyncConfig);
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
@@ -195,8 +194,10 @@ const Flow = ({ tab, collectionId }) => {
     return true;
   };
 
-  const onGraphComplete = (status, logs) => {
-    setLogs(tab.id, logs);
+  const onGraphComplete = async (status, logs) => {
+    const response = await uploadGraphRunLogs(tab.name, logs);
+    console.log(response);
+    setLogs(tab.id, logs, response);
     if (status == 'Success') {
       toast.success(`FlowTest Run Success!`);
     } else if (status == 'Failed') {
@@ -275,10 +276,10 @@ const Flow = ({ tab, collectionId }) => {
               );
               const result = await g.run();
               logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
-              onGraphComplete(result.status, logger.get());
+              await onGraphComplete(result.status, logger.get());
             } catch (error) {
               logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
-              onGraphComplete('Failed', logger.get());
+              await onGraphComplete('Failed', logger.get());
               toast.error(`Internal error running graph`);
               runnableEdges(false);
             }

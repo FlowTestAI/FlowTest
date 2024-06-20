@@ -361,10 +361,10 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         };
       } catch (error) {
         if (error?.response) {
-          if (error.response?.status === 403 || error.response?.status === 429) {
+          if (error.response?.status >= 400 && error.response?.status < 500) {
             return {
               upload: 'fail',
-              message: 'Unable to upload build scan',
+              message: 'Unable to upload flow scan',
               reason: `${JSON.stringify(error.response?.data)}`,
             };
           }
@@ -372,14 +372,14 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
           if (error.response?.status === 500) {
             return {
               upload: 'fail',
-              message: 'Unable to upload build scan',
+              message: 'Unable to upload flow scan',
               reason: 'Internal Server Error',
             };
           }
         }
         return {
           upload: 'fail',
-          message: 'Unable to upload build scan',
+          message: 'Unable to upload flow scan',
         };
       }
     } catch (error) {

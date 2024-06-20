@@ -27,7 +27,7 @@ export const useTabStore = create((set, get) => ({
       name: flowtest.name,
       pathname: flowtest.pathname,
       flowData: flowtest.flowData,
-      logs: [],
+      run: {},
     };
 
     set((state) => ({ tabs: [...state.tabs, newTab] }));
@@ -81,12 +81,15 @@ export const useTabStore = create((set, get) => ({
       }),
     );
   },
-  updateFlowTestLogs: (tabId, logs) => {
+  updateFlowTestLogs: (tabId, logs, flowScan) => {
     set(
       produce((state) => {
         const existingTab = state.tabs.find((t) => t.id === tabId);
         if (existingTab) {
-          existingTab.logs = logs;
+          existingTab.run = {
+            scan: flowScan,
+            logs,
+          };
         }
       }),
     );

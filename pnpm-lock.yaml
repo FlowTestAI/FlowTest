@@ -243,6 +243,9 @@ importers:
       axios:
         specifier: ^1.6.7
         version: 1.7.2
+      axios-retry:
+        specifier: ^4.4.0
+        version: 4.4.0(axios@1.7.2)
       chokidar:
         specifier: ^3.6.0
         version: 3.6.0

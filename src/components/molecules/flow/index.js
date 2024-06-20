@@ -27,6 +27,7 @@ import Button from 'components/atoms/common/Button';
 import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 import GraphLogger, { LogLevel } from './graph/GraphLogger';
 import Mousetrap from 'mousetrap';
+import useSettingsStore from 'stores/SettingsStore';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -87,6 +88,7 @@ const Flow = ({ tab, collectionId }) => {
     useCanvasStore(selector);
 
   const setLogs = useTabStore((state) => state.updateFlowTestLogs);
+  const logSyncConfig = useSettingsStore((state) => state.logSyncConfig);
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
@@ -196,9 +198,9 @@ const Flow = ({ tab, collectionId }) => {
   const onGraphComplete = (status, logs) => {
     setLogs(tab.id, logs);
     if (status == 'Success') {
-      toast.success(`FlowTest Run Success! \n View Logs`);
+      toast.success(`FlowTest Run Success!`);
     } else if (status == 'Failed') {
-      toast.error(`FlowTest Run Failed! \n View Logs`);
+      toast.error(`FlowTest Run Failed!`);
     }
     runnableEdges(false);
   };

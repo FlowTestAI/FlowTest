@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition, Listbox } from '@headlessui/react';
 import Button from 'components/atoms/common/Button';
@@ -35,9 +35,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
   const [bedrockSecretAccessKey, setBedrockSecretAccessKey] = useState('');
 
   const [flowtestName, setFlowtestName] = useState('');
-  const [selectedCollection, setSelectionCollection] = useState(
-    collectionId ? collections.find((c) => c.id === collectionId) : {},
-  );
+  const [selectedCollection, setSelectionCollection] = useState({});
   const [selectedFolder, setSelectedFolder] = useState('');
 
   // Error flags
@@ -49,6 +47,10 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
   const [showBedrockAccessKeyIdError, setShowBedrockAccessKeyIdError] = useState(false);
   const [showBedrockSecretAccessKeyError, setShowBedrockSecretAccessKeyError] = useState(false);
   //const [showFolderSelectionError, setShowFolderSelectionError] = useState(false);
+
+  useEffect(() => {
+    setSelectionCollection(collectionId ? collections.find((c) => c.id === collectionId) : {});
+  }, [collectionId]);
 
   const resetFields = () => {
     if (!collectionId) {

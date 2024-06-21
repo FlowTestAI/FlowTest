@@ -16,6 +16,7 @@ import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
 import { JsonView, allExpanded, collapseAllNested, darkStyles, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 import { LogLevel } from '../flow/graph/GraphLogger';
+import { ShieldCheckIcon, BarsArrowUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import GenAIUsageDisclaimer from '../modals/GenAIUsageDisclaimer';
 import { getLocalStorageItem } from 'utils/common';
 
@@ -37,6 +38,34 @@ const TabPanelHeader = () => {
   const [genAiUsageDisclaimerModalOpen, setGenAiUsageDisclaimerModalOpen] = useState(false);
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
 
+  const renderFlowScan = (flowScan) => {
+    if (flowScan.upload === 'disabled') {
+      return (
+        <div className='flex flex-col items-start'>
+          <Tippy content={flowScan.message} placement='top'>
+            <BarsArrowUpIcon className='h-4 w-4' />
+          </Tippy>
+          {'Activate Flow Scan'}
+        </div>
+      );
+    } else if (flowScan.upload === 'success') {
+      return (
+        <div className='flex flex-col items-start'>
+          <ShieldCheckIcon className='h-4 w-4' />
+          {flowScan.url}
+        </div>
+      );
+    } else if (flowScan.upload === 'fail') {
+      return (
+        <div className='flex flex-col items-start'>
+          <ExclamationTriangleIcon className='h-4 w-4' />
+          {flowScan.message}
+          {flowScan?.reason}
+        </div>
+      );
+    }
+  };
+
   const renderLog = (log) => {
     if (log.logLevel === LogLevel.INFO) {
       let message = '';
@@ -47,28 +76,30 @@ const TabPanelHeader = () => {
 
       if (log.node != undefined) {
         const type = log.node.type;
+        const data = log.node.data;
         if (type === 'outputNode') {
           json = {
-            output: log.node.data,
+            output: data.output,
           };
         }
 
+        if (type === 'authNode') {
+          message = `${data.authType}`;
+        }
+
         if (type === 'assertNode') {
-          const data = log.node.data;
           message = `Assert : ${data.var1} of type ${typeof data.var1} ${data.operator} ${data.var2} of type ${typeof data.var2} = ${data.result}`;
         }
 
         if (type === 'delayNode') {
-          message = `Waiting for ${log.node.data} ms`;
+          message = `Waiting for ${data.delay} ms`;
         }
 
         if (type === 'setVarNode') {
-          const data = log.node.data;
           message = `Setting Variable:  ${data.name} = ${data.value}`;
         }
 
         if (type === 'requestNode') {
-          const data = log.node.data;
           message = `${data.request.type.toUpperCase()} ${data.request.url}`;
           json = data;
         }
@@ -142,7 +173,7 @@ const TabPanelHeader = () => {
               <div className='flex h-12 items-center justify-center'>
                 <SaveFlowModal tab={focusTab} />
               </div>
-              {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
+              {focusTab.type === OBJ_TYPES.flowtest && focusTab.run.logs && focusTab.run.logs.length != 0 ? (
                 <div>
                   <Button
                     id='graph-logs-side-sheet'
@@ -186,7 +217,8 @@ const TabPanelHeader = () => {
                       className='drawer-overlay'
                     ></label>
                     <ul className='menu min-h-full bg-base-200 p-4 text-base-content'>
-                      {graphRunLogs.map((item, index) => (
+                      <li key='scan'>{renderFlowScan(focusTab.run.scan)}</li>
+                      {focusTab.run.logs.map((item, index) => (
                         <li key={index}>{renderLog(item)}</li>
                       ))}
                     </ul>

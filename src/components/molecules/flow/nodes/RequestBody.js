@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useRef } from 'react';
 import { PropTypes } from 'prop-types';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
-import { DocumentArrowUpIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline';
+import { DocumentArrowUpIcon, ClipboardDocumentCheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import useCanvasStore from 'stores/CanvasStore';
 import { toast } from 'react-toastify';
@@ -22,9 +22,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
   const setRequestNodeBody = useCanvasStore((state) => state.setRequestNodeBody);
   const [cachedValues, setCachedValues] = React.useState({});
 
-  const [textToCopy, setTextToCopy] = useState(nodeData.requestBody.body); // The text you want to copy
   const [copyStatus, setCopyStatus] = useState(false); // To indicate if the text was copied
-  const [showCopiedToClipboardToolTip, setShowCopiedToClipboardToolTip] = useState(false);
 
   const uploadFileForRequestNode = useRef(null);
 
@@ -73,7 +71,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
     });
   };
 
-  const handleRawJson = async (value) => {
+  const handleRawJson = (value) => {
     setRequestNodeBody(nodeId, 'raw-json', value);
   };
 
@@ -112,13 +110,6 @@ const RequestBody = ({ nodeId, nodeData }) => {
       }
     }
     return [];
-  };
-
-  const onCopyText = () => {
-    setCopyStatus(true);
-    setShowCopiedToClipboardToolTip(true);
-    setTimeout(() => setCopyStatus(false), 2000); // Reset status after 2 seconds
-    setTimeout(() => setShowCopiedToClipboardToolTip(false), 2000); // Reset status after 2 seconds
   };
 
   return (
@@ -164,26 +155,30 @@ const RequestBody = ({ nodeId, nodeData }) => {
               <div className='relative bg-background-lighter'>
                 <Editor
                   name='request-body-json'
-                  onChange={async (e) => {
-                    await handleRawJson(e);
-                    setTextToCopy(e);
-                  }}
+                  onChange={(e) => handleRawJson(e)}
                   value={nodeData.requestBody.body}
                   classes={'w-full max-h-96'}
                   completionOptions={getActiveVariables()}
                 />
 
                 <div className='absolute right-5 top-0 cursor-pointer text-slate-400 hover:text-cyan-900'>
-                  <CopyToClipboard text={textToCopy} onCopy={onCopyText}>
+                  <CopyToClipboard
+                    text={nodeData.requestBody.body}
+                    onCopy={() => {
+                      setCopyStatus(true);
+                      setTimeout(() => setCopyStatus(false), 2000); // Reset status after 2 seconds
+                    }}
+                  >
                     <button>
-                      <Tippy
-                        content='Copied to Clipboard'
-                        placement='top'
-                        visible={showCopiedToClipboardToolTip}
-                        onClickOutside={() => setShowCopiedToClipboardToolTip(false)}
-                      >
-                        <ClipboardDocumentCheckIcon className='h-6 w-6' />
-                      </Tippy>
+                      {copyStatus ? (
+                        <Tippy content='Copied to Clipboard' placement='top'>
+                          <ClipboardDocumentCheckIcon className='h-6 w-6' />
+                        </Tippy>
+                      ) : (
+                        <Tippy content='Copy to Clipboard' placement='top'>
+                          <ClipboardDocumentIcon className='h-6 w-6' />
+                        </Tippy>
+                      )}
                     </button>
                   </CopyToClipboard>
                 </div>

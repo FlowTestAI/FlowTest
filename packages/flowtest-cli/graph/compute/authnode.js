@@ -1,6 +1,7 @@
 const { computeVariables } = require('./utils');
 const Node = require('./node');
 const chalk = require('chalk');
+const { LogLevel } = require('../GraphLogger');
 
 class authNode extends Node {
   constructor(auth, envVariables, logger) {

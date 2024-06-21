@@ -32,7 +32,7 @@ class assertNode extends Node {
 
     const operator = this.operator;
     if (operator == undefined) {
-      throw 'Operator undefined';
+      throw Error('Operator undefined');
     }
 
     let result;
@@ -50,7 +50,7 @@ class assertNode extends Node {
         result = var1 < var2;
         break;
       default:
-        throw 'Unsupported operator';
+        throw Error('Unsupported operator');
     }
     this.logger.add(LogLevel.INFO, '', { type: 'assertNode', data: { var1, var2, operator, result } });
 

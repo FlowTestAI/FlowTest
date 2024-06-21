@@ -51,7 +51,7 @@ const argv = yargs(hideBin(process.argv))
         })
         .option('scan', {
           alias: 's',
-          describe: 'generate and upload build scan',
+          describe: 'generate and upload flow scan',
         });
     },
     async (argv) => {
@@ -79,7 +79,7 @@ const argv = yargs(hideBin(process.argv))
             logger,
           );
           console.log(chalk.yellow('Running Flow \n'));
-          if (flowData.nodes.find((n) => n.type === 'complexNode')) {
+          if (flowData.nodes.find((n) => n.type === 'flowNode')) {
             console.log(
               chalk.blue(
                 '[Note] This flow contains nested flows so run it from parent directory of collection. Ignore if already doing that. \n',

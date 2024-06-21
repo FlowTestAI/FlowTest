@@ -44,28 +44,26 @@ const TabPanelHeader = () => {
 
       if (log.node != undefined) {
         const type = log.node.type;
+        const data = log.node.data;
         if (type === 'outputNode') {
           json = {
-            output: log.node.data,
+            output: data.output,
           };
         }
 
         if (type === 'assertNode') {
-          const data = log.node.data;
           message = `Assert : ${data.var1} of type ${typeof data.var1} ${data.operator} ${data.var2} of type ${typeof data.var2} = ${data.result}`;
         }
 
         if (type === 'delayNode') {
-          message = `Waiting for ${log.node.data} ms`;
+          message = `Waiting for ${data.delay} ms`;
         }
 
         if (type === 'setVarNode') {
-          const data = log.node.data;
           message = `Setting Variable:  ${data.name} = ${data.value}`;
         }
 
         if (type === 'requestNode') {
-          const data = log.node.data;
           message = `${data.request.type.toUpperCase()} ${data.request.url}`;
           json = data;
         }
@@ -112,15 +110,14 @@ const TabPanelHeader = () => {
     }
   };
 
-  // this gives forced reflow warning?
   const renderFlowScan = (flowScan) => {
     if (flowScan.upload === 'disabled') {
       return (
         <div className='flex flex-col items-start'>
           <Tippy content={flowScan.message} placement='top'>
             <BarsArrowUpIcon className='h-4 w-4' />
-            {'Activate Flow Scan'}
           </Tippy>
+          {'Activate Flow Scan'}
         </div>
       );
     } else if (flowScan.upload === 'success') {

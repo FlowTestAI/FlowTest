@@ -91,7 +91,16 @@ export const isSaveNeeded = (flowData, flowDataDraft) => {
     return { id, type, data, position };
   };
 
-  const nodes = flowData.nodes.map((e) => unwrapNode(e));
+  const nodes = flowData.nodes.map((node) => {
+    if (node.type === 'outputNode' && node.data.output) {
+      const { ['output']: _, ...data } = node.data;
+      return unwrapNode({
+        ...node,
+        data,
+      });
+    }
+    return unwrapNode(node);
+  });
   const nodesDraft = flowDataDraft.nodes.map((node) => {
     if (node.type === 'outputNode' && node.data.output) {
       const { ['output']: _, ...data } = node.data;

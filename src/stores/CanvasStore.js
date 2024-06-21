@@ -7,7 +7,6 @@ import { getDefaultValue } from 'utils/common';
 const useCanvasStore = create((set, get) => ({
   nodes: [],
   edges: [],
-  logs: [],
   collectionId: '',
   timeout: '60000',
   viewport: { x: 0, y: 0, zoom: 1 },
@@ -33,6 +32,9 @@ const useCanvasStore = create((set, get) => ({
     });
     useTabStore.getState().updateFlowTestEdges(get().edges);
   },
+  setIntialState: ({ nodes, edges, viewport }) => {
+    set((state) => ({ ...state, ...{ nodes, edges, viewport } }));
+  },
   setNodes: (nodes) => {
     set({ nodes });
     useTabStore.getState().updateFlowTestNodes(get().nodes);
@@ -40,10 +42,6 @@ const useCanvasStore = create((set, get) => ({
   setEdges: (edges) => {
     set({ edges });
     useTabStore.getState().updateFlowTestEdges(get().edges);
-  },
-  setLogs: (logs) => {
-    set({ logs });
-    useTabStore.getState().updateFlowTestLogs(get().logs);
   },
   setCollectionId: (collectionId) => {
     set({ collectionId });

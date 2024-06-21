@@ -27,6 +27,7 @@ import Button from 'components/atoms/common/Button';
 import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 import GraphLogger, { LogLevel } from './graph/GraphLogger';
 import Mousetrap from 'mousetrap';
+import { uploadGraphRunLogs } from 'service/collection';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -78,14 +79,15 @@ const selector = (state) => ({
   onConnect: state.onConnect,
   setNodes: state.setNodes,
   setEdges: state.setEdges,
-  setLogs: state.setLogs,
   viewport: state.viewport,
   setViewport: state.setViewport,
 });
 
 const Flow = ({ tab, collectionId }) => {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, setLogs, viewport, setViewport } =
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, setNodes, setEdges, viewport, setViewport } =
     useCanvasStore(selector);
+
+  const setLogs = useTabStore((state) => state.updateFlowTestLogs);
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
@@ -192,12 +194,14 @@ const Flow = ({ tab, collectionId }) => {
     return true;
   };
 
-  const onGraphComplete = (status, logs) => {
-    setLogs(logs);
+  const onGraphComplete = async (status, logs) => {
+    const response = await uploadGraphRunLogs(tab.name, logs);
+    console.log(response);
+    setLogs(tab.id, logs, response);
     if (status == 'Success') {
-      toast.success(`FlowTest Run Success! \n View Logs`);
+      toast.success(`FlowTest Run Success!`);
     } else if (status == 'Failed') {
-      toast.error(`FlowTest Run Failed! \n View Logs`);
+      toast.error(`FlowTest Run Failed!`);
     }
     runnableEdges(false);
   };
@@ -272,10 +276,10 @@ const Flow = ({ tab, collectionId }) => {
               );
               const result = await g.run();
               logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
-              onGraphComplete(result.status, logger.get());
+              await onGraphComplete(result.status, logger.get());
             } catch (error) {
               logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
-              onGraphComplete('Failed', logger.get());
+              await onGraphComplete('Failed', logger.get());
               toast.error(`Internal error running graph`);
               runnableEdges(false);
             }

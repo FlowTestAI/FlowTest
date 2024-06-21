@@ -3,7 +3,7 @@ import Node from './node';
 
 class nestedFlowNode extends Node {
   constructor(nodes, edges, startTime, initialEnvVars, logger, caller) {
-    super('complexNode');
+    super('flowNode');
     this.internalGraph = new Graph1(nodes, edges, startTime, initialEnvVars, logger, caller);
   }
 

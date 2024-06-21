@@ -5,6 +5,7 @@ const url = require('url');
 const template = require('./electron-menu');
 const Watcher = require('./src/app/watcher');
 const registerRendererEventHandlers = require('./src/ipc/collection');
+const registerSettingsEventHandlers = require('./src/ipc/settings');
 
 let mainWindow;
 let watcher;
@@ -59,6 +60,7 @@ app.on('ready', async () => {
   watcher = new Watcher();
 
   registerRendererEventHandlers(mainWindow, watcher);
+  registerSettingsEventHandlers(mainWindow);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

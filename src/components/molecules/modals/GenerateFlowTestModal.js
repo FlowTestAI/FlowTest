@@ -103,7 +103,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
         </Transition.Child>
 
         <div className='fixed inset-0 overflow-y-auto'>
-          <div className='flex items-center justify-center min-h-full p-4 text-center'>
+          <div className='flex min-h-full items-center justify-center p-4 text-center'>
             <Transition.Child
               as={Fragment}
               enter='ease-out duration-300'
@@ -113,8 +113,8 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
               leaveFrom='opacity-100 scale-100'
               leaveTo='opacity-0 scale-95'
             >
-              <Dialog.Panel className='w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl'>
-                <Dialog.Title as='h3' className='pb-4 text-lg font-semibold text-center border-b border-gray-300'>
+              <Dialog.Panel className='w-full max-w-2xl transform overflow-hidden rounded bg-white p-6 text-left align-middle shadow-xl transition-all'>
+                <Dialog.Title as='h3' className='border-b border-gray-300 pb-4 text-center text-lg font-semibold'>
                   Use our AI to generate the flow
                 </Dialog.Title>
                 <div className='flex flex-col gap-6 py-6'>
@@ -138,7 +138,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                   {!collectionId && (
                     <>
                       <div>
-                        <div className='flex justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                        <div className='flex justify-between gap-2 whitespace-nowrap rounded border border-cyan-900 bg-background-light text-cyan-900 transition hover:bg-background'>
                           <Listbox
                             value={selectedCollection}
                             onChange={(value) => {
@@ -146,10 +146,10 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                               // setSelectionCollectionId(value.id);
                             }}
                           >
-                            <div className='relative flex w-full h-full'>
+                            <div className='relative flex h-full w-full'>
                               <Listbox.Button className='flex w-full items-center justify-between gap-1 px-4 py-2.5 sm:text-sm'>
                                 {!isEmpty(selectedCollection) ? selectedCollection.name : 'Select Collection'}
-                                <ChevronUpDownIcon className='w-5 h-5' aria-hidden='true' />
+                                <ChevronUpDownIcon className='h-5 w-5' aria-hidden='true' />
                               </Listbox.Button>
                               <Transition
                                 as={Fragment}
@@ -157,7 +157,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                                 leaveFrom='opacity-100'
                                 leaveTo='opacity-0'
                               >
-                                <Listbox.Options className='absolute right-0 z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded shadow-lg top-10 max-h-60 ring-1 ring-black/5'>
+                                <Listbox.Options className='absolute right-0 top-10 z-10 mt-1 max-h-60 w-full overflow-auto rounded bg-white py-1 text-base shadow-lg ring-1 ring-black/5'>
                                   {collections.map((collection, index) => {
                                     return (
                                       <Listbox.Option
@@ -178,7 +178,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                                             </span>
                                             {selected ? (
                                               <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
-                                                <CheckIcon className='w-5 h-5' aria-hidden='true' />
+                                                <CheckIcon className='h-5 w-5' aria-hidden='true' />
                                               </span>
                                             ) : null}
                                           </>
@@ -201,17 +201,17 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                       </div>
                       {!isEmpty(selectedCollection) && containsFolder(selectedCollection) ? (
                         <div>
-                          <div className='justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                          <div className='justify-between gap-2 whitespace-nowrap rounded border border-cyan-900 bg-background-light text-cyan-900 transition hover:bg-background'>
                             <Listbox
                               value={selectedFolder}
                               onChange={(value) => {
                                 setSelectedFolder(value);
                               }}
                             >
-                              <div className='relative flex w-full h-full'>
+                              <div className='relative flex h-full w-full'>
                                 <Listbox.Button className='flex w-full items-center justify-between gap-1 px-4 py-2.5 sm:text-sm'>
                                   {!isEmpty(selectedFolder) ? selectedFolder.name : 'Select Folder'}
-                                  <ChevronUpDownIcon className='w-5 h-5' aria-hidden='true' />
+                                  <ChevronUpDownIcon className='h-5 w-5' aria-hidden='true' />
                                 </Listbox.Button>
                                 <Transition
                                   as={Fragment}
@@ -219,7 +219,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                                   leaveFrom='opacity-100'
                                   leaveTo='opacity-0'
                                 >
-                                  <Listbox.Options className='absolute right-0 z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded shadow-lg top-10 max-h-60 ring-1 ring-black/5'>
+                                  <Listbox.Options className='absolute right-0 top-10 z-10 mt-1 max-h-60 w-full overflow-auto rounded bg-white py-1 text-base shadow-lg ring-1 ring-black/5'>
                                     {flattenItems(selectedCollection.items).map((collectionItem, index) => {
                                       if (collectionItem.type === OBJ_TYPES.folder) {
                                         return (
@@ -244,7 +244,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                                                 </span>
                                                 {selected ? (
                                                   <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
-                                                    <CheckIcon className='w-5 h-5' aria-hidden='true' />
+                                                    <CheckIcon className='h-5 w-5' aria-hidden='true' />
                                                   </span>
                                                 ) : null}
                                               </>
@@ -275,7 +275,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                 <div>
                   {!isEmpty(selectedCollection) && (
                     <div>
-                      <div className='justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                      <div className='justify-between gap-2 whitespace-nowrap rounded border border-cyan-900 bg-background-light text-cyan-900 transition hover:bg-background'>
                         <Listbox
                           value={selectedModel}
                           onChange={(m) => {
@@ -316,10 +316,10 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                             setSelectedModel(m);
                           }}
                         >
-                          <div className='relative flex w-full h-full'>
+                          <div className='relative flex h-full w-full'>
                             <Listbox.Button className='flex w-full items-center justify-between gap-1 px-4 py-2.5 sm:text-sm'>
                               {selectedModel ? selectedModel : 'Select model'}
-                              <ChevronUpDownIcon className='w-5 h-5' aria-hidden='true' />
+                              <ChevronUpDownIcon className='h-5 w-5' aria-hidden='true' />
                             </Listbox.Button>
                             <Transition
                               as={Fragment}
@@ -327,7 +327,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                               leaveFrom='opacity-100'
                               leaveTo='opacity-0'
                             >
-                              <Listbox.Options className='absolute right-0 z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded shadow-lg top-10 max-h-60 ring-1 ring-black/5'>
+                              <Listbox.Options className='absolute right-0 top-10 z-10 mt-1 max-h-60 w-full overflow-auto rounded bg-white py-1 text-base shadow-lg ring-1 ring-black/5'>
                                 {Object.values(GENAI_MODELS).map((modelType) => (
                                   <Listbox.Option
                                     key={modelType}
@@ -345,7 +345,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                                         </span>
                                         {selected ? (
                                           <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
-                                            <CheckIcon className='w-5 h-5' aria-hidden='true' />
+                                            <CheckIcon className='h-5 w-5' aria-hidden='true' />
                                           </span>
                                         ) : null}
                                       </>
@@ -366,9 +366,9 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                   )}
                   {selectedModel === GENAI_MODELS.openai ? (
                     <div>
-                      <div className='flex items-center justify-center w-full h-12 mt-6 text-sm border rounded border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                      <div className='mt-6 flex h-12 w-full items-center justify-center rounded border border-cyan-900 bg-background-light text-sm text-cyan-900 hover:bg-background'>
                         <label
-                          className='flex items-center w-32 h-full px-4 bg-transparent border-r border-cyan-900'
+                          className='flex h-full w-32 items-center border-r border-cyan-900 bg-transparent px-4'
                           htmlFor='openAIkey'
                         >
                           API_KEY
@@ -379,7 +379,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                           className='nodrag nowheel block w-full bg-transparent p-2.5 outline-none'
                           name='keyName'
                           placeholder='Enter your OPENAI api key'
-                          value={modelKey.trim() != '' ? modelKey : 'Enter your OPENAI api key'}
+                          value={modelKey}
                           //readOnly='readonly'
                           onChange={(e) => setModelKey(e.target.value)}
                         />
@@ -395,9 +395,9 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                   )}
                   {selectedModel === GENAI_MODELS.bedrock_claude ? (
                     <div>
-                      <div className='flex items-center justify-center w-full h-12 mt-6 text-sm border rounded border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                      <div className='mt-6 flex h-12 w-full items-center justify-center rounded border border-cyan-900 bg-background-light text-sm text-cyan-900 hover:bg-background'>
                         <label
-                          className='flex items-center w-32 h-full px-4 bg-transparent border-r border-cyan-900'
+                          className='flex h-full w-32 items-center border-r border-cyan-900 bg-transparent px-4'
                           htmlFor='bedrockAccessKeyId'
                         >
                           ACCESS_KEYID
@@ -408,9 +408,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                           className='nodrag nowheel block w-full bg-transparent p-2.5 outline-none'
                           name='keyId'
                           placeholder='Enter your BEDROCK access key id'
-                          value={
-                            bedrockAccessKeyId.trim() != '' ? bedrockAccessKeyId : 'Enter your BEDROCK access key id'
-                          }
+                          value={bedrockAccessKeyId}
                           //readOnly='readonly'
                           onChange={(e) => setBedrockAccessKeyId(e.target.value)}
                         />
@@ -420,9 +418,9 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                       ) : (
                         ''
                       )}
-                      <div className='flex items-center justify-center w-full h-12 mt-6 text-sm border rounded border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
+                      <div className='mt-6 flex h-12 w-full items-center justify-center rounded border border-cyan-900 bg-background-light text-sm text-cyan-900 hover:bg-background'>
                         <label
-                          className='flex items-center h-full px-4 bg-transparent border-r w-fit border-cyan-900'
+                          className='flex h-full w-fit items-center border-r border-cyan-900 bg-transparent px-4'
                           htmlFor='bedrockSecretAccessKey'
                         >
                           SECRET_ACCESSKEY
@@ -433,11 +431,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                           className='nodrag nowheel block w-full bg-transparent p-2.5 outline-none'
                           name='keyName'
                           placeholder='Enter your BEDROCK secret access key'
-                          value={
-                            bedrockSecretAccessKey.trim() != ''
-                              ? bedrockSecretAccessKey
-                              : 'Enter your BEDROCK secret access key'
-                          }
+                          value={bedrockSecretAccessKey}
                           //readOnly='readonly'
                           onChange={(e) => setBedrockSecretAccessKey(e.target.value)}
                         />
@@ -469,7 +463,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                     )}
                   </div>
                 </div>
-                <div className='flex items-center gap-2 mt-6'>
+                <div className='mt-6 flex items-center gap-2'>
                   <Button
                     btnType={BUTTON_TYPES.primary}
                     intentType={BUTTON_INTENT_TYPES.error}

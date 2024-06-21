@@ -17,6 +17,7 @@ const readFile = require('../utils/filemanager/readfile');
 const FlowtestAI = require('../ai/flowtestai');
 const { stringify, parse } = require('flatted');
 const { deserialize, serialize } = require('../utils/flowparser/parser');
+const { axiosClient } = require('./axiosClient');
 
 const collectionStore = new Collections();
 const flowTestAI = new FlowtestAI();
@@ -317,7 +318,9 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
       } else {
         return {
           error: {
-            message: `An error occurred while running the request : ${error?.message}`,
+            status: '',
+            statusText: '',
+            data: `An error occurred while running the request : ${error?.message}`,
           },
         };
       }
@@ -331,6 +334,55 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         return await flowTestAI.generate(parse(collection.openapi_spec), instruction, model);
       } else {
         return Promise.reject(new Error('Collection not found'));
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
+
+  ipcMain.handle('renderer:upload-logs', async (event, name, config, logs) => {
+    function bytesToBase64(bytes) {
+      const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join('');
+      return btoa(binString);
+    }
+
+    try {
+      const data = {
+        version: 1,
+        name,
+        scan: logs,
+      };
+      try {
+        const response = await axiosClient(config.hostUrl, config.accessId, config.accessKey).post(
+          '/upload',
+          bytesToBase64(new TextEncoder().encode(JSON.stringify(data))),
+        );
+        return {
+          upload: 'success',
+          url: `${config.hostUrl}/scan/${response.data.data[0].id}`,
+        };
+      } catch (error) {
+        if (error?.response) {
+          if (error.response?.status >= 400 && error.response?.status < 500) {
+            return {
+              upload: 'fail',
+              message: 'Unable to upload flow scan',
+              reason: `${JSON.stringify(error.response?.data)}`,
+            };
+          }
+
+          if (error.response?.status === 500) {
+            return {
+              upload: 'fail',
+              message: 'Unable to upload flow scan',
+              reason: 'Internal Server Error',
+            };
+          }
+        }
+        return {
+          upload: 'fail',
+          message: 'Unable to upload flow scan',
+        };
       }
     } catch (error) {
       return Promise.reject(error);

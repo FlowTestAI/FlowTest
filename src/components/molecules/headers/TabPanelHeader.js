@@ -16,13 +16,13 @@ import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
 import { JsonView, allExpanded, collapseAllNested, darkStyles, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 import { LogLevel } from '../flow/graph/GraphLogger';
+import { ShieldCheckIcon, BarsArrowUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
   const tabs = useTabStore((state) => state.tabs);
   const focusTab = tabs.find((t) => t.id === focusTabId);
 
-  const graphRunLogs = useCanvasStore((state) => state.logs);
   const setTimeout = useCanvasStore((state) => state.setTimeout);
 
   const [slidingPaneState, setSlidingPaneState] = useState({
@@ -44,28 +44,26 @@ const TabPanelHeader = () => {
 
       if (log.node != undefined) {
         const type = log.node.type;
+        const data = log.node.data;
         if (type === 'outputNode') {
           json = {
-            output: log.node.data,
+            output: data.output,
           };
         }
 
         if (type === 'assertNode') {
-          const data = log.node.data;
           message = `Assert : ${data.var1} of type ${typeof data.var1} ${data.operator} ${data.var2} of type ${typeof data.var2} = ${data.result}`;
         }
 
         if (type === 'delayNode') {
-          message = `Waiting for ${log.node.data} ms`;
+          message = `Waiting for ${data.delay} ms`;
         }
 
         if (type === 'setVarNode') {
-          const data = log.node.data;
           message = `Setting Variable:  ${data.name} = ${data.value}`;
         }
 
         if (type === 'requestNode') {
-          const data = log.node.data;
           message = `${data.request.type.toUpperCase()} ${data.request.url}`;
           json = data;
         }
@@ -112,6 +110,34 @@ const TabPanelHeader = () => {
     }
   };
 
+  const renderFlowScan = (flowScan) => {
+    if (flowScan.upload === 'disabled') {
+      return (
+        <div className='flex flex-col items-start'>
+          <Tippy content={flowScan.message} placement='top'>
+            <BarsArrowUpIcon className='h-4 w-4' />
+          </Tippy>
+          {'Activate Flow Scan'}
+        </div>
+      );
+    } else if (flowScan.upload === 'success') {
+      return (
+        <div className='flex flex-col items-start'>
+          <ShieldCheckIcon className='h-4 w-4' />
+          {flowScan.url}
+        </div>
+      );
+    } else if (flowScan.upload === 'fail') {
+      return (
+        <div className='flex flex-col items-start'>
+          <ExclamationTriangleIcon className='h-4 w-4' />
+          {flowScan.message}
+          {flowScan?.reason}
+        </div>
+      );
+    }
+  };
+
   return (
     <>
       {focusTab ? (
@@ -119,7 +145,7 @@ const TabPanelHeader = () => {
           <div className='flex items-center justify-between px-4 py-3'>
             <div className='py-3 text-base tracking-[0.15em]'>{focusTab.name}</div>
 
-            <div className='flex items-center justify-between gap-4 pl-4 border-l border-gray-300'>
+            <div className='flex items-center justify-between gap-4 border-l border-gray-300 pl-4'>
               {focusTab.type === OBJ_TYPES.flowtest && (
                 // ToDo: Check this
                 <div className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded border border-cyan-900 bg-background-light px-4 py-2.5 text-cyan-900 transition hover:bg-background'>
@@ -132,10 +158,10 @@ const TabPanelHeader = () => {
                 </div>
               )}
 
-              <div className='flex items-center justify-center h-12'>
+              <div className='flex h-12 items-center justify-center'>
                 <SaveFlowModal tab={focusTab} />
               </div>
-              {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
+              {focusTab.type === OBJ_TYPES.flowtest && focusTab.run.logs && focusTab.run.logs.length != 0 ? (
                 <div>
                   <Button
                     id='graph-logs-side-sheet'
@@ -153,7 +179,7 @@ const TabPanelHeader = () => {
                   >
                     <Tippy content='Logs' placement='top'>
                       <label htmlFor='graph-logs-side-sheet'>
-                        <DocumentTextIcon className='w-5 h-5' />
+                        <DocumentTextIcon className='h-5 w-5' />
                       </label>
                     </Tippy>
                   </Button>
@@ -178,8 +204,9 @@ const TabPanelHeader = () => {
                       aria-label='close sidebar'
                       className='drawer-overlay'
                     ></label>
-                    <ul className='min-h-full p-4 menu bg-base-200 text-base-content'>
-                      {graphRunLogs.map((item, index) => (
+                    <ul className='menu min-h-full bg-base-200 p-4 text-base-content'>
+                      <li key='scan'>{renderFlowScan(focusTab.run.scan)}</li>
+                      {focusTab.run.logs.map((item, index) => (
                         <li key={index}>{renderLog(item)}</li>
                       ))}
                     </ul>
@@ -197,7 +224,7 @@ const TabPanelHeader = () => {
                     fullWidth={true}
                     className='flex items-center justify-between gap-x-4'
                   >
-                    <SparklesIcon className='w-5 h-5' />
+                    <SparklesIcon className='h-5 w-5' />
                     Generate
                   </Button>
                   <GenerateFlowTestModal

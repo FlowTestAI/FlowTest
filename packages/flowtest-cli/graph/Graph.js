@@ -133,7 +133,7 @@ class Graph {
 
       if (node.type === 'authNode') {
         console.log('Authentication Node');
-        const aNode = new authNode(node.data, this.envVariables);
+        const aNode = new authNode(node.data, this.envVariables, this.logger);
         this.auth = node.data.type ? aNode.evaluate() : undefined;
         result = {
           status: 'Success',

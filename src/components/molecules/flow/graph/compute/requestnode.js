@@ -35,7 +35,11 @@ class requestNode extends Node {
     if (res.error) {
       this.logger.add(LogLevel.ERROR, 'HTTP request failed', {
         type: 'requestNode',
-        data: { request: { type: options.method, url: options.url }, response: res.error, preReqVars: evalVariables },
+        data: {
+          request: { type: options.method, url: options.url, data: options.data },
+          response: res.error,
+          preReqVars: evalVariables,
+        },
       });
       return {
         status: 'Failed',
@@ -60,7 +64,11 @@ class requestNode extends Node {
       }
       this.logger.add(LogLevel.INFO, 'HTTP request success', {
         type: 'requestNode',
-        data: { request: { type: options.method, url: options.url }, response: res, preReqVars: evalVariables },
+        data: {
+          request: { type: options.method, url: options.url, data: options.data },
+          response: res,
+          preReqVars: evalVariables,
+        },
       });
       return {
         status: 'Success',

@@ -3,6 +3,7 @@ import useSettingsStore from 'stores/SettingsStore';
 
 const registerSettingsEventHandlers = () => {
   const _addLogSyncConfig = useSettingsStore((state) => state.addLogSyncConfig);
+  const _addGenAIUsageDisclaimer = useSettingsStore((state) => state.addGenAIUsageDisclaimer);
 
   useEffect(() => {
     const { ipcRenderer } = window;
@@ -11,6 +12,10 @@ const registerSettingsEventHandlers = () => {
       if (savedSettings.logSyncConfig) {
         const config = savedSettings.logSyncConfig;
         _addLogSyncConfig(config.enabled || false, config.hostUrl || '', config.accessId || '', config.accessKey || '');
+      }
+
+      if (savedSettings.genAIUsageDisclaimer) {
+        _addGenAIUsageDisclaimer(savedSettings.genAIUsageDisclaimer);
       }
     });
 

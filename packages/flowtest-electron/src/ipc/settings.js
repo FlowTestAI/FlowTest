@@ -20,6 +20,17 @@ const registerSettingsEventHandlers = (mainWindow) => {
       return Promise.reject(error);
     }
   });
+
+  ipcMain.handle('renderer:add-genAIUsageDisclaimer', async (event, accepted) => {
+    try {
+      settingsStore.addGenAIUsageDisclaimer(accepted);
+      const savedSettings = settingsStore.getAll();
+
+      mainWindow.webContents.send('main:saved-settings', savedSettings);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  });
 };
 
 module.exports = registerSettingsEventHandlers;

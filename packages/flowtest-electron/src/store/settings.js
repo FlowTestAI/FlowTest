@@ -9,14 +9,20 @@ class Settings {
     this.store.set('logSyncConfig', { enabled, hostUrl, accessId, accessKey });
   }
 
+  addGenAIUsageDisclaimer(accepted) {
+    this.store.set('genAIUsageDisclaimer', accepted);
+  }
+
   getAll() {
     return {
       logSyncConfig: this.store.get('logSyncConfig') || {},
+      genAIUsageDisclaimer: this.store.get('genAIUsageDisclaimer') || false,
     };
   }
 
   clearAll() {
     this.store.set('logSyncConfig', {});
+    this.store.set('genAIUsageDisclaimer', false);
   }
 }
 

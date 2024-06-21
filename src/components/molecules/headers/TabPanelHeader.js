@@ -18,14 +18,13 @@ import 'react-json-view-lite/dist/index.css';
 import { LogLevel } from '../flow/graph/GraphLogger';
 import { ShieldCheckIcon, BarsArrowUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import GenAIUsageDisclaimer from '../modals/GenAIUsageDisclaimer';
-import { getLocalStorageItem } from 'utils/common';
+import useSettingsStore from 'stores/SettingsStore';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
   const tabs = useTabStore((state) => state.tabs);
   const focusTab = tabs.find((t) => t.id === focusTabId);
 
-  const graphRunLogs = useCanvasStore((state) => state.logs);
   const setTimeout = useCanvasStore((state) => state.setTimeout);
 
   const [slidingPaneState, setSlidingPaneState] = useState({
@@ -146,10 +145,6 @@ const TabPanelHeader = () => {
     }
   };
 
-  const showDisclaimerMsg = () => {
-    return getLocalStorageItem('show_gen_ai_disclaimer');
-  };
-
   return (
     <>
       {focusTab ? (
@@ -233,9 +228,7 @@ const TabPanelHeader = () => {
                     btnType={BUTTON_TYPES.secondary}
                     isDisabled={false}
                     onClickHandle={() => {
-                      const showMsg = showDisclaimerMsg();
-                      console.log(`\n \n showMsg : ${showMsg} \n`);
-                      if (showMsg === 'false') {
+                      if (useSettingsStore.getState().genAIUsageDisclaimer === true) {
                         setGenerateFlowTestModalOpen(true);
                       } else {
                         setGenAiUsageDisclaimerModalOpen(true);
@@ -247,20 +240,16 @@ const TabPanelHeader = () => {
                     <SparklesIcon className='h-5 w-5' />
                     Generate
                   </Button>
-                  {/* ToDo: Discuss: I think having a user profile file on disk for this setting and all the future settings will be better */}
-                  {showDisclaimerMsg() === 'false' ? (
-                    <GenerateFlowTestModal
-                      closeFn={() => setGenerateFlowTestModalOpen(false)}
-                      open={generateFlowTestModalOpen}
-                      collectionId={focusTab.collectionId}
-                    />
-                  ) : (
-                    <GenAIUsageDisclaimer
-                      closeFn={() => setGenAiUsageDisclaimerModalOpen(false)}
-                      open={genAiUsageDisclaimerModalOpen}
-                      collectionId={focusTab.collectionId}
-                    />
-                  )}
+                  <GenerateFlowTestModal
+                    closeFn={() => setGenerateFlowTestModalOpen(false)}
+                    open={generateFlowTestModalOpen}
+                    collectionId={focusTab.collectionId}
+                  />
+                  <GenAIUsageDisclaimer
+                    closeFn={() => setGenAiUsageDisclaimerModalOpen(false)}
+                    open={genAiUsageDisclaimerModalOpen}
+                    openGenerateFlowTestModal={() => setGenerateFlowTestModalOpen(true)}
+                  />
                 </div>
               )}
             </div>

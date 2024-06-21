@@ -10,7 +10,7 @@ const registerSettingsEventHandlers = () => {
     ipcRenderer.on('main:saved-settings', (savedSettings) => {
       if (savedSettings.logSyncConfig) {
         const config = savedSettings.logSyncConfig;
-        _addLogSyncConfig(config.hostUrl || '', config.accessId || '', config.accessKey || '');
+        _addLogSyncConfig(config.enabled || false, config.hostUrl || '', config.accessId || '', config.accessKey || '');
       }
     });
 

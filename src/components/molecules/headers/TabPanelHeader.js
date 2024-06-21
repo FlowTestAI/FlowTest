@@ -121,16 +121,20 @@ const TabPanelHeader = () => {
         </div>
       );
     } else if (flowScan.upload === 'success') {
-      <div className='flex flex-col items-start'>
-        <ShieldCheckIcon className='h-4 w-4' />
-        {flowScan.url}
-      </div>;
+      return (
+        <div className='flex flex-col items-start'>
+          <ShieldCheckIcon className='h-4 w-4' />
+          {flowScan.url}
+        </div>
+      );
     } else if (flowScan.upload === 'fail') {
-      <div className='flex flex-col items-start'>
-        <ExclamationTriangleIcon className='h-4 w-4' />
-        {flowScan.message}
-        {flowScan?.reason}
-      </div>;
+      return (
+        <div className='flex flex-col items-start'>
+          <ExclamationTriangleIcon className='h-4 w-4' />
+          {flowScan.message}
+          {flowScan?.reason}
+        </div>
+      );
     }
   };
 

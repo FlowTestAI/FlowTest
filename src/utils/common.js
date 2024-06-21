@@ -45,3 +45,11 @@ export const isEmptyObj = (obj) => {
   }
   return JSON.stringify(obj) === JSON.stringify({});
 };
+
+export const setLocalStorageItem = (itemKey, itemValue) => {
+  localStorage.setItem(itemKey, itemValue);
+};
+
+export const getLocalStorageItem = (itemKey) => {
+  return localStorage.getItem(itemKey);
+};

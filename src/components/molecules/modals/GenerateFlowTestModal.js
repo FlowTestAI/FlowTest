@@ -379,7 +379,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                           className='nodrag nowheel block w-full bg-transparent p-2.5 outline-none'
                           name='keyName'
                           placeholder='Enter your OPENAI api key'
-                          value={modelKey}
+                          value={modelKey.trim()}
                           //readOnly='readonly'
                           onChange={(e) => setModelKey(e.target.value)}
                         />
@@ -408,7 +408,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                           className='nodrag nowheel block w-full bg-transparent p-2.5 outline-none'
                           name='keyId'
                           placeholder='Enter your BEDROCK access key id'
-                          value={bedrockAccessKeyId}
+                          value={bedrockAccessKeyId.trim()}
                           //readOnly='readonly'
                           onChange={(e) => setBedrockAccessKeyId(e.target.value)}
                         />
@@ -431,7 +431,7 @@ const GenerateFlowTestModal = ({ closeFn = () => null, open = false, collectionI
                           className='nodrag nowheel block w-full bg-transparent p-2.5 outline-none'
                           name='keyName'
                           placeholder='Enter your BEDROCK secret access key'
-                          value={bedrockSecretAccessKey}
+                          value={bedrockSecretAccessKey.trim()}
                           //readOnly='readonly'
                           onChange={(e) => setBedrockSecretAccessKey(e.target.value)}
                         />

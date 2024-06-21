@@ -16,13 +16,15 @@ import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
 import { JsonView, allExpanded, collapseAllNested, darkStyles, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 import { LogLevel } from '../flow/graph/GraphLogger';
-import { ShieldCheckIcon, BarsArrowUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import GenAIUsageDisclaimer from '../modals/GenAIUsageDisclaimer';
+import { getLocalStorageItem } from 'utils/common';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
   const tabs = useTabStore((state) => state.tabs);
   const focusTab = tabs.find((t) => t.id === focusTabId);
 
+  const graphRunLogs = useCanvasStore((state) => state.logs);
   const setTimeout = useCanvasStore((state) => state.setTimeout);
 
   const [slidingPaneState, setSlidingPaneState] = useState({
@@ -32,6 +34,7 @@ const TabPanelHeader = () => {
     subtitle: 'Not Available',
   });
 
+  const [genAiUsageDisclaimerModalOpen, setGenAiUsageDisclaimerModalOpen] = useState(false);
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
 
   const renderLog = (log) => {
@@ -44,26 +47,28 @@ const TabPanelHeader = () => {
 
       if (log.node != undefined) {
         const type = log.node.type;
-        const data = log.node.data;
         if (type === 'outputNode') {
           json = {
-            output: data.output,
+            output: log.node.data,
           };
         }
 
         if (type === 'assertNode') {
+          const data = log.node.data;
           message = `Assert : ${data.var1} of type ${typeof data.var1} ${data.operator} ${data.var2} of type ${typeof data.var2} = ${data.result}`;
         }
 
         if (type === 'delayNode') {
-          message = `Waiting for ${data.delay} ms`;
+          message = `Waiting for ${log.node.data} ms`;
         }
 
         if (type === 'setVarNode') {
+          const data = log.node.data;
           message = `Setting Variable:  ${data.name} = ${data.value}`;
         }
 
         if (type === 'requestNode') {
+          const data = log.node.data;
           message = `${data.request.type.toUpperCase()} ${data.request.url}`;
           json = data;
         }
@@ -110,32 +115,8 @@ const TabPanelHeader = () => {
     }
   };
 
-  const renderFlowScan = (flowScan) => {
-    if (flowScan.upload === 'disabled') {
-      return (
-        <div className='flex flex-col items-start'>
-          <Tippy content={flowScan.message} placement='top'>
-            <BarsArrowUpIcon className='h-4 w-4' />
-          </Tippy>
-          {'Activate Flow Scan'}
-        </div>
-      );
-    } else if (flowScan.upload === 'success') {
-      return (
-        <div className='flex flex-col items-start'>
-          <ShieldCheckIcon className='h-4 w-4' />
-          {flowScan.url}
-        </div>
-      );
-    } else if (flowScan.upload === 'fail') {
-      return (
-        <div className='flex flex-col items-start'>
-          <ExclamationTriangleIcon className='h-4 w-4' />
-          {flowScan.message}
-          {flowScan?.reason}
-        </div>
-      );
-    }
+  const showDisclaimerMsg = () => {
+    return getLocalStorageItem('show_gen_ai_disclaimer');
   };
 
   return (
@@ -161,7 +142,7 @@ const TabPanelHeader = () => {
               <div className='flex h-12 items-center justify-center'>
                 <SaveFlowModal tab={focusTab} />
               </div>
-              {focusTab.type === OBJ_TYPES.flowtest && focusTab.run.logs && focusTab.run.logs.length != 0 ? (
+              {focusTab.type === OBJ_TYPES.flowtest && graphRunLogs.length != 0 ? (
                 <div>
                   <Button
                     id='graph-logs-side-sheet'
@@ -205,8 +186,7 @@ const TabPanelHeader = () => {
                       className='drawer-overlay'
                     ></label>
                     <ul className='menu min-h-full bg-base-200 p-4 text-base-content'>
-                      <li key='scan'>{renderFlowScan(focusTab.run.scan)}</li>
-                      {focusTab.run.logs.map((item, index) => (
+                      {graphRunLogs.map((item, index) => (
                         <li key={index}>{renderLog(item)}</li>
                       ))}
                     </ul>
@@ -220,18 +200,35 @@ const TabPanelHeader = () => {
                   <Button
                     btnType={BUTTON_TYPES.secondary}
                     isDisabled={false}
-                    onClickHandle={() => setGenerateFlowTestModalOpen(true)}
+                    onClickHandle={() => {
+                      const showMsg = showDisclaimerMsg();
+                      console.log(`\n \n showMsg : ${showMsg} \n`);
+                      if (showMsg === 'false') {
+                        setGenerateFlowTestModalOpen(true);
+                      } else {
+                        setGenAiUsageDisclaimerModalOpen(true);
+                      }
+                    }}
                     fullWidth={true}
                     className='flex items-center justify-between gap-x-4'
                   >
                     <SparklesIcon className='h-5 w-5' />
                     Generate
                   </Button>
-                  <GenerateFlowTestModal
-                    closeFn={() => setGenerateFlowTestModalOpen(false)}
-                    open={generateFlowTestModalOpen}
-                    collectionId={focusTab.collectionId}
-                  />
+                  {/* ToDo: Discuss: I think having a user profile file on disk for this setting and all the future settings will be better */}
+                  {showDisclaimerMsg() === 'false' ? (
+                    <GenerateFlowTestModal
+                      closeFn={() => setGenerateFlowTestModalOpen(false)}
+                      open={generateFlowTestModalOpen}
+                      collectionId={focusTab.collectionId}
+                    />
+                  ) : (
+                    <GenAIUsageDisclaimer
+                      closeFn={() => setGenAiUsageDisclaimerModalOpen(false)}
+                      open={genAiUsageDisclaimerModalOpen}
+                      collectionId={focusTab.collectionId}
+                    />
+                  )}
                 </div>
               )}
             </div>

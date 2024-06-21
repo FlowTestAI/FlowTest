@@ -17,6 +17,8 @@ import { JsonView, allExpanded, collapseAllNested, darkStyles, defaultStyles } f
 import 'react-json-view-lite/dist/index.css';
 import { LogLevel } from '../flow/graph/GraphLogger';
 import { ShieldCheckIcon, BarsArrowUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import GenAIUsageDisclaimer from '../modals/GenAIUsageDisclaimer';
+import useSettingsStore from 'stores/SettingsStore';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
@@ -32,7 +34,36 @@ const TabPanelHeader = () => {
     subtitle: 'Not Available',
   });
 
+  const [genAiUsageDisclaimerModalOpen, setGenAiUsageDisclaimerModalOpen] = useState(false);
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
+
+  const renderFlowScan = (flowScan) => {
+    if (flowScan.upload === 'disabled') {
+      return (
+        <div className='flex flex-col items-start'>
+          <Tippy content={flowScan.message} placement='top'>
+            <BarsArrowUpIcon className='h-4 w-4' />
+          </Tippy>
+          {'Activate Flow Scan'}
+        </div>
+      );
+    } else if (flowScan.upload === 'success') {
+      return (
+        <div className='flex flex-col items-start'>
+          <ShieldCheckIcon className='h-4 w-4' />
+          {flowScan.url}
+        </div>
+      );
+    } else if (flowScan.upload === 'fail') {
+      return (
+        <div className='flex flex-col items-start'>
+          <ExclamationTriangleIcon className='h-4 w-4' />
+          {flowScan.message}
+          {flowScan?.reason}
+        </div>
+      );
+    }
+  };
 
   const renderLog = (log) => {
     if (log.logLevel === LogLevel.INFO) {
@@ -49,6 +80,10 @@ const TabPanelHeader = () => {
           json = {
             output: data.output,
           };
+        }
+
+        if (type === 'authNode') {
+          message = `${data.authType}`;
         }
 
         if (type === 'assertNode') {
@@ -105,34 +140,6 @@ const TabPanelHeader = () => {
               <></>
             )}
           </div>
-        </div>
-      );
-    }
-  };
-
-  const renderFlowScan = (flowScan) => {
-    if (flowScan.upload === 'disabled') {
-      return (
-        <div className='flex flex-col items-start'>
-          <Tippy content={flowScan.message} placement='top'>
-            <BarsArrowUpIcon className='h-4 w-4' />
-          </Tippy>
-          {'Activate Flow Scan'}
-        </div>
-      );
-    } else if (flowScan.upload === 'success') {
-      return (
-        <div className='flex flex-col items-start'>
-          <ShieldCheckIcon className='h-4 w-4' />
-          {flowScan.url}
-        </div>
-      );
-    } else if (flowScan.upload === 'fail') {
-      return (
-        <div className='flex flex-col items-start'>
-          <ExclamationTriangleIcon className='h-4 w-4' />
-          {flowScan.message}
-          {flowScan?.reason}
         </div>
       );
     }
@@ -220,7 +227,13 @@ const TabPanelHeader = () => {
                   <Button
                     btnType={BUTTON_TYPES.secondary}
                     isDisabled={false}
-                    onClickHandle={() => setGenerateFlowTestModalOpen(true)}
+                    onClickHandle={() => {
+                      if (useSettingsStore.getState().genAIUsageDisclaimer === true) {
+                        setGenerateFlowTestModalOpen(true);
+                      } else {
+                        setGenAiUsageDisclaimerModalOpen(true);
+                      }
+                    }}
                     fullWidth={true}
                     className='flex items-center justify-between gap-x-4'
                   >
@@ -231,6 +244,11 @@ const TabPanelHeader = () => {
                     closeFn={() => setGenerateFlowTestModalOpen(false)}
                     open={generateFlowTestModalOpen}
                     collectionId={focusTab.collectionId}
+                  />
+                  <GenAIUsageDisclaimer
+                    closeFn={() => setGenAiUsageDisclaimerModalOpen(false)}
+                    open={genAiUsageDisclaimerModalOpen}
+                    openGenerateFlowTestModal={() => setGenerateFlowTestModalOpen(true)}
                   />
                 </div>
               )}

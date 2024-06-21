@@ -71,7 +71,7 @@ const RequestNode = ({ id, data }) => {
           width='14'
           height='14'
           fill='currentColor'
-          className='inline-block ml-2 cursor-pointer'
+          className='ml-2 inline-block cursor-pointer'
           viewBox='0 0 16 16'
           style={{ marginTop: 1 }}
         >
@@ -87,32 +87,32 @@ const RequestNode = ({ id, data }) => {
     return (
       <div>
         {variables && Object.keys(variables).length > 0 ? (
-          <table className='leading-normal'>
+          <table className='border-collapse border-2 border-background-dark leading-normal'>
             <thead>
-              <tr className='text-xs font-bold tracking-wider text-left bg-ghost-50 text-ghost-600'>
-                <th className='w-2/6 p-1 border border-ghost-200'>Name</th>
-                <th className='w-4/6 p-1 border border-ghost-200 '>Value</th>
-                <th className='w-1/6 p-1 border border-ghost-200 '></th>
+              <tr className='bg-ghost-50 text-ghost-600 text-left text-xs font-bold tracking-wider'>
+                <th className='border-2 border-background-dark p-2'>Name</th>
+                <th className='border-2 border-background-dark p-2'>Value</th>
+                <th className='border-2 border-background-dark p-2'></th>
               </tr>
             </thead>
             <tbody>
               {Object.keys(variables).map((id, index) => (
-                <tr key={index} className='text-sm border-b border-gray-200 text-ghost-700 hover:bg-ghost-50'>
-                  <td className='p-1 whitespace-no-wrap'>
+                <tr key={index} className='text-ghost-700 hover:bg-ghost-50 border-b border-gray-200 text-sm'>
+                  <td className='whitespace-no-wrap border-2 border-background-dark'>
                     <input
                       type='text'
-                      className='nodrag nowheel block h-9 w-full p-2.5'
+                      className='nodrag nowheel block h-9 w-full bg-transparent p-2.5 outline-none'
                       name='variable-name'
                       value={id}
                       readOnly
                     />
                   </td>
-                  <td className='p-1 whitespace-no-wrap'>
+                  <td className='whitespace-no-wrap border-2 border-background-dark'>
                     {variables[id].type === 'Boolean' ? (
                       <select
                         onChange={(e) => handleVariableChange(e, vType, id)}
                         name='boolean-val'
-                        className=' nodrag nowheel h-9 w-full p-2.5 px-1'
+                        className=' nodrag nowheel h-9 w-full bg-background-light p-2.5 px-1 outline-none'
                         value={variables[id].value}
                       >
                         <option value='true'>True</option>
@@ -121,7 +121,7 @@ const RequestNode = ({ id, data }) => {
                     ) : variables[id].type === 'Now' ? (
                       <input
                         type='text'
-                        className='nodrag nowheel block h-9 w-full p-2.5'
+                        className='nodrag nowheel block h-9 w-full bg-background-light p-2.5 outline-none'
                         name='variable-name'
                         value='Date.now()'
                         readOnly
@@ -129,7 +129,7 @@ const RequestNode = ({ id, data }) => {
                     ) : (
                       <input
                         type={getInputType(variables[id].type)}
-                        className='nodrag nowheel block h-9 w-full p-2.5'
+                        className='nodrag nowheel block h-9 w-full bg-background-light p-2.5 outline-none'
                         name='variable-value'
                         data-type={getInputType(variables[id].type)}
                         onChange={(e) => handleVariableChange(e, vType, id)}
@@ -137,10 +137,12 @@ const RequestNode = ({ id, data }) => {
                       />
                     )}
                   </td>
-                  <td className='flex p-1 whitespace-no-wrap'>
-                    <Tooltip text={variables[id].type} />
-                    <div onClick={(e) => handleDeleteVariable(e, vType, id)} className='pl-2 text-neutral-500'>
-                      <TrashIcon className='w-4 h-4' />
+                  <td className='border-2 border-background-dark p-2'>
+                    <div className='flex items-center gap-4'>
+                      <Tooltip text={variables[id].type} />
+                      <div onClick={(e) => handleDeleteVariable(e, vType, id)} className='cursor-pointer'>
+                        <TrashIcon className='h-4 w-4' />
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -178,14 +180,14 @@ const RequestNode = ({ id, data }) => {
         className='text-xl'
       >
         <div>
-          <Listbox.Button className='relative flex text-left cursor-default border-cyan-950'>
+          <Listbox.Button className='relative flex cursor-default border-cyan-950 text-left'>
             <span className='block truncate'>{data.requestType}</span>
             <span className='p-1'>
-              <ChevronUpDownIcon className='w-5 h-5' aria-hidden='true' />
+              <ChevronUpDownIcon className='h-5 w-5' aria-hidden='true' />
             </span>
           </Listbox.Button>
           <Transition as={Fragment} leave='transition ease-in duration-100' leaveFrom='opacity-100' leaveTo='opacity-0'>
-            <Listbox.Options className='absolute z-50 py-1 mt-1 overflow-auto text-base bg-white max-h-60 w-36 focus:outline-none'>
+            <Listbox.Options className='absolute z-50 mt-1 max-h-60 w-36 overflow-auto bg-white py-1 text-base focus:outline-none'>
               {requestNodes
                 .map((el) => el.requestType)
                 .map((reqType) => (
@@ -203,7 +205,7 @@ const RequestNode = ({ id, data }) => {
                         <span className={`block`}>{reqType}</span>
                         {selected ? (
                           <span className='absolute inset-y-0 left-0 flex items-center pl-1 font-semibold'>
-                            <CheckIcon className='w-5 h-5' aria-hidden='true' />
+                            <CheckIcon className='h-5 w-5' aria-hidden='true' />
                           </span>
                         ) : null}
                       </>
@@ -239,9 +241,9 @@ const RequestNode = ({ id, data }) => {
         <NodeHorizontalDivider />
         <div className='bg-background'>
           <h3 className='p-2'>Variables</h3>
-          <div>
+          <div className='px-2'>
             <NodeHorizontalDivider />
-            <div>
+            <div className='pb-2'>
               <div className='flex items-center justify-between'>
                 <div className='p-2'>Pre Request</div>
                 <button
@@ -250,13 +252,13 @@ const RequestNode = ({ id, data }) => {
                     setVariableDialogOpen(true);
                   }}
                 >
-                  <PlusIcon className='w-4 h-4' />
+                  <PlusIcon className='h-4 w-4' />
                 </button>
               </div>
               {renderVariables('pre-request')}
             </div>
             <NodeHorizontalDivider />
-            <div>
+            <div className='pb-2'>
               <div className='flex items-center justify-between'>
                 <div className='p-2'>Post Response</div>
                 <button
@@ -265,7 +267,7 @@ const RequestNode = ({ id, data }) => {
                     setVariableDialogOpen(true);
                   }}
                 >
-                  <PlusIcon className='w-4 h-4' />
+                  <PlusIcon className='h-4 w-4' />
                 </button>
               </div>
               {renderVariables('post-response')}

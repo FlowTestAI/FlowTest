@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useRef } from 'react';
 import { PropTypes } from 'prop-types';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
-import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
+import { DocumentArrowUpIcon, ClipboardDocumentCheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import useCanvasStore from 'stores/CanvasStore';
 import { toast } from 'react-toastify';
@@ -13,12 +13,16 @@ import { BUTTON_TYPES } from 'constants/Common';
 import useCollectionStore from 'stores/CollectionStore';
 import { useTabStore } from 'stores/TabStore';
 import { cloneDeep } from 'lodash';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import Tippy from '@tippyjs/react';
 
 const requestBodyTypeOptions = ['None', 'form-data', 'raw-json'];
 
 const RequestBody = ({ nodeId, nodeData }) => {
   const setRequestNodeBody = useCanvasStore((state) => state.setRequestNodeBody);
   const [cachedValues, setCachedValues] = React.useState({});
+
+  const [copyStatus, setCopyStatus] = useState(false); // To indicate if the text was copied
 
   const uploadFileForRequestNode = useRef(null);
 
@@ -110,11 +114,11 @@ const RequestBody = ({ nodeId, nodeData }) => {
 
   return (
     <>
-      <div className='flex items-center justify-between p-4 bg-background'>
+      <div className='flex items-center justify-between bg-background p-4'>
         <h3>Body</h3>
         <Menu as='div' className='relative inline-block text-left'>
           <Menu.Button data-click-from='body-type-menu'>
-            <EllipsisVerticalIcon className='w-4 h-4' aria-hidden='true' data-click-from='body-type-menu' />
+            <EllipsisVerticalIcon className='h-4 w-4' aria-hidden='true' data-click-from='body-type-menu' />
           </Menu.Button>
           <Transition
             as={Fragment}
@@ -126,13 +130,13 @@ const RequestBody = ({ nodeId, nodeData }) => {
             leaveTo='transform opacity-0 scale-95'
           >
             <Menu.Items
-              className='absolute right-0 z-10 w-56 px-1 py-1 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none'
+              className='absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white px-1 py-1 shadow-lg ring-1 ring-black/5 focus:outline-none'
               data-click-from='body-type-menu'
             >
               {requestBodyTypeOptions.map((bodyTypeOption, index) => (
                 <Menu.Item key={index} data-click-from='body-type-menu' onClick={() => handleClose(bodyTypeOption)}>
                   <button
-                    className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group hover:bg-background-light'
+                    className='group flex w-full items-center rounded-md px-2 py-2 text-sm text-gray-900 hover:bg-background-light'
                     data-click-from='body-type-menu'
                   >
                     {bodyTypeOption}
@@ -146,9 +150,9 @@ const RequestBody = ({ nodeId, nodeData }) => {
       {nodeData.requestBody && nodeData.requestBody.type === 'raw-json' && (
         <>
           <NodeHorizontalDivider />
-          <div className='p-4 bg-background'>
-            <div className='w-full nodrag nowheel min-w-72'>
-              <div className='bg-background-lighter'>
+          <div className='bg-background p-4'>
+            <div className='nodrag nowheel w-full min-w-72'>
+              <div className='relative bg-background-lighter'>
                 <Editor
                   name='request-body-json'
                   onChange={(e) => handleRawJson(e)}
@@ -156,6 +160,28 @@ const RequestBody = ({ nodeId, nodeData }) => {
                   classes={'w-full max-h-96'}
                   completionOptions={getActiveVariables()}
                 />
+
+                <div className='absolute right-5 top-0 cursor-pointer text-slate-400 hover:text-cyan-900'>
+                  <CopyToClipboard
+                    text={nodeData.requestBody.body}
+                    onCopy={() => {
+                      setCopyStatus(true);
+                      setTimeout(() => setCopyStatus(false), 2000); // Reset status after 2 seconds
+                    }}
+                  >
+                    <button>
+                      {copyStatus ? (
+                        <Tippy content='Copied to Clipboard' placement='top'>
+                          <ClipboardDocumentCheckIcon className='h-6 w-6' />
+                        </Tippy>
+                      ) : (
+                        <Tippy content='Copy to Clipboard' placement='top'>
+                          <ClipboardDocumentIcon className='h-6 w-6' />
+                        </Tippy>
+                      )}
+                    </button>
+                  </CopyToClipboard>
+                </div>
               </div>
               <Button
                 btnType={BUTTON_TYPES.secondary}
@@ -181,7 +207,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
       {nodeData.requestBody && nodeData.requestBody.type === 'form-data' && (
         <>
           <NodeHorizontalDivider />
-          <div className='p-4 bg-background'>
+          <div className='bg-background p-4'>
             <TextInputWithLabel
               placeHolder='key'
               onChangeHandler={(e) => handleFormDataKey(e)}
@@ -198,7 +224,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
                 }}
                 fullWidth={true}
               >
-                <DocumentArrowUpIcon className='w-4 h-4 text-center' />
+                <DocumentArrowUpIcon className='h-4 w-4 text-center' />
                 Upload File
                 {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
                 <div className='hidden'>

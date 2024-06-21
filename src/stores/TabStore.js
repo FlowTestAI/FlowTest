@@ -33,6 +33,24 @@ export const useTabStore = create((set, get) => ({
     set((state) => ({ tabs: [...state.tabs, newTab] }));
     set(() => ({ focusTabId: newTab.id }));
   },
+  saveFlowTestTab: (tab) => {
+    set(
+      produce((state) => {
+        const existingTab = state.tabs.find(
+          (t) =>
+            t.id === tab.id &&
+            t.name === tab.name &&
+            t.pathname === tab.pathname &&
+            t.collectionId === tab.collectionId &&
+            tab.type === OBJ_TYPES.flowtest,
+        );
+        if (existingTab) {
+          existingTab.flowData = cloneDeep(existingTab.flowDataDraft);
+          existingTab.flowDataDraft = null;
+        }
+      }),
+    );
+  },
   // these state changes are meant to be triggered by canvas in focus
   updateFlowTestNodes: (nodes) => {
     set(

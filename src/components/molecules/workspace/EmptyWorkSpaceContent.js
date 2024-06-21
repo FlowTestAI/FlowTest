@@ -10,6 +10,8 @@ import GenerateFlowTestModal from '../modals/GenerateFlowTestModal';
 import NewFlowTestModal from '../modals/flow/NewFlowTestModal';
 import NewEnvironmentFileModal from '../modals/sidebar/NewEnvironmentFileModal';
 import OpenCollectionModal from '../modals/OpenCollectionModal';
+import GenAIUsageDisclaimer from '../modals/GenAIUsageDisclaimer';
+import useSettingsStore from 'stores/SettingsStore';
 
 const EmptyWorkSpaceContent = () => {
   const collections = useCollectionStore((state) => state.collections);
@@ -17,16 +19,18 @@ const EmptyWorkSpaceContent = () => {
   const [importCollectionModal, setImportCollectionModal] = useState(false);
   const [newFlowTestModal, setNewFlowTestModal] = useState(false);
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
+  const [genAiUsageDisclaimerModalOpen, setGenAiUsageDisclaimerModalOpen] = useState(false);
   const [newEnvironmentFileModal, setNewEnvironmentFileModal] = useState(false);
+
   return (
-    <div className='flex items-center justify-center h-full text-cyan-900'>
-      <div className='flex flex-col max-w-xl gap-8 2xl:gap-10'>
+    <div className='flex h-full items-center justify-center text-cyan-900'>
+      <div className='flex max-w-xl flex-col gap-8 2xl:gap-10'>
         <div className='text-center'>
           <div className='flex items-center justify-center'>
-            <RectangleStackIcon className='w-24 h-24' />
+            <RectangleStackIcon className='h-24 w-24' />
           </div>
           <p className='text-2xl'>
-            A <span className='italic font-semibold font-montserrat'>Collection</span> is a ...
+            A <span className='font-montserrat font-semibold italic'>Collection</span> is a ...
           </p>
           <p className='mt-2 text-sm italic 2xl:mt-4'>
             A Collection is a set of flows where each flow is a set of API requests chained together, along with each
@@ -48,7 +52,13 @@ const EmptyWorkSpaceContent = () => {
                 <Button
                   btnType={BUTTON_TYPES.primary}
                   isDisabled={false}
-                  onClickHandle={() => setGenerateFlowTestModalOpen(true)}
+                  onClickHandle={() => {
+                    if (useSettingsStore.getState().genAIUsageDisclaimer === true) {
+                      setGenerateFlowTestModalOpen(true);
+                    } else {
+                      setGenAiUsageDisclaimerModalOpen(true);
+                    }
+                  }}
                   fullWidth={true}
                 >
                   Generate a Flow
@@ -81,10 +91,10 @@ const EmptyWorkSpaceContent = () => {
             <HorizontalDivider themeColor={'bg-cyan-900'} themeStyles={'opacity-75'} />
             <div className='text-center'>
               <div className='flex items-center justify-center'>
-                <Square3Stack3DIcon className='w-24 h-24' />
+                <Square3Stack3DIcon className='h-24 w-24' />
               </div>
               <p className='text-2xl'>
-                An <span className='italic font-semibold font-montserrat'>Environment</span> is a ...
+                An <span className='font-montserrat font-semibold italic'>Environment</span> is a ...
               </p>
               <p className='mt-2 text-sm italic 2xl:mt-4'>
                 An environment is a set of one or more variables that you can reference when sending API requests using
@@ -113,6 +123,11 @@ const EmptyWorkSpaceContent = () => {
       <ImportCollectionModal closeFn={() => setImportCollectionModal(false)} open={importCollectionModal} />
       <NewFlowTestModal closeFn={() => setNewFlowTestModal(false)} open={newFlowTestModal} />
       <GenerateFlowTestModal closeFn={() => setGenerateFlowTestModalOpen(false)} open={generateFlowTestModalOpen} />
+      <GenAIUsageDisclaimer
+        closeFn={() => setGenAiUsageDisclaimerModalOpen(false)}
+        open={genAiUsageDisclaimerModalOpen}
+        openGenerateFlowTestModal={() => setGenerateFlowTestModalOpen(true)}
+      />
       <NewEnvironmentFileModal closeFn={() => setNewEnvironmentFileModal(false)} open={newEnvironmentFileModal} />
     </div>
   );

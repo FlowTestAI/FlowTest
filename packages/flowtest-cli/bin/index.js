@@ -93,21 +93,27 @@ const argv = yargs(hideBin(process.argv))
           } else {
             console.log(chalk.bold('Flow Run: ') + chalk.red(`   ✕ `) + chalk.dim(result.status));
           }
-          logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
-          console.log(chalk.bold('Total Time: ') + chalk.dim(`${Date.now() - startTime} ms`));
+          const time = Date.now() - startTime;
+          logger.add(LogLevel.INFO, `Total time: ${time} ms`);
+          console.log(chalk.bold('Total Time: ') + chalk.dim(`${time} ms`));
           //console.log(logger.get());
 
           if (argv.scan) {
             const data = {
-              version: 1,
-              name: argv.file.toString(),
-              scan: logger.get(),
+              scan_metadata: {
+                version: 1,
+                name: argv.file.toString(),
+                status: result.status,
+                time,
+              },
+              scan: bytesToBase64(new TextEncoder().encode(JSON.stringify(logger.get()))),
             };
             try {
-              const response = await axiosClient.post(
-                '/upload',
-                bytesToBase64(new TextEncoder().encode(JSON.stringify(data))),
-              );
+              const response = await axiosClient.post('/upload', data, {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              });
               console.log(chalk.bold('Flow Scan: ') + chalk.dim(`${baseUrl}/scan/${response.data.data[0].id}`));
             } catch (error) {
               if (error?.response) {

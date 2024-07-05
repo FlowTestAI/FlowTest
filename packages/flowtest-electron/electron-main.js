@@ -6,6 +6,8 @@ const template = require('./electron-menu');
 const Watcher = require('./src/app/watcher');
 const registerRendererEventHandlers = require('./src/ipc/collection');
 const registerSettingsEventHandlers = require('./src/ipc/settings');
+const packageJson = require('./package.json'); // app's package.json
+const https = require('https');
 
 let mainWindow;
 let watcher;
@@ -18,6 +20,41 @@ if (process.env.NODE_ENV === 'production') {
   console.warn = noop;
   console.debug = noop;
   console.trace = noop;
+}
+
+const version = {
+  current: packageJson.version,
+  latest: packageJson.version,
+};
+
+function checkForUpdates() {
+  const url = `https://raw.githubusercontent.com/FlowTestAI/FlowTest/main/packages/flowtest-electron/package.json`;
+
+  https
+    .get(url, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        try {
+          const remotePackageJson = JSON.parse(data);
+          const latestVersion = remotePackageJson.version;
+
+          if (latestVersion !== version.current) {
+            version.latest = latestVersion;
+            //shell.openExternal(`https://github.com/${username}/${repo}/releases`);
+          }
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+        }
+      });
+    })
+    .on('error', (err) => {
+      console.error('Error fetching package.json:', err);
+    });
 }
 
 app.on('ready', async () => {
@@ -58,6 +95,12 @@ app.on('ready', async () => {
   });
 
   watcher = new Watcher();
+
+  checkForUpdates();
+  mainWindow.webContents.on('did-finish-load', () => {
+    // Send a message to the renderer process
+    mainWindow.webContents.send('main:app-version', version);
+  });
 
   registerRendererEventHandlers(mainWindow, watcher);
   registerSettingsEventHandlers(mainWindow);

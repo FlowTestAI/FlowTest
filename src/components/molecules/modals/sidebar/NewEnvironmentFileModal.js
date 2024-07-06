@@ -1,18 +1,15 @@
 import React, { Fragment, useState } from 'react';
-import { PropTypes } from 'prop-types';
 import { Dialog, Transition, Listbox } from '@headlessui/react';
-import { createFolder, createFlowTest, createEnvironmentFile } from 'service/collection';
-import { DirectoryOptionsActions } from 'constants/WorkspaceDirectory';
+import { createEnvironmentFile } from 'service/collection';
 import { toast } from 'react-toastify';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_INTENT_TYPES, BUTTON_TYPES, OBJ_TYPES } from 'constants/Common';
 import TextInput from 'components/atoms/common/TextInput';
-import Collection from '../../sidebar/content/Collection';
 import useCollectionStore from 'stores/CollectionStore';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { isEmpty } from 'lodash';
-import TimeoutSelector from 'components/atoms/common/TimeoutSelector';
-import { timeoutForGraphRun } from 'components/molecules/flow/utils';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 const NewEnvironmentFileModal = ({ closeFn = () => null, open = false }) => {
   const collections = useCollectionStore.getState().collections;
@@ -84,7 +81,7 @@ const NewEnvironmentFileModal = ({ closeFn = () => null, open = false }) => {
                       )}
                     </div>
                     <div>
-                      <div className='flex justify-between gap-2 transition border rounded bg-background-light hover:bg-background whitespace-nowrap border-cyan-900 text-cyan-900'>
+                      <div className='flex justify-between gap-2 transition border rounded whitespace-nowrap border-cyan-900 bg-background-light text-cyan-900 hover:bg-background'>
                         <Listbox
                           value={selectedCollection}
                           onChange={(value) => {

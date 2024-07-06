@@ -62,7 +62,7 @@ const AuthNode = ({ id, data }) => {
               leaveFrom='opacity-100'
               leaveTo='opacity-0'
             >
-              <Listbox.Options className='absolute w-full py-1 mt-1 overflow-auto text-base bg-white max-h-60 focus:outline-none'>
+              <Listbox.Options className='absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white max-h-60 focus:outline-none'>
                 <Listbox.Option
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 hover:font-semibold ${

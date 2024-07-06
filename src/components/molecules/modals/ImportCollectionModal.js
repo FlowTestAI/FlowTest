@@ -1,11 +1,10 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
-import { DocumentArrowUpIcon, FolderPlusIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/outline';
 import ImportCollectionTypes from 'constants/ImportCollectionTypes';
 import { createCollection } from 'service/collection';
 import { toast } from 'react-toastify';
-import useCollectionStore from 'stores/CollectionStore';
 
 const ImportCollectionModal = ({ closeFn = () => null, open = false }) => {
   const [selectedFilePath, setSelectedFilePath] = useState('');

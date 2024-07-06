@@ -67,7 +67,7 @@ details summary::-webkit-details-marker {
   text-overflow: ellipsis;
 }
 .side-sheet-overlay .slide-pane__content {
-  padding: 2.5rem 2rem;
+  padding: 1rem 2rem;
 }
 
 /* React flow related CSS */
@@ -137,3 +137,12 @@ details summary::-webkit-details-marker {
 .cm-scroller {
   overflow: auto;
 } */
+
+/* Overriding style for react-json-view-lite */
+.json-view-container > div {
+  background: transparent !important;
+}
+
+.flow-logs-menu {
+  margin-inline-start: 1.25rem;
+}

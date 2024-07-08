@@ -32,6 +32,10 @@ class requestNode extends Node {
 
     const res = await this.runHttpRequest(options);
 
+    if (this.nodeData.requestBody.type === 'form-data') {
+      options.data.value = '<BASE64_ENCODED_FILE_DATA>';
+    }
+
     if (res.error) {
       this.logger.add(LogLevel.ERROR, 'HTTP request failed', {
         type: 'requestNode',

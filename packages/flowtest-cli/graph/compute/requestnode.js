@@ -48,6 +48,11 @@ class requestNode extends Node {
 
     const res = await this.runHttpRequest(options);
 
+    if (this.nodeData.requestBody.type === 'form-data') {
+      // we don't want to send full file value
+      options.data.value = '<BASE64_ENCODED_FILE_DATA>';
+    }
+
     if (res.error) {
       console.log(chalk.red(`   ✕ `) + chalk.dim(`Request failed: ${JSON.stringify(res.error)}`));
       this.logger.add(LogLevel.ERROR, 'HTTP request failed', {

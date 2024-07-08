@@ -58,10 +58,14 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            type: authType,
-          };
+          if (authType == 'no-auth') {
+            node.data = {};
+          } else {
+            node.data = {
+              ...node.data,
+              type: authType,
+            };
+          }
         }
 
         return node;

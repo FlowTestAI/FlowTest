@@ -118,7 +118,7 @@ const AuthNode = ({ id, data }) => {
             <TextEditor
               placeHolder={`Password`}
               onChangeHandler={(value) => handleChange(value, 'password')}
-              name={'username'}
+              name={'password'}
               value={data.password ? data.password : ''}
               completionOptions={getActiveVariables()}
               styles={'w-full'}

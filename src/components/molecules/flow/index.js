@@ -243,7 +243,7 @@ const Flow = ({ tab, collectionId }) => {
       >
         <Background variant='dots' gap={12} size={1} />
         <Controls
-          className='flex border-cyan-900 shadow-none'
+          className='flex shadow-none border-cyan-900'
           onFitView={() => setViewport(reactFlowInstance.getViewport())}
         ></Controls>
         <Button

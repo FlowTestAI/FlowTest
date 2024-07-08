@@ -63,7 +63,7 @@ const NestedFlowNode = ({ id, data }) => {
               }}
               name='flow'
               value={data.relativePath ? data.relativePath : ''}
-              className='h-12 max-w-48 cursor-default rounded border border-cyan-950 bg-background-light p-2 outline-none'
+              className='h-12 p-2 border rounded outline-none cursor-default max-w-48 border-cyan-950 bg-background-light'
             >
               <option key='None' value=''>
                 Select a flow

@@ -347,6 +347,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   unSetOutputNode: (nodeId) => {
     set({
@@ -362,6 +363,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setFlowForComplexNode: (nodeId, relativePath) => {
     set({
@@ -377,6 +379,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setVariableNodeName: (nodeId, name) => {
     set({

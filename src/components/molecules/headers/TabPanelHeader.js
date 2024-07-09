@@ -13,12 +13,13 @@ import 'react-sliding-pane/dist/react-sliding-pane.css';
 import TimeoutSelector from 'components/atoms/common/TimeoutSelector';
 import { timeoutForGraphRun } from 'components/molecules/flow/utils';
 import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
-import { JsonView, allExpanded, collapseAllNested, darkStyles, defaultStyles } from 'react-json-view-lite';
+// import { JsonView, allExpanded, collapseAllNested, darkStyles, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
-import { LogLevel } from '../flow/graph/GraphLogger';
-import { ShieldCheckIcon, BarsArrowUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+// import { LogLevel } from '../flow/graph/GraphLogger';
+
 import GenAIUsageDisclaimer from '../modals/GenAIUsageDisclaimer';
 import useSettingsStore from 'stores/SettingsStore';
+import FlowLogs from '../sideSheets/FlowLogs';
 
 const TabPanelHeader = () => {
   const focusTabId = useTabStore((state) => state.focusTabId);
@@ -37,114 +38,6 @@ const TabPanelHeader = () => {
   const [genAiUsageDisclaimerModalOpen, setGenAiUsageDisclaimerModalOpen] = useState(false);
   const [generateFlowTestModalOpen, setGenerateFlowTestModalOpen] = useState(false);
 
-  const renderFlowScan = (flowScan) => {
-    if (flowScan.upload === 'disabled') {
-      return (
-        <div className='flex flex-col items-start'>
-          <Tippy content={flowScan.message} placement='top'>
-            <BarsArrowUpIcon className='h-4 w-4' />
-          </Tippy>
-          {'Activate Flow Scan'}
-        </div>
-      );
-    } else if (flowScan.upload === 'success') {
-      return (
-        <div className='flex flex-col items-start'>
-          <ShieldCheckIcon className='h-4 w-4' />
-          {flowScan.url}
-        </div>
-      );
-    } else if (flowScan.upload === 'fail') {
-      return (
-        <div className='flex flex-col items-start'>
-          <ExclamationTriangleIcon className='h-4 w-4' />
-          {flowScan.message}
-          {flowScan?.reason}
-        </div>
-      );
-    }
-  };
-
-  const renderLog = (log) => {
-    if (log.logLevel === LogLevel.INFO) {
-      let message = '';
-      let json = undefined;
-      if (log.message.trim() != '') {
-        message = log.message;
-      }
-
-      if (log.node != undefined) {
-        const type = log.node.type;
-        const data = log.node.data;
-        if (type === 'outputNode') {
-          json = {
-            output: data.output,
-          };
-        }
-
-        if (type === 'authNode') {
-          message = `${data.authType}`;
-        }
-
-        if (type === 'assertNode') {
-          message = `Assert : ${data.var1} of type ${typeof data.var1} ${data.operator} ${data.var2} of type ${typeof data.var2} = ${data.result}`;
-        }
-
-        if (type === 'delayNode') {
-          message = `Waiting for ${data.delay} ms`;
-        }
-
-        if (type === 'setVarNode') {
-          message = `Setting Variable:  ${data.name} = ${data.value}`;
-        }
-
-        if (type === 'requestNode') {
-          message = `${data.request.type.toUpperCase()} ${data.request.url}`;
-          json = data;
-        }
-      }
-
-      return (
-        <div className='flex flex-col items-start'>
-          <div className='flex flex-row items-start'>
-            <div>
-              <p style={{ color: 'red' }}>{log.timestamp}</p>
-            </div>
-            <div>
-              <p> : {message}</p>
-            </div>
-          </div>
-          <div>
-            {json != undefined ? (
-              <React.Fragment>
-                <JsonView data={json} shouldExpandNode={collapseAllNested} style={defaultStyles} />
-              </React.Fragment>
-            ) : (
-              <></>
-            )}
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className='flex flex-col items-start'>
-          <p style={{ color: 'red' }}>
-            {log.timestamp} : {log.message}
-          </p>
-          <div>
-            {log.node != undefined ? (
-              <React.Fragment>
-                <JsonView data={log.node.data} shouldExpandNode={collapseAllNested} style={defaultStyles} />
-              </React.Fragment>
-            ) : (
-              <></>
-            )}
-          </div>
-        </div>
-      );
-    }
-  };
-
   return (
     <>
       {focusTab ? (
@@ -152,7 +45,7 @@ const TabPanelHeader = () => {
           <div className='flex items-center justify-between px-4 py-3'>
             <div className='py-3 text-base tracking-[0.15em]'>{focusTab.name}</div>
 
-            <div className='flex items-center justify-between gap-4 border-l border-gray-300 pl-4'>
+            <div className='flex items-center justify-between gap-4 pl-4 border-l border-gray-300'>
               {focusTab.type === OBJ_TYPES.flowtest && (
                 // ToDo: Check this
                 <div className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded border border-cyan-900 bg-background-light px-4 py-2.5 text-cyan-900 transition hover:bg-background'>
@@ -165,7 +58,7 @@ const TabPanelHeader = () => {
                 </div>
               )}
 
-              <div className='flex h-12 items-center justify-center'>
+              <div className='flex items-center justify-center h-12'>
                 <SaveFlowModal tab={focusTab} />
               </div>
               {focusTab.type === OBJ_TYPES.flowtest && focusTab.run.logs && focusTab.run.logs.length != 0 ? (
@@ -186,7 +79,7 @@ const TabPanelHeader = () => {
                   >
                     <Tippy content='Logs' placement='top'>
                       <label htmlFor='graph-logs-side-sheet'>
-                        <DocumentTextIcon className='h-5 w-5' />
+                        <DocumentTextIcon className='w-5 h-5' />
                       </label>
                     </Tippy>
                   </Button>
@@ -206,17 +99,7 @@ const TabPanelHeader = () => {
                       });
                     }}
                   >
-                    <label
-                      htmlFor='graph-logs-side-sheet'
-                      aria-label='close sidebar'
-                      className='drawer-overlay'
-                    ></label>
-                    <ul className='menu min-h-full bg-base-200 p-4 text-base-content'>
-                      <li key='scan'>{renderFlowScan(focusTab.run.scan)}</li>
-                      {focusTab.run.logs.map((item, index) => (
-                        <li key={index}>{renderLog(item)}</li>
-                      ))}
-                    </ul>
+                    <FlowLogs logsData={focusTab}></FlowLogs>
                   </SlidingPane>
                 </div>
               ) : (
@@ -237,7 +120,7 @@ const TabPanelHeader = () => {
                     fullWidth={true}
                     className='flex items-center justify-between gap-x-4'
                   >
-                    <SparklesIcon className='h-5 w-5' />
+                    <SparklesIcon className='w-5 h-5' />
                     Generate
                   </Button>
                   <GenerateFlowTestModal

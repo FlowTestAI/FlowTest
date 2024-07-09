@@ -12,7 +12,7 @@ const registerSettingsEventHandlers = (mainWindow) => {
 
   ipcMain.handle('renderer:add-logsyncconfig', async (event, config) => {
     try {
-      settingsStore.addLogSyncConfig(...config);
+      settingsStore.addLogSyncConfig(config.enabled, config.hostUrl, config.accessId, config.accessKey);
       const savedSettings = settingsStore.getAll();
 
       mainWindow.webContents.send('main:saved-settings', savedSettings);

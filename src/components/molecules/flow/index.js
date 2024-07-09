@@ -194,8 +194,8 @@ const Flow = ({ tab, collectionId }) => {
     return true;
   };
 
-  const onGraphComplete = async (status, logs) => {
-    const response = await uploadGraphRunLogs(tab.name, logs);
+  const onGraphComplete = async (status, time, logs) => {
+    const response = await uploadGraphRunLogs(tab.name, status, time, logs);
     console.log(response);
     setLogs(tab.id, logs, response);
     if (status == 'Success') {
@@ -275,11 +275,13 @@ const Flow = ({ tab, collectionId }) => {
                 'main',
               );
               const result = await g.run();
-              logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
-              await onGraphComplete(result.status, logger.get());
+              const time = Date.now() - startTime;
+              logger.add(LogLevel.INFO, `Total time: ${time} ms`);
+              await onGraphComplete(result.status, time, logger.get());
             } catch (error) {
-              logger.add(LogLevel.INFO, `Total time: ${Date.now() - startTime} ms`);
-              await onGraphComplete('Failed', logger.get());
+              const time = Date.now() - startTime;
+              logger.add(LogLevel.INFO, `Total time: ${time} ms`);
+              await onGraphComplete('Failed', time, logger.get());
               toast.error(`Internal error running graph`);
               runnableEdges(false);
             }

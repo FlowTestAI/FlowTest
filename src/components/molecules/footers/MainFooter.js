@@ -1,31 +1,45 @@
-import React from 'react';
-import { ArrowLeftEndOnRectangleIcon, ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/outline';
+import React, { useState } from 'react';
+import {
+  ArrowLeftEndOnRectangleIcon,
+  ArrowRightStartOnRectangleIcon,
+  Cog8ToothIcon,
+} from '@heroicons/react/24/outline';
+
 import Tippy from '@tippyjs/react';
 import useNavigationStore from 'stores/AppNavBarStore';
 import useCollectionStore from 'stores/CollectionStore';
+import SettingsModal from '../modals/SettingsModal';
 
 const MainFooter = () => {
   const collections = useCollectionStore((state) => state.collections);
   const isNavBarCollapsed = useNavigationStore((state) => state.collapseNavBar);
   const updateNavCollapseState = useNavigationStore((state) => state.setNavCollapseState);
+  const [openSettingsModal, setOpenSettingsModal] = useState(false);
   return (
     <footer className='flex items-center justify-between px-4 py-3 text-xs'>
-      <label className='swap swap-rotate cursor-pointer py-1'>
-        <input
-          type='checkbox'
-          onClick={(event) => {
-            if (collections.length) {
-              // since default is false for isNavBarCollapsed
-              updateNavCollapseState(!isNavBarCollapsed);
-            } else {
-              event.preventDefault();
-              event.stopPropagation();
-            }
-          }}
-        />
-        <ArrowRightStartOnRectangleIcon className='swap-on h-6 w-6' />
-        <ArrowLeftEndOnRectangleIcon className='swap-off h-6 w-6' />
-      </label>
+      <div className='flex items-center justify-between gap-2'>
+        <button onClick={() => setOpenSettingsModal(true)}>
+          <Cog8ToothIcon className='w-6 h-6' />
+        </button>
+        <label className='py-1 cursor-pointer swap swap-rotate'>
+          <input
+            // Overriding styles as Daisy UI input and React Hook form's input were conflicting
+            className='!focus:outline-none !focus:ring-0 !appearance-none !border-0 !bg-transparent !bg-none !outline-none'
+            type='checkbox'
+            onClick={(event) => {
+              if (collections.length) {
+                // since default is false for isNavBarCollapsed
+                updateNavCollapseState(!isNavBarCollapsed);
+              } else {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+            }}
+          />
+          <ArrowRightStartOnRectangleIcon className='w-6 h-6 swap-on' />
+          <ArrowLeftEndOnRectangleIcon className='w-6 h-6 swap-off' />
+        </label>
+      </div>
       <div className='flex items-center justify-between gap-4 font-semibold'>
         <Tippy content='External Link' placement='top'>
           <a href='https://github.com/FlowTestAI/FlowTest' target='_blank' rel='noreferrer' className='link'>
@@ -62,6 +76,7 @@ const MainFooter = () => {
           </a>
         </Tippy>
       </div>
+      <SettingsModal closeFn={() => setOpenSettingsModal(false)} open={openSettingsModal} />
     </footer>
   );
 };

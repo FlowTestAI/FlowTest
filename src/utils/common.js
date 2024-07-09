@@ -45,3 +45,8 @@ export const isEmptyObj = (obj) => {
   }
   return JSON.stringify(obj) === JSON.stringify({});
 };
+
+export const formatTimeStamp = (timeStamp) => {
+  let formattedDate = new Date(timeStamp);
+  return formattedDate.toGMTString();
+};

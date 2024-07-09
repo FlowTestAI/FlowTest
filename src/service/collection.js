@@ -403,16 +403,17 @@ export const deleteFlowTest = (pathname, collectionId) => {
   }
 };
 
-export const uploadGraphRunLogs = async (name, logs) => {
+export const uploadGraphRunLogs = async (name, status, time, logs) => {
   try {
     const { ipcRenderer } = window;
     const logSyncConfig = useSettingsStore.getState().logSyncConfig;
+
     if (logSyncConfig.enabled) {
-      return await ipcRenderer.invoke('renderer:upload-logs', name, logSyncConfig, logs);
+      return await ipcRenderer.invoke('renderer:upload-logs', name, logSyncConfig, status, time, logs);
     } else {
       return {
         upload: 'disabled',
-        message: 'Enable flow scans today to get more value out of your APIs',
+        message: 'Enable flow scans to get more value out of your APIs',
       };
     }
   } catch (error) {

@@ -340,7 +340,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
-  ipcMain.handle('renderer:upload-logs', async (event, name, config, logs) => {
+  ipcMain.handle('renderer:upload-logs', async (event, name, config, status, time, logs) => {
     function bytesToBase64(bytes) {
       const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join('');
       return btoa(binString);
@@ -348,15 +348,16 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
 
     try {
       const data = {
-        version: 1,
-        name,
-        scan: logs,
+        scan_metadata: {
+          version: 1,
+          name,
+          status,
+          time,
+        },
+        scan: bytesToBase64(new TextEncoder().encode(JSON.stringify(logs))),
       };
       try {
-        const response = await axiosClient(config.hostUrl, config.accessId, config.accessKey).post(
-          '/upload',
-          bytesToBase64(new TextEncoder().encode(JSON.stringify(data))),
-        );
+        const response = await axiosClient(config.hostUrl, config.accessId, config.accessKey).post('/upload', data);
         return {
           upload: 'success',
           url: `${config.hostUrl}/scan/${response.data.data[0].id}`,

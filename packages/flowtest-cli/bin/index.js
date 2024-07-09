@@ -10,6 +10,7 @@ const { cloneDeep } = require('lodash');
 const dotenv = require('dotenv');
 const { GraphLogger, LogLevel } = require('../graph/GraphLogger');
 const { baseUrl, axiosClient } = require('./axiosClient');
+require('dotenv').config();
 
 const getEnvVariables = (pathname) => {
   const content = readFile(pathname);
@@ -108,10 +109,14 @@ const argv = yargs(hideBin(process.argv))
               },
               scan: bytesToBase64(new TextEncoder().encode(JSON.stringify(logger.get()))),
             };
+            const accessId = process.env.FLOWTEST_ACCESS_ID;
+            const accessKey = process.env.FLOWTEST_ACCESS_KEY;
             try {
               const response = await axiosClient.post('/upload', data, {
                 headers: {
                   'Content-Type': 'application/json',
+                  'x-access-id': accessId,
+                  'x-access-key': accessKey,
                 },
               });
               console.log(chalk.bold('Flow Scan: ') + chalk.dim(`${baseUrl}/scan/${response.data.data[0].id}`));

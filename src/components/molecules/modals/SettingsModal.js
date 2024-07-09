@@ -42,7 +42,7 @@ const SettingsModal = ({ closeFn = () => null, open = false, initialTab = 0 }) =
 
   const onFormSubmit = async (data) => {
     try {
-      await addLogSyncConfig(data.enabled, 'http://localhost:3000', data.accessId, data.accessKey);
+      await addLogSyncConfig(data.enabled, 'https://flowtest-ai.vercel.app', data.accessId, data.accessKey);
       // send the form data as a request
       showSuccessFullSubmissionMessage(true);
       closeFn();

@@ -7,6 +7,8 @@ const axiosClient = (baseUrl, accessId, accessKey) => {
     baseURL: `${baseUrl}/api`,
     headers: {
       'Content-Type': 'application/json',
+      'x-access-id': accessId,
+      'x-access-key': accessKey,
     },
   });
 

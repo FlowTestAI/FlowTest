@@ -46,7 +46,7 @@ const hideScrollbar = EditorView.theme({
 export const Editor = ({ ...props }) => {
   const editor = useRef();
   const [view, setView] = useState(null);
-  const [dynamicOptions, setDynamicOptions] = useState([]);
+  const [dynamicOptions, setDynamicOptions] = useState(props.completionOptions || []);
 
   if (view) {
     if (!isEqual(dynamicOptions, props.completionOptions)) {

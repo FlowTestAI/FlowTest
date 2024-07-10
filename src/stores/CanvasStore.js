@@ -59,11 +59,20 @@ const useCanvasStore = create((set, get) => ({
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
           if (authType == 'no-auth') {
-            node.data = {};
+            return {
+              ...node,
+              data: {
+                type: authType,
+              },
+            };
           } else {
-            node.data = {
-              ...node.data,
-              type: authType,
+            return {
+              ...node,
+              data: {
+                type: authType,
+                username: '',
+                password: '',
+              },
             };
           }
         }
@@ -71,15 +80,19 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setBasicAuthValues: (nodeId, attribute, value) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            [attribute]: value,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              [attribute]: value,
+            },
           };
         }
 
@@ -93,9 +106,12 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            requestType,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              requestType,
+            },
           };
         }
 
@@ -109,9 +125,12 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            url,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              url,
+            },
           };
         }
 
@@ -130,11 +149,14 @@ const useCanvasStore = create((set, get) => ({
             type: type,
             value: getDefaultValue(type),
           };
-          node.data = {
-            ...node.data,
-            preReqVars: {
-              ...node.data.preReqVars,
-              [newId]: newVar,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              preReqVars: {
+                ...node.data.preReqVars,
+                [newId]: newVar,
+              },
             },
           };
         }
@@ -142,6 +164,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   requestNodeDeletePreRequestVar: (nodeId, id) => {
     set({
@@ -150,15 +173,19 @@ const useCanvasStore = create((set, get) => ({
           // it's important to create a new object here, to inform React Flow about the cahnges
           const { [id]: _, ...newVariables } = node.data.preReqVars;
 
-          node.data = {
-            ...node.data,
-            preReqVars: newVariables,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              preReqVars: newVariables,
+            },
           };
         }
 
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   requestNodeChangePreRequestVar: (nodeId, id, value) => {
     set({
@@ -170,11 +197,14 @@ const useCanvasStore = create((set, get) => ({
             value,
           };
 
-          node.data = {
-            ...node.data,
-            preReqVars: {
-              ...node.data.preReqVars,
-              [id]: updateVar,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              preReqVars: {
+                ...node.data.preReqVars,
+                [id]: updateVar,
+              },
             },
           };
         }
@@ -194,11 +224,15 @@ const useCanvasStore = create((set, get) => ({
             type: type,
             value: getDefaultValue(type),
           };
-          node.data = {
-            ...node.data,
-            postRespVars: {
-              ...node.data.postRespVars,
-              [newId]: newVar,
+
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              postRespVars: {
+                ...node.data.postRespVars,
+                [newId]: newVar,
+              },
             },
           };
         }
@@ -206,6 +240,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   requestNodeDeletePostResponseVar: (nodeId, id) => {
     set({
@@ -214,15 +249,19 @@ const useCanvasStore = create((set, get) => ({
           // it's important to create a new object here, to inform React Flow about the cahnges
           const { [id]: _, ...newVariables } = node.data.postRespVars;
 
-          node.data = {
-            ...node.data,
-            postRespVars: newVariables,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              postRespVars: newVariables,
+            },
           };
         }
 
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   requestNodeChangePostResponseVar: (nodeId, id, value) => {
     set({
@@ -234,11 +273,14 @@ const useCanvasStore = create((set, get) => ({
             value,
           };
 
-          node.data = {
-            ...node.data,
-            postRespVars: {
-              ...node.data.postRespVars,
-              [id]: updateVar,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              postRespVars: {
+                ...node.data.postRespVars,
+                [id]: updateVar,
+              },
             },
           };
         }
@@ -254,26 +296,35 @@ const useCanvasStore = create((set, get) => ({
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
           if (type === 'None') {
-            node.data = {
-              ...node.data,
-              requestBody: {
-                type,
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                requestBody: {
+                  type,
+                },
               },
             };
           } else if (type === 'raw-json') {
-            node.data = {
-              ...node.data,
-              requestBody: {
-                type,
-                body: data,
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                requestBody: {
+                  type,
+                  body: data,
+                },
               },
             };
           } else if (type === 'form-data') {
-            node.data = {
-              ...node.data,
-              requestBody: {
-                type,
-                body: data,
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                requestBody: {
+                  type,
+                  body: data,
+                },
               },
             };
           }
@@ -289,13 +340,16 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            variables: {
-              ...node.data.variables,
-              [name]: {
-                type,
-                value,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              variables: {
+                ...node.data.variables,
+                [name]: {
+                  type,
+                  value,
+                },
               },
             },
           };
@@ -311,24 +365,31 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            operator,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              operator,
+            },
           };
         }
 
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setDelayNodeValue: (nodeId, value) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            delay: value,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              delay: value,
+            },
           };
         }
 
@@ -342,9 +403,12 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            output,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              output,
+            },
           };
         }
 
@@ -374,9 +438,12 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            relativePath,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              relativePath,
+            },
           };
         }
 
@@ -390,11 +457,14 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            variable: {
-              ...node.data?.variable,
-              name,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              variable: {
+                ...node.data?.variable,
+                name,
+              },
             },
           };
         }
@@ -409,12 +479,15 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            variable: {
-              ...node.data?.variable,
-              type,
-              value: type === 'Expression' ? {} : getDefaultValue(type),
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              variable: {
+                ...node.data?.variable,
+                type,
+                value: type === 'Expression' ? {} : getDefaultValue(type),
+              },
             },
           };
         }
@@ -422,23 +495,27 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   setVariableNodeExpressionsVariable: (nodeId, name, type, value) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            variable: {
-              ...node.data.variable,
-              value: {
-                ...node.data.variable.value,
-                variables: {
-                  ...node.data.variable.value?.variables,
-                  [name]: {
-                    type,
-                    value,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              variable: {
+                ...node.data.variable,
+                value: {
+                  ...node.data.variable.value,
+                  variables: {
+                    ...node.data.variable.value?.variables,
+                    [name]: {
+                      type,
+                      value,
+                    },
                   },
                 },
               },
@@ -456,13 +533,16 @@ const useCanvasStore = create((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            variable: {
-              ...node.data.variable,
-              value: {
-                ...node.data.variable.value,
-                operator,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              variable: {
+                ...node.data.variable,
+                value: {
+                  ...node.data.variable.value,
+                  operator,
+                },
               },
             },
           };
@@ -471,17 +551,21 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
+    useTabStore.getState().updateFlowTestNodes(get().nodes);
   },
   variableNodeChangeVar: (nodeId, value) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
-          node.data = {
-            ...node.data,
-            variable: {
-              ...node.data.variable,
-              value,
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              variable: {
+                ...node.data.variable,
+                value,
+              },
             },
           };
         }

@@ -100,7 +100,7 @@ const highlightStyle = EditorView.baseTheme({
 export const TextEditor = ({ placeHolder, onChangeHandler, value, disableState, completionOptions, styles }) => {
   const editor1 = useRef();
   const [view, setView] = useState(null);
-  const [dynamicOptions, setDynamicOptions] = useState([]);
+  const [dynamicOptions, setDynamicOptions] = useState(completionOptions);
 
   if (view) {
     if (!isEqual(dynamicOptions, completionOptions)) {

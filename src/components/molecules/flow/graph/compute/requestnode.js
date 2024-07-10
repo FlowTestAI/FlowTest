@@ -32,7 +32,7 @@ class requestNode extends Node {
 
     const res = await this.runHttpRequest(options);
 
-    if (this.nodeData.requestBody.type === 'form-data') {
+    if (this.nodeData?.requestBody?.type === 'form-data') {
       options.data.value = '<BASE64_ENCODED_FILE_DATA>';
     }
 
@@ -111,7 +111,7 @@ class requestNode extends Node {
       data: requestData,
     };
 
-    if (this.auth && this.auth.type === 'basic-auth') {
+    if (this.auth && this.auth?.type === 'basic-auth') {
       options.auth = {};
       options.auth.username = this.auth.username;
       options.auth.password = this.auth.password;

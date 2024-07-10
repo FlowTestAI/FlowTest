@@ -183,14 +183,20 @@ class Graph {
         throw Error(`Timeout of ${this.timeout} ms exceeded, stopping graph run`);
       }
     } catch (err) {
-      this.logger.add(LogLevel.ERROR, `Flow failed due to ${err}`, node);
+      this.logger.add(LogLevel.ERROR, `Flow failed due to ${err}`, {
+        type: 'errorNode',
+        data: node.data,
+      });
       return {
         status: 'Failed',
       };
     }
 
     if (result === undefined) {
-      this.logger.add(LogLevel.ERROR, 'Flow failed due to failure to evaluate result', node);
+      this.logger.add(LogLevel.ERROR, 'Flow failed due to failure to evaluate result', {
+        type: 'errorNode',
+        data: node.data,
+      });
       return {
         status: 'Failed',
       };

@@ -206,7 +206,10 @@ class Graph {
       }
     } catch (err) {
       console.log(chalk.red(`Flow failed at: ${JSON.stringify(node.data)} due to ${err}`));
-      this.logger.add(LogLevel.ERROR, `Flow failed due to ${err}`, node);
+      this.logger.add(LogLevel.ERROR, `Flow failed due to ${err}`, {
+        type: 'errorNode',
+        data: node.data,
+      });
       return {
         status: 'Failed',
       };
@@ -214,7 +217,10 @@ class Graph {
 
     if (result === undefined) {
       console.log(chalk.red(`Flow failed due to failure to evaluate result at node: ${node.data}`));
-      this.logger.add(LogLevel.ERROR, 'Flow failed due to failure to evaluate result', node);
+      this.logger.add(LogLevel.ERROR, 'Flow failed due to failure to evaluate result', {
+        type: 'errorNode',
+        data: node.data,
+      });
       return {
         status: 'Failed',
       };

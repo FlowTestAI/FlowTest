@@ -1,54 +1,58 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition, Tab } from '@headlessui/react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+// import { useForm } from 'react-hook-form';
+// import { z } from 'zod';
+// import { zodResolver } from '@hookform/resolvers/zod';
 import { XCircleIcon } from '@heroicons/react/20/solid';
 import Button from 'components/atoms/common/Button';
 import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 import { addLogSyncConfig } from 'service/settings';
 import useSettingsStore from 'stores/SettingsStore';
 
-const schema = z.object({
-  enabled: z.boolean(),
-  accessId: z.string(),
-  accessKey: z.string(),
-});
+// const schema = z.object({
+//   enabled: z.boolean(),
+//   accessId: z.string(),
+//   accessKey: z.string(),
+// });
 
 const SettingsModal = ({ closeFn = () => null, open = false, initialTab = 0 }) => {
   const [successFullSubmissionMessage, showSuccessFullSubmissionMessage] = useState(false);
+  const [failureFullSubmissionMessage, showFailureFullSubmissionMessage] = useState(false);
   const config = useSettingsStore((state) => state.logSyncConfig);
+  const [enabled, setEnabled] = useState(false);
+  const [accessId, setAccessId] = useState('');
+  const [accessKey, setAccessKey] = useState('');
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    setError,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: {
-      enabled: false,
-      accessId: '',
-      accessKey: '',
-    },
-    resolver: zodResolver(schema),
-  });
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   setValue,
+  //   setError,
+  //   formState: { errors, isSubmitting },
+  // } = useForm({
+  //   defaultValues: {
+  //     enabled: false,
+  //     accessId: '',
+  //     accessKey: '',
+  //   },
+  //   resolver: zodResolver(schema),
+  // });
 
   useEffect(() => {
-    setValue('enabled', config?.enabled || false);
-    setValue('accessId', config?.accessId || '');
-    setValue('accessKey', config?.accessKey || '');
+    setEnabled(config?.enabled || false);
+    setAccessId(config?.accessId || '');
+    setAccessKey(config?.accessKey || '');
   }, [config]);
 
-  const onFormSubmit = async (data) => {
+  const onFormSubmit = async () => {
     try {
-      await addLogSyncConfig(data.enabled, 'https://flowtest-ai.vercel.app', data.accessId, data.accessKey);
+      await addLogSyncConfig(enabled, 'https://flowtest-ai.vercel.app', accessId, accessKey);
       // send the form data as a request
       showSuccessFullSubmissionMessage(true);
       closeFn();
     } catch (error) {
       // To show error message from the request handler
-      setError('root', { message: error });
+      showFailureFullSubmissionMessage(true);
     }
   };
 
@@ -59,6 +63,9 @@ const SettingsModal = ({ closeFn = () => null, open = false, initialTab = 0 }) =
           as='div'
           className='relative z-10'
           onClose={() => {
+            setEnabled(config?.enabled || false);
+            setAccessId(config?.accessId || '');
+            setAccessKey(config?.accessKey || '');
             closeFn();
           }}
         >
@@ -114,65 +121,74 @@ const SettingsModal = ({ closeFn = () => null, open = false, initialTab = 0 }) =
                     <Tab.Panels className='mt-2'>
                       <Tab.Panel className='p-4'>
                         {/* Scans Content */}
-                        <form className='flex flex-col items-start gap-4' onSubmit={handleSubmit(onFormSubmit)}>
-                          <div className='bg-card min-h-[20vh] w-full rounded-lg border border-gray-300 p-4 shadow-sm'>
-                            <div className='py-2'>
-                              <p className='text-lg'>
-                                Scans aim to provide anayltics and observability for your flows. <br />
-                                <a
-                                  href='https://flowtest-ai.vercel.app/'
-                                  target='_blank'
-                                  rel='noreferrer'
-                                  className='text-blue-500 hover:underline'
-                                >
-                                  Get Access Keys
-                                </a>
-                              </p>
-                            </div>
-                            <div className='py-2'>
-                              <label htmlFor='enabled' className='block text-lg font-medium text-gray-700'>
-                                Enabled
-                              </label>
-                              <input type='checkbox' {...register('enabled')} id='enabled' className='block' />
-                              {errors.enabled && <div className='text-red-500'>{errors.enabled.message}</div>}
-                            </div>
-                            <div className='py-2'>
-                              <label htmlFor='accessId' className='block text-lg font-medium text-gray-700'>
-                                Access Id
-                              </label>
-                              <input
-                                {...register('accessId')}
-                                type='text'
-                                placeholder='Access Id'
-                                className='mb-2 block w-full rounded border border-slate-700 bg-background-light p-2.5 text-sm text-slate-900 outline-none'
-                              />
-                              {errors.accessId && <div className='text-red-500'>{errors.accessId.message}</div>}
-                            </div>
-                            <div className='py-2'>
-                              <label htmlFor='accessKey' className='block text-lg font-medium text-gray-700'>
-                                Access Key
-                              </label>
-                              <input
-                                {...register('accessKey')}
-                                type='text'
-                                placeholder='Access Key'
-                                className='mb-2 block w-full rounded border border-slate-700 bg-background-light p-2.5 text-sm text-slate-900 outline-none'
-                              />
-                              {errors.accessKey && <div className='text-red-500'>{errors.accessKey.message}</div>}
-                            </div>
-                            <div>
-                              {errors.root && <div className='text-red-500'>{errors.root.message}</div>}{' '}
-                              {successFullSubmissionMessage && (
-                                <div className='text-green-500'> Successfully saved settings</div>
-                              )}
-                            </div>
+                        <div className='bg-card min-h-[20vh] w-full rounded-lg border border-gray-300 p-4 shadow-sm'>
+                          <div className='py-2'>
+                            <p className='text-lg'>
+                              Scans aim to provide anayltics and observability for your flows. <br />
+                              <a
+                                href='https://flowtest-ai.vercel.app/'
+                                target='_blank'
+                                rel='noreferrer'
+                                className='text-blue-500 hover:underline'
+                              >
+                                Get Access Keys
+                              </a>
+                            </p>
                           </div>
-                          <div className='flex justify-center w-full mt-6'>
-                            <Button btnType={BUTTON_TYPES.primary} isDisabled={isSubmitting} fullWidth={true}>
-                              {isSubmitting ? 'Loading...' : 'Save'}
-                            </Button>
+                          <div className='py-2'>
+                            <label htmlFor='enabled' className='block text-lg font-medium text-gray-700'>
+                              Enabled
+                            </label>
+                            <input
+                              type='checkbox'
+                              checked={enabled}
+                              onChange={() => setEnabled(!enabled)}
+                              id='enabled'
+                              className='block'
+                            />
                           </div>
-                        </form>
+                          <div className='py-2'>
+                            <label htmlFor='accessId' className='block text-lg font-medium text-gray-700'>
+                              Access Id
+                            </label>
+                            <input
+                              value={accessId}
+                              onChange={(e) => setAccessId(e.target.value)}
+                              type='text'
+                              placeholder='Access Id'
+                              className='mb-2 block w-full rounded border border-slate-700 bg-background-light p-2.5 text-sm text-slate-900 outline-none'
+                            />
+                          </div>
+                          <div className='py-2'>
+                            <label htmlFor='accessKey' className='block text-lg font-medium text-gray-700'>
+                              Access Key
+                            </label>
+                            <input
+                              value={accessKey}
+                              onChange={(e) => setAccessKey(e.target.value)}
+                              type='text'
+                              placeholder='Access Key'
+                              className='mb-2 block w-full rounded border border-slate-700 bg-background-light p-2.5 text-sm text-slate-900 outline-none'
+                            />
+                          </div>
+                          <div>
+                            {failureFullSubmissionMessage && (
+                              <div className='text-red-500'> Failed to saved settings</div>
+                            )}
+                            {successFullSubmissionMessage && (
+                              <div className='text-green-500'> Successfully saved settings</div>
+                            )}
+                          </div>
+                        </div>
+                        <div className='flex justify-center w-full mt-6'>
+                          <Button
+                            btnType={BUTTON_TYPES.primary}
+                            fullWidth={true}
+                            onClickHandle={async () => await onFormSubmit()}
+                          >
+                            {'Save'}
+                          </Button>
+                        </div>
                       </Tab.Panel>
                       <Tab.Panel className='p-4'>
                         {/* Theme Content */}

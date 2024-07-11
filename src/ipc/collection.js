@@ -18,7 +18,6 @@ const registerMainEventHandlers = () => {
     const { ipcRenderer } = window;
 
     ipcRenderer.on('main:collection-created', (id, name, pathname, nodes) => {
-      console.log(`\n \n main:collection-created :: _createCollection \n \n `);
       _createCollection(id, name, pathname, nodes);
     });
 

@@ -70,7 +70,7 @@ module.exports = {
       montserrat: ['Montserrat', 'sans-serif'],
     },
   },
-  plugins: [require('daisyui'), require('@tailwindcss/forms')],
+  plugins: [require('daisyui')],
   daisyui: {
     // themes: false,
     themes: [],

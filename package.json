@@ -45,7 +45,6 @@
     "@emotion/styled": "^11.11.0",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
-    "@hookform/resolvers": "^3.7.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -67,7 +66,6 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^18.2.0",
     "react-edit-text": "^5.1.1",
-    "react-hook-form": "^7.52.0",
     "react-icons": "^5.0.1",
     "react-json-view-lite": "^1.4.0",
     "react-perfect-scrollbar": "^1.5.8",
@@ -82,12 +80,10 @@
     "tailwindcss": "^3.4.1",
     "typescript": "4",
     "web-vitals": "^2.1.4",
-    "zod": "^3.23.8",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
-    "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "20.11.5",
     "daisyui": "^4.7.2",

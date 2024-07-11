@@ -22,7 +22,6 @@ const SettingsModal = ({ closeFn = () => null, open = false, initialTab = 0 }) =
   const [enabled, setEnabled] = useState(false);
   const [accessId, setAccessId] = useState('');
   const [accessKey, setAccessKey] = useState('');
-  console.log(config);
 
   // const {
   //   register,

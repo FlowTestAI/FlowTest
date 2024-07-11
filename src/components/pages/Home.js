@@ -11,14 +11,16 @@ import HorizontalDivider from 'components/atoms/common/HorizontalDivider';
 import WithoutSplitPane from 'components/layouts/WithoutSplitPane';
 import useCollectionStore from 'stores/CollectionStore';
 import registerSettingsEventHandlers from 'ipc/settings';
+import useTelemetry from 'utils/useTelemetry';
 
 const Home = () => {
   const collections = useCollectionStore((state) => state.collections);
   const showLoader = useCommonStore((state) => state.showLoader);
   registerMainEventHandlers();
   registerSettingsEventHandlers();
+  useTelemetry();
   return (
-    <div className='relative flex h-full flex-col font-openSans text-cyan-900'>
+    <div className='relative flex flex-col h-full font-openSans text-cyan-900'>
       <MainHeader />
       <HorizontalDivider />
       {/* For some reason with this condition in SplitPane component, drag feature was not getting enabled thus putting this here 

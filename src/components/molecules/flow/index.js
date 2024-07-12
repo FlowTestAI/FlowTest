@@ -196,8 +196,8 @@ const Flow = ({ tab, collectionId }) => {
 
   const onGraphComplete = async (status, time, logs) => {
     const response = await uploadGraphRunLogs(tab.name, status, time, logs);
-    console.log(response);
-    setLogs(tab.id, logs, response);
+    //console.log(response);
+    setLogs(tab.id, status, logs, response);
     if (status == 'Success') {
       toast.success(`FlowTest Run Success!`);
     } else if (status == 'Failed') {

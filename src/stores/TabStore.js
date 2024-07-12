@@ -99,12 +99,13 @@ export const useTabStore = create((set, get) => ({
       }),
     );
   },
-  updateFlowTestLogs: (tabId, logs, flowScan) => {
+  updateFlowTestLogs: (tabId, status, logs, flowScan) => {
     set(
       produce((state) => {
         const existingTab = state.tabs.find((t) => t.id === tabId);
         if (existingTab) {
           existingTab.run = {
+            status,
             scan: flowScan,
             logs,
           };

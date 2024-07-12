@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { ShieldCheckIcon, BarsArrowUpIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import {
+  ShieldCheckIcon,
+  BarsArrowUpIcon,
+  ExclamationTriangleIcon,
+  XCircleIcon,
+  CheckCircleIcon,
+} from '@heroicons/react/24/outline';
 import { JsonView, collapseAllNested, defaultStyles } from 'react-json-view-lite';
 import { LogLevel } from '../flow/graph/GraphLogger';
 import { ClockIcon } from '@heroicons/react/20/solid';
@@ -87,7 +93,16 @@ const FlowLogs = ({ logsData }) => {
     <div className='overflow-auto'>
       <div>{renderFlowScan(logsData.run.scan)}</div>
       <div className='flex flex-col mt-4 border-2 rounded-md shadow-sm border-slate-300 bg-background-light text-cyan-900'>
-        <h2 className='px-4 py-2 text-2xl font-medium border-b-2 border-slate-300'>Logs</h2>
+        <h2 className='px-4 py-2 text-2xl font-medium border-b-2 border-slate-300'>
+          <div className='flex flex-row'>
+            Logs
+            {logsData.run.status === 'Success' ? (
+              <CheckCircleIcon className='w-5 h-5' />
+            ) : (
+              <XCircleIcon className='w-5 h-5' />
+            )}
+          </div>
+        </h2>
         <div className='p-4'>
           {logsData.run.logs.map((log, index) => {
             if (log.logLevel === LogLevel.INFO) {

@@ -68,7 +68,7 @@ const argv = yargs(hideBin(process.argv))
         try {
           const flowData = serialize(JSON.parse(content));
           // output json output to a file
-          //console.log(chalk.green(JSON.stringify(flowData)));
+
           const logger = new GraphLogger();
           const startTime = Date.now();
           const g = new Graph(
@@ -80,13 +80,11 @@ const argv = yargs(hideBin(process.argv))
             logger,
           );
           console.log(chalk.yellow('Running Flow \n'));
-          if (flowData.nodes.find((n) => n.type === 'flowNode')) {
-            console.log(
-              chalk.blue(
-                '[Note] This flow contains nested flows so run it from root directory of collection. Ignore if already doing that. \n',
-              ),
-            );
-          }
+          console.log(
+            chalk.blue(
+              'Right now CLI commands must be run from root directory of collection. We will gradually add support to run commands from anywhere inside the collection. \n',
+            ),
+          );
           const result = await g.run();
           console.log('\n');
           if (result.status === 'Success') {

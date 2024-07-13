@@ -204,6 +204,9 @@ importers:
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
+      form-data:
+        specifier: ^4.0.0
+        version: 4.0.0
       fs:
         specifier: ^0.0.1-security
         version: 0.0.1-security
@@ -270,6 +273,9 @@ importers:
       flatted:
         specifier: ^3.3.1
         version: 3.3.1
+      form-data:
+        specifier: ^4.0.0
+        version: 4.0.0
       fs:
         specifier: ^0.0.1-security
         version: 0.0.1-security

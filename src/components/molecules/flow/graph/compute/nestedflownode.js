@@ -2,9 +2,9 @@ import Graph1 from '../Graph';
 import Node from './node';
 
 class nestedFlowNode extends Node {
-  constructor(nodes, edges, startTime, initialEnvVars, logger, caller) {
+  constructor(nodes, edges, startTime, initialEnvVars, logger, caller, collectionPath) {
     super('flowNode');
-    this.internalGraph = new Graph1(nodes, edges, startTime, initialEnvVars, logger, caller);
+    this.internalGraph = new Graph1(nodes, edges, startTime, initialEnvVars, logger, caller, collectionPath);
   }
 
   async evaluate() {

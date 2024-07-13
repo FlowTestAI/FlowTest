@@ -196,8 +196,8 @@ const Flow = ({ tab, collectionId }) => {
 
   const onGraphComplete = async (status, time, logs) => {
     const response = await uploadGraphRunLogs(tab.name, status, time, logs);
-    console.log(response);
-    setLogs(tab.id, logs, response);
+    //console.log(response);
+    setLogs(tab.id, status, logs, response);
     if (status == 'Success') {
       toast.success(`FlowTest Run Success!`);
     } else if (status == 'Failed') {
@@ -243,7 +243,7 @@ const Flow = ({ tab, collectionId }) => {
       >
         <Background variant='dots' gap={12} size={1} />
         <Controls
-          className='flex shadow-none border-cyan-900'
+          className='flex border-cyan-900 shadow-none'
           onFitView={() => setViewport(reactFlowInstance.getViewport())}
         ></Controls>
         <Button
@@ -257,10 +257,10 @@ const Flow = ({ tab, collectionId }) => {
             try {
               let envVariables = {};
 
-              const activeEnv = useCollectionStore
-                .getState()
-                .collections.find((c) => c.id === collectionId)
-                ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+              const activeCollection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+              const activeEnv = activeCollection?.environments.find(
+                (e) => e.name === useTabStore.getState().selectedEnv,
+              );
               if (activeEnv) {
                 envVariables = cloneDeep(activeEnv.variables);
               }
@@ -273,6 +273,7 @@ const Flow = ({ tab, collectionId }) => {
                 envVariables,
                 logger,
                 'main',
+                activeCollection.pathname,
               );
               const result = await g.run();
               const time = Date.now() - startTime;

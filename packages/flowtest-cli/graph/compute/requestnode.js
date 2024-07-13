@@ -3,6 +3,10 @@ const Node = require('./node');
 const axios = require('axios');
 const chalk = require('chalk');
 const { LogLevel } = require('../GraphLogger');
+const FormData = require('form-data');
+const { extend, cloneDeep } = require('lodash');
+const fs = require('fs');
+const path = require('path');
 
 const newAbortSignal = () => {
   const abortController = new AbortController();
@@ -113,11 +117,8 @@ class requestNode extends Node {
           : JSON.parse('{}');
       } else if (this.nodeData.requestBody.type === 'form-data') {
         contentType = 'multipart/form-data';
-        requestData = {
-          key: computeVariables(this.nodeData.requestBody.body.key, variablesDict),
-          value: this.nodeData.requestBody.body.value,
-          name: this.nodeData.requestBody.body.name,
-        };
+        const params = cloneDeep(this.nodeData.requestBody.body);
+        requestData = params;
       }
     }
 
@@ -125,7 +126,7 @@ class requestNode extends Node {
       method: restMethod,
       url: finalUrl,
       headers: {
-        'Content-type': contentType,
+        'content-type': contentType,
       },
       data: requestData,
     };
@@ -141,12 +142,23 @@ class requestNode extends Node {
 
   async runHttpRequest(request) {
     try {
-      if (request.headers['Content-type'] === 'multipart/form-data') {
-        const requestData = new FormData();
-        const file = await convertBase64ToBlob(request.data.value);
-        requestData.append(request.data.key, file, request.data.name);
+      if (request.headers['content-type'] === 'multipart/form-data') {
+        const formData = new FormData();
+        const params = request.data;
+        await params.map(async (param, index) => {
+          if (param.type === 'text') {
+            formData.append(param.key, param.value);
+          }
 
-        request.data = requestData;
+          if (param.type === 'file') {
+            let trimmedFilePath = param.value.trim();
+
+            formData.append(param.key, fs.createReadStream(trimmedFilePath), path.basename(trimmedFilePath));
+          }
+        });
+
+        request.data = formData;
+        extend(request.headers, formData.getHeaders());
       }
 
       // assuming 'application/json' type

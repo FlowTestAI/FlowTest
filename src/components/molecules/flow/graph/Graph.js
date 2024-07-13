@@ -11,7 +11,7 @@ import setVarNode from './compute/setvarnode';
 import { LogLevel } from './GraphLogger';
 
 class Graph {
-  constructor(nodes, edges, startTime, initialEnvVars, logger, caller) {
+  constructor(nodes, edges, startTime, initialEnvVars, logger, caller, collectionPath) {
     this.nodes = nodes;
     this.edges = edges;
     this.logger = logger;
@@ -21,6 +21,7 @@ class Graph {
     this.auth = undefined;
     this.envVariables = initialEnvVars;
     this.caller = caller;
+    this.collectionPath = collectionPath;
   }
 
   #checkTimeout() {
@@ -125,7 +126,14 @@ class Graph {
       }
 
       if (node.type === 'requestNode') {
-        const rNode = new requestNode(node.data, prevNodeOutputData, this.envVariables, this.auth, this.logger);
+        const rNode = new requestNode(
+          node.data,
+          prevNodeOutputData,
+          this.envVariables,
+          this.auth,
+          this.logger,
+          this.collectionPath,
+        );
         result = await rNode.evaluate();
         // add post response variables if any
         if (result.postRespVars) {
@@ -146,6 +154,7 @@ class Graph {
             this.envVariables,
             this.logger,
             node.type,
+            this.collectionPath,
           );
           result = await cNode.evaluate();
           this.envVariables = result.envVars;

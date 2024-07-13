@@ -1,15 +1,17 @@
+import { cloneDeep } from 'lodash';
 import { computeNodeVariables, computeVariables } from '../compute/utils';
 import { LogLevel } from '../GraphLogger';
 import Node from './node';
 
 class requestNode extends Node {
-  constructor(nodeData, prevNodeOutputData, envVariables, auth, logger) {
+  constructor(nodeData, prevNodeOutputData, envVariables, auth, logger, collectionPath) {
     super('requestNode');
     this.nodeData = nodeData;
     this.prevNodeOutputData = prevNodeOutputData;
     this.envVariables = envVariables;
     this.auth = auth;
     this.logger = logger;
+    this.collectionPath = collectionPath;
   }
 
   async evaluate() {
@@ -28,13 +30,9 @@ class requestNode extends Node {
     console.debug('Evaluated Url: ', finalUrl);
 
     // step 3
-    const options = this.formulateRequest(finalUrl, variablesDict);
+    const options = await this.formulateRequest(finalUrl, variablesDict);
 
     const res = await this.runHttpRequest(options);
-
-    if (this.nodeData?.requestBody?.type === 'form-data') {
-      options.data.value = '<BASE64_ENCODED_FILE_DATA>';
-    }
 
     if (res.error) {
       this.logger.add(LogLevel.ERROR, 'HTTP request failed', {
@@ -81,7 +79,7 @@ class requestNode extends Node {
     }
   }
 
-  formulateRequest(finalUrl, variablesDict) {
+  async formulateRequest(finalUrl, variablesDict) {
     let restMethod = this.nodeData.requestType.toLowerCase();
     let contentType = 'application/json';
     let requestData = undefined;
@@ -94,11 +92,8 @@ class requestNode extends Node {
           : JSON.parse('{}');
       } else if (this.nodeData.requestBody.type === 'form-data') {
         contentType = 'multipart/form-data';
-        requestData = {
-          key: computeVariables(this.nodeData.requestBody.body.key, variablesDict),
-          value: this.nodeData.requestBody.body.value,
-          name: this.nodeData.requestBody.body.name,
-        };
+        const params = cloneDeep(this.nodeData.requestBody.body);
+        requestData = params;
       }
     }
 
@@ -106,7 +101,7 @@ class requestNode extends Node {
       method: restMethod,
       url: finalUrl,
       headers: {
-        'Content-type': contentType,
+        'content-type': contentType,
       },
       data: requestData,
     };
@@ -124,7 +119,7 @@ class requestNode extends Node {
     const { ipcRenderer } = window;
 
     return new Promise((resolve, reject) => {
-      ipcRenderer.invoke('renderer:run-http-request', request).then(resolve).catch(reject);
+      ipcRenderer.invoke('renderer:run-http-request', request, this.collectionPath).then(resolve).catch(reject);
     });
   }
 }

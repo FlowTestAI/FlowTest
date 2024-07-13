@@ -1,7 +1,12 @@
 import React, { Fragment, useState, useRef } from 'react';
 import { PropTypes } from 'prop-types';
-import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
-import { DocumentArrowUpIcon, ClipboardDocumentCheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import { EllipsisVerticalIcon, PlusIcon } from '@heroicons/react/24/solid';
+import {
+  DocumentArrowUpIcon,
+  ClipboardDocumentCheckIcon,
+  ClipboardDocumentIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import useCanvasStore from 'stores/CanvasStore';
 import { toast } from 'react-toastify';
@@ -15,16 +20,19 @@ import { useTabStore } from 'stores/TabStore';
 import { cloneDeep } from 'lodash';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Tippy from '@tippyjs/react';
+import FormDataSelector from './FormDataSelector';
 
 const requestBodyTypeOptions = ['None', 'form-data', 'raw-json'];
 
 const RequestBody = ({ nodeId, nodeData }) => {
+  const { ipcRenderer } = window;
   const setRequestNodeBody = useCanvasStore((state) => state.setRequestNodeBody);
   const [cachedValues, setCachedValues] = React.useState({});
 
   const [copyStatus, setCopyStatus] = useState(false); // To indicate if the text was copied
 
-  const uploadFileForRequestNode = useRef(null);
+  // Refs to hold the input elements
+  const inputRefs = useRef([]);
 
   const updateCachedValues = () => {
     if (nodeData.requestBody) {
@@ -37,12 +45,12 @@ const RequestBody = ({ nodeId, nodeData }) => {
     }
   };
 
-  const handleFileUpload = async (e) => {
+  const handleFileUpload = async (e, index) => {
     if (!e.target.files) return;
 
     if (e.target.files.length === 1) {
       const file = e.target.files[0];
-      const { name } = file;
+      const { name, path } = file;
 
       const reader = new FileReader();
       reader.onload = (evt) => {
@@ -53,22 +61,20 @@ const RequestBody = ({ nodeId, nodeData }) => {
 
         const value = result;
 
-        setRequestNodeBody(nodeId, 'form-data', {
-          key: nodeData.requestBody.body.key,
-          value: value,
-          name: name,
-        });
+        const updatedParams = [...nodeData.requestBody.body];
+        const activeCollectionId = useCanvasStore.getState().collectionId;
+        const activeCollection = useCollectionStore.getState().collections.find((c) => c.id === activeCollectionId);
+        if (activeCollection && path.startsWith(activeCollection.pathname)) {
+          updatedParams[index].value = ipcRenderer.relative(activeCollection.pathname, path);
+        } else {
+          updatedParams[index].value = path;
+        }
+
+        updatedParams[index].name = name;
+        setRequestNodeBody(nodeId, 'form-data', updatedParams);
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const handleFormDataKey = (e) => {
-    setRequestNodeBody(nodeId, 'form-data', {
-      key: e.target.value,
-      value: nodeData.requestBody.body.value,
-      name: nodeData.requestBody.body.name,
-    });
   };
 
   const handleRawJson = (value) => {
@@ -89,11 +95,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
       if (cachedValues['form-data']) {
         setRequestNodeBody(nodeId, option, cachedValues['form-data']);
       } else {
-        setRequestNodeBody(nodeId, option, {
-          key: '',
-          value: '',
-          name: '',
-        });
+        setRequestNodeBody(nodeId, option, []);
       }
     }
   };
@@ -110,6 +112,104 @@ const RequestBody = ({ nodeId, nodeData }) => {
       }
     }
     return [];
+  };
+
+  const renderFormData = (params) => {
+    return (
+      <div>
+        {params && params.length > 0 ? (
+          <table className='border-collapse border-2 border-background-dark leading-normal'>
+            <thead>
+              <tr className='bg-ghost-50 text-ghost-600 text-left text-xs font-bold tracking-wider'>
+                <th className='border-2 border-background-dark p-2'>Key</th>
+                <th className='border-2 border-background-dark p-2'>Value</th>
+                <th className='border-2 border-background-dark p-2'></th>
+              </tr>
+            </thead>
+            <tbody>
+              {params.map((param, index) => (
+                <tr key={index} className='text-ghost-700 hover:bg-ghost-50 border-b border-gray-200 text-sm'>
+                  <td className='whitespace-no-wrap border-2 border-background-dark'>
+                    <input
+                      type='text'
+                      className='nodrag nowheel block h-9 w-full bg-background-light p-2.5 outline-none'
+                      name='variable-name'
+                      value={param.key}
+                      onChange={(event) => {
+                        const updatedParams = [...nodeData.requestBody.body];
+                        updatedParams[index].key = event.target.value;
+                        setRequestNodeBody(nodeId, 'form-data', updatedParams);
+                      }}
+                    />
+                  </td>
+                  <td className='whitespace-no-wrap border-2 border-background-dark'>
+                    {param.type === 'text' ? (
+                      <input
+                        type='text'
+                        className='nodrag nowheel block h-9 w-full bg-background-light p-2.5 outline-none'
+                        name='variable-name'
+                        value={param.value}
+                        onChange={(event) => {
+                          const updatedParams = [...nodeData.requestBody.body];
+                          updatedParams[index].value = event.target.value;
+                          setRequestNodeBody(nodeId, 'form-data', updatedParams);
+                        }}
+                      />
+                    ) : (
+                      <div className='nodrag nowheel w-full'>
+                        <Button
+                          btnType={BUTTON_TYPES.secondary}
+                          isDisabled={false}
+                          onClickHandle={() => {
+                            //uploadFileForRequestNode.current.click();
+                            if (inputRefs.current[index]) {
+                              inputRefs.current[index].click(); // Trigger the file input click
+                            }
+                          }}
+                          fullWidth={true}
+                        >
+                          <DocumentArrowUpIcon className='h-4 w-4 text-center' />
+                          <div
+                            className='max-w-xs overflow-hidden whitespace-nowrap'
+                            style={{ textOverflow: 'ellipsis' }}
+                          >
+                            {param.name && param.name.trim() !== '' ? param.name : 'Upload File'}
+                          </div>
+                          {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
+                          <div className='hidden'>
+                            <input
+                              type='file'
+                              id='file'
+                              ref={(el) => (inputRefs.current[index] = el)}
+                              onChange={(e) => handleFileUpload(e, index)}
+                            />
+                          </div>
+                        </Button>
+                      </div>
+                    )}
+                  </td>
+                  <td className='border-2 border-background-dark p-2'>
+                    <div className='flex items-center gap-4'>
+                      <div
+                        onClick={() => {
+                          const updatedParams = nodeData.requestBody.body.filter((_, i) => i !== index);
+                          setRequestNodeBody(nodeId, 'form-data', updatedParams);
+                        }}
+                        className='cursor-pointer'
+                      >
+                        <TrashIcon className='h-4 w-4' />
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          ''
+        )}
+      </div>
+    );
   };
 
   return (
@@ -207,33 +307,19 @@ const RequestBody = ({ nodeId, nodeData }) => {
       {nodeData.requestBody && nodeData.requestBody.type === 'form-data' && (
         <>
           <NodeHorizontalDivider />
-          <div className='bg-background p-4'>
-            <TextInputWithLabel
-              placeHolder='key'
-              onChangeHandler={(e) => handleFormDataKey(e)}
-              name={'variable-value'}
-              value={nodeData.requestBody.body.key}
-              label={'File'}
-            />
-            <div className='pt-4'>
-              <Button
-                btnType={BUTTON_TYPES.secondary}
-                isDisabled={false}
-                onClickHandle={() => {
-                  uploadFileForRequestNode.current.click();
-                }}
-                fullWidth={true}
-              >
-                <DocumentArrowUpIcon className='h-4 w-4 text-center' />
-                Upload File
-                {/* Ref: https://stackoverflow.com/questions/37457128/react-open-file-browser-on-click-a-div */}
-                <div className='hidden'>
-                  <input type='file' id='file' ref={uploadFileForRequestNode} onChange={handleFileUpload} />
-                </div>
-              </Button>
-              <div className='pt-1 text-center'>
-                {nodeData.requestBody.body.name != '' ? nodeData.requestBody.body.name : 'Choose a file to upload'}
+          <div className='bg-background pb-2'>
+            <div>
+              <div className='flex items-center justify-between'>
+                <div className='p-2'>Add Param</div>
+                <FormDataSelector
+                  onSelectHandler={(type) => {
+                    const currentParams = nodeData.requestBody.body;
+                    const updatedParams = currentParams.concat([{ key: '', value: '', type }]);
+                    setRequestNodeBody(nodeId, 'form-data', updatedParams);
+                  }}
+                />
               </div>
+              {renderFormData(nodeData.requestBody.body)}
             </div>
           </div>
         </>

@@ -25,6 +25,7 @@ import FormDataSelector from './FormDataSelector';
 const requestBodyTypeOptions = ['None', 'form-data', 'raw-json'];
 
 const RequestBody = ({ nodeId, nodeData }) => {
+  const { ipcRenderer } = window;
   const setRequestNodeBody = useCanvasStore((state) => state.setRequestNodeBody);
   const [cachedValues, setCachedValues] = React.useState({});
 
@@ -61,7 +62,14 @@ const RequestBody = ({ nodeId, nodeData }) => {
         const value = result;
 
         const updatedParams = [...nodeData.requestBody.body];
-        updatedParams[index].value = path;
+        const activeCollectionId = useCanvasStore.getState().collectionId;
+        const activeCollection = useCollectionStore.getState().collections.find((c) => c.id === activeCollectionId);
+        if (activeCollection && path.startsWith(activeCollection.pathname)) {
+          updatedParams[index].value = ipcRenderer.relative(activeCollection.pathname, path);
+        } else {
+          updatedParams[index].value = path;
+        }
+
         updatedParams[index].name = name;
         setRequestNodeBody(nodeId, 'form-data', updatedParams);
       };
@@ -106,23 +114,21 @@ const RequestBody = ({ nodeId, nodeData }) => {
     return [];
   };
 
-  console.log(nodeData.requestBody);
-
   const renderFormData = (params) => {
     return (
       <div>
         {params && params.length > 0 ? (
-          <table className='leading-normal border-2 border-collapse border-background-dark'>
+          <table className='border-collapse border-2 border-background-dark leading-normal'>
             <thead>
-              <tr className='text-xs font-bold tracking-wider text-left bg-ghost-50 text-ghost-600'>
-                <th className='p-2 border-2 border-background-dark'>Key</th>
-                <th className='p-2 border-2 border-background-dark'>Value</th>
-                <th className='p-2 border-2 border-background-dark'></th>
+              <tr className='bg-ghost-50 text-ghost-600 text-left text-xs font-bold tracking-wider'>
+                <th className='border-2 border-background-dark p-2'>Key</th>
+                <th className='border-2 border-background-dark p-2'>Value</th>
+                <th className='border-2 border-background-dark p-2'></th>
               </tr>
             </thead>
             <tbody>
               {params.map((param, index) => (
-                <tr key={index} className='text-sm border-b border-gray-200 text-ghost-700 hover:bg-ghost-50'>
+                <tr key={index} className='text-ghost-700 hover:bg-ghost-50 border-b border-gray-200 text-sm'>
                   <td className='whitespace-no-wrap border-2 border-background-dark'>
                     <input
                       type='text'
@@ -150,7 +156,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
                         }}
                       />
                     ) : (
-                      <div className='w-full nodrag nowheel'>
+                      <div className='nodrag nowheel w-full'>
                         <Button
                           btnType={BUTTON_TYPES.secondary}
                           isDisabled={false}
@@ -162,7 +168,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
                           }}
                           fullWidth={true}
                         >
-                          <DocumentArrowUpIcon className='w-4 h-4 text-center' />
+                          <DocumentArrowUpIcon className='h-4 w-4 text-center' />
                           <div
                             className='max-w-xs overflow-hidden whitespace-nowrap'
                             style={{ textOverflow: 'ellipsis' }}
@@ -182,7 +188,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
                       </div>
                     )}
                   </td>
-                  <td className='p-2 border-2 border-background-dark'>
+                  <td className='border-2 border-background-dark p-2'>
                     <div className='flex items-center gap-4'>
                       <div
                         onClick={() => {
@@ -191,7 +197,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
                         }}
                         className='cursor-pointer'
                       >
-                        <TrashIcon className='w-4 h-4' />
+                        <TrashIcon className='h-4 w-4' />
                       </div>
                     </div>
                   </td>
@@ -208,11 +214,11 @@ const RequestBody = ({ nodeId, nodeData }) => {
 
   return (
     <>
-      <div className='flex items-center justify-between p-4 bg-background'>
+      <div className='flex items-center justify-between bg-background p-4'>
         <h3>Body</h3>
         <Menu as='div' className='relative inline-block text-left'>
           <Menu.Button data-click-from='body-type-menu'>
-            <EllipsisVerticalIcon className='w-4 h-4' aria-hidden='true' data-click-from='body-type-menu' />
+            <EllipsisVerticalIcon className='h-4 w-4' aria-hidden='true' data-click-from='body-type-menu' />
           </Menu.Button>
           <Transition
             as={Fragment}
@@ -224,13 +230,13 @@ const RequestBody = ({ nodeId, nodeData }) => {
             leaveTo='transform opacity-0 scale-95'
           >
             <Menu.Items
-              className='absolute right-0 z-10 w-56 px-1 py-1 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none'
+              className='absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white px-1 py-1 shadow-lg ring-1 ring-black/5 focus:outline-none'
               data-click-from='body-type-menu'
             >
               {requestBodyTypeOptions.map((bodyTypeOption, index) => (
                 <Menu.Item key={index} data-click-from='body-type-menu' onClick={() => handleClose(bodyTypeOption)}>
                   <button
-                    className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group hover:bg-background-light'
+                    className='group flex w-full items-center rounded-md px-2 py-2 text-sm text-gray-900 hover:bg-background-light'
                     data-click-from='body-type-menu'
                   >
                     {bodyTypeOption}
@@ -244,8 +250,8 @@ const RequestBody = ({ nodeId, nodeData }) => {
       {nodeData.requestBody && nodeData.requestBody.type === 'raw-json' && (
         <>
           <NodeHorizontalDivider />
-          <div className='p-4 bg-background'>
-            <div className='w-full nodrag nowheel min-w-72'>
+          <div className='bg-background p-4'>
+            <div className='nodrag nowheel w-full min-w-72'>
               <div className='relative bg-background-lighter'>
                 <Editor
                   name='request-body-json'
@@ -255,7 +261,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
                   completionOptions={getActiveVariables()}
                 />
 
-                <div className='absolute top-0 cursor-pointer right-5 text-slate-400 hover:text-cyan-900'>
+                <div className='absolute right-5 top-0 cursor-pointer text-slate-400 hover:text-cyan-900'>
                   <CopyToClipboard
                     text={nodeData.requestBody.body}
                     onCopy={() => {
@@ -266,11 +272,11 @@ const RequestBody = ({ nodeId, nodeData }) => {
                     <button>
                       {copyStatus ? (
                         <Tippy content='Copied to Clipboard' placement='top'>
-                          <ClipboardDocumentCheckIcon className='w-6 h-6' />
+                          <ClipboardDocumentCheckIcon className='h-6 w-6' />
                         </Tippy>
                       ) : (
                         <Tippy content='Copy to Clipboard' placement='top'>
-                          <ClipboardDocumentIcon className='w-6 h-6' />
+                          <ClipboardDocumentIcon className='h-6 w-6' />
                         </Tippy>
                       )}
                     </button>
@@ -301,7 +307,7 @@ const RequestBody = ({ nodeId, nodeData }) => {
       {nodeData.requestBody && nodeData.requestBody.type === 'form-data' && (
         <>
           <NodeHorizontalDivider />
-          <div className='pb-2 bg-background'>
+          <div className='bg-background pb-2'>
             <div>
               <div className='flex items-center justify-between'>
                 <div className='p-2'>Add Param</div>

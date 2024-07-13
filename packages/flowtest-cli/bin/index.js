@@ -83,7 +83,7 @@ const argv = yargs(hideBin(process.argv))
           if (flowData.nodes.find((n) => n.type === 'flowNode')) {
             console.log(
               chalk.blue(
-                '[Note] This flow contains nested flows so run it from parent directory of collection. Ignore if already doing that. \n',
+                '[Note] This flow contains nested flows so run it from root directory of collection. Ignore if already doing that. \n',
               ),
             );
           }

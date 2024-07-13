@@ -18,6 +18,8 @@ const FlowtestAI = require('../ai/flowtestai');
 const { stringify, parse } = require('flatted');
 const { deserialize, serialize } = require('../utils/flowparser/parser');
 const { axiosClient } = require('./axiosClient');
+const FormData = require('form-data');
+const { extend } = require('lodash');
 
 const collectionStore = new Collections();
 const flowTestAI = new FlowtestAI();
@@ -283,23 +285,38 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
     }
   });
 
-  ipcMain.handle('renderer:run-http-request', async (event, request) => {
+  ipcMain.handle('renderer:run-http-request', async (event, request, collectionPath) => {
     try {
-      if (request.headers['Content-type'] === 'multipart/form-data') {
-        const requestData = new FormData();
-        const file = await convertBase64ToBlob(request.data.value);
-        requestData.append(request.data.key, file, request.data.name);
+      if (request.headers['content-type'] === 'multipart/form-data') {
+        const formData = new FormData();
+        const params = request.data;
+        await params.map(async (param, index) => {
+          if (param.type === 'text') {
+            formData.append(param.key, param.value);
+          }
 
-        request.data = requestData;
+          if (param.type === 'file') {
+            let trimmedFilePath = param.value.trim();
+
+            if (!path.isAbsolute(trimmedFilePath)) {
+              trimmedFilePath = path.join(collectionPath, trimmedFilePath);
+            }
+
+            formData.append(param.key, fs.createReadStream(trimmedFilePath), path.basename(trimmedFilePath));
+          }
+        });
+
+        request.data = formData;
+        extend(request.headers, formData.getHeaders());
       }
 
-      // assuming 'application/json' type
       const options = {
         ...request,
         signal: newAbortSignal(),
       };
 
       const result = await axios(options);
+
       return {
         status: result.status,
         statusText: result.statusText,

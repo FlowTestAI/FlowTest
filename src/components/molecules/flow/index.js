@@ -243,7 +243,7 @@ const Flow = ({ tab, collectionId }) => {
       >
         <Background variant='dots' gap={12} size={1} />
         <Controls
-          className='flex shadow-none border-cyan-900'
+          className='flex border-cyan-900 shadow-none'
           onFitView={() => setViewport(reactFlowInstance.getViewport())}
         ></Controls>
         <Button
@@ -257,10 +257,10 @@ const Flow = ({ tab, collectionId }) => {
             try {
               let envVariables = {};
 
-              const activeEnv = useCollectionStore
-                .getState()
-                .collections.find((c) => c.id === collectionId)
-                ?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+              const activeCollection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+              const activeEnv = activeCollection?.environments.find(
+                (e) => e.name === useTabStore.getState().selectedEnv,
+              );
               if (activeEnv) {
                 envVariables = cloneDeep(activeEnv.variables);
               }
@@ -273,6 +273,7 @@ const Flow = ({ tab, collectionId }) => {
                 envVariables,
                 logger,
                 'main',
+                activeCollection.pathname,
               );
               const result = await g.run();
               const time = Date.now() - startTime;

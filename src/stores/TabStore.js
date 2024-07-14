@@ -33,7 +33,7 @@ export const useTabStore = create((set, get) => ({
     set((state) => ({ tabs: [...state.tabs, newTab] }));
     set(() => ({ focusTabId: newTab.id }));
   },
-  saveFlowTestTab: (tab) => {
+  saveFlowTestTab: (tab, updatedFlowData) => {
     set(
       produce((state) => {
         const existingTab = state.tabs.find(
@@ -45,7 +45,7 @@ export const useTabStore = create((set, get) => ({
             tab.type === OBJ_TYPES.flowtest,
         );
         if (existingTab) {
-          existingTab.flowData = cloneDeep(existingTab.flowDataDraft);
+          existingTab.flowData = updatedFlowData;
           existingTab.flowDataDraft = null;
         }
       }),

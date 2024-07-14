@@ -92,9 +92,12 @@ class Watcher {
   change(mainWindow, pathname, collectionId, watchPath) {
     console.log(`[Watcher] file ${pathname} changed`);
     if (this.isFlowTestFile(pathname)) {
+      const content = readFile(pathname);
+      const flowData = serialize(JSON.parse(content));
       const file = {
         name: path.basename(pathname),
-        pathname: pathname,
+        pathname,
+        flowData,
       };
       mainWindow.webContents.send('main:update-flowtest', file, collectionId);
     } else if (this.isEnvFile(pathname, watchPath)) {

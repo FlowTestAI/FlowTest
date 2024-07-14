@@ -117,8 +117,8 @@ const useCollectionStore = create((set, get) => ({
 
             // check if there are any open tabs, if yes mark them saved
             const tab = useTabStore.getState().tabs.find((t) => t.id === existingEnv.id);
-            if (tab && tab.variablesDraft) {
-              tab.variables = cloneDeep(tab.variablesDraft);
+            if (tab) {
+              tab.variables = cloneDeep(file.variables);
               tab.variablesDraft = null;
             }
           } else {
@@ -286,9 +286,9 @@ const useCollectionStore = create((set, get) => ({
             // console.log(`Collection updated: ${JSON.stringify(collection)}`);
 
             // check if there are any open tabs, if yes mark them saved
-            const tab = useTabStore.getState().tabs.find((t) => t.id === item.id);
-            if (tab && tab.flowDataDraft) {
-              useTabStore.getState().saveFlowTestTab(tab);
+            const existingTab = useTabStore.getState().tabs.find((t) => t.id === item.id);
+            if (existingTab) {
+              useTabStore.getState().saveFlowTestTab(existingTab, cloneDeep(file.flowData));
             }
           }
         }

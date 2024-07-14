@@ -118,7 +118,7 @@ const useCollectionStore = create((set, get) => ({
             // check if there are any open tabs, if yes mark them saved
             const tab = useTabStore.getState().tabs.find((t) => t.id === existingEnv.id);
             if (tab) {
-              tab.variables = file.variables;
+              tab.variables = cloneDeep(file.variables);
               tab.variablesDraft = null;
             }
           } else {

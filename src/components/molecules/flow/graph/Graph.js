@@ -86,7 +86,7 @@ class Graph {
 
             return nd;
           });
-          useTabStore.getState().updateFlowTestNodes(updatedNodes);
+          useTabStore.getState().updateFlowTestNodes(this.tab.id, updatedNodes);
         }
         result = {
           status: 'Success',
@@ -254,7 +254,7 @@ class Graph {
 
         return node;
       });
-      useTabStore.getState().updateFlowTestNodes(updatedNodes);
+      useTabStore.getState().updateFlowTestNodes(this.tab.id, updatedNodes);
     }
 
     this.graphRunNodeOutput = {};

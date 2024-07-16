@@ -14,13 +14,13 @@ const useCanvasStore = create((set, get) => ({
     set({
       nodes: applyNodeChanges(changes, get().nodes),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   onEdgesChange: (changes) => {
     set({
       edges: applyEdgeChanges(changes, get().edges),
     });
-    useTabStore.getState().updateFlowTestEdges(get().edges);
+    useTabStore.getState().updateFlowTestEdges(useTabStore.getState().focusTabId, get().edges);
   },
   onConnect: (connection) => {
     const newEdge = {
@@ -30,18 +30,18 @@ const useCanvasStore = create((set, get) => ({
     set({
       edges: addEdge(newEdge, get().edges),
     });
-    useTabStore.getState().updateFlowTestEdges(get().edges);
+    useTabStore.getState().updateFlowTestEdges(useTabStore.getState().focusTabId, get().edges);
   },
   setIntialState: ({ nodes, edges, viewport }) => {
     set((state) => ({ ...state, ...{ nodes, edges, viewport } }));
   },
   setNodes: (nodes) => {
     set({ nodes });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setEdges: (edges) => {
     set({ edges });
-    useTabStore.getState().updateFlowTestEdges(get().edges);
+    useTabStore.getState().updateFlowTestEdges(useTabStore.getState().focusTabId, get().edges);
   },
   setCollectionId: (collectionId) => {
     set({ collectionId });
@@ -51,7 +51,7 @@ const useCanvasStore = create((set, get) => ({
   },
   setViewport: (viewport) => {
     set({ viewport });
-    useTabStore.getState().updateFlowTestViewport(get().viewport);
+    useTabStore.getState().updateFlowTestViewport(useTabStore.getState().focusTabId, get().viewport);
   },
   setAuthNodeType: (nodeId, authType) => {
     set({
@@ -80,7 +80,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setBasicAuthValues: (nodeId, attribute, value) => {
     set({
@@ -99,7 +99,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setRequestNodeType: (nodeId, requestType) => {
     set({
@@ -118,7 +118,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setRequestNodeUrl: (nodeId, url) => {
     set({
@@ -137,7 +137,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   requestNodeAddPreRequestVar: (nodeId, name, type) => {
     set({
@@ -164,7 +164,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   requestNodeDeletePreRequestVar: (nodeId, id) => {
     set({
@@ -185,7 +185,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   requestNodeChangePreRequestVar: (nodeId, id, value) => {
     set({
@@ -212,7 +212,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   requestNodeAddPostResponseVar: (nodeId, name, type) => {
     set({
@@ -240,7 +240,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   requestNodeDeletePostResponseVar: (nodeId, id) => {
     set({
@@ -261,7 +261,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   requestNodeChangePostResponseVar: (nodeId, id, value) => {
     set({
@@ -288,7 +288,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setRequestNodeBody: (nodeId, type, data) => {
     set({
@@ -333,7 +333,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setAssertNodeVariable: (nodeId, name, type, value) => {
     set({
@@ -358,7 +358,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setAssertNodeOperator: (nodeId, operator) => {
     set({
@@ -377,7 +377,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setDelayNodeValue: (nodeId, value) => {
     set({
@@ -395,7 +395,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setFlowForComplexNode: (nodeId, relativePath) => {
     set({
@@ -414,7 +414,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setVariableNodeName: (nodeId, name) => {
     set({
@@ -436,7 +436,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setVariableNodeType: (nodeId, type) => {
     set({
@@ -459,7 +459,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setVariableNodeExpressionsVariable: (nodeId, name, type, value) => {
     set({
@@ -490,7 +490,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   setVariableNodeExpressionOperator: (nodeId, operator) => {
     set({
@@ -515,7 +515,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
   variableNodeChangeVar: (nodeId, value) => {
     set({
@@ -537,7 +537,7 @@ const useCanvasStore = create((set, get) => ({
         return node;
       }),
     });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
 }));
 

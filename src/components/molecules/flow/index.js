@@ -113,27 +113,27 @@ const Flow = ({ tab, collectionId }) => {
     [],
   );
 
-  useMemo(() => {
-    if (reactFlowInstance) {
-      const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
-        return {
-          ...edge,
-          animated: tab.running,
-        };
-      });
-      setEdges(updatedEdges);
-    }
-  }, [tab.running]);
+  // useMemo(() => {
+  //   if (reactFlowInstance) {
+  //     const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
+  //       return {
+  //         ...edge,
+  //         animated: tab.running,
+  //       };
+  //     });
+  //     setEdges(updatedEdges);
+  //   }
+  // }, [reactFlowInstance, tab.running]);
 
-  const runnableEdges = (runnable) => {
-    const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
-      return {
-        ...edge,
-        animated: runnable,
-      };
-    });
-    setEdges(updatedEdges);
-  };
+  // const runnableEdges = (runnable) => {
+  //   const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
+  //     return {
+  //       ...edge,
+  //       animated: runnable,
+  //     };
+  //   });
+  //   setEdges(updatedEdges);
+  // };
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -207,17 +207,17 @@ const Flow = ({ tab, collectionId }) => {
     return true;
   };
 
-  const onGraphComplete = async (status, time, logs) => {
-    const response = await uploadGraphRunLogs(tab.name, status, time, logs);
-    //console.log(response);
-    setLogs(tab.id, status, logs, response);
-    if (status == 'Success') {
-      toast.success(`FlowTest Run Success!`);
-    } else if (status == 'Failed') {
-      toast.error(`FlowTest Run Failed!`);
-    }
-    runnableEdges(false);
-  };
+  // const onGraphComplete = async (status, time, logs) => {
+  //   const response = await uploadGraphRunLogs(tab.name, status, time, logs);
+  //   //console.log(response);
+  //   setLogs(tab.id, status, logs, response);
+  //   if (status == 'Success') {
+  //     toast.success(`FlowTest Run Success!`);
+  //   } else if (status == 'Failed') {
+  //     toast.error(`FlowTest Run Failed!`);
+  //   }
+  //   runnableEdges(false);
+  // };
 
   reactFlowInstance?.setViewport(viewport);
 
@@ -234,7 +234,10 @@ const Flow = ({ tab, collectionId }) => {
       <ReactFlow
         key={tab.id}
         nodes={nodes}
-        edges={edges}
+        edges={edges.map((edge) => ({
+          ...edge,
+          animated: tab.running,
+        }))}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}

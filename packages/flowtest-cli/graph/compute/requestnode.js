@@ -161,7 +161,7 @@ class requestNode extends Node {
         headers: request.headers,
         // form data obj gets serialized here so that it can be sent over wire
         // otherwise ipc communication errors out
-        data: JSON.parse(JSON.stringify(request.data)),
+        data: request.data ? JSON.parse(JSON.stringify(request.data)) : request.data,
       };
 
       const result = await axios({

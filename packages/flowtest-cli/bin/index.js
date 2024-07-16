@@ -56,7 +56,6 @@ const argv = yargs(hideBin(process.argv))
         });
     },
     async (argv) => {
-      console.log(`Reading file: ${argv.file}`);
       if (argv.file.toLowerCase().endsWith(`.flow`)) {
         let content = undefined;
         try {
@@ -79,9 +78,9 @@ const argv = yargs(hideBin(process.argv))
             argv.env ? getEnvVariables(argv.env) : {},
             logger,
           );
-          console.log(chalk.yellow('Running Flow \n'));
+          console.log(chalk.blue('Running Flow \n'));
           console.log(
-            chalk.blue(
+            chalk.yellow(
               'Right now CLI commands must be run from root directory of collection. We will gradually add support to run commands from anywhere inside the collection. \n',
             ),
           );
@@ -109,27 +108,43 @@ const argv = yargs(hideBin(process.argv))
             };
             const accessId = process.env.FLOWTEST_ACCESS_ID;
             const accessKey = process.env.FLOWTEST_ACCESS_KEY;
-            try {
-              const response = await axiosClient.post('/upload', data, {
-                headers: {
-                  'Content-Type': 'application/json',
-                  'x-access-id': accessId,
-                  'x-access-key': accessKey,
-                },
-              });
-              console.log(chalk.bold('Flow Scan: ') + chalk.dim(`${baseUrl}/scan/${response.data.data[0].id}`));
-            } catch (error) {
-              if (error?.response) {
-                if (error.response?.status >= 400 && error.response?.status < 500) {
-                  console.log(chalk.red(`   ${JSON.stringify(error.response?.data)}`));
-                }
-
-                if (error.response?.status === 500) {
-                  console.log(chalk.red('   Internal Server Error'));
-                }
-              }
+            if (!accessId || accessId.trim() === '' || !accessKey || accessKey.trim() === '') {
               console.log(chalk.red(`   ✕ `) + chalk.dim('Unable to upload flow scan'));
+              console.log(
+                chalk.yellow(`Failed to detect access key pairs. Make sure to set environment variables properly.`),
+              );
+              console.log(chalk.yellow(`   export FLOWTEST_ACCESS_ID="<<FLOWTEST_ACCESS_ID>>"`));
+              console.log(chalk.yellow(`   export FLOWTEST_ACCESS_KEY="<<FLOWTEST_ACCESS_KEY>>"`));
+            } else {
+              try {
+                const response = await axiosClient.post('/upload', data, {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-id': accessId,
+                    'x-access-key': accessKey,
+                  },
+                });
+                console.log(chalk.bold('Flow Scan: ') + chalk.dim(`${baseUrl}/scan/${response.data.data[0].id}`));
+              } catch (error) {
+                if (error?.response) {
+                  if (error.response?.status >= 400 && error.response?.status < 500) {
+                    console.log(chalk.red(`   ${JSON.stringify(error.response?.data)}`));
+                  }
+
+                  if (error.response?.status === 500) {
+                    console.log(chalk.red('   Internal Server Error'));
+                  }
+                }
+                console.log(chalk.red(`   ✕ `) + chalk.dim('Unable to upload flow scan'));
+              }
             }
+          } else {
+            console.log('\n');
+            console.log(
+              chalk.yellow(
+                'Enable flow scans today to get more value our of your APIs. Get your access key pairs at https://flowtest-ai.vercel.app/ \n',
+              ),
+            );
           }
 
           process.exit(1);

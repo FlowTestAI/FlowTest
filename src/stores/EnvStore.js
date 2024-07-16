@@ -8,12 +8,12 @@ const useEnvStore = create((set, get) => ({
   },
   handleAddVariable: (key, value) => {
     set((state) => ({ variables: { ...state.variables, [key]: value } }));
-    useTabStore.getState().updateEnvTab(get().variables);
+    useTabStore.getState().updateEnvTab(useTabStore.getState().focusTabId, get().variables);
   },
   handleDeleteVariable: (key) => {
     const { [key]: _, ...newVariables } = get().variables;
     set({ variables: newVariables });
-    useTabStore.getState().updateEnvTab(get().variables);
+    useTabStore.getState().updateEnvTab(useTabStore.getState().focusTabId, get().variables);
   },
 }));
 

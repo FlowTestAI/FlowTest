@@ -115,11 +115,7 @@ const parseOpenAPISpec = (collection) => {
           if (request['requestBody']['content']['multipart/form-data']) {
             requestBody = {
               type: 'form-data',
-              body: {
-                key: '',
-                value: '',
-                name: '',
-              },
+              body: [],
             };
           }
         }

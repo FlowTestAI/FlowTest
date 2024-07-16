@@ -45,25 +45,20 @@ class requestNode extends Node {
     const finalUrl = computeVariables(this.nodeData.url, variablesDict);
 
     // step 3
-    const options = this.formulateRequest(finalUrl, variablesDict);
+    const rawRequest = this.formulateRequest(finalUrl, variablesDict);
 
     console.log(chalk.green(`   ✓ `) + chalk.dim(`type = ${this.nodeData.requestType.toUpperCase()}`));
     console.log(chalk.green(`   ✓ `) + chalk.dim(`url = ${finalUrl}`));
 
-    const res = await this.runHttpRequest(options);
+    const { request, response } = await this.runHttpRequest(rawRequest);
 
-    if (this.nodeData.requestBody.type === 'form-data') {
-      // we don't want to send full file value
-      options.data.value = '<BASE64_ENCODED_FILE_DATA>';
-    }
-
-    if (res.error) {
-      console.log(chalk.red(`   ✕ `) + chalk.dim(`Request failed: ${JSON.stringify(res.error)}`));
+    if (response.error) {
+      console.log(chalk.red(`   ✕ `) + chalk.dim(`Request failed: ${JSON.stringify(response.error)}`));
       this.logger.add(LogLevel.ERROR, 'HTTP request failed', {
         type: 'requestNode',
         data: {
-          request: { type: options.method, url: options.url, data: options.data },
-          response: res.error,
+          request,
+          response: response.error,
           preReqVars: evalVariables,
         },
       });
@@ -71,52 +66,52 @@ class requestNode extends Node {
         status: 'Failed',
       };
     } else {
-      console.log(chalk.green(`   ✓ `) + chalk.dim(`Request successful: ${JSON.stringify(res)}`));
+      console.log(chalk.green(`   ✓ `) + chalk.dim(`Request successful: ${JSON.stringify(response)}`));
       if (this.nodeData.postRespVars) {
-        const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, res.data);
+        const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, response.data);
         this.logger.add(LogLevel.INFO, 'HTTP request success', {
           type: 'requestNode',
           data: {
-            request: { type: options.method, url: options.url, data: options.data },
-            response: res,
+            request,
+            response,
             preReqVars: evalVariables,
             postRespVars: evalPostRespVars,
           },
         });
         return {
           status: 'Success',
-          data: res.data,
+          data: response.data,
           postRespVars: evalPostRespVars,
         };
       }
       this.logger.add(LogLevel.INFO, 'HTTP request success', {
         type: 'requestNode',
         data: {
-          request: { type: options.method, url: options.url, data: options.data },
-          response: res,
+          request,
+          response,
           preReqVars: evalVariables,
         },
       });
       return {
         status: 'Success',
-        data: res.data,
+        data: response.data,
       };
     }
   }
 
   formulateRequest(finalUrl, variablesDict) {
     let restMethod = this.nodeData.requestType.toLowerCase();
-    let contentType = 'application/json';
+    let headers = {};
     let requestData = undefined;
 
     if (this.nodeData.requestBody) {
       if (this.nodeData.requestBody.type === 'raw-json') {
-        contentType = 'application/json';
+        headers['content-type'] = 'application/json';
         requestData = this.nodeData.requestBody.body
           ? JSON.parse(computeVariables(this.nodeData.requestBody.body, variablesDict))
           : JSON.parse('{}');
       } else if (this.nodeData.requestBody.type === 'form-data') {
-        contentType = 'multipart/form-data';
+        headers['content-type'] = 'multipart/form-data';
         const params = cloneDeep(this.nodeData.requestBody.body);
         requestData = params;
       }
@@ -125,9 +120,7 @@ class requestNode extends Node {
     const options = {
       method: restMethod,
       url: finalUrl,
-      headers: {
-        'content-type': contentType,
-      },
+      headers,
       data: requestData,
     };
 
@@ -141,6 +134,7 @@ class requestNode extends Node {
   }
 
   async runHttpRequest(request) {
+    let requestSent;
     try {
       if (request.headers['content-type'] === 'multipart/form-data') {
         const formData = new FormData();
@@ -161,34 +155,51 @@ class requestNode extends Node {
         extend(request.headers, formData.getHeaders());
       }
 
-      // assuming 'application/json' type
-      const options = {
-        ...request,
-        signal: newAbortSignal(),
+      requestSent = {
+        url: request.url,
+        method: request.method,
+        headers: request.headers,
+        // form data obj gets serialized here so that it can be sent over wire
+        // otherwise ipc communication errors out
+        data: JSON.parse(JSON.stringify(request.data)),
       };
 
-      const result = await axios(options);
+      const result = await axios({
+        ...request,
+        signal: newAbortSignal(),
+      });
+
       return {
-        status: result.status,
-        statusText: result.statusText,
-        data: result.data,
-        headers: result.headers,
+        request: requestSent,
+        response: {
+          status: result.status,
+          statusText: result.statusText,
+          data: result.data,
+          headers: result.headers,
+        },
       };
     } catch (error) {
       if (error?.response) {
         return {
-          error: {
-            status: error.response.status,
-            statusText: error.response.statusText,
-            data: error.response.data,
+          request: requestSent,
+          response: {
+            error: {
+              status: error.response.status,
+              statusText: error.response.statusText,
+              data: error.response.data,
+              headers: error.response.headers,
+            },
           },
         };
       } else {
         return {
-          error: {
-            status: '',
-            statusText: '',
-            data: `An error occurred while running the request : ${error?.message}`,
+          request: requestSent,
+          response: {
+            error: {
+              status: '',
+              statusText: '',
+              data: `An error occurred while running the request : ${error?.message}`,
+            },
           },
         };
       }

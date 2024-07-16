@@ -30,16 +30,16 @@ class requestNode extends Node {
     console.debug('Evaluated Url: ', finalUrl);
 
     // step 3
-    const options = await this.formulateRequest(finalUrl, variablesDict);
+    const rawRequest = await this.formulateRequest(finalUrl, variablesDict);
 
-    const res = await this.runHttpRequest(options);
+    const { request, response } = await this.runHttpRequest(rawRequest);
 
-    if (res.error) {
+    if (response.error) {
       this.logger.add(LogLevel.ERROR, 'HTTP request failed', {
         type: 'requestNode',
         data: {
-          request: { type: options.method, url: options.url, data: options.data },
-          response: res.error,
+          request,
+          response: response.error,
           preReqVars: evalVariables,
         },
       });
@@ -48,50 +48,50 @@ class requestNode extends Node {
       };
     } else {
       if (this.nodeData.postRespVars) {
-        const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, res.data);
+        const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, response.data);
         this.logger.add(LogLevel.INFO, 'HTTP request success', {
           type: 'requestNode',
           data: {
-            request: { type: options.method, url: options.url, data: options.data },
-            response: res,
+            request,
+            response,
             preReqVars: evalVariables,
             postRespVars: evalPostRespVars,
           },
         });
         return {
           status: 'Success',
-          data: res.data,
+          data: response.data,
           postRespVars: evalPostRespVars,
         };
       }
       this.logger.add(LogLevel.INFO, 'HTTP request success', {
         type: 'requestNode',
         data: {
-          request: { type: options.method, url: options.url, data: options.data },
-          response: res,
+          request,
+          response,
           preReqVars: evalVariables,
         },
       });
       return {
         status: 'Success',
-        data: res.data,
+        data: response.data,
       };
     }
   }
 
   async formulateRequest(finalUrl, variablesDict) {
     let restMethod = this.nodeData.requestType.toLowerCase();
-    let contentType = 'application/json';
+    let headers = {};
     let requestData = undefined;
 
     if (this.nodeData.requestBody) {
       if (this.nodeData.requestBody.type === 'raw-json') {
-        contentType = 'application/json';
+        headers['content-type'] = 'application/json';
         requestData = this.nodeData.requestBody.body
           ? JSON.parse(computeVariables(this.nodeData.requestBody.body, variablesDict))
           : JSON.parse('{}');
       } else if (this.nodeData.requestBody.type === 'form-data') {
-        contentType = 'multipart/form-data';
+        headers['content-type'] = 'multipart/form-data';
         const params = cloneDeep(this.nodeData.requestBody.body);
         requestData = params;
       }
@@ -100,9 +100,7 @@ class requestNode extends Node {
     const options = {
       method: restMethod,
       url: finalUrl,
-      headers: {
-        'content-type': contentType,
-      },
+      headers,
       data: requestData,
     };
 
@@ -115,11 +113,11 @@ class requestNode extends Node {
     return options;
   }
 
-  runHttpRequest(request) {
+  runHttpRequest(rawRequest) {
     const { ipcRenderer } = window;
 
     return new Promise((resolve, reject) => {
-      ipcRenderer.invoke('renderer:run-http-request', request, this.collectionPath).then(resolve).catch(reject);
+      ipcRenderer.invoke('renderer:run-http-request', rawRequest, this.collectionPath).then(resolve).catch(reject);
     });
   }
 }

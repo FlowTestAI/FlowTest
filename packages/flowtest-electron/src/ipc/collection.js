@@ -19,7 +19,7 @@ const { stringify, parse } = require('flatted');
 const { deserialize, serialize } = require('../utils/flowparser/parser');
 const { axiosClient } = require('./axiosClient');
 const FormData = require('form-data');
-const { extend } = require('lodash');
+const { extend, cloneDeep } = require('lodash');
 
 const collectionStore = new Collections();
 const flowTestAI = new FlowtestAI();
@@ -286,6 +286,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
   });
 
   ipcMain.handle('renderer:run-http-request', async (event, request, collectionPath) => {
+    let requestSent;
     try {
       if (request.headers['content-type'] === 'multipart/form-data') {
         const formData = new FormData();
@@ -310,34 +311,51 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
         extend(request.headers, formData.getHeaders());
       }
 
-      const options = {
-        ...request,
-        signal: newAbortSignal(),
+      requestSent = {
+        url: request.url,
+        method: request.method,
+        headers: request.headers,
+        // form data obj gets serialized here so that it can be sent over wire
+        // otherwise ipc communication errors out
+        data: JSON.parse(JSON.stringify(request.data)),
       };
 
-      const result = await axios(options);
+      const result = await axios({
+        ...request,
+        signal: newAbortSignal(),
+      });
 
       return {
-        status: result.status,
-        statusText: result.statusText,
-        data: result.data,
-        headers: result.headers,
+        request: requestSent,
+        response: {
+          status: result.status,
+          statusText: result.statusText,
+          data: result.data,
+          headers: result.headers,
+        },
       };
     } catch (error) {
       if (error?.response) {
         return {
-          error: {
-            status: error.response.status,
-            statusText: error.response.statusText,
-            data: error.response.data,
+          request: requestSent,
+          response: {
+            error: {
+              status: error.response.status,
+              statusText: error.response.statusText,
+              data: error.response.data,
+              headers: error.response.headers,
+            },
           },
         };
       } else {
         return {
-          error: {
-            status: '',
-            statusText: '',
-            data: `An error occurred while running the request : ${error?.message}`,
+          request: requestSent,
+          response: {
+            error: {
+              status: '',
+              statusText: '',
+              data: `An error occurred while running the request : ${error?.message}`,
+            },
           },
         };
       }

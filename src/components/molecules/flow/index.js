@@ -219,6 +219,7 @@ const Flow = ({ tab, collectionId }) => {
   return (
     <div className='flex-auto'>
       <ReactFlow
+        key={tab.id}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}

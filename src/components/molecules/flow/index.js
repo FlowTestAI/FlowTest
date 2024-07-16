@@ -28,6 +28,7 @@ import { BUTTON_INTENT_TYPES, BUTTON_TYPES } from 'constants/Common';
 import GraphLogger, { LogLevel } from './graph/GraphLogger';
 import Mousetrap from 'mousetrap';
 import { uploadGraphRunLogs } from 'service/collection';
+import { graphRun } from './graph/GraphRun';
 
 const StartNode = () => (
   <FlowNode title='Start' handleLeft={false} handleRight={true} handleRightData={{ type: 'source' }}></FlowNode>
@@ -111,6 +112,18 @@ const Flow = ({ tab, collectionId }) => {
     }),
     [],
   );
+
+  useMemo(() => {
+    if (reactFlowInstance) {
+      const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
+        return {
+          ...edge,
+          animated: tab.running,
+        };
+      });
+      setEdges(updatedEdges);
+    }
+  }, [tab.running]);
 
   const runnableEdges = (runnable) => {
     const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
@@ -251,43 +264,51 @@ const Flow = ({ tab, collectionId }) => {
           classes={'absolute bottom-4 right-20 z-[2000] text-xl'}
           btnType={BUTTON_TYPES.primary}
           isDisabled={false}
-          onClickHandle={async () => {
-            runnableEdges(true);
-            const startTime = Date.now();
-            const logger = new GraphLogger();
-            try {
-              let envVariables = {};
+          onClickHandle={() => {
+            const activeCollection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+            const activeEnv = activeCollection?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
+            const nodes = cloneDeep(reactFlowInstance.getNodes());
+            const edges = cloneDeep(reactFlowInstance.getEdges());
 
-              const activeCollection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-              const activeEnv = activeCollection?.environments.find(
-                (e) => e.name === useTabStore.getState().selectedEnv,
-              );
-              if (activeEnv) {
-                envVariables = cloneDeep(activeEnv.variables);
-              }
-
-              // ============= flow =====================
-              const g = new Graph(
-                cloneDeep(reactFlowInstance.getNodes()),
-                cloneDeep(reactFlowInstance.getEdges()),
-                startTime,
-                envVariables,
-                logger,
-                'main',
-                activeCollection.pathname,
-              );
-              const result = await g.run();
-              const time = Date.now() - startTime;
-              logger.add(LogLevel.INFO, `Total time: ${time} ms`);
-              await onGraphComplete(result.status, time, logger.get());
-            } catch (error) {
-              const time = Date.now() - startTime;
-              logger.add(LogLevel.INFO, `Total time: ${time} ms`);
-              await onGraphComplete('Failed', time, logger.get());
-              toast.error(`Internal error running graph`);
-              runnableEdges(false);
-            }
+            graphRun(tab, nodes, edges, activeCollection?.pathname, activeEnv);
           }}
+          // onClickHandle={async () => {
+          //   runnableEdges(true);
+          //   const startTime = Date.now();
+          //   const logger = new GraphLogger();
+          //   try {
+          //     let envVariables = {};
+
+          //     const activeCollection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
+          //     const activeEnv = activeCollection?.environments.find(
+          //       (e) => e.name === useTabStore.getState().selectedEnv,
+          //     );
+          //     if (activeEnv) {
+          //       envVariables = cloneDeep(activeEnv.variables);
+          //     }
+
+          //     // ============= flow =====================
+          //     const g = new Graph(
+          //       cloneDeep(reactFlowInstance.getNodes()),
+          //       cloneDeep(reactFlowInstance.getEdges()),
+          //       startTime,
+          //       envVariables,
+          //       logger,
+          //       'main',
+          //       activeCollection.pathname,
+          //     );
+          //     const result = await g.run();
+          //     const time = Date.now() - startTime;
+          //     logger.add(LogLevel.INFO, `Total time: ${time} ms`);
+          //     await onGraphComplete(result.status, time, logger.get());
+          //   } catch (error) {
+          //     const time = Date.now() - startTime;
+          //     logger.add(LogLevel.INFO, `Total time: ${time} ms`);
+          //     await onGraphComplete('Failed', time, logger.get());
+          //     toast.error(`Internal error running graph`);
+          //     runnableEdges(false);
+          //   }
+          // }}
           fullWidth={false}
         >
           Run

@@ -27,6 +27,7 @@ export const useTabStore = create((set, get) => ({
       name: flowtest.name,
       pathname: flowtest.pathname,
       flowData: flowtest.flowData,
+      running: false,
       run: {},
     };
 
@@ -109,6 +110,16 @@ export const useTabStore = create((set, get) => ({
             scan: flowScan,
             logs,
           };
+        }
+      }),
+    );
+  },
+  updateFlowTestRunStatus: (tabId, running) => {
+    set(
+      produce((state) => {
+        const existingTab = state.tabs.find((t) => t.id === tabId);
+        if (existingTab) {
+          existingTab.running = running;
         }
       }),
     );

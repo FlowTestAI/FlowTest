@@ -101,17 +101,17 @@ class requestNode extends Node {
 
   formulateRequest(finalUrl, variablesDict) {
     let restMethod = this.nodeData.requestType.toLowerCase();
-    let contentType = 'application/json';
+    let headers = {};
     let requestData = undefined;
 
     if (this.nodeData.requestBody) {
       if (this.nodeData.requestBody.type === 'raw-json') {
-        contentType = 'application/json';
+        headers['content-type'] = 'application/json';
         requestData = this.nodeData.requestBody.body
           ? JSON.parse(computeVariables(this.nodeData.requestBody.body, variablesDict))
           : JSON.parse('{}');
       } else if (this.nodeData.requestBody.type === 'form-data') {
-        contentType = 'multipart/form-data';
+        headers['content-type'] = 'multipart/form-data';
         const params = cloneDeep(this.nodeData.requestBody.body);
         requestData = params;
       }
@@ -120,9 +120,7 @@ class requestNode extends Node {
     const options = {
       method: restMethod,
       url: finalUrl,
-      headers: {
-        'content-type': contentType,
-      },
+      headers,
       data: requestData,
     };
 
@@ -189,6 +187,7 @@ class requestNode extends Node {
               status: error.response.status,
               statusText: error.response.statusText,
               data: error.response.data,
+              headers: error.response.headers,
             },
           },
         };

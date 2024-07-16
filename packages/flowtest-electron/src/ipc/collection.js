@@ -343,6 +343,7 @@ const registerRendererEventHandlers = (mainWindow, watcher) => {
               status: error.response.status,
               statusText: error.response.statusText,
               data: error.response.data,
+              headers: error.response.headers,
             },
           },
         };

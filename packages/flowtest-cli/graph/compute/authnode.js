@@ -23,7 +23,7 @@ class authNode extends Node {
         username,
         password,
       };
-    } else if (this.auth.type === 'no-auth') {
+    } else if (this.nodeData.type === 'no-auth') {
       console.log(chalk.green(`   ✓ `) + chalk.dim('.....using no authentication'));
       this.logger.add(LogLevel.INFO, '', { type: 'authNode', data: { authType: 'No Authentication' } });
       return {

@@ -21,7 +21,7 @@ class authNode extends Node {
         username,
         password,
       };
-    } else if (this.auth.type === 'no-auth') {
+    } else if (this.nodeData.type === 'no-auth') {
       this.logger.add(LogLevel.INFO, '', { type: 'authNode', data: { authType: 'No Authentication' } });
       return {
         type: 'no-auth',

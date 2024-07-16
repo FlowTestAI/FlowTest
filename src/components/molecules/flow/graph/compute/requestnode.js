@@ -30,16 +30,16 @@ class requestNode extends Node {
     console.debug('Evaluated Url: ', finalUrl);
 
     // step 3
-    const options = await this.formulateRequest(finalUrl, variablesDict);
+    const rawRequest = await this.formulateRequest(finalUrl, variablesDict);
 
-    const res = await this.runHttpRequest(options);
+    const { request, response } = await this.runHttpRequest(rawRequest);
 
-    if (res.error) {
+    if (response.error) {
       this.logger.add(LogLevel.ERROR, 'HTTP request failed', {
         type: 'requestNode',
         data: {
-          request: { type: options.method, url: options.url, data: options.data },
-          response: res.error,
+          request: { type: request.method, url: request.url, data: request.data },
+          response: response.error,
           preReqVars: evalVariables,
         },
       });
@@ -48,33 +48,33 @@ class requestNode extends Node {
       };
     } else {
       if (this.nodeData.postRespVars) {
-        const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, res.data);
+        const evalPostRespVars = computeNodeVariables(this.nodeData.postRespVars, response.data);
         this.logger.add(LogLevel.INFO, 'HTTP request success', {
           type: 'requestNode',
           data: {
-            request: { type: options.method, url: options.url, data: options.data },
-            response: res,
+            request: { type: request.method, url: request.url, data: request.data },
+            response,
             preReqVars: evalVariables,
             postRespVars: evalPostRespVars,
           },
         });
         return {
           status: 'Success',
-          data: res.data,
+          data: response.data,
           postRespVars: evalPostRespVars,
         };
       }
       this.logger.add(LogLevel.INFO, 'HTTP request success', {
         type: 'requestNode',
         data: {
-          request: { type: options.method, url: options.url, data: options.data },
-          response: res,
+          request: { type: request.method, url: request.url, data: request.data },
+          response,
           preReqVars: evalVariables,
         },
       });
       return {
         status: 'Success',
-        data: res.data,
+        data: response.data,
       };
     }
   }
@@ -115,11 +115,11 @@ class requestNode extends Node {
     return options;
   }
 
-  runHttpRequest(request) {
+  runHttpRequest(rawRequest) {
     const { ipcRenderer } = window;
 
     return new Promise((resolve, reject) => {
-      ipcRenderer.invoke('renderer:run-http-request', request, this.collectionPath).then(resolve).catch(reject);
+      ipcRenderer.invoke('renderer:run-http-request', rawRequest, this.collectionPath).then(resolve).catch(reject);
     });
   }
 }

@@ -38,7 +38,7 @@ class requestNode extends Node {
       this.logger.add(LogLevel.ERROR, 'HTTP request failed', {
         type: 'requestNode',
         data: {
-          request: { type: request.method, url: request.url, data: request.data },
+          request,
           response: response.error,
           preReqVars: evalVariables,
         },
@@ -52,7 +52,7 @@ class requestNode extends Node {
         this.logger.add(LogLevel.INFO, 'HTTP request success', {
           type: 'requestNode',
           data: {
-            request: { type: request.method, url: request.url, data: request.data },
+            request,
             response,
             preReqVars: evalVariables,
             postRespVars: evalPostRespVars,
@@ -67,7 +67,7 @@ class requestNode extends Node {
       this.logger.add(LogLevel.INFO, 'HTTP request success', {
         type: 'requestNode',
         data: {
-          request: { type: request.method, url: request.url, data: request.data },
+          request,
           response,
           preReqVars: evalVariables,
         },

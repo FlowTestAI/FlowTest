@@ -2,26 +2,27 @@
 
 import { cloneDeep } from 'lodash';
 import { readFlowTestSync } from 'service/collection';
-import useCanvasStore from 'stores/CanvasStore';
 import authNode from './compute/authnode';
 import nestedFlowNode from './compute/nestedflownode';
 import assertNode from './compute/assertnode';
 import requestNode from './compute/requestnode';
 import setVarNode from './compute/setvarnode';
 import { LogLevel } from './GraphLogger';
+import { useTabStore } from 'stores/TabStore';
 
 class Graph {
-  constructor(nodes, edges, startTime, initialEnvVars, logger, caller, collectionPath) {
+  constructor(nodes, edges, startTime, initialEnvVars, logger, collectionPath, timeout, tab) {
     this.nodes = nodes;
     this.edges = edges;
     this.logger = logger;
-    this.timeout = useCanvasStore.getState().timeout;
+    this.timeout = timeout;
     this.startTime = startTime;
     this.graphRunNodeOutput = {};
     this.auth = undefined;
     this.envVariables = initialEnvVars;
-    this.caller = caller;
+    //this.caller = caller;
     this.collectionPath = collectionPath;
+    this.tab = tab;
   }
 
   #checkTimeout() {
@@ -71,8 +72,21 @@ class Graph {
 
       if (node.type === 'outputNode') {
         this.logger.add(LogLevel.INFO, '', { type: 'outputNode', data: { output: prevNodeOutputData } });
-        if (this.caller === 'main') {
-          useCanvasStore.getState().setOutputNode(node.id, prevNodeOutputData);
+        if (this.tab) {
+          const updatedNodes = this.nodes.map((nd) => {
+            if (nd.id === node.id) {
+              return {
+                ...nd,
+                data: {
+                  ...nd.data,
+                  output: prevNodeOutputData,
+                },
+              };
+            }
+
+            return nd;
+          });
+          useTabStore.getState().updateFlowTestNodes(updatedNodes);
         }
         result = {
           status: 'Success',
@@ -153,8 +167,9 @@ class Graph {
             this.startTime,
             this.envVariables,
             this.logger,
-            node.type,
+            //node.type,
             this.collectionPath,
+            this.timeout,
           );
           result = await cNode.evaluate();
           this.envVariables = result.envVars;
@@ -228,14 +243,20 @@ class Graph {
   }
 
   async run() {
-    // reset every output node for a fresh run
-    if (this.caller === 'main') {
-      this.nodes.forEach((node) => {
+    if (this.tab) {
+      const updatedNodes = this.nodes.map((node) => {
         if (node.type === 'outputNode') {
-          useCanvasStore.getState().unSetOutputNode(node.id);
+          if (node.data.output) {
+            const { ['output']: _, ...data } = node.data;
+            node.data = data;
+          }
         }
+
+        return node;
       });
+      useTabStore.getState().updateFlowTestNodes(updatedNodes);
     }
+
     this.graphRunNodeOutput = {};
 
     this.logger.add(LogLevel.INFO, 'Start Flowtest');

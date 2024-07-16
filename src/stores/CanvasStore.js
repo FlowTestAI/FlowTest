@@ -392,42 +392,6 @@ const useCanvasStore = create((set, get) => ({
             },
           };
         }
-
-        return node;
-      }),
-    });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
-  },
-  setOutputNode: (nodeId, output) => {
-    set({
-      nodes: get().nodes.map((node) => {
-        if (node.id === nodeId) {
-          // it's important to create a new object here, to inform React Flow about the cahnges
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              output,
-            },
-          };
-        }
-
-        return node;
-      }),
-    });
-    useTabStore.getState().updateFlowTestNodes(get().nodes);
-  },
-  unSetOutputNode: (nodeId) => {
-    set({
-      nodes: get().nodes.map((node) => {
-        if (node.id === nodeId) {
-          // it's important to create a new object here, to inform React Flow about the cahnges
-          if (node.data.output) {
-            const { ['output']: _, ...data } = node.data;
-            node.data = data;
-          }
-        }
-
         return node;
       }),
     });

@@ -3,8 +3,10 @@ import GraphLogger, { LogLevel } from './GraphLogger';
 import Graph from './Graph';
 import { useTabStore } from 'stores/TabStore';
 import { cloneDeep } from 'lodash';
+import { uploadGraphRunLogs } from 'service/collection';
+import { toast } from 'react-toastify';
 
-export const graphRun = async (tab, nodes, edges, collectionPath, selectedEnv) => {
+export const graphRun = async (tab, nodes, edges, timeout, collectionPath, selectedEnv) => {
   useTabStore.getState().updateFlowTestRunStatus(tab.id, true);
 
   //runnableEdges(true);
@@ -26,13 +28,25 @@ export const graphRun = async (tab, nodes, edges, collectionPath, selectedEnv) =
       startTime,
       envVariables,
       logger,
-      'main',
+      //'main',
       collectionPath,
+      timeout,
+      tab,
     );
     const result = await g.run();
     const time = Date.now() - startTime;
     logger.add(LogLevel.INFO, `Total time: ${time} ms`);
+    //useTabStore.getState().updateFlowTestRunStatus(tab.id, false);
+    const logs = logger.get();
+    console.log(logs);
+    const response = await uploadGraphRunLogs(tab.name, result.status, time, logs);
+    useTabStore.getState().updateFlowTestLogs(tab.id, result.status, logs, response);
     useTabStore.getState().updateFlowTestRunStatus(tab.id, false);
+    if (result.status == 'Success') {
+      toast.success(`FlowTest Run Success!`);
+    } else if (result.status == 'Failed') {
+      toast.error(`FlowTest Run Failed!`);
+    }
     //await onGraphComplete(result.status, time, logger.get());
   } catch (error) {
     const time = Date.now() - startTime;

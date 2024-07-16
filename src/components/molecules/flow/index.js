@@ -269,8 +269,9 @@ const Flow = ({ tab, collectionId }) => {
             const activeEnv = activeCollection?.environments.find((e) => e.name === useTabStore.getState().selectedEnv);
             const nodes = cloneDeep(reactFlowInstance.getNodes());
             const edges = cloneDeep(reactFlowInstance.getEdges());
+            const timeout = useCanvasStore.getState().timeout;
 
-            graphRun(tab, nodes, edges, activeCollection?.pathname, activeEnv);
+            graphRun(tab, nodes, edges, timeout, activeCollection?.pathname, activeEnv);
           }}
           // onClickHandle={async () => {
           //   runnableEdges(true);

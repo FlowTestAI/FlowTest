@@ -296,14 +296,10 @@ const useCanvasStore = create((set, get) => ({
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the cahnges
           if (type === 'None') {
+            const { ['requestBody']: _, ...data } = node.data;
             return {
               ...node,
-              data: {
-                ...node.data,
-                requestBody: {
-                  type,
-                },
-              },
+              data,
             };
           } else if (type === 'raw-json') {
             return {

@@ -113,28 +113,6 @@ const Flow = ({ tab, collectionId }) => {
     [],
   );
 
-  // useMemo(() => {
-  //   if (reactFlowInstance) {
-  //     const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
-  //       return {
-  //         ...edge,
-  //         animated: tab.running,
-  //       };
-  //     });
-  //     setEdges(updatedEdges);
-  //   }
-  // }, [reactFlowInstance, tab.running]);
-
-  // const runnableEdges = (runnable) => {
-  //   const updatedEdges = reactFlowInstance.getEdges().map((edge) => {
-  //     return {
-  //       ...edge,
-  //       animated: runnable,
-  //     };
-  //   });
-  //   setEdges(updatedEdges);
-  // };
-
   const onDragOver = useCallback((event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -207,18 +185,6 @@ const Flow = ({ tab, collectionId }) => {
     return true;
   };
 
-  // const onGraphComplete = async (status, time, logs) => {
-  //   const response = await uploadGraphRunLogs(tab.name, status, time, logs);
-  //   //console.log(response);
-  //   setLogs(tab.id, status, logs, response);
-  //   if (status == 'Success') {
-  //     toast.success(`FlowTest Run Success!`);
-  //   } else if (status == 'Failed') {
-  //     toast.error(`FlowTest Run Failed!`);
-  //   }
-  //   runnableEdges(false);
-  // };
-
   reactFlowInstance?.setViewport(viewport);
 
   //const cmdAndSPressed = useKeyPress(['Meta+s', 'Strg+s', 'Ctrl+s']);
@@ -276,43 +242,6 @@ const Flow = ({ tab, collectionId }) => {
 
             graphRun(tab, nodes, edges, timeout, activeCollection?.pathname, activeEnv);
           }}
-          // onClickHandle={async () => {
-          //   runnableEdges(true);
-          //   const startTime = Date.now();
-          //   const logger = new GraphLogger();
-          //   try {
-          //     let envVariables = {};
-
-          //     const activeCollection = useCollectionStore.getState().collections.find((c) => c.id === collectionId);
-          //     const activeEnv = activeCollection?.environments.find(
-          //       (e) => e.name === useTabStore.getState().selectedEnv,
-          //     );
-          //     if (activeEnv) {
-          //       envVariables = cloneDeep(activeEnv.variables);
-          //     }
-
-          //     // ============= flow =====================
-          //     const g = new Graph(
-          //       cloneDeep(reactFlowInstance.getNodes()),
-          //       cloneDeep(reactFlowInstance.getEdges()),
-          //       startTime,
-          //       envVariables,
-          //       logger,
-          //       'main',
-          //       activeCollection.pathname,
-          //     );
-          //     const result = await g.run();
-          //     const time = Date.now() - startTime;
-          //     logger.add(LogLevel.INFO, `Total time: ${time} ms`);
-          //     await onGraphComplete(result.status, time, logger.get());
-          //   } catch (error) {
-          //     const time = Date.now() - startTime;
-          //     logger.add(LogLevel.INFO, `Total time: ${time} ms`);
-          //     await onGraphComplete('Failed', time, logger.get());
-          //     toast.error(`Internal error running graph`);
-          //     runnableEdges(false);
-          //   }
-          // }}
           fullWidth={false}
         >
           Run

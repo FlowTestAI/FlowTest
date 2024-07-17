@@ -94,7 +94,7 @@ const FlowLogs = ({ logsData }) => {
       <div>{renderFlowScan(logsData.run.scan)}</div>
       <div className='mt-4 flex flex-col rounded-md border-2 border-slate-300 bg-background-light text-cyan-900 shadow-sm'>
         <h2 className='border-b-2 border-slate-300 px-4 py-2 text-2xl font-medium'>
-          <div className='flex flex-row'>
+          <div className='flex flex-row items-center gap-2'>
             Logs
             {logsData.run.status === 'Success' ? (
               <CheckCircleIcon className='h-5 w-5' />

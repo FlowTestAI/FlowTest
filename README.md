@@ -116,4 +116,4 @@ Fun fact: our contributing guide itself was an external contribution 🍺
 
 ## License 📄
 
-Source code in this repository is made available under the [MIT License](LICENSE.md).
+Source code in this repository is made available under the [MIT License](LICENSE).

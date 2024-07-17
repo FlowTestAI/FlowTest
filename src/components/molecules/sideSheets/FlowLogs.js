@@ -21,9 +21,9 @@ const FlowLogs = ({ logsData }) => {
   const renderFlowScan = (flowScan) => {
     if (flowScan.upload === 'disabled') {
       return (
-        <div className='w-full p-4 my-2 border rounded border-sky-600 bg-sky-50 text-sky-600'>
-          <div className='flex items-center justify-between w-full'>
-            <div className='flex items-center justify-start w-full gap-4'>
+        <div className='my-2 w-full rounded border border-sky-600 bg-sky-50 p-4 text-sky-600'>
+          <div className='flex w-full items-center justify-between'>
+            <div className='flex w-full items-center justify-start gap-4'>
               <BarsArrowUpIcon className='h-7 w-7' />
               <div className='w-full'>
                 <div className='flex items-center justify-start gap-2 text-lg font-semibold'>
@@ -45,15 +45,15 @@ const FlowLogs = ({ logsData }) => {
       );
     } else if (flowScan.upload === 'success') {
       return (
-        <div className='w-full p-4 my-2 text-green-600 border border-green-600 rounded bg-green-50'>
-          <div className='flex items-center justify-start w-full gap-4'>
+        <div className='my-2 w-full rounded border border-green-600 bg-green-50 p-4 text-green-600'>
+          <div className='flex w-full items-center justify-start gap-4'>
             <ShieldCheckIcon className='h-7 w-7' />
             <div className='w-full'>
-              <div className='flex items-center justify-start gap-2 mb-4 text-lg font-semibold'>
+              <div className='mb-4 flex items-center justify-start gap-2 text-lg font-semibold'>
                 <h2>Successfully published the scan</h2>
               </div>
               <HorizontalDivider themeColor={'bg-green-600'} />
-              <p className='pt-4 pb-2 font'>
+              <p className='font pb-2 pt-4'>
                 <span className='font-semibold'>URL: </span>
                 <a href={flowScan.url} target='_blank' rel='noreferrer' className='hover:underline'>
                   {flowScan.url}
@@ -65,7 +65,7 @@ const FlowLogs = ({ logsData }) => {
       );
     } else if (flowScan.upload === 'fail') {
       return (
-        <div className='flex items-center w-full gap-4 p-4 my-2 border rounded border-amber-600 bg-amber-50 text-amber-600'>
+        <div className='my-2 flex w-full items-center gap-4 rounded border border-amber-600 bg-amber-50 p-4 text-amber-600'>
           <div className='flex items-center'>
             <ExclamationTriangleIcon className='h-7 w-7' />
           </div>
@@ -78,7 +78,7 @@ const FlowLogs = ({ logsData }) => {
             {flowScan?.reason ? (
               <>
                 <HorizontalDivider themeColor={'bg-amber-600'} />
-                <p className='pt-4 pb-2'>{flowScan?.reason}</p>
+                <p className='pb-2 pt-4'>{flowScan?.reason}</p>
               </>
             ) : (
               <></>
@@ -92,14 +92,14 @@ const FlowLogs = ({ logsData }) => {
   return (
     <div className='overflow-auto'>
       <div>{renderFlowScan(logsData.run.scan)}</div>
-      <div className='flex flex-col mt-4 border-2 rounded-md shadow-sm border-slate-300 bg-background-light text-cyan-900'>
-        <h2 className='px-4 py-2 text-2xl font-medium border-b-2 border-slate-300'>
-          <div className='flex flex-row'>
+      <div className='mt-4 flex flex-col rounded-md border-2 border-slate-300 bg-background-light text-cyan-900 shadow-sm'>
+        <h2 className='border-b-2 border-slate-300 px-4 py-2 text-2xl font-medium'>
+          <div className='flex flex-row items-center gap-2'>
             Logs
             {logsData.run.status === 'Success' ? (
-              <CheckCircleIcon className='w-5 h-5' />
+              <CheckCircleIcon className='h-5 w-5' />
             ) : (
-              <XCircleIcon className='w-5 h-5' />
+              <XCircleIcon className='h-5 w-5' />
             )}
           </div>
         </h2>
@@ -138,25 +138,25 @@ const FlowLogs = ({ logsData }) => {
                 }
 
                 if (type === 'requestNode') {
-                  message = `${data.request.type.toUpperCase()} ${data.request.url}`;
+                  message = `${data.request.method.toUpperCase()} ${data.request.url}`;
                   json = data;
                 }
               }
 
               return (
                 <>
-                  <ul className='w-full p-0 menu' key={index}>
+                  <ul className='menu w-full p-0' key={index}>
                     <li>
-                      <div className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start'>
+                      <div className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out'>
                         <div className='flex items-center justify-start gap-2 px-2 py-1'>
-                          <ClockIcon className='w-6 h-6' />
+                          <ClockIcon className='h-6 w-6' />
                           <span className='text-lg'>{`${log.timestamp} : ${message}`}</span>
                         </div>
                       </div>
                       <ul className='flow-logs-menu before:absolute before:bottom-0 before:top-0 before:w-[1px] before:bg-background-dark before:opacity-100'>
                         <li className='pl-4 pr-2'>
                           {json != undefined ? (
-                            <div className='w-full px-2 py-4 my-4 overflow-auto border json-view-container border-slate-700'>
+                            <div className='json-view-container my-4 w-full overflow-auto border border-slate-700 px-2 py-4'>
                               <React.Fragment>
                                 <JsonView data={json} shouldExpandNode={collapseAllNested} style={defaultStyles} />
                               </React.Fragment>
@@ -173,18 +173,18 @@ const FlowLogs = ({ logsData }) => {
             } else {
               return (
                 <>
-                  <ul className='w-full p-0 menu' key={index}>
+                  <ul className='menu w-full p-0' key={index}>
                     <li>
-                      <div className='flex items-center justify-between gap-2 p-0 transition duration-200 ease-out rounded text-balance text-start'>
+                      <div className='flex items-center justify-between gap-2 text-balance rounded p-0 text-start transition duration-200 ease-out'>
                         <div className='flex items-center justify-start gap-2 px-2 py-1 text-red-500'>
-                          <ClockIcon className='w-6 h-6' />
+                          <ClockIcon className='h-6 w-6' />
                           <span className='text-lg'>{`${log.timestamp} : ${log.message}`}</span>
                         </div>
                       </div>
                       <ul className='flow-logs-menu before:absolute before:bottom-0 before:top-0 before:w-[1px] before:bg-background-dark before:opacity-100'>
                         <li className='pl-4 pr-2'>
                           {log.node != undefined ? (
-                            <div className='px-2 py-4 my-4 overflow-auto border json-view-container border-slate-700'>
+                            <div className='json-view-container my-4 overflow-auto border border-slate-700 px-2 py-4'>
                               <React.Fragment>
                                 <JsonView
                                   data={log.node.data}

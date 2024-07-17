@@ -33,7 +33,7 @@ const Env = ({ tab }) => {
   });
 
   return (
-    <div className='p-4'>
+    <div className='p-4' key={tab.id}>
       <table className='w-full leading-normal'>
         <thead>
           <tr className='bg-ghost-50 text-ghost-600 text-left text-xs font-bold uppercase tracking-wider'>

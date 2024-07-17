@@ -1,5 +1,7 @@
 import React, { Fragment, useState, useRef } from 'react';
 import { PropTypes } from 'prop-types';
+import { Listbox, Transition } from '@headlessui/react';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { EllipsisVerticalIcon, PlusIcon } from '@heroicons/react/24/solid';
 import {
   DocumentArrowUpIcon,
@@ -7,7 +9,7 @@ import {
   ClipboardDocumentIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
-import { Menu, Transition } from '@headlessui/react';
+//import { Menu, Transition } from '@headlessui/react';
 import useCanvasStore from 'stores/CanvasStore';
 import { toast } from 'react-toastify';
 import { Editor } from 'components/atoms/Editor';
@@ -216,36 +218,50 @@ const RequestBody = ({ nodeId, nodeData }) => {
     <>
       <div className='flex items-center justify-between bg-background p-4'>
         <h3>Body</h3>
-        <Menu as='div' className='relative inline-block text-left'>
-          <Menu.Button data-click-from='body-type-menu'>
-            <EllipsisVerticalIcon className='h-4 w-4' aria-hidden='true' data-click-from='body-type-menu' />
-          </Menu.Button>
-          <Transition
-            as={Fragment}
-            enter='transition ease-out duration-100'
-            enterFrom='transform opacity-0 scale-95'
-            enterTo='transform opacity-100 scale-100'
-            leave='transition ease-in duration-75'
-            leaveFrom='transform opacity-100 scale-100'
-            leaveTo='transform opacity-0 scale-95'
-          >
-            <Menu.Items
-              className='absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white px-1 py-1 shadow-lg ring-1 ring-black/5 focus:outline-none'
-              data-click-from='body-type-menu'
+        <Listbox
+          value={nodeData.requestBody?.type ? nodeData.requestBody.type : 'None'}
+          onChange={(selectedValue) => {
+            handleClose(selectedValue);
+          }}
+          className='text-xl'
+        >
+          <div>
+            <Listbox.Button className='relative flex cursor-default border-cyan-950 text-left'>
+              <EllipsisVerticalIcon className='h-4 w-4' aria-hidden='true' data-click-from='body-type-menu' />
+            </Listbox.Button>
+            <Transition
+              as={Fragment}
+              leave='transition ease-in duration-100'
+              leaveFrom='opacity-100'
+              leaveTo='opacity-0'
             >
-              {requestBodyTypeOptions.map((bodyTypeOption, index) => (
-                <Menu.Item key={index} data-click-from='body-type-menu' onClick={() => handleClose(bodyTypeOption)}>
-                  <button
-                    className='group flex w-full items-center rounded-md px-2 py-2 text-sm text-gray-900 hover:bg-background-light'
-                    data-click-from='body-type-menu'
+              <Listbox.Options className='absolute z-50 mt-1 max-h-60 w-36 overflow-auto bg-white py-1 text-base focus:outline-none'>
+                {requestBodyTypeOptions.map((bodyTypeOption) => (
+                  <Listbox.Option
+                    key={bodyTypeOption}
+                    className={({ active }) =>
+                      `relative cursor-default select-none py-2 pl-7 pr-4 hover:font-semibold ${
+                        active ? 'bg-background-light text-slate-900' : ''
+                      }`
+                    }
+                    value={bodyTypeOption}
                   >
-                    {bodyTypeOption}
-                  </button>
-                </Menu.Item>
-              ))}
-            </Menu.Items>
-          </Transition>
-        </Menu>
+                    {({ selected }) => (
+                      <>
+                        <span className={`block`}>{bodyTypeOption}</span>
+                        {selected ? (
+                          <span className='absolute inset-y-0 left-0 flex items-center pl-1 font-semibold'>
+                            <CheckIcon className='h-5 w-5' aria-hidden='true' />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Transition>
+          </div>
+        </Listbox>
       </div>
       {nodeData.requestBody && nodeData.requestBody.type === 'raw-json' && (
         <>

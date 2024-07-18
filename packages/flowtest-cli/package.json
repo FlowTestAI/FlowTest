@@ -1,5 +1,5 @@
 {
-  "name": "@flowtestai/cli",
+  "name": "flowtestai",
   "version": "1.0.0",
   "description": "CLI to run flow from command line",
   "main": "bin/index.js",
@@ -8,6 +8,13 @@
   },
   "bin": {
     "flow": "bin/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/FlowTestAI/FlowTest/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FlowTestAI/FlowTest.git"
   },
   "author": "Sajal Jain <jsajal1993@gmail.com>",
   "license": "MIT",

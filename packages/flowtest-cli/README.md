@@ -1,6 +1,6 @@
 # flowtestai-cli
 
-With FlowTestAI CLI, you can now run your end to end tests directly from command line.
+With FlowTestAI CLI, you can now run your end to end flows, constructed using FlowTestAI, directly from command line.
 
 This makes it easier to run your tests in different environments, automate your testing process, and integrate your tests with your continuous integration and deployment workflows.
 
@@ -9,7 +9,7 @@ This makes it easier to run your tests in different environments, automate your 
 To install the FlowTestAI CLI, use the node package manager of your choice, such as NPM:
 
 ```bash
-npm install -g @flowtestai/cli
+npm install -g flowtestai
 ```
 
 ## Getting started

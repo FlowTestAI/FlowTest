@@ -3,8 +3,8 @@
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const chalk = require('chalk');
-const readFile = require('../../flowtest-electron/src/utils/filemanager/readfile');
-const { serialize } = require('../../flowtest-electron/src/utils/flowparser/parser');
+const readFile = require('../utils/readfile');
+const { serialize } = require('../utils/flowparser/parser');
 const { Graph } = require('../graph/Graph');
 const { cloneDeep } = require('lodash');
 const dotenv = require('dotenv');

@@ -7,10 +7,10 @@ const requestNode = require('./compute/requestNode');
 const setVarNode = require('./compute/setvarnode');
 const chalk = require('chalk');
 const path = require('path');
-const readFile = require('../../flowtest-electron/src/utils/filemanager/readfile');
-const { serialize } = require('../../flowtest-electron/src/utils/flowparser/parser');
 const Node = require('./compute/node');
 const { LogLevel } = require('./GraphLogger');
+const readFile = require('../utils/readfile');
+const { serialize } = require('../utils/flowparser/parser');
 
 class nestedFlowNode extends Node {
   constructor(nodes, edges, startTime, timeout, initialEnvVars, logger) {

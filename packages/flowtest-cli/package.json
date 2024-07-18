@@ -1,13 +1,20 @@
 {
-  "name": "flowtest-cli",
-  "version": "1.0.0",
+  "name": "flowtestai",
+  "version": "1.0.2",
   "description": "CLI to run flow from command line",
   "main": "bin/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "flow": "./bin/index.js"
+    "flow": "bin/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/FlowTestAI/FlowTest/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FlowTestAI/FlowTest.git"
   },
   "author": "Sajal Jain <jsajal1993@gmail.com>",
   "license": "MIT",

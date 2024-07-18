@@ -14,7 +14,12 @@ It works as a normal desktop app and interacts directly with your local file sys
 
 <img width="1728" alt="Screenshot 2024-04-18 at 5 41 43 PM" src="https://github.com/FlowTestAI/FlowTest/assets/5829490/c04f6e3e-fe69-4d25-a008-ba558c8fe149">
 
-🚧 We are actively working on launching a CLI. The CLI allows you to run API first workflows created using FlowTestAI from command line interface making it easier to automate and run them in a CI/CD (continuous integration/development) fashion.
+## CLI
+https://www.npmjs.com/package/flowtestai
+
+The CLI allows you to run flows created using FlowTestAI from command line interface making it easier to automate and run them in a CI/CD (continuous integration/development) fashion.
+
+[README](https://github.com/FlowTestAI/FlowTest/blob/main/packages/flowtest-cli/README.md)
 
 ## Documentation 📝
 

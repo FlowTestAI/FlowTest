@@ -38,7 +38,7 @@ If you need to use an environment, you can specify it with the `--env` or `-e` o
 flow run -f test.flow -e environments/test.env
 ```
 
-If you need to publish the results of your flow runs for further analysis, you can specify the `-s` option. Request your access key pairs from https://flowtest-ai.vercel.app/ and then export $FLOWTEST_ACCESS_ID and $FLOWTEST_ACCESS_KEY
+If you need to publish the results of your flow runs for further analysis, you can specify the `-s` option. Request your access key pairs from https://flowtest-ai.vercel.app/ and then run export $FLOWTEST_ACCESS_ID and $FLOWTEST_ACCESS_KEY before publishing:
 
 ```bash
 flow run -f test.flow -e environments/test.env -s
@@ -53,7 +53,7 @@ flow run -f test.flow -e environments/test.env -s
 
 If you encounter any issues or have any feedback or suggestions, please raise them on our [GitHub repository](https://github.com/FlowTestAI/FlowTest)
 
-Thank you for using Bruno CLI!
+Thank you for using FlowTestAI CLI!
 
 ## Changelog
 

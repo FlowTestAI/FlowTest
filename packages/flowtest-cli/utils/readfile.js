@@ -1,5 +1,13 @@
 const fs = require('fs');
-const { pathExists } = require('./filesystem');
+
+const pathExists = (path) => {
+  try {
+    fs.accessSync(path);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
 
 const readFile = (path) => {
   if (!path) {

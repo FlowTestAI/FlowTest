@@ -10,7 +10,7 @@ const path = require('path');
 const Node = require('./compute/node');
 const { LogLevel } = require('./GraphLogger');
 const readFile = require('../utils/readfile');
-const { serialize } = require('../utils/parser');
+const { serialize } = require('../utils/flowparser/parser');
 
 class nestedFlowNode extends Node {
   constructor(nodes, edges, startTime, timeout, initialEnvVars, logger) {

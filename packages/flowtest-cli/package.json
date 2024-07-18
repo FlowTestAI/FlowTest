@@ -1,6 +1,6 @@
 {
   "name": "flowtestai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI to run flow from command line",
   "main": "bin/index.js",
   "scripts": {

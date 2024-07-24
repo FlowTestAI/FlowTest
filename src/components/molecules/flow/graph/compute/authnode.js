@@ -21,6 +21,13 @@ class authNode extends Node {
         username,
         password,
       };
+    } else if (this.nodeData.type === 'bearer-token') {
+      this.logger.add(LogLevel.INFO, '', { type: 'authNode', data: { authType: 'Bearer Token' } });
+      const token = computeVariables(this.nodeData.token, this.envVariables);
+      return {
+        type: 'bearer-token',
+        token,
+      };
     } else if (this.nodeData.type === 'no-auth') {
       this.logger.add(LogLevel.INFO, '', { type: 'authNode', data: { authType: 'No Authentication' } });
       return {

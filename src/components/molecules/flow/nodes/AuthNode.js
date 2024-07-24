@@ -13,10 +13,15 @@ import { cloneDeep } from 'lodash';
 const AuthNode = ({ id, data }) => {
   const setAuthNodeType = useCanvasStore((state) => state.setAuthNodeType);
   const setBasicAuthValues = useCanvasStore((state) => state.setBasicAuthValues);
-  const [selected, setSelected] = useState(data.type && data.type === 'basic-auth' ? 'basic-auth' : 'no-auth');
+  const setBearerTokenValue = useCanvasStore((state) => state.setBearerTokenValue);
+  const [selected, setSelected] = useState(data.type ? data.type : 'no-auth');
 
-  const handleChange = (value, option) => {
+  const handleBasicAuthValueChange = (value, option) => {
     setBasicAuthValues(id, option, value);
+  };
+
+  const handleBearerTokenChange = (value) => {
+    setBearerTokenValue(id, value);
   };
 
   const getActiveVariables = () => {
@@ -33,6 +38,16 @@ const AuthNode = ({ id, data }) => {
     return [];
   };
 
+  const getAuthType = () => {
+    if (selected === 'no-auth') {
+      return 'No Auth';
+    } else if (selected === 'basic-auth') {
+      return 'Basic Auth';
+    } else if (selected === 'bearer-token') {
+      return 'Bearer Token';
+    }
+  };
+
   return (
     <>
       <FlowNode
@@ -42,89 +57,122 @@ const AuthNode = ({ id, data }) => {
         handleRight={true}
         handleRightData={{ type: 'source' }}
       >
-        <Listbox
-          value={selected}
-          onChange={(selectedValue) => {
-            setSelected(selectedValue);
-            setAuthNodeType(id, selectedValue);
-          }}
-        >
-          <div className='relative min-w-36'>
-            <Listbox.Button className='relative w-full p-2 text-left border rounded cursor-default border-cyan-950'>
-              <span className='block truncate'>{selected === 'no-auth' ? 'No Auth' : 'Basic Auth'}</span>
-              <span className='absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'>
-                <ChevronUpDownIcon className='w-5 h-5' aria-hidden='true' />
-              </span>
-            </Listbox.Button>
-            <Transition
-              as={Fragment}
-              leave='transition ease-in duration-100'
-              leaveFrom='opacity-100'
-              leaveTo='opacity-0'
-            >
-              <Listbox.Options className='absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white max-h-60 focus:outline-none'>
-                <Listbox.Option
-                  className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 hover:font-semibold ${
-                      active ? 'bg-background-light text-slate-900' : ''
-                    }`
-                  }
-                  value={'no-auth'}
-                >
-                  {({ selected }) => (
-                    <>
-                      <span className={`block`}>No Auth</span>
-                      {selected ? (
-                        <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
-                          <CheckIcon className='w-5 h-5' aria-hidden='true' />
-                        </span>
-                      ) : null}
-                    </>
-                  )}
-                </Listbox.Option>
-                <Listbox.Option
-                  className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 hover:font-semibold ${
-                      active ? 'bg-background-light text-slate-900' : ''
-                    }`
-                  }
-                  value={'basic-auth'}
-                >
-                  {({ selected }) => (
-                    <>
-                      <span className={`block`}>Basic auth</span>
-                      {selected ? (
-                        <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
-                          <CheckIcon className='w-5 h-5' aria-hidden='true' />
-                        </span>
-                      ) : null}
-                    </>
-                  )}
-                </Listbox.Option>
-              </Listbox.Options>
-            </Transition>
-          </div>
-        </Listbox>
-        {data.type === 'basic-auth' && (
-          <div className='flex flex-col gap-2 py-4'>
-            <TextEditor
-              placeHolder={`Username`}
-              onChangeHandler={(value) => handleChange(value, 'username')}
-              name={'username'}
-              value={data.username ? data.username : ''}
-              completionOptions={getActiveVariables()}
-              styles={'w-full'}
-            />
-            <TextEditor
-              placeHolder={`Password`}
-              onChangeHandler={(value) => handleChange(value, 'password')}
-              name={'password'}
-              value={data.password ? data.password : ''}
-              completionOptions={getActiveVariables()}
-              styles={'w-full'}
-            />
-          </div>
-        )}
+        <div className='w-52'>
+          <Listbox
+            value={selected}
+            onChange={(selectedValue) => {
+              setSelected(selectedValue);
+              setAuthNodeType(id, selectedValue);
+            }}
+          >
+            <div className='relative'>
+              <Listbox.Button className='relative w-full cursor-default rounded border border-cyan-950 p-2 text-left'>
+                <span className='block truncate'>{getAuthType()}</span>
+                <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
+                  <ChevronUpDownIcon className='h-5 w-5' aria-hidden='true' />
+                </span>
+              </Listbox.Button>
+              <Transition
+                as={Fragment}
+                leave='transition ease-in duration-100'
+                leaveFrom='opacity-100'
+                leaveTo='opacity-0'
+              >
+                <Listbox.Options className='absolute z-10 mt-1 max-h-60 w-full overflow-auto bg-white py-1 text-base focus:outline-none'>
+                  <Listbox.Option
+                    className={({ active }) =>
+                      `relative cursor-default select-none py-2 pl-10 pr-4 hover:font-semibold ${
+                        active ? 'bg-background-light text-slate-900' : ''
+                      }`
+                    }
+                    value={'no-auth'}
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className={`block`}>No Auth</span>
+                        {selected ? (
+                          <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
+                            <CheckIcon className='h-5 w-5' aria-hidden='true' />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
+                  <Listbox.Option
+                    className={({ active }) =>
+                      `relative cursor-default select-none py-2 pl-10 pr-4 hover:font-semibold ${
+                        active ? 'bg-background-light text-slate-900' : ''
+                      }`
+                    }
+                    value={'basic-auth'}
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className={`block`}>Basic auth</span>
+                        {selected ? (
+                          <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
+                            <CheckIcon className='h-5 w-5' aria-hidden='true' />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
+                  <Listbox.Option
+                    className={({ active }) =>
+                      `relative cursor-default select-none py-2 pl-10 pr-4 hover:font-semibold ${
+                        active ? 'bg-background-light text-slate-900' : ''
+                      }`
+                    }
+                    value={'bearer-token'}
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className={`block`}>Bearer Token</span>
+                        {selected ? (
+                          <span className='absolute inset-y-0 left-0 flex items-center pl-3 font-semibold'>
+                            <CheckIcon className='h-5 w-5' aria-hidden='true' />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
+                </Listbox.Options>
+              </Transition>
+            </div>
+          </Listbox>
+          {data.type === 'basic-auth' && (
+            <div className='flex flex-col gap-2 py-4'>
+              <TextEditor
+                placeHolder={`Username`}
+                onChangeHandler={(value) => handleBasicAuthValueChange(value, 'username')}
+                name={'username'}
+                value={data.username ? data.username : ''}
+                completionOptions={getActiveVariables()}
+                styles={'w-full'}
+              />
+              <TextEditor
+                placeHolder={`Password`}
+                onChangeHandler={(value) => handleBasicAuthValueChange(value, 'password')}
+                name={'password'}
+                value={data.password ? data.password : ''}
+                completionOptions={getActiveVariables()}
+                styles={'w-full'}
+              />
+            </div>
+          )}
+          {data.type === 'bearer-token' && (
+            <div className='flex flex-col gap-2 py-4'>
+              <TextEditor
+                placeHolder={`Token`}
+                onChangeHandler={(value) => handleBearerTokenChange(value)}
+                name={'token'}
+                value={data.token ? data.token : ''}
+                completionOptions={getActiveVariables()}
+                styles={'w-full'}
+              />
+            </div>
+          )}
+        </div>
       </FlowNode>
     </>
   );

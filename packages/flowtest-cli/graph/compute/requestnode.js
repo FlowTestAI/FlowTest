@@ -123,6 +123,10 @@ class requestNode extends Node {
       });
     }
 
+    if (this.auth && this.auth?.type === 'bearer-token') {
+      headers['Authorization'] = `Bearer ${this.auth.token}`;
+    }
+
     const options = {
       method: restMethod,
       url: finalUrl,
@@ -130,7 +134,7 @@ class requestNode extends Node {
       data: requestData,
     };
 
-    if (this.auth && this.auth.type === 'basic-auth') {
+    if (this.auth && this.auth?.type === 'basic-auth') {
       options.auth = {};
       options.auth.username = this.auth.username;
       options.auth.password = this.auth.password;

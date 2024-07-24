@@ -324,27 +324,24 @@ const RequestNode = ({ id, data }) => {
         />
         <NodeHorizontalDivider />
         <Tab.Group defaultIndex={getDefaultIndex()}>
-          <Tab.List className='flex space-x-1 rounded-xl bg-blue-900/20 p-1'>
+          <Tab.List className='flex'>
             <Tab
               className={({ selected }) =>
-                `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
-                  ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+                `w-full p-2 ${selected ? 'rounded border border-cyan-900 bg-slate-100' : ''}`
               }
             >
               Body
             </Tab>
             <Tab
               className={({ selected }) =>
-                `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
-                  ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+                `w-full p-2 ${selected ? 'rounded border border-cyan-900 bg-slate-100' : ''}`
               }
             >
               Variables
             </Tab>
             <Tab
               className={({ selected }) =>
-                `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
-                  ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+                `w-full p-2 ${selected ? 'rounded border border-cyan-900 bg-slate-100' : ''}`
               }
             >
               Headers

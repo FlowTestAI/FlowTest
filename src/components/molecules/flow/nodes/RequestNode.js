@@ -18,10 +18,12 @@ import { useTabStore } from 'stores/TabStore';
 import { cloneDeep } from 'lodash';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { Tab } from '@headlessui/react';
 
 const RequestNode = ({ id, data }) => {
   const setRequestNodeUrl = useCanvasStore((state) => state.setRequestNodeUrl);
   const setRequestNodeType = useCanvasStore((state) => state.setRequestNodeType);
+  const setRequestNodeHeaders = useCanvasStore((state) => state.setRequestNodeHeaders);
   const requestNodeAddPreRequestVar = useCanvasStore((state) => state.requestNodeAddPreRequestVar);
   const requestNodeDeletePreRequestVar = useCanvasStore((state) => state.requestNodeDeletePreRequestVar);
   const requestNodeChangePreRequestVar = useCanvasStore((state) => state.requestNodeChangePreRequestVar);
@@ -156,6 +158,75 @@ const RequestNode = ({ id, data }) => {
     );
   };
 
+  const renderHeaders = () => {
+    return (
+      <div>
+        {data.headers && data.headers.length > 0 ? (
+          <table className='border-collapse border-2 border-background-dark leading-normal'>
+            <thead>
+              <tr className='bg-ghost-50 text-ghost-600 text-left text-xs font-bold tracking-wider'>
+                <th className='border-2 border-background-dark p-2'>Name</th>
+                <th className='border-2 border-background-dark p-2'>Value</th>
+                <th className='border-2 border-background-dark p-2'></th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.headers.map((pair, index) => (
+                <tr key={index} className='text-ghost-700 hover:bg-ghost-50 border-b border-gray-200 text-sm'>
+                  <td className='whitespace-no-wrap border-2 border-background-dark'>
+                    <input
+                      type='text'
+                      className='nodrag nowheel block h-9 w-full bg-background-light p-2.5 outline-none'
+                      name='header-name'
+                      value={pair.name}
+                      onChange={(e) => {
+                        const existingHeaders = [...data.headers];
+                        existingHeaders[index].name = e.target.value;
+                        setRequestNodeHeaders(id, existingHeaders);
+                      }}
+                    />
+                  </td>
+                  <td className='whitespace-no-wrap border-2 border-background-dark'>
+                    <input
+                      type='text'
+                      className='nodrag nowheel block h-9 w-full bg-background-light p-2.5 outline-none'
+                      name='header-value'
+                      data-type='text'
+                      onChange={(e) => {
+                        const existingHeaders = [...data.headers];
+                        existingHeaders[index].value = e.target.value;
+                        setRequestNodeHeaders(id, existingHeaders);
+                      }}
+                      value={pair.value}
+                    />
+                  </td>
+                  <td className='border-2 border-background-dark p-2'>
+                    <div className='flex items-center gap-4'>
+                      {/* <Tooltip text={variables[id].type} /> */}
+                      <div
+                        onClick={(e) => {
+                          setRequestNodeHeaders(
+                            id,
+                            data.headers.filter((_, i) => i !== index),
+                          );
+                        }}
+                        className='cursor-pointer'
+                      >
+                        <TrashIcon className='h-4 w-4' />
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          ''
+        )}
+      </div>
+    );
+  };
+
   const getActiveVariables = () => {
     const collectionId = useCanvasStore.getState().collectionId;
     if (collectionId) {
@@ -219,6 +290,21 @@ const RequestNode = ({ id, data }) => {
     );
   };
 
+  const getDefaultIndex = () => {
+    if (data.requestBody?.type) {
+      return 0;
+    } else if (
+      (data.preReqVars && Object.entries(data.preReqVars).length > 0) ||
+      (data.postRespVars && Object.entries(data.postRespVars).length > 0)
+    ) {
+      return 1;
+    } else if (data.headers && data.headers.length > 0) {
+      return 2;
+    } else {
+      return 0;
+    }
+  };
+
   return (
     <FlowNode
       title={listBox()}
@@ -237,44 +323,99 @@ const RequestNode = ({ id, data }) => {
           styles={'w-full mb-2'}
         />
         <NodeHorizontalDivider />
-        <RequestBody nodeId={id} nodeData={data} />
-        <NodeHorizontalDivider />
-        <div className='bg-background'>
-          <h3 className='p-2'>Variables</h3>
-          <div className='px-2'>
-            <NodeHorizontalDivider />
-            <div className='pb-2'>
-              <div className='flex items-center justify-between'>
-                <div className='p-2'>Pre Request</div>
-                <button
-                  onClick={() => {
-                    setModalType('pre-request');
-                    setVariableDialogOpen(true);
-                  }}
-                >
-                  <PlusIcon className='h-4 w-4' />
-                </button>
+        <Tab.Group defaultIndex={getDefaultIndex()}>
+          <Tab.List className='flex space-x-1 rounded-xl bg-blue-900/20 p-1'>
+            <Tab
+              className={({ selected }) =>
+                `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
+                  ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+              }
+            >
+              Body
+            </Tab>
+            <Tab
+              className={({ selected }) =>
+                `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
+                  ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+              }
+            >
+              Variables
+            </Tab>
+            <Tab
+              className={({ selected }) =>
+                `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
+                  ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
+              }
+            >
+              Headers
+            </Tab>
+          </Tab.List>
+          <Tab.Panels className='mt-2'>
+            <Tab.Panel>
+              <RequestBody nodeId={id} nodeData={data} />
+            </Tab.Panel>
+            <Tab.Panel>
+              <div className='bg-background'>
+                <h3 className='p-2'>Variables</h3>
+                <div className='px-2'>
+                  <NodeHorizontalDivider />
+                  <div className='pb-2'>
+                    <div className='flex items-center justify-between'>
+                      <div className='p-2'>Pre Request</div>
+                      <button
+                        onClick={() => {
+                          setModalType('pre-request');
+                          setVariableDialogOpen(true);
+                        }}
+                      >
+                        <PlusIcon className='h-4 w-4' />
+                      </button>
+                    </div>
+                    {renderVariables('pre-request')}
+                  </div>
+                  <NodeHorizontalDivider />
+                  <div className='pb-2'>
+                    <div className='flex items-center justify-between'>
+                      <div className='p-2'>Post Response</div>
+                      <button
+                        onClick={() => {
+                          setModalType('post-response');
+                          setVariableDialogOpen(true);
+                        }}
+                      >
+                        <PlusIcon className='h-4 w-4' />
+                      </button>
+                    </div>
+                    {renderVariables('post-response')}
+                  </div>
+                </div>
               </div>
-              {renderVariables('pre-request')}
-            </div>
-            <NodeHorizontalDivider />
-            <div className='pb-2'>
-              <div className='flex items-center justify-between'>
-                <div className='p-2'>Post Response</div>
-                <button
-                  onClick={() => {
-                    setModalType('post-response');
-                    setVariableDialogOpen(true);
-                  }}
-                >
-                  <PlusIcon className='h-4 w-4' />
-                </button>
+            </Tab.Panel>
+            <Tab.Panel>
+              <div className='bg-background'>
+                {/* <h3 className='p-2'>Headers</h3> */}
+                <div className='px-2'>
+                  <NodeHorizontalDivider />
+                  <div className='pb-2'>
+                    <div className='flex items-center justify-between'>
+                      <div className='p-2'>Headers</div>
+                      <button
+                        onClick={() => {
+                          const existingHeaders = data.headers || [];
+                          const updatedHeaders = existingHeaders.concat([{ name: '', value: '' }]);
+                          setRequestNodeHeaders(id, updatedHeaders);
+                        }}
+                      >
+                        <PlusIcon className='h-4 w-4' />
+                      </button>
+                    </div>
+                    {renderHeaders()}
+                  </div>
+                </div>
               </div>
-              {renderVariables('post-response')}
-            </div>
-          </div>
-        </div>
-        <NodeHorizontalDivider />
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
       </div>
       <AddVariableModal
         closeFn={() => setVariableDialogOpen(false)}

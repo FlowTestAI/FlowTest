@@ -34,22 +34,36 @@ const Env = ({ tab }) => {
 
   return (
     <div className='p-4' key={tab.id}>
-      <table className='w-full leading-normal'>
+      <table className='w-full table-fixed leading-normal'>
         <thead>
           <tr className='bg-ghost-50 text-ghost-600 text-left text-xs font-bold uppercase tracking-wider'>
-            <th className='border-ghost-200 max-w-4 border p-5'>S. No.</th>
-            <th className='border-ghost-200 border p-5 '>Key</th>
-            <th className='border-ghost-200 border p-5'>Value</th>
-            <th className='border-ghost-200 max-w-4 border p-5'>Action</th>
+            <th className='border-ghost-200 border p-5' style={{ width: '50px' }}>
+              S. No.
+            </th>
+            <th className='border-ghost-200 border p-5' style={{ width: '100px' }}>
+              Key
+            </th>
+            <th className='border-ghost-200 border p-5' style={{ width: '200px' }}>
+              Value
+            </th>
+            <th className='border-ghost-200 border p-5' style={{ width: '50px' }}>
+              Action
+            </th>
           </tr>
         </thead>
         <tbody>
           {Object.entries(variables).map(([key, value], index) => (
             <tr key={index} className='text-ghost-700 hover:bg-ghost-50 border-b border-gray-200 text-sm'>
-              <td className='whitespace-no-wrap max-w-4 p-5'>{index + 1}</td>
-              <td className='whitespace-no-wrap p-5'>{key}</td>
-              <td className='whitespace-no-wrap p-5'>{value}</td>
-              <td className='whitespace-no-wrap max-w-4 p-5'>
+              <td className='whitespace-no-wrap p-5' style={{ width: '50px' }}>
+                {index + 1}
+              </td>
+              <td className='whitespace-no-wrap truncate p-5' style={{ width: '100px' }}>
+                {key}
+              </td>
+              <td className='whitespace-no-wrap truncate p-5' style={{ width: '200px' }}>
+                {value}
+              </td>
+              <td className='whitespace-no-wrap p-5' style={{ width: '50px' }}>
                 <div
                   className='hover:bg-ghost-200 relative inline-block cursor-pointer rounded-md p-2 text-left transition duration-200 ease-out'
                   onClick={() => {

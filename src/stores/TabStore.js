@@ -157,6 +157,19 @@ export const useTabStore = create((set, get) => ({
       }),
     );
   },
+  saveEnvTab: (tab, variables) => {
+    set(
+      produce((state) => {
+        const existingTab = state.tabs.find(
+          (t) => t.id === tab.id && t.name === tab.name && t.type === OBJ_TYPES.environment,
+        );
+        if (existingTab) {
+          existingTab.variables = variables;
+          existingTab.variablesDraft = null;
+        }
+      }),
+    );
+  },
   closeTab: (id, collectionId) => {
     set((state) => ({ tabs: state.tabs.filter((t) => t.id !== id) }));
     if (get().focusTabId === id) {

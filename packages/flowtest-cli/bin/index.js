@@ -142,7 +142,7 @@ const argv = yargs(hideBin(process.argv))
             console.log('\n');
             console.log(
               chalk.yellow(
-                'Enable flow scans today to get more value our of your APIs. Get your access key pairs at https://flowtest-ai.vercel.app/ \n',
+                'Enable flow scans today to get more value our of your APIs. Get your access key pairs at https://www.useflowtest.ai/ \n',
               ),
             );
           }

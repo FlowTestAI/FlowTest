@@ -2,7 +2,7 @@
 const axios = require('axios');
 const axiosRetry = require('axios-retry').default;
 
-const baseUrl = 'https://flowtest-ai.vercel.app';
+const baseUrl = 'https://www.useflowtest.ai';
 
 const axiosClient = axios.create({
   baseURL: `${baseUrl}/api`,

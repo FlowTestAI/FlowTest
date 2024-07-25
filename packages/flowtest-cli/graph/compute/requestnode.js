@@ -117,6 +117,12 @@ class requestNode extends Node {
       }
     }
 
+    if (this.nodeData.headers && this.nodeData.headers.length > 0) {
+      this.nodeData.headers.map((pair, index) => {
+        headers[pair.name] = pair.value;
+      });
+    }
+
     const options = {
       method: restMethod,
       url: finalUrl,

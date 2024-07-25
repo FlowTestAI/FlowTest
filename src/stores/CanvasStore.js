@@ -331,6 +331,33 @@ const useCanvasStore = create((set, get) => ({
     });
     useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
   },
+  setRequestNodeHeaders: (nodeId, headers) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          if (Object.entries(headers).length === 0) {
+            const { ['headers']: _, ...data } = node.data;
+            return {
+              ...node,
+              data,
+            };
+          } else {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                headers,
+              },
+            };
+          }
+        }
+
+        return node;
+      }),
+    });
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
+  },
   setAssertNodeVariable: (nodeId, name, type, value) => {
     set({
       nodes: get().nodes.map((node) => {

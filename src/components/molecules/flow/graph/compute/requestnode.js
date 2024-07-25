@@ -103,6 +103,10 @@ class requestNode extends Node {
       });
     }
 
+    if (this.auth && this.auth?.type === 'bearer-token') {
+      headers['Authorization'] = `Bearer ${this.auth.token}`;
+    }
+
     const options = {
       method: restMethod,
       url: finalUrl,

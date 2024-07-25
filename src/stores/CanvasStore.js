@@ -65,13 +65,21 @@ const useCanvasStore = create((set, get) => ({
                 type: authType,
               },
             };
-          } else {
+          } else if (authType == 'basic-auth') {
             return {
               ...node,
               data: {
                 type: authType,
                 username: '',
                 password: '',
+              },
+            };
+          } else if (authType == 'bearer-token') {
+            return {
+              ...node,
+              data: {
+                type: authType,
+                token: '',
               },
             };
           }
@@ -92,6 +100,25 @@ const useCanvasStore = create((set, get) => ({
             data: {
               ...node.data,
               [attribute]: value,
+            },
+          };
+        }
+
+        return node;
+      }),
+    });
+    useTabStore.getState().updateFlowTestNodes(useTabStore.getState().focusTabId, get().nodes);
+  },
+  setBearerTokenValue: (nodeId, token) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          // it's important to create a new object here, to inform React Flow about the cahnges
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              token,
             },
           };
         }

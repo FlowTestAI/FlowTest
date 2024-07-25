@@ -46,7 +46,7 @@ const SettingsModal = ({ closeFn = () => null, open = false, initialTab = 0 }) =
 
   const onFormSubmit = async () => {
     try {
-      await addLogSyncConfig(enabled, 'https://flowtest-ai.vercel.app', accessId, accessKey);
+      await addLogSyncConfig(enabled, 'https://www.useflowtest.ai', accessId, accessKey);
       // send the form data as a request
       showSuccessFullSubmissionMessage(true);
       closeFn();
@@ -125,7 +125,7 @@ const SettingsModal = ({ closeFn = () => null, open = false, initialTab = 0 }) =
                               <p className='text-lg'>
                                 Scans aim to provide anayltics and observability for your flows. <br />
                                 <a
-                                  href='https://flowtest-ai.vercel.app/'
+                                  href='https://www.useflowtest.ai/'
                                   target='_blank'
                                   rel='noreferrer'
                                   className='text-blue-500 hover:underline'

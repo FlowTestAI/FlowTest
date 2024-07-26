@@ -73,20 +73,14 @@ class Graph {
       if (node.type === 'outputNode') {
         this.logger.add(LogLevel.INFO, '', { type: 'outputNode', data: { output: prevNodeOutputData } });
         if (this.tab) {
-          const updatedNodes = this.nodes.map((nd) => {
-            if (nd.id === node.id) {
-              return {
-                ...nd,
-                data: {
-                  ...nd.data,
-                  output: prevNodeOutputData,
-                },
-              };
-            }
-
-            return nd;
-          });
-          useTabStore.getState().updateFlowTestNodes(this.tab.id, updatedNodes);
+          const updatedNode = {
+            ...node,
+            data: {
+              ...node.data,
+              output: prevNodeOutputData,
+            },
+          };
+          useTabStore.getState().updateFlowTestNode(this.tab.id, updatedNode);
         }
         result = {
           status: 'Success',

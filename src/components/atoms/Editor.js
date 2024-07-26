@@ -41,6 +41,9 @@ const hideScrollbar = EditorView.theme({
     whiteSpace: 'nowrap',
     scrollbarWidth: 'none' /* For Firefox */,
   },
+  '&': {
+    cursor: 'text',
+  },
 });
 
 export const Editor = ({ ...props }) => {

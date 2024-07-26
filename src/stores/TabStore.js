@@ -67,6 +67,26 @@ export const useTabStore = create((set, get) => ({
       }),
     );
   },
+  updateFlowTestNode: (tabId, updatedNode) => {
+    set(
+      produce((state) => {
+        if (tabId) {
+          const existingTab = state.tabs.find((t) => t.id === tabId);
+          if (existingTab) {
+            if (!existingTab.flowDataDraft) {
+              existingTab.flowDataDraft = existingTab.flowData ? cloneDeep(existingTab.flowData) : {};
+            }
+            existingTab.flowDataDraft.nodes = existingTab.flowDataDraft.nodes.map((node, index) => {
+              if (node.id === updatedNode.id) {
+                return updatedNode;
+              }
+              return node;
+            });
+          }
+        }
+      }),
+    );
+  },
   updateFlowTestEdges: (tabId, edges) => {
     set(
       produce((state) => {

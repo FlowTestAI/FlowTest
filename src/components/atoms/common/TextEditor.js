@@ -45,6 +45,8 @@ const hideScrollbar = EditorView.theme({
   '.cm-content': {
     padding: '0', // Adjust padding to fit your needs
     overflow: 'auto',
+    lineHeight: '1.75rem',
+    fontSize: '1.125rem',
   },
   '.cm-scroller::-webkit-scrollbar': {
     display: 'none' /* For Chrome, Safari, and Opera */,
@@ -54,10 +56,12 @@ const hideScrollbar = EditorView.theme({
   },
   '&': {
     height: 'auto', // Adjust height to auto for single-line input
+    cursor: 'text',
   },
   '.cm-placeholder': {
     color: '#aaa', // Placeholder text color
   },
+  '&.cm-focused': { outline: 'none' },
 });
 
 // Rebind the Enter key to do nothing
@@ -98,27 +102,13 @@ const highlightStyle = EditorView.baseTheme({
 });
 
 export const TextEditor = ({ placeHolder, onChangeHandler, value, disableState, completionOptions, styles }) => {
-  const editor1 = useRef();
-  const [view, setView] = useState(null);
+  const editorRef = useRef(null);
+  const viewRef = useRef(null);
   const [dynamicOptions, setDynamicOptions] = useState(completionOptions);
 
-  if (view) {
-    if (!isEqual(dynamicOptions, completionOptions)) {
-      updateAutocompleteOptions(view, completionOptions);
-      setDynamicOptions(completionOptions);
-    }
-    if (value != view.state.doc.toString()) {
-      view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: value } });
-    }
-  }
-
-  const onUpdate = EditorView.updateListener.of((v) => {
-    if (onChangeHandler) {
-      onChangeHandler(v.state.doc.toString());
-    }
-  });
-
   useEffect(() => {
+    if (!editorRef.current) return;
+
     const state = EditorState.create({
       doc: value,
       extensions: [
@@ -127,7 +117,11 @@ export const TextEditor = ({ placeHolder, onChangeHandler, value, disableState, 
         //myAutocomplete,
         //basicSetup,
         keymap.of([defaultKeymap, indentWithTab]),
-        onUpdate,
+        EditorView.updateListener.of((v) => {
+          if (onChangeHandler && v.docChanged) {
+            onChangeHandler(v.state.doc.toString());
+          }
+        }),
         //EditorState.readOnly.of(props.readOnly || false),
         history(),
         hideScrollbar,
@@ -138,18 +132,36 @@ export const TextEditor = ({ placeHolder, onChangeHandler, value, disableState, 
       ],
     });
 
-    const view = new EditorView({ state, parent: editor1.current });
-    setView(view);
+    const view = new EditorView({ state, parent: editorRef.current });
+    viewRef.current = view;
 
     return () => {
       view.destroy();
-      setView(null);
     };
   }, []);
 
-  const mainStyles =
-    'nodrag nowheel block rounded border border-slate-700 bg-background-light p-2.5 text-sm outline-none';
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view) return;
+
+    // Update completion options if they've changed
+    if (!isEqual(dynamicOptions, completionOptions)) {
+      updateAutocompleteOptions(view, completionOptions);
+      setDynamicOptions(completionOptions);
+    }
+
+    // Update content if it's different from current editor content
+    const currentContent = view.state.doc.toString();
+    if (value !== currentContent) {
+      view.dispatch({
+        changes: { from: 0, to: currentContent.length, insert: value },
+      });
+    }
+  }, [value, completionOptions]);
+
+  //const mainStyles =
+  //  'nodrag nowheel block border border-slate-700 bg-background-light p-2.5 text-base outline-none';
   const intentStyles = disableState ? 'cursor-not-allowed text-slate-400' : 'text-slate-900';
 
-  return <div ref={editor1} className={`${mainStyles} ${intentStyles} ${styles}`}></div>;
+  return <div ref={editorRef} className={`${styles}`}></div>;
 };

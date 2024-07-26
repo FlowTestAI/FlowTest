@@ -11,10 +11,11 @@ import { useTabStore } from 'stores/TabStore';
 import { cloneDeep } from 'lodash';
 
 const AuthNode = ({ id, data }) => {
+  const validAuthValues = ['no-auth', 'basic-auth', 'bearer-token'];
   const setAuthNodeType = useCanvasStore((state) => state.setAuthNodeType);
   const setBasicAuthValues = useCanvasStore((state) => state.setBasicAuthValues);
   const setBearerTokenValue = useCanvasStore((state) => state.setBearerTokenValue);
-  const [selected, setSelected] = useState(data.type ? data.type : 'no-auth');
+  const [selected, setSelected] = useState(data.type && validAuthValues.includes(data.type) ? data.type : 'no-auth');
 
   const handleBasicAuthValueChange = (value, option) => {
     setBasicAuthValues(id, option, value);
@@ -148,7 +149,9 @@ const AuthNode = ({ id, data }) => {
                 name={'username'}
                 value={data.username ? data.username : ''}
                 completionOptions={getActiveVariables()}
-                styles={'w-full'}
+                styles={
+                  'w-full nodrag nowheel block rounded border border-slate-700 bg-background-light p-2.5 text-base outline-none'
+                }
               />
               <TextEditor
                 placeHolder={`Password`}
@@ -156,19 +159,23 @@ const AuthNode = ({ id, data }) => {
                 name={'password'}
                 value={data.password ? data.password : ''}
                 completionOptions={getActiveVariables()}
-                styles={'w-full'}
+                styles={
+                  'w-full nodrag nowheel block rounded border border-slate-700 bg-background-light p-2.5 text-base outline-none'
+                }
               />
             </div>
           )}
           {data.type === 'bearer-token' && (
             <div className='flex flex-col gap-2 py-4'>
               <TextEditor
-                placeHolder={`Token`}
+                placeHolder={'Token'}
                 onChangeHandler={(value) => handleBearerTokenChange(value)}
                 name={'token'}
                 value={data.token ? data.token : ''}
                 completionOptions={getActiveVariables()}
-                styles={'w-full'}
+                styles={
+                  'w-full nodrag nowheel block rounded border border-slate-700 bg-background-light p-2.5 text-base outline-none'
+                }
               />
             </div>
           )}

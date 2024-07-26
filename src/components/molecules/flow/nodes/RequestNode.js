@@ -158,6 +158,28 @@ const RequestNode = ({ id, data }) => {
     );
   };
 
+  const headerNameChange = (index, updateName) => {
+    const currentHeaders = useCanvasStore.getState().nodes.find((n) => n.id === id)?.data?.headers || [];
+    const updatedHeaders = currentHeaders.map((p, idx) => {
+      if (idx === index) {
+        return { name: updateName, value: p.value };
+      }
+      return p;
+    });
+    setRequestNodeHeaders(id, updatedHeaders);
+  };
+
+  const headerValueChange = (index, updateValue) => {
+    const currentHeaders = useCanvasStore.getState().nodes.find((n) => n.id === id)?.data?.headers || [];
+    const updatedHeaders = currentHeaders.map((p, idx) => {
+      if (idx === index) {
+        return { name: p.name, value: updateValue };
+      }
+      return p;
+    });
+    setRequestNodeHeaders(id, updatedHeaders);
+  };
+
   const renderHeaders = () => {
     return (
       <div>
@@ -173,34 +195,27 @@ const RequestNode = ({ id, data }) => {
             <tbody>
               {data.headers.map((pair, index) => (
                 <tr key={index} className='text-ghost-700 hover:bg-ghost-50 border-b border-gray-200 text-sm'>
-                  <td className='whitespace-no-wrap border-2 border-background-dark'>
-                    <input
-                      type='text'
-                      className='nodrag nowheel block h-9 w-full bg-background-light p-2.5 outline-none'
+                  <td className='whitespace-no-wrap w-[45%] border-2 border-background-dark'>
+                    <TextEditor
+                      placeHolder=''
+                      onChangeHandler={(name) => headerNameChange(index, name)}
                       name='header-name'
                       value={pair.name}
-                      onChange={(e) => {
-                        const existingHeaders = [...data.headers];
-                        existingHeaders[index].name = e.target.value;
-                        setRequestNodeHeaders(id, existingHeaders);
-                      }}
+                      completionOptions={getActiveVariables()}
+                      styles={'w-40 nodrag nowheel block bg-background-light p-2.5 outline-none'}
                     />
                   </td>
-                  <td className='whitespace-no-wrap border-2 border-background-dark'>
-                    <input
-                      type='text'
-                      className='nodrag nowheel block h-9 w-full bg-background-light p-2.5 outline-none'
+                  <td className='whitespace-no-wrap w-[45%] border-2 border-background-dark'>
+                    <TextEditor
+                      placeHolder=''
+                      onChangeHandler={(value) => headerValueChange(index, value)}
                       name='header-value'
-                      data-type='text'
-                      onChange={(e) => {
-                        const existingHeaders = [...data.headers];
-                        existingHeaders[index].value = e.target.value;
-                        setRequestNodeHeaders(id, existingHeaders);
-                      }}
                       value={pair.value}
+                      completionOptions={getActiveVariables()}
+                      styles={'w-40 nodrag nowheel block bg-background-light p-2.5 outline-none'}
                     />
                   </td>
-                  <td className='border-2 border-background-dark p-2'>
+                  <td className='w-[10%] border-2 border-background-dark p-2'>
                     <div className='flex items-center gap-4'>
                       {/* <Tooltip text={variables[id].type} /> */}
                       <div
@@ -320,7 +335,9 @@ const RequestNode = ({ id, data }) => {
           name={'url'}
           value={data.url ? data.url : ''}
           completionOptions={getActiveVariables()}
-          styles={'w-full mb-2'}
+          styles={
+            'w-full mb-2 nodrag nowheel rounded block border border-slate-700 bg-background-light p-2.5 text-base outline-none'
+          }
         />
         <NodeHorizontalDivider />
         <Tab.Group defaultIndex={getDefaultIndex()}>

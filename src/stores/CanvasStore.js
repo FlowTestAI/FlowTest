@@ -362,6 +362,7 @@ const useCanvasStore = create((set, get) => ({
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
+          console.log(node.data?.headers);
           // it's important to create a new object here, to inform React Flow about the cahnges
           if (Object.entries(headers).length === 0) {
             const { ['headers']: _, ...data } = node.data;

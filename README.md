@@ -7,7 +7,7 @@
 
 💡 We are proud to announce that we were recently featured in a [LangChain](https://blog.langchain.dev/empowering-development-with-flowtestai/) blog post.
 
-FlowTest is a powerful, code-agnostic tool designed to simplify the creation and execution of end-to-end API tests. With its intuitive interface and robust features, FlowTest empowers developers and QA teams to streamline their API testing process, improve collaboration, and gain valuable insights into their API performance.
+FlowTestAI is a powerful, code-agnostic tool designed to simplify the creation and execution of end-to-end API tests. With its intuitive interface and robust features, FlowTestAI empowers developers and QA teams to streamline their API testing process, improve collaboration, and gain valuable insights into their API performance.
 
 <img width="1728" alt="Screenshot 2024-04-18 at 5 41 43 PM" src="https://github.com/FlowTestAI/FlowTest/assets/5829490/c04f6e3e-fe69-4d25-a008-ba558c8fe149">
 
@@ -29,7 +29,7 @@ FlowTest is a powerful, code-agnostic tool designed to simplify the creation and
 ### Desktop App Installation
 
 1. Download FlowTestAI for your OS from our [releases page](https://github.com/FlowTestAI/FlowTest/releases).
-2. Install and launch FlowTest like any other desktop application.
+2. Install and launch FlowTestAI like any other desktop application.
 3. Start creating end-to-end API tests using natural language or drag-and-drop.
 4. Save your work locally and use Git for version control, just like with traditional IDEs.
 
